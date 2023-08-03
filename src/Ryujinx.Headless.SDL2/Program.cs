@@ -21,6 +21,8 @@ using Ryujinx.Graphics.Gpu.Shader;
 using Ryujinx.Graphics.OpenGL;
 using Ryujinx.Graphics.Vulkan;
 using Ryujinx.Graphics.Vulkan.MoltenVK;
+using Ryujinx.Graphics.Metal;
+using Ryujinx.Headless.SDL2.Metal;
 using Ryujinx.Headless.SDL2.OpenGL;
 using Ryujinx.Headless.SDL2.Vulkan;
 using Ryujinx.HLE;
@@ -510,9 +512,12 @@ namespace Ryujinx.Headless.SDL2
 
         private static WindowBase CreateWindow(Options options)
         {
-            return options.GraphicsBackend == GraphicsBackend.Vulkan
-                ? new VulkanWindow(_inputManager, options.LoggingGraphicsDebugLevel, options.AspectRatio, options.EnableMouse, options.HideCursorMode, options.IgnoreControllerApplet)
-                : new OpenGLWindow(_inputManager, options.LoggingGraphicsDebugLevel, options.AspectRatio, options.EnableMouse, options.HideCursorMode, options.IgnoreControllerApplet);
+            return options.GraphicsBackend switch
+            {
+                GraphicsBackend.Vulkan => new VulkanWindow(_inputManager, options.LoggingGraphicsDebugLevel, options.AspectRatio, options.EnableMouse, options.HideCursorMode, options.IgnoreControllerApplet),
+                GraphicsBackend.Metal => new MetalWindow(_inputManager, options.LoggingGraphicsDebugLevel, options.AspectRatio, options.EnableKeyboard, options.HideCursorMode, options.IgnoreControllerApplet),
+                _ => new OpenGLWindow(_inputManager, options.LoggingGraphicsDebugLevel, options.AspectRatio, options.EnableMouse, options.HideCursorMode, options.IgnoreControllerApplet)
+            };
         }
 
         private static IRenderer CreateRenderer(Options options, WindowBase window)
@@ -542,6 +547,11 @@ namespace Ryujinx.Headless.SDL2
                     (instance, vk) => new SurfaceKHR((ulong)(vulkanWindow.CreateWindowSurface(instance.Handle))),
                     vulkanWindow.GetRequiredInstanceExtensions,
                     preferredGpuId);
+            }
+
+            if (options.GraphicsBackend == GraphicsBackend.Metal && window is MetalWindow metalWindow && OperatingSystem.IsMacOS())
+            {
+                return new MetalRenderer(metalWindow.GetLayer);
             }
 
             return new OpenGLRenderer();
