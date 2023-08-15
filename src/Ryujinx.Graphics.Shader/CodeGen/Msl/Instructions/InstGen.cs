@@ -3,7 +3,10 @@ using Ryujinx.Graphics.Shader.StructuredIr;
 using Ryujinx.Graphics.Shader.Translation;
 using System;
 
+using static Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions.InstGenCall;
 using static Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions.InstGenHelper;
+using static Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions.InstGenMemory;
+using static Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions.InstGenVector;
 using static Ryujinx.Graphics.Shader.StructuredIr.InstructionInfo;
 
 namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
@@ -105,7 +108,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     case Instruction.Barrier:
                         return "|| BARRIER ||";
                     case Instruction.Call:
-                        return "|| CALL ||";
+                        return Call(context, operation);
                     case Instruction.FSIBegin:
                         return "|| FSI BEGIN ||";
                     case Instruction.FSIEnd:
@@ -125,25 +128,26 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     case Instruction.ImageAtomic:
                         return "|| IMAGE ATOMIC ||";
                     case Instruction.Load:
-                        return "|| LOAD ||";
+                        return Load(context, operation);
                     case Instruction.Lod:
                         return "|| LOD ||";
                     case Instruction.MemoryBarrier:
                         return "|| MEMORY BARRIER ||";
                     case Instruction.Store:
-                        return "|| STORE ||";
+                        return Store(context, operation);
                     case Instruction.TextureSample:
-                        return "|| TEXTURE SAMPLE ||";
+                        return TextureSample(context, operation);
                     case Instruction.TextureSize:
-                        return "|| TEXTURE SIZE ||";
+                        return TextureSize(context, operation);
                     case Instruction.VectorExtract:
-                        return "|| VECTOR EXTRACT ||";
+                        return VectorExtract(context, operation);
                     case Instruction.VoteAllEqual:
                         return "|| VOTE ALL EQUAL ||";
                 }
             }
 
-            throw new InvalidOperationException($"Unexpected instruction type \"{info.Type}\".");
+            // TODO: Return this to being an error
+            return $"Unexpected instruction type \"{info.Type}\".";
         }
     }
 }
