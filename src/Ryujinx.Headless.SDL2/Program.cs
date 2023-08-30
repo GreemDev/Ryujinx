@@ -515,7 +515,9 @@ namespace Ryujinx.Headless.SDL2
             return options.GraphicsBackend switch
             {
                 GraphicsBackend.Vulkan => new VulkanWindow(_inputManager, options.LoggingGraphicsDebugLevel, options.AspectRatio, options.EnableMouse, options.HideCursorMode, options.IgnoreControllerApplet),
-                GraphicsBackend.Metal => new MetalWindow(_inputManager, options.LoggingGraphicsDebugLevel, options.AspectRatio, options.EnableKeyboard, options.HideCursorMode, options.IgnoreControllerApplet),
+                GraphicsBackend.Metal => OperatingSystem.IsMacOS() ?
+                    new MetalWindow(_inputManager, options.LoggingGraphicsDebugLevel, options.AspectRatio, options.EnableKeyboard, options.HideCursorMode, options.IgnoreControllerApplet) :
+                    throw new Exception("Attempted to use Metal renderer on non-macOS platform!"),
                 _ => new OpenGLWindow(_inputManager, options.LoggingGraphicsDebugLevel, options.AspectRatio, options.EnableMouse, options.HideCursorMode, options.IgnoreControllerApplet)
             };
         }
