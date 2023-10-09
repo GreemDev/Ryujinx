@@ -25,7 +25,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 IoVariable.InstanceId => ("instance_id", AggregateType.S32),
                 IoVariable.PointCoord => ("point_coord", AggregateType.Vector2),
                 IoVariable.PointSize => ("point_size", AggregateType.FP32),
-                IoVariable.Position => ("position", AggregateType.Vector4 | AggregateType.FP32),
+                IoVariable.Position => ("out.position", AggregateType.Vector4 | AggregateType.FP32),
                 IoVariable.PrimitiveId => ("primitive_id", AggregateType.S32),
                 IoVariable.UserDefined => GetUserDefinedVariableName(definitions, location, component, isOutput, isPerPatch),
                 IoVariable.VertexId => ("vertex_id", AggregateType.S32),
@@ -52,21 +52,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 name += "_" + "xyzw"[component & 3];
             }
 
-            string prefix = "";
-            switch (definitions.Stage)
-            {
-                case ShaderStage.Vertex:
-                    prefix = "Vertex";
-                    break;
-                case ShaderStage.Fragment:
-                    prefix = "Fragment";
-                    break;
-                case ShaderStage.Compute:
-                    prefix = "Compute";
-                    break;
-            }
-
-            prefix += isOutput ? "Out" : "In";
+            string prefix = isOutput ? "out" : "in";
 
             return (prefix + "." + name, definitions.GetUserDefinedType(location, isOutput));
         }
