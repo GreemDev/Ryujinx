@@ -70,6 +70,11 @@ namespace Ryujinx.Graphics.Metal
             throw new NotImplementedException();
         }
 
+        public IImageArray CreateImageArray(int size, bool isBuffer)
+        {
+            throw new NotImplementedException();
+        }
+
         public BufferHandle CreateBuffer(int size, BufferAccess access)
         {
             var buffer = _device.NewBuffer((ulong)size, MTLResourceOptions.ResourceStorageModeShared);
@@ -98,6 +103,11 @@ namespace Ryujinx.Graphics.Metal
             var texture = new Texture(_device, _pipeline, info);
 
             return texture;
+        }
+
+        public ITextureArray CreateTextureArray(int size, bool isBuffer)
+        {
+            throw new NotImplementedException();
         }
 
         public bool PrepareHostMapping(IntPtr address, ulong size)
@@ -157,6 +167,8 @@ namespace Ryujinx.Graphics.Metal
                 supportsCubemapView: true,
                 supportsNonConstantTextureOffset: false,
                 supportsScaledVertexFormats: true,
+                // TODO: Metal Bindless Support
+                supportsSeparateSampler: false,
                 supportsShaderBallot: false,
                 supportsShaderBarrierDivergence: false,
                 supportsShaderFloat64: false,

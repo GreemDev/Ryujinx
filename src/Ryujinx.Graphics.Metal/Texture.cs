@@ -3,6 +3,7 @@ using Ryujinx.Common.Memory;
 using Ryujinx.Graphics.GAL;
 using SharpMetal.Metal;
 using System;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
@@ -170,11 +171,11 @@ namespace Ryujinx.Graphics.Metal
         }
 
         // TODO: Handle array formats
-        public unsafe void SetData(SpanOrArray<byte> data)
+        public unsafe void SetData(IMemoryOwner<byte> data)
         {
             var blitCommandEncoder = _pipeline.GetOrCreateBlitEncoder();
 
-            var dataSpan = data.Span;
+            var dataSpan = data.Memory.Span;
             var mtlBuffer = _device.NewBuffer((ulong)dataSpan.Length, MTLResourceOptions.ResourceStorageModeShared);
             var bufferSpan = new Span<byte>(mtlBuffer.Contents.ToPointer(), dataSpan.Length);
             dataSpan.CopyTo(bufferSpan);
@@ -222,7 +223,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        public void SetData(SpanOrArray<byte> data, int layer, int level)
+        public void SetData(IMemoryOwner<byte> data, int layer, int level)
         {
             var blitCommandEncoder = _pipeline.GetOrCreateBlitEncoder();
 
@@ -235,7 +236,7 @@ namespace Ryujinx.Graphics.Metal
 
             unsafe
             {
-                var dataSpan = data.Span;
+                var dataSpan = data.Memory.Span;
                 var mtlBuffer = _device.NewBuffer((ulong)dataSpan.Length, MTLResourceOptions.ResourceStorageModeShared);
                 var bufferSpan = new Span<byte>(mtlBuffer.Contents.ToPointer(), dataSpan.Length);
                 dataSpan.CopyTo(bufferSpan);
@@ -254,7 +255,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        public void SetData(SpanOrArray<byte> data, int layer, int level, Rectangle<int> region)
+        public void SetData(IMemoryOwner<byte> data, int layer, int level, Rectangle<int> region)
         {
             var blitCommandEncoder = _pipeline.GetOrCreateBlitEncoder();
 
@@ -267,7 +268,7 @@ namespace Ryujinx.Graphics.Metal
 
             unsafe
             {
-                var dataSpan = data.Span;
+                var dataSpan = data.Memory.Span;
                 var mtlBuffer = _device.NewBuffer((ulong)dataSpan.Length, MTLResourceOptions.ResourceStorageModeShared);
                 var bufferSpan = new Span<byte>(mtlBuffer.Contents.ToPointer(), dataSpan.Length);
                 dataSpan.CopyTo(bufferSpan);

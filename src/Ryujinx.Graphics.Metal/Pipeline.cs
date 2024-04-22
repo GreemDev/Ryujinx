@@ -428,6 +428,11 @@ namespace Ryujinx.Graphics.Metal
             Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
         }
 
+        public void SetImageArray(ShaderStage stage, int binding, IImageArray array)
+        {
+            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+        }
+
         public void SetLineParameters(float width, bool smooth)
         {
             // Not supported in Metal
@@ -642,6 +647,11 @@ namespace Ryujinx.Graphics.Metal
                     }
                 }
             }
+        }
+
+        public void SetTextureArray(ShaderStage stage, int binding, ITextureArray array)
+        {
+            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
         }
 
         public void SetUniformBuffers(ReadOnlySpan<BufferAssignment> buffers)

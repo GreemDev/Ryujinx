@@ -1,9 +1,11 @@
 using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.GAL;
 using SharpMetal.Metal;
+using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
 {
+    [SupportedOSPlatform("macos")]
     static class EnumConversion
     {
         public static MTLSamplerAddressMode Convert(this AddressMode mode)
