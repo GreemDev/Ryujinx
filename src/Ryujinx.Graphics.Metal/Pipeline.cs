@@ -531,7 +531,10 @@ namespace Ryujinx.Graphics.Metal
         {
             int maxScissors = Math.Min(regions.Length, _renderEncoderState.ViewportCount);
 
-            if (maxScissors == 0) { return; }
+            if (maxScissors == 0)
+            {
+                return;
+            }
 
             var mtlScissorRects = new MTLScissorRect[maxScissors];
 
@@ -549,7 +552,8 @@ namespace Ryujinx.Graphics.Metal
             }
 
             _renderEncoderState.UpdateScissors(mtlScissorRects);
-            if (_currentEncoderType == EncoderType.Render) {
+            if (_currentEncoderType == EncoderType.Render)
+            {
                 fixed (MTLScissorRect* pMtlScissorRects = mtlScissorRects)
                 {
                     var renderCommandEncoder = GetOrCreateRenderEncoder();
