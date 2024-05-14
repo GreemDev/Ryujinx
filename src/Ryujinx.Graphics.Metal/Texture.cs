@@ -1,6 +1,7 @@
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.Memory;
 using Ryujinx.Graphics.GAL;
+using SharpMetal.Foundation;
 using SharpMetal.Metal;
 using System;
 using System.Buffers;
@@ -81,6 +82,62 @@ namespace Ryujinx.Graphics.Metal
             MTLTexture = _device.NewTexture(descriptor);
         }
 
+        public Texture(MTLDevice device, Pipeline pipeline, TextureCreateInfo info, MTLTexture sourceTexture, int firstLayer, int firstLevel) {
+            _device = device;
+            _pipeline = pipeline;
+            _info = info;
+
+            var pixelFormat = FormatTable.GetFormat(Info.Format);
+            var textureType = Info.Target.Convert();
+            NSRange levels;
+            levels.location = (ulong)firstLevel;
+            levels.length = (ulong)Info.Levels;
+            NSRange slices;
+            slices.location = (ulong)firstLayer;
+            slices.length = 1;
+
+            if (info.Target == Target.Texture3D)
+            {
+                slices.length = (ulong)Info.Depth;
+            }
+            else if (info.Target != Target.Cubemap)
+            {
+                slices.length = (ulong)Info.Depth;
+            }
+
+            var swizzleR = Info.SwizzleR.Convert();
+            var swizzleG = Info.SwizzleG.Convert();
+            var swizzleB = Info.SwizzleB.Convert();
+            var swizzleA = Info.SwizzleA.Convert();
+
+            if (info.Format == Format.R5G5B5A1Unorm ||
+                info.Format == Format.R5G5B5X1Unorm ||
+                info.Format == Format.R5G6B5Unorm)
+            {
+                (swizzleB, swizzleR) = (swizzleR, swizzleB);
+            }
+            else if (pixelFormat == MTLPixelFormat.ABGR4Unorm || info.Format == Format.A1B5G5R5Unorm)
+            {
+                var tempB = swizzleB;
+                var tempA = swizzleA;
+
+                swizzleB = swizzleG;
+                swizzleA = swizzleR;
+                swizzleR = tempA;
+                swizzleG = tempB;
+            }
+
+            var swizzle = new MTLTextureSwizzleChannels
+            {
+                red = swizzleR,
+                green = swizzleG,
+                blue = swizzleB,
+                alpha = swizzleA
+            };
+
+            MTLTexture = sourceTexture.NewTextureView(pixelFormat, textureType, levels, slices, swizzle);
+        }
+
         public void CopyTo(ITexture destination, int firstLayer, int firstLevel)
         {
             var blitCommandEncoder = _pipeline.GetOrCreateBlitEncoder();
@@ -156,8 +213,7 @@ namespace Ryujinx.Graphics.Metal
 
         public ITexture CreateView(TextureCreateInfo info, int firstLayer, int firstLevel)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
-            throw new NotImplementedException();
+            return new Texture(_device, _pipeline, info, MTLTexture, firstLayer, firstLevel);
         }
 
         public PinnedSpan<byte> GetData()
