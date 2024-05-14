@@ -29,7 +29,6 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
         Call = 1 << 10,
         Atomic = 1 << 11,
         Special = 1 << 12,
-        Cast = 1 << 13,
 
         ArityMask = 0xff,
     }

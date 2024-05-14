@@ -53,13 +53,13 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             Add(Instruction.ConditionalSelect,        InstType.OpTernary,      "?:", 12);
             Add(Instruction.ConvertFP32ToFP64,        0); // MSL does not have a 64-bit FP
             Add(Instruction.ConvertFP64ToFP32,        0); // MSL does not have a 64-bit FP
-            Add(Instruction.ConvertFP32ToS32,         InstType.Cast,           "int");
-            Add(Instruction.ConvertFP32ToU32,         InstType.Cast,           "uint");
+            Add(Instruction.ConvertFP32ToS32,         InstType.CallUnary,      "int");
+            Add(Instruction.ConvertFP32ToU32,         InstType.CallUnary,      "uint");
             Add(Instruction.ConvertFP64ToS32,         0); // MSL does not have a 64-bit FP
             Add(Instruction.ConvertFP64ToU32,         0); // MSL does not have a 64-bit FP
-            Add(Instruction.ConvertS32ToFP32,         InstType.Cast,           "float");
+            Add(Instruction.ConvertS32ToFP32,         InstType.CallUnary,      "float");
             Add(Instruction.ConvertS32ToFP64,         0); // MSL does not have a 64-bit FP
-            Add(Instruction.ConvertU32ToFP32,         InstType.Cast,           "float");
+            Add(Instruction.ConvertU32ToFP32,         InstType.CallUnary,      "float");
             Add(Instruction.ConvertU32ToFP64,         0); // MSL does not have a 64-bit FP
             Add(Instruction.Cosine,                   InstType.CallUnary,      "cos");
             Add(Instruction.Ddx,                      InstType.CallUnary,      "dfdx");

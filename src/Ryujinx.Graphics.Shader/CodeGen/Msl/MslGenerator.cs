@@ -122,6 +122,13 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 {
                     args = args.Append($"device float4 *{storageBuffers.Name} [[buffer({storageBuffers.Binding})]]").ToArray();
                 }
+
+                foreach (var texture in context.Properties.Textures.Values)
+                {
+                    // TODO: don't use always texture2d
+                    args = args.Append($"texture2d<float> tex_{texture.Name} [[texture({texture.Binding})]]").ToArray();
+                    args = args.Append($"sampler samp_{texture.Name} [[sampler({texture.Binding})]]").ToArray();
+                }
             }
 
             return $"{funcKeyword} {returnType} {funcName ?? function.Name}({string.Join(", ", args)})";

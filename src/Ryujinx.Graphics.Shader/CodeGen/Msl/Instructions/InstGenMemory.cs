@@ -158,7 +158,9 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
             bool colorIsVector = isGather || !isShadow;
 
-            string texCall = "texture.";
+            string samplerName = GetSamplerName(context.Properties, texOp);
+            string texCall = $"tex_{samplerName}";
+            texCall += ".";
 
             int srcIndex = 0;
 
@@ -175,9 +177,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             {
                 texCall += "sample(";
 
-                string samplerName = GetSamplerName(context.Properties, texOp);
-
-                texCall += samplerName;
+                texCall += $"samp_{samplerName}";
             }
 
             int coordsCount = texOp.Type.GetDimensions();
