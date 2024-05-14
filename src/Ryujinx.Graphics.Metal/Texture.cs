@@ -49,35 +49,7 @@ namespace Ryujinx.Graphics.Metal
                 descriptor.ArrayLength = (ulong)Info.Depth;
             }
 
-            var swizzleR = Info.SwizzleR.Convert();
-            var swizzleG = Info.SwizzleG.Convert();
-            var swizzleB = Info.SwizzleB.Convert();
-            var swizzleA = Info.SwizzleA.Convert();
-
-            if (info.Format == Format.R5G5B5A1Unorm ||
-                info.Format == Format.R5G5B5X1Unorm ||
-                info.Format == Format.R5G6B5Unorm)
-            {
-                (swizzleB, swizzleR) = (swizzleR, swizzleB);
-            }
-            else if (descriptor.PixelFormat == MTLPixelFormat.ABGR4Unorm || info.Format == Format.A1B5G5R5Unorm)
-            {
-                var tempB = swizzleB;
-                var tempA = swizzleA;
-
-                swizzleB = swizzleG;
-                swizzleA = swizzleR;
-                swizzleR = tempA;
-                swizzleG = tempB;
-            }
-
-            descriptor.Swizzle = new MTLTextureSwizzleChannels
-            {
-                red = swizzleR,
-                green = swizzleG,
-                blue = swizzleB,
-                alpha = swizzleA
-            };
+            descriptor.Swizzle = GetSwizzle(info, descriptor.PixelFormat);
 
             MTLTexture = _device.NewTexture(descriptor);
         }
@@ -105,6 +77,12 @@ namespace Ryujinx.Graphics.Metal
                 slices.length = (ulong)Info.Depth;
             }
 
+            var swizzle = GetSwizzle(info, pixelFormat);
+
+            MTLTexture = sourceTexture.NewTextureView(pixelFormat, textureType, levels, slices, swizzle);
+        }
+
+        private MTLTextureSwizzleChannels GetSwizzle(TextureCreateInfo info, MTLPixelFormat pixelFormat) {
             var swizzleR = Info.SwizzleR.Convert();
             var swizzleG = Info.SwizzleG.Convert();
             var swizzleB = Info.SwizzleB.Convert();
@@ -127,15 +105,13 @@ namespace Ryujinx.Graphics.Metal
                 swizzleG = tempB;
             }
 
-            var swizzle = new MTLTextureSwizzleChannels
+            return new MTLTextureSwizzleChannels
             {
                 red = swizzleR,
                 green = swizzleG,
                 blue = swizzleB,
                 alpha = swizzleA
             };
-
-            MTLTexture = sourceTexture.NewTextureView(pixelFormat, textureType, levels, slices, swizzle);
         }
 
         public void CopyTo(ITexture destination, int firstLayer, int firstLevel)
