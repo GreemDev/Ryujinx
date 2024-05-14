@@ -36,7 +36,7 @@ namespace Ryujinx.Graphics.Metal
             _device = device;
         }
 
-        public unsafe readonly void SetEncoderState(MTLRenderCommandEncoder renderCommandEncoder, MTLVertexDescriptor vertexDescriptor)
+        public unsafe readonly void SetEncoderState(MTLRenderCommandEncoder renderCommandEncoder, MTLRenderPassDescriptor descriptor, MTLVertexDescriptor vertexDescriptor)
         {
             var renderPipelineDescriptor = new MTLRenderPipelineDescriptor
             {
@@ -53,13 +53,21 @@ namespace Ryujinx.Graphics.Metal
                 renderPipelineDescriptor.FragmentFunction = _fragmentFunction.Value;
             }
 
-            var attachment = renderPipelineDescriptor.ColorAttachments.Object(0);
-            attachment.SetBlendingEnabled(true);
-            attachment.PixelFormat = MTLPixelFormat.BGRA8Unorm;
-            attachment.SourceAlphaBlendFactor = MTLBlendFactor.SourceAlpha;
-            attachment.DestinationAlphaBlendFactor = MTLBlendFactor.OneMinusSourceAlpha;
-            attachment.SourceRGBBlendFactor = MTLBlendFactor.SourceAlpha;
-            attachment.DestinationRGBBlendFactor = MTLBlendFactor.OneMinusSourceAlpha;
+            const int maxColorAttachments = 8;
+            for (int i = 0; i < maxColorAttachments; i++)
+            {
+                var renderAttachment = descriptor.ColorAttachments.Object((ulong)i);
+                if (renderAttachment.Texture != null)
+                {
+                    var attachment = renderPipelineDescriptor.ColorAttachments.Object((ulong)i);
+                    attachment.SetBlendingEnabled(true);
+                    attachment.PixelFormat = renderAttachment.Texture.PixelFormat;
+                    attachment.SourceAlphaBlendFactor = MTLBlendFactor.SourceAlpha;
+                    attachment.DestinationAlphaBlendFactor = MTLBlendFactor.OneMinusSourceAlpha;
+                    attachment.SourceRGBBlendFactor = MTLBlendFactor.SourceAlpha;
+                    attachment.DestinationRGBBlendFactor = MTLBlendFactor.OneMinusSourceAlpha;
+                }
+            }
 
             var error = new NSError(IntPtr.Zero);
             var pipelineState = _device.NewRenderPipelineState(renderPipelineDescriptor, ref error);

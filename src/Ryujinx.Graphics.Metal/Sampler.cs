@@ -1,6 +1,7 @@
 using Ryujinx.Graphics.GAL;
 using SharpMetal.Metal;
 using System.Runtime.Versioning;
+using System;
 
 namespace Ryujinx.Graphics.Metal
 {
@@ -23,7 +24,7 @@ namespace Ryujinx.Graphics.Metal
                 LodMinClamp = info.MinLod,
                 LodMaxClamp = info.MaxLod,
                 LodAverage = false,
-                MaxAnisotropy = (uint)info.MaxAnisotropy,
+                MaxAnisotropy = Math.Max((uint)info.MaxAnisotropy, 1),
                 SAddressMode = info.AddressU.Convert(),
                 TAddressMode = info.AddressV.Convert(),
                 RAddressMode = info.AddressP.Convert()

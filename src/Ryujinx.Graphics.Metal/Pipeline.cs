@@ -137,7 +137,7 @@ namespace Ryujinx.Graphics.Metal
             }
 
             var renderCommandEncoder = _commandBuffer.RenderCommandEncoder(descriptor);
-            _renderEncoderState.SetEncoderState(renderCommandEncoder, _vertexDescriptor);
+            _renderEncoderState.SetEncoderState(renderCommandEncoder, descriptor, _vertexDescriptor);
 
             RebindBuffers(renderCommandEncoder);
 
@@ -193,7 +193,7 @@ namespace Ryujinx.Graphics.Metal
                 _helperShaders.BlitShader.VertexFunction,
                 _helperShaders.BlitShader.FragmentFunction,
                 _device);
-            _renderEncoderState.SetEncoderState(renderCommandEncoder, _vertexDescriptor);
+            _renderEncoderState.SetEncoderState(renderCommandEncoder, descriptor, _vertexDescriptor);
 
             var sampler = _device.NewSamplerState(new MTLSamplerDescriptor
             {
