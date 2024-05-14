@@ -133,6 +133,12 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
                     context.EnterScope();
 
+                    if (context.Definitions.Stage == ShaderStage.Fragment)
+                    {
+                        // TODO: check if it's needed
+                        context.AppendLine("float4 position [[position]];");
+                    }
+
                     foreach (var ioDefinition in inputs.OrderBy(x => x.Location))
                     {
                         string type = GetVarTypeName(context, context.Definitions.GetUserDefinedType(ioDefinition.Location, isOutput: false));
