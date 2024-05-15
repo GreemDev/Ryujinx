@@ -152,6 +152,7 @@ namespace Ryujinx.Graphics.Metal
                 supportsBgraFormat: true,
                 supportsR4G4Format: false,
                 supportsR4G4B4A4Format: true,
+                supportsScaledVertexFormats: true,
                 supportsSnormBufferTextureFormat: true,
                 supportsSparseBuffer: false,
                 supports5BitComponentFormat: true,
@@ -166,7 +167,7 @@ namespace Ryujinx.Graphics.Metal
                 supportsMismatchingViewFormat: true,
                 supportsCubemapView: true,
                 supportsNonConstantTextureOffset: false,
-                supportsScaledVertexFormats: true,
+                supportsQuads: false,
                 // TODO: Metal Bindless Support
                 supportsSeparateSampler: false,
                 supportsShaderBallot: false,

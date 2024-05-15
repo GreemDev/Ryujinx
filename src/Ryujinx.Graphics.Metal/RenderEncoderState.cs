@@ -18,8 +18,8 @@ namespace Ryujinx.Graphics.Metal
         private MTLCompareFunction _depthCompareFunction = MTLCompareFunction.Always;
         private bool _depthWriteEnabled = false;
 
-        private MTLStencilDescriptor _backFaceStencil = new MTLStencilDescriptor();
-        private MTLStencilDescriptor _frontFaceStencil = new MTLStencilDescriptor();
+        private MTLStencilDescriptor _backFaceStencil = new();
+        private MTLStencilDescriptor _frontFaceStencil = new();
 
         public PrimitiveTopology Topology = PrimitiveTopology.Triangles;
         public MTLCullMode CullMode = MTLCullMode.None;
@@ -27,7 +27,7 @@ namespace Ryujinx.Graphics.Metal
 
         private MTLViewport[] _viewports = [];
         private MTLScissorRect[] _scissors = [];
-        public int ViewportCount => _viewports.Length;
+        public readonly int ViewportCount => _viewports.Length;
 
         public RenderEncoderState(MTLFunction vertexFunction, MTLFunction fragmentFunction, MTLDevice device)
         {
@@ -53,11 +53,11 @@ namespace Ryujinx.Graphics.Metal
                 renderPipelineDescriptor.FragmentFunction = _fragmentFunction.Value;
             }
 
-            const int maxColorAttachments = 8;
-            for (int i = 0; i < maxColorAttachments; i++)
+            const int MaxColorAttachments = 8;
+            for (int i = 0; i < MaxColorAttachments; i++)
             {
                 var renderAttachment = descriptor.ColorAttachments.Object((ulong)i);
-                if (renderAttachment.Texture != null)
+                if (renderAttachment.Texture != IntPtr.Zero)
                 {
                     var attachment = renderPipelineDescriptor.ColorAttachments.Object((ulong)i);
                     attachment.SetBlendingEnabled(true);
