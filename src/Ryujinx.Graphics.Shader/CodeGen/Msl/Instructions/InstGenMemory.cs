@@ -184,13 +184,6 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
             int pCount = coordsCount;
 
-            int arrayIndexElem = -1;
-
-            if (isArray)
-            {
-                arrayIndexElem = pCount++;
-            }
-
             if (isShadow && !isGather)
             {
                 pCount++;
@@ -211,19 +204,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
                     for (int index = 0; index < count; index++)
                     {
-                        if (arrayIndexElem == index)
-                        {
-                            elems[index] = Src(AggregateType.S32);
-
-                            if (!intCoords)
-                            {
-                                elems[index] = "float(" + elems[index] + ")";
-                            }
-                        }
-                        else
-                        {
-                            elems[index] = Src(coordType);
-                        }
+                        elems[index] = Src(coordType);
                     }
 
                     string prefix = intCoords ? "int" : "float";
@@ -237,6 +218,11 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             }
 
             Append(AssemblePVector(pCount));
+
+            if (isArray)
+            {
+                texCall += ", " + Src(AggregateType.S32);
+            }
 
             texCall += ")" + (colorIsVector ? GetMaskMultiDest(texOp.Index) : "");
 
