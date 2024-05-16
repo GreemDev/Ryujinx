@@ -137,7 +137,11 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 {
                     var textureTypeName = texture.Type.ToMslTextureType();
                     args = args.Append($"{textureTypeName} tex_{texture.Name} [[texture({texture.Binding})]]").ToArray();
-                    args = args.Append($"sampler samp_{texture.Name} [[sampler({texture.Binding})]]").ToArray();
+                    // If the texture is not separate, we need to declare a sampler
+                    if (!texture.Separate)
+                    {
+                        args = args.Append($"sampler samp_{texture.Name} [[sampler({texture.Binding})]]").ToArray();
+                    }
                 }
             }
 
