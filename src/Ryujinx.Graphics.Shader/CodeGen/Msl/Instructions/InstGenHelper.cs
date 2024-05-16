@@ -23,7 +23,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             Add(Instruction.AtomicOr,                 InstType.AtomicBinary,   "atomic_or_explicit");
             Add(Instruction.AtomicSwap,               InstType.AtomicBinary,   "atomic_exchange_explicit");
             Add(Instruction.AtomicXor,                InstType.AtomicBinary,   "atomic_xor_explicit");
-            Add(Instruction.Absolute,                 InstType.AtomicBinary,   "atomic_abs_explicit");
+            Add(Instruction.Absolute,                 InstType.CallUnary,      "abs");
             Add(Instruction.Add,                      InstType.OpBinaryCom,    "+",  2);
             Add(Instruction.Ballot,                   InstType.CallUnary,      "simd_ballot");
             Add(Instruction.Barrier,                  InstType.Special);
