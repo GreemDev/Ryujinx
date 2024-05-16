@@ -735,6 +735,11 @@ namespace Ryujinx.Graphics.Metal
 
         public unsafe void SetViewports(ReadOnlySpan<Viewport> viewports)
         {
+            static float Clamp(float value)
+            {
+                return Math.Clamp(value, 0f, 1f);
+            }
+
             var mtlViewports = new MTLViewport[viewports.Length];
 
             for (int i = 0; i < viewports.Length; i++)
@@ -746,8 +751,8 @@ namespace Ryujinx.Graphics.Metal
                     originY = viewport.Region.Y,
                     width = viewport.Region.Width,
                     height = viewport.Region.Height,
-                    znear = viewport.DepthNear,
-                    zfar = viewport.DepthFar
+                    znear = Clamp(viewport.DepthNear),
+                    zfar = Clamp(viewport.DepthFar)
                 };
             }
 
