@@ -113,6 +113,13 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                     }
                 }
 
+                // TODO: add these only if they are used
+                if (stage == ShaderStage.Vertex)
+                {
+                    args = args.Append("uint vertex_id [[vertex_id]]").ToArray();
+                    args = args.Append("uint instance_id [[instance_id]]").ToArray();
+                }
+
                 foreach (var constantBuffer in context.Properties.ConstantBuffers.Values)
                 {
                     var varType = constantBuffer.Type.Fields[0].Type & ~AggregateType.Array;
