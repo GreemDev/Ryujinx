@@ -10,6 +10,6 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
         public const string ArgumentNamePrefix = "a";
 
-        public const string UndefinedName = "undef";
+        public const string UndefinedName = "0";
     }
 }
