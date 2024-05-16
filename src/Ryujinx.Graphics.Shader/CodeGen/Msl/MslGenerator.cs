@@ -129,7 +129,8 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 foreach (var storageBuffers in context.Properties.StorageBuffers.Values)
                 {
                     var varType = storageBuffers.Type.Fields[0].Type & ~AggregateType.Array;
-                    args = args.Append($"device {Declarations.GetVarTypeName(context, varType)} *{storageBuffers.Name} [[buffer({storageBuffers.Binding})]]").ToArray();
+                    // Offset the binding by 15 to avoid clashing with the constant buffers
+                    args = args.Append($"device {Declarations.GetVarTypeName(context, varType)} *{storageBuffers.Name} [[buffer({15 + storageBuffers.Binding})]]").ToArray();
                 }
 
                 foreach (var texture in context.Properties.Textures.Values)

@@ -600,11 +600,12 @@ namespace Ryujinx.Graphics.Metal
             {
                 if (buffer.Range.Size != 0)
                 {
+                    // Offset the binding by 15
                     _storageBuffers.Add(new BufferInfo
                     {
                         Handle = buffer.Range.Handle.ToIntPtr(),
                         Offset = buffer.Range.Offset,
-                        Index = buffer.Binding
+                        Index = buffer.Binding + 15
                     });
                 }
             }
