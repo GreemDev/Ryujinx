@@ -155,5 +155,31 @@ namespace Ryujinx.Graphics.Shader
 
             return typeName;
         }
+
+        public static string ToMslTextureType(this SamplerType type)
+        {
+            string typeName = (type & SamplerType.Mask) switch
+            {
+                SamplerType.None => "texture",
+                SamplerType.Texture1D => "texture1d",
+                SamplerType.TextureBuffer => "texturebuffer",
+                SamplerType.Texture2D => "texture2d",
+                SamplerType.Texture3D => "texture3d",
+                SamplerType.TextureCube => "texturecube",
+                _ => throw new ArgumentException($"Invalid sampler type \"{type}\"."),
+            };
+
+            if ((type & SamplerType.Multisample) != 0)
+            {
+                typeName += "_ms";
+            }
+
+            if ((type & SamplerType.Array) != 0)
+            {
+                typeName += "_array";
+            }
+
+            return typeName + "<float>";
+        }
     }
 }

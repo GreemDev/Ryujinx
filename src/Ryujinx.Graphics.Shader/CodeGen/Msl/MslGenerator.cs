@@ -135,8 +135,8 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
                 foreach (var texture in context.Properties.Textures.Values)
                 {
-                    // TODO: don't use always texture2d
-                    args = args.Append($"texture2d<float> tex_{texture.Name} [[texture({texture.Binding})]]").ToArray();
+                    var textureTypeName = texture.Type.ToMslTextureType();
+                    args = args.Append($"{textureTypeName} tex_{texture.Name} [[texture({texture.Binding})]]").ToArray();
                     args = args.Append($"sampler samp_{texture.Name} [[sampler({texture.Binding})]]").ToArray();
                 }
             }
