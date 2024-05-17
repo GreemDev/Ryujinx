@@ -69,6 +69,8 @@ namespace Ryujinx.Graphics.Metal
                 }
             }
 
+            renderPipelineDescriptor.DepthAttachmentPixelFormat = descriptor.DepthAttachment.Texture.PixelFormat;
+
             var error = new NSError(IntPtr.Zero);
             var pipelineState = _device.NewRenderPipelineState(renderPipelineDescriptor, ref error);
             if (error != IntPtr.Zero)
