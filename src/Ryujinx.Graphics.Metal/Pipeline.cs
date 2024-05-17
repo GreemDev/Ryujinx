@@ -30,6 +30,7 @@ namespace Ryujinx.Graphics.Metal
         private MTLCommandEncoder? _currentEncoder;
         private EncoderType _currentEncoderType = EncoderType.None;
         private MTLTexture[] _renderTargets = [];
+        private MTLTexture _depthTarget;
 
         private RenderEncoderState _renderEncoderState;
         private readonly MTLVertexDescriptor _vertexDescriptor = new();
@@ -135,6 +136,10 @@ namespace Ryujinx.Graphics.Metal
                     attachment.LoadAction = MTLLoadAction.Load;
                 }
             }
+
+            var depthAttachment = descriptor.DepthAttachment;
+            depthAttachment.Texture = _depthTarget;
+            depthAttachment.LoadAction = MTLLoadAction.Load;
 
             var renderCommandEncoder = _commandBuffer.RenderCommandEncoder(descriptor);
             _renderEncoderState.SetEncoderState(renderCommandEncoder, descriptor, _vertexDescriptor);
@@ -521,6 +526,11 @@ namespace Ryujinx.Graphics.Metal
                 {
                     _renderTargets[i] = tex.MTLTexture;
                 }
+            }
+
+            if (depthStencil is Texture depthTexture)
+            {
+                _depthTarget = depthTexture.MTLTexture;
             }
 
             // Recreate Render Command Encoder
