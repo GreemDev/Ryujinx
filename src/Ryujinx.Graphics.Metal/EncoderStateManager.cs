@@ -68,15 +68,43 @@ namespace Ryujinx.Graphics.Metal
             }
 
             var depthAttachment = renderPassDescriptor.DepthAttachment;
-            depthAttachment.Texture = _currentState.DepthStencil;
-            depthAttachment.LoadAction = MTLLoadAction.Load;
+            var stencilAttachment = renderPassDescriptor.StencilAttachment;
 
-            // var stencilAttachment = renderPassDescriptor.StencilAttachment;
-            // stencilAttachment.Texture =
-            // stencilAttachment.LoadAction = MTLLoadAction.Load;
+            switch (_currentState.DepthStencil.PixelFormat)
+            {
+                // Depth Only Attachment
+                case MTLPixelFormat.Depth16Unorm:
+                case MTLPixelFormat.Depth32Float:
+                    depthAttachment.Texture = _currentState.DepthStencil;
+                    depthAttachment.LoadAction = MTLLoadAction.Load;
+                    renderPipelineDescriptor.DepthAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
+                    break;
 
-            renderPipelineDescriptor.DepthAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
-            // renderPipelineDescriptor.StencilAttachmentPixelFormat =
+                // Stencil Only Attachment
+                case MTLPixelFormat.Stencil8:
+                    stencilAttachment.Texture = _currentState.DepthStencil;
+                    stencilAttachment.LoadAction = MTLLoadAction.Load;
+                    renderPipelineDescriptor.StencilAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
+                    break;
+
+                // Combined Attachment
+                case MTLPixelFormat.Depth24UnormStencil8:
+                case MTLPixelFormat.Depth32FloatStencil8:
+                    depthAttachment.Texture = _currentState.DepthStencil;
+                    depthAttachment.LoadAction = MTLLoadAction.Load;
+
+                    var unpackedFormat = FormatTable.PackedStencilToXFormat(_currentState.DepthStencil.PixelFormat);
+                    var stencilView = _currentState.DepthStencil.NewTextureView(unpackedFormat);
+                    stencilAttachment.Texture = stencilView;
+                    stencilAttachment.LoadAction = MTLLoadAction.Load;
+
+                    renderPipelineDescriptor.DepthAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
+                    renderPipelineDescriptor.StencilAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
+                    break;
+                default:
+                    Logger.Error?.PrintMsg(LogClass.Gpu, $"Unsupported Depth/Stencil Format: {_currentState.DepthStencil.PixelFormat}!");
+                    break;
+            }
 
             renderPipelineDescriptor.VertexDescriptor = _currentState.VertexDescriptor;
 
@@ -86,7 +114,7 @@ namespace Ryujinx.Graphics.Metal
             }
             else
             {
-                return new (IntPtr.Zero);
+                return new(IntPtr.Zero);
             }
 
             if (_currentState.FragmentFunction != null)
@@ -230,13 +258,21 @@ namespace Ryujinx.Graphics.Metal
                 WriteMask = (uint)stencilTest.FrontMask
             };
 
-            _currentState.DepthStencilState = _device.NewDepthStencilState(new MTLDepthStencilDescriptor
+            _currentState.StencilTestEnabled = stencilTest.TestEnable;
+
+            var descriptor = new MTLDepthStencilDescriptor
             {
                 DepthCompareFunction = _currentState.DepthCompareFunction,
-                DepthWriteEnabled = _currentState.DepthWriteEnabled,
-                BackFaceStencil = stencilTest.TestEnable ? _currentState.BackFaceStencil : new MTLStencilDescriptor(IntPtr.Zero),
-                FrontFaceStencil = stencilTest.TestEnable ? _currentState.FrontFaceStencil : new MTLStencilDescriptor(IntPtr.Zero)
-            });
+                DepthWriteEnabled = _currentState.DepthWriteEnabled
+            };
+
+            if (_currentState.StencilTestEnabled)
+            {
+                descriptor.BackFaceStencil = _currentState.BackFaceStencil;
+                descriptor.FrontFaceStencil = _currentState.FrontFaceStencil;
+            }
+
+            _currentState.DepthStencilState = _device.NewDepthStencilState(descriptor);
 
             // Inline Update
 
@@ -253,13 +289,19 @@ namespace Ryujinx.Graphics.Metal
             _currentState.DepthCompareFunction = depthTest.TestEnable ? depthTest.Func.Convert() : MTLCompareFunction.Always;
             _currentState.DepthWriteEnabled = depthTest.WriteEnable;
 
-            _currentState.DepthStencilState = _device.NewDepthStencilState(new MTLDepthStencilDescriptor
+            var descriptor = new MTLDepthStencilDescriptor
             {
                 DepthCompareFunction = _currentState.DepthCompareFunction,
-                DepthWriteEnabled = _currentState.DepthWriteEnabled,
-                BackFaceStencil = _currentState.BackFaceStencil,
-                FrontFaceStencil = _currentState.FrontFaceStencil
-            });
+                DepthWriteEnabled = _currentState.DepthWriteEnabled
+            };
+
+            if (_currentState.StencilTestEnabled)
+            {
+                descriptor.BackFaceStencil = _currentState.BackFaceStencil;
+                descriptor.FrontFaceStencil = _currentState.FrontFaceStencil;
+            }
+
+            _currentState.DepthStencilState = _device.NewDepthStencilState(descriptor);
 
             // Inline Update
 

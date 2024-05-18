@@ -32,6 +32,7 @@ namespace Ryujinx.Graphics.Metal
 
         public MTLStencilDescriptor BackFaceStencil = new();
         public MTLStencilDescriptor FrontFaceStencil = new();
+        public bool StencilTestEnabled = false;
 
         public PrimitiveTopology Topology = PrimitiveTopology.Triangles;
         public MTLCullMode CullMode = MTLCullMode.None;

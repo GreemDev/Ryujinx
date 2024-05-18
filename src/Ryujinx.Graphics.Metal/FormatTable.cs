@@ -1,3 +1,4 @@
+using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.GAL;
 using SharpMetal.Metal;
 using System;
@@ -64,8 +65,7 @@ namespace Ryujinx.Graphics.Metal
             Add(Format.R32G32B32A32Sint, MTLPixelFormat.RGBA32Sint);
             Add(Format.S8Uint, MTLPixelFormat.Stencil8);
             Add(Format.D16Unorm, MTLPixelFormat.Depth16Unorm);
-            // Approximate
-            Add(Format.S8UintD24Unorm, MTLPixelFormat.BGRA8Unorm);
+            // Add(Format.S8UintD24Unorm, MTLPixelFormat.BGRA8Unorm);
             Add(Format.D32Float, MTLPixelFormat.Depth32Float);
             Add(Format.D24UnormS8Uint, MTLPixelFormat.Depth24UnormStencil8);
             Add(Format.D32FloatS8Uint, MTLPixelFormat.Depth32FloatStencil8);
@@ -180,6 +180,18 @@ namespace Ryujinx.Graphics.Metal
             }
 
             return mtlFormat;
+        }
+
+        public static MTLPixelFormat PackedStencilToXFormat(MTLPixelFormat format)
+        {
+            switch (format)
+            {
+                case MTLPixelFormat.Depth24UnormStencil8: return MTLPixelFormat.X24Stencil8;
+                case MTLPixelFormat.Depth32FloatStencil8: return MTLPixelFormat.X32Stencil8;
+                default:
+                    Logger.Warning?.PrintMsg(LogClass.Gpu, $"Attempted to get stencil format for non packed format {format}!");
+                    return MTLPixelFormat.Invalid;
+            }
         }
     }
 }
