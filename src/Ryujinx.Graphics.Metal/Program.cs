@@ -28,8 +28,6 @@ namespace Ryujinx.Graphics.Metal
                 {
                     Logger.Warning?.Print(LogClass.Gpu, $"Shader linking failed: \n{StringHelper.String(libraryError.LocalizedDescription)}");
                     _status = ProgramLinkStatus.Failure;
-                    //Console.WriteLine($"SHADER {index}: {shader.Code}");
-                    //throw new NotImplementedException();
                     return;
                 }
 

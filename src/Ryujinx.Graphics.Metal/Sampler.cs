@@ -33,6 +33,11 @@ namespace Ryujinx.Graphics.Metal
             _mtlSamplerState = samplerState;
         }
 
+        public Sampler(MTLSamplerState samplerState)
+        {
+            _mtlSamplerState = samplerState;
+        }
+
         public MTLSamplerState GetSampler()
         {
             return _mtlSamplerState;

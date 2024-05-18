@@ -5,7 +5,6 @@ using SharpMetal.Foundation;
 using SharpMetal.Metal;
 using SharpMetal.QuartzCore;
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
@@ -24,37 +23,27 @@ namespace Ryujinx.Graphics.Metal
     {
         private readonly MTLDevice _device;
         private readonly MTLCommandQueue _commandQueue;
-        private readonly HelperShaders _helperShaders;
+        private readonly HelperShader _helperShader;
 
         private MTLCommandBuffer _commandBuffer;
+        public MTLCommandBuffer CommandBuffer => _commandBuffer;
+
         private MTLCommandEncoder? _currentEncoder;
+        public MTLCommandEncoder? CurrentEncoder => _currentEncoder;
+
         private EncoderType _currentEncoderType = EncoderType.None;
-        private MTLTexture[] _renderTargets = [];
-        private MTLTexture _depthTarget;
+        public EncoderType CurrentEncoderType => _currentEncoderType;
 
-        private RenderEncoderState _renderEncoderState;
-        private readonly MTLVertexDescriptor _vertexDescriptor = new();
-        private List<BufferInfo> _vertexBuffers = [];
-        private List<BufferInfo> _uniformBuffers = [];
-        private List<BufferInfo> _storageBuffers = [];
-
-        private MTLBuffer _indexBuffer;
-        private MTLIndexType _indexType;
-        private ulong _indexBufferOffset;
-        private MTLClearColor _clearColor;
+        private EncoderStateManager _encoderStateManager;
 
         public Pipeline(MTLDevice device, MTLCommandQueue commandQueue)
         {
             _device = device;
             _commandQueue = commandQueue;
-            _helperShaders = new HelperShaders(_device);
-
-            _renderEncoderState = new RenderEncoderState(
-                _helperShaders.BlitShader.VertexFunction,
-                _helperShaders.BlitShader.FragmentFunction,
-                _device);
+            _helperShader = new HelperShader(_device, this);
 
             _commandBuffer = _commandQueue.CommandBuffer();
+            _encoderStateManager = new EncoderStateManager(_device, this);
         }
 
         public MTLRenderCommandEncoder GetOrCreateRenderEncoder()
@@ -126,28 +115,11 @@ namespace Ryujinx.Graphics.Metal
         {
             EndCurrentPass();
 
-            var descriptor = new MTLRenderPassDescriptor();
-            for (int i = 0; i < _renderTargets.Length; i++)
-            {
-                if (_renderTargets[i] != null)
-                {
-                    var attachment = descriptor.ColorAttachments.Object((ulong)i);
-                    attachment.Texture = _renderTargets[i];
-                    attachment.LoadAction = MTLLoadAction.Load;
-                }
-            }
-
-            var depthAttachment = descriptor.DepthAttachment;
-            depthAttachment.Texture = _depthTarget;
-            depthAttachment.LoadAction = MTLLoadAction.Load;
-
-            var renderCommandEncoder = _commandBuffer.RenderCommandEncoder(descriptor);
-            _renderEncoderState.SetEncoderState(renderCommandEncoder, descriptor, _vertexDescriptor);
-
-            RebindBuffers(renderCommandEncoder);
+            var renderCommandEncoder = _encoderStateManager.CreateRenderCommandEncoder();
 
             _currentEncoder = renderCommandEncoder;
             _currentEncoderType = EncoderType.Render;
+
             return renderCommandEncoder;
         }
 
@@ -184,34 +156,9 @@ namespace Ryujinx.Graphics.Metal
 
             EndCurrentPass();
 
-            var descriptor = new MTLRenderPassDescriptor();
-            var colorAttachment = descriptor.ColorAttachments.Object(0);
+            _encoderStateManager.SwapStates();
 
-            colorAttachment.Texture = drawable.Texture;
-            colorAttachment.LoadAction = MTLLoadAction.Clear;
-            colorAttachment.ClearColor = _clearColor;
-
-            descriptor.ColorAttachments.SetObject(colorAttachment, 0);
-
-            var renderCommandEncoder = _commandBuffer.RenderCommandEncoder(descriptor);
-            _renderEncoderState = new RenderEncoderState(
-                _helperShaders.BlitShader.VertexFunction,
-                _helperShaders.BlitShader.FragmentFunction,
-                _device);
-            _renderEncoderState.SetEncoderState(renderCommandEncoder, descriptor, _vertexDescriptor);
-
-            var sampler = _device.NewSamplerState(new MTLSamplerDescriptor
-            {
-                MinFilter = MTLSamplerMinMagFilter.Nearest,
-                MagFilter = MTLSamplerMinMagFilter.Nearest,
-                MipFilter = MTLSamplerMipFilter.NotMipmapped
-            });
-
-            renderCommandEncoder.SetFragmentTexture(tex.MTLTexture, 0);
-            renderCommandEncoder.SetFragmentSamplerState(sampler, 0);
-
-            renderCommandEncoder.DrawPrimitives(MTLPrimitiveType.Triangle, 0, 6);
-            renderCommandEncoder.EndEncoding();
+            // _helperShader.BlitColor(tex, drawable.Texture);
 
             _commandBuffer.PresentDrawable(drawable);
             _commandBuffer.Commit();
@@ -219,29 +166,14 @@ namespace Ryujinx.Graphics.Metal
             _commandBuffer = _commandQueue.CommandBuffer();
         }
 
+        public void Finish()
+        {
+            _encoderStateManager.SwapStates();
+        }
+
         public void Barrier()
         {
             Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
-        }
-
-        public void RebindBuffers(MTLRenderCommandEncoder renderCommandEncoder)
-        {
-            foreach (var vertexBuffer in _vertexBuffers)
-            {
-                renderCommandEncoder.SetVertexBuffer(new MTLBuffer(vertexBuffer.Handle), (ulong)vertexBuffer.Offset, (ulong)vertexBuffer.Index);
-            }
-
-            foreach (var uniformBuffer in _uniformBuffers)
-            {
-                renderCommandEncoder.SetVertexBuffer(new MTLBuffer(uniformBuffer.Handle), (ulong)uniformBuffer.Offset, (ulong)uniformBuffer.Index);
-                renderCommandEncoder.SetFragmentBuffer(new MTLBuffer(uniformBuffer.Handle), (ulong)uniformBuffer.Offset, (ulong)uniformBuffer.Index);
-            }
-
-            foreach (var storageBuffer in _storageBuffers)
-            {
-                renderCommandEncoder.SetVertexBuffer(new MTLBuffer(storageBuffer.Handle), (ulong)storageBuffer.Offset, (ulong)storageBuffer.Index);
-                renderCommandEncoder.SetFragmentBuffer(new MTLBuffer(storageBuffer.Handle), (ulong)storageBuffer.Offset, (ulong)storageBuffer.Index);
-            }
         }
 
         public void ClearBuffer(BufferHandle destination, int offset, int size, uint value)
@@ -262,11 +194,10 @@ namespace Ryujinx.Graphics.Metal
 
         public void ClearRenderTargetColor(int index, int layer, int layerCount, uint componentMask, ColorF color)
         {
-            _clearColor = new MTLClearColor { red = color.Red, green = color.Green, blue = color.Blue, alpha = color.Alpha };
+            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
         }
 
-        public void ClearRenderTargetDepthStencil(int layer, int layerCount, float depthValue, bool depthMask, int stencilValue,
-            int stencilMask)
+        public void ClearRenderTargetDepthStencil(int layer, int layerCount, float depthValue, bool depthMask, int stencilValue, int stencilMask)
         {
             Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
         }
@@ -301,9 +232,14 @@ namespace Ryujinx.Graphics.Metal
             var renderCommandEncoder = GetOrCreateRenderEncoder();
 
             // TODO: Support topology re-indexing to provide support for TriangleFans
-            var primitiveType = _renderEncoderState.Topology.Convert();
+            var primitiveType = _encoderStateManager.Topology.Convert();
 
-            renderCommandEncoder.DrawPrimitives(primitiveType, (ulong)firstVertex, (ulong)vertexCount, (ulong)instanceCount, (ulong)firstInstance);
+            renderCommandEncoder.DrawPrimitives(
+                primitiveType,
+                (ulong)firstVertex,
+                (ulong)vertexCount,
+                (ulong)instanceCount,
+                (ulong)firstInstance);
         }
 
         public void DrawIndexed(int indexCount, int instanceCount, int firstIndex, int firstVertex, int firstInstance)
@@ -311,9 +247,17 @@ namespace Ryujinx.Graphics.Metal
             var renderCommandEncoder = GetOrCreateRenderEncoder();
 
             // TODO: Support topology re-indexing to provide support for TriangleFans
-            var primitiveType = _renderEncoderState.Topology.Convert();
+            var primitiveType = _encoderStateManager.Topology.Convert();
 
-            renderCommandEncoder.DrawIndexedPrimitives(primitiveType, (ulong)indexCount, _indexType, _indexBuffer, _indexBufferOffset, (ulong)instanceCount, firstVertex, (ulong)firstInstance);
+            renderCommandEncoder.DrawIndexedPrimitives(
+                primitiveType,
+                (ulong)indexCount,
+                _encoderStateManager.IndexType,
+                _encoderStateManager.IndexBuffer,
+                _encoderStateManager.IndexBufferOffset,
+                (ulong)instanceCount,
+                firstVertex,
+                (ulong)firstInstance);
         }
 
         public void DrawIndexedIndirect(BufferRange indirectBuffer)
@@ -383,49 +327,22 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetDepthTest(DepthTestDescriptor depthTest)
         {
-            var depthStencilState = _renderEncoderState.UpdateDepthState(
-                depthTest.TestEnable ? depthTest.Func.Convert() : MTLCompareFunction.Always,
-                depthTest.WriteEnable);
-
-            if (_currentEncoderType == EncoderType.Render)
-            {
-                new MTLRenderCommandEncoder(_currentEncoder.Value).SetDepthStencilState(depthStencilState);
-            }
+            _encoderStateManager.UpdateDepthState(depthTest);
         }
 
         public void SetFaceCulling(bool enable, Face face)
         {
-            var cullMode = enable ? face.Convert() : MTLCullMode.None;
-
-            if (_currentEncoderType == EncoderType.Render)
-            {
-                new MTLRenderCommandEncoder(_currentEncoder.Value).SetCullMode(cullMode);
-            }
-
-            _renderEncoderState.CullMode = cullMode;
+            _encoderStateManager.UpdateCullMode(enable, face);
         }
 
         public void SetFrontFace(FrontFace frontFace)
         {
-            var winding = frontFace.Convert();
-
-            if (_currentEncoderType == EncoderType.Render)
-            {
-                new MTLRenderCommandEncoder(_currentEncoder.Value).SetFrontFacingWinding(winding);
-            }
-
-            _renderEncoderState.Winding = winding;
+            _encoderStateManager.UpdateFrontFace(frontFace);
         }
 
         public void SetIndexBuffer(BufferRange buffer, IndexType type)
         {
-            if (buffer.Handle != BufferHandle.Null)
-            {
-                _indexType = type.Convert();
-                _indexBufferOffset = (ulong)buffer.Offset;
-                var handle = buffer.Handle;
-                _indexBuffer = new(Unsafe.As<BufferHandle, IntPtr>(ref handle));
-            }
+            _encoderStateManager.UpdateIndexBuffer(buffer, type);
         }
 
         public void SetImage(ShaderStage stage, int binding, ITexture texture, Format imageFormat)
@@ -482,23 +399,12 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetPrimitiveTopology(PrimitiveTopology topology)
         {
-            _renderEncoderState.Topology = topology;
+            _encoderStateManager.UpdatePrimitiveTopology(topology);
         }
 
         public void SetProgram(IProgram program)
         {
-            Program prg = (Program)program;
-
-            if (prg.VertexFunction == IntPtr.Zero)
-            {
-                Logger.Error?.PrintMsg(LogClass.Gpu, "Invalid Vertex Function!");
-                return;
-            }
-
-            _renderEncoderState = new RenderEncoderState(
-                prg.VertexFunction,
-                prg.FragmentFunction,
-                _device);
+            _encoderStateManager.UpdateProgram(program);
         }
 
         public void SetRasterizerDiscard(bool discard)
@@ -513,118 +419,27 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetRenderTargets(ITexture[] colors, ITexture depthStencil)
         {
-            _renderTargets = new MTLTexture[colors.Length];
-
-            for (int i = 0; i < colors.Length; i++)
-            {
-                if (colors[i] is not Texture tex)
-                {
-                    continue;
-                }
-
-                if (tex.MTLTexture != null)
-                {
-                    _renderTargets[i] = tex.MTLTexture;
-                }
-            }
-
-            if (depthStencil is Texture depthTexture)
-            {
-                _depthTarget = depthTexture.MTLTexture;
-            }
-
-            // Recreate Render Command Encoder
-            BeginRenderPass();
+            _encoderStateManager.UpdateRenderTargets(colors, depthStencil);
         }
 
-        public unsafe void SetScissors(ReadOnlySpan<Rectangle<int>> regions)
+        public void SetScissors(ReadOnlySpan<Rectangle<int>> regions)
         {
-            int maxScissors = Math.Min(regions.Length, _renderEncoderState.Viewports.Length);
-
-            if (maxScissors == 0)
-            {
-                return;
-            }
-
-            var mtlScissorRects = new MTLScissorRect[maxScissors];
-
-            for (int i = 0; i < maxScissors; i++)
-            {
-                var region = regions[i];
-
-                mtlScissorRects[i] = new MTLScissorRect
-                {
-                    height = Math.Clamp((ulong)region.Height, 0, (ulong)_renderEncoderState.Viewports[i].height),
-                    width = Math.Clamp((ulong)region.Width, 0, (ulong)_renderEncoderState.Viewports[i].width),
-                    x = (ulong)region.X,
-                    y = (ulong)region.Y
-                };
-            }
-
-            _renderEncoderState.UpdateScissors(mtlScissorRects);
-            if (_currentEncoderType == EncoderType.Render)
-            {
-                fixed (MTLScissorRect* pMtlScissorRects = mtlScissorRects)
-                {
-                    var renderCommandEncoder = GetOrCreateRenderEncoder();
-                    renderCommandEncoder.SetScissorRects((IntPtr)pMtlScissorRects, (ulong)regions.Length);
-                }
-            }
+            _encoderStateManager.UpdateScissors(regions);
         }
 
         public void SetStencilTest(StencilTestDescriptor stencilTest)
         {
-            var backFace = new MTLStencilDescriptor
-            {
-                StencilFailureOperation = stencilTest.BackSFail.Convert(),
-                DepthFailureOperation = stencilTest.BackDpFail.Convert(),
-                DepthStencilPassOperation = stencilTest.BackDpPass.Convert(),
-                StencilCompareFunction = stencilTest.BackFunc.Convert(),
-                ReadMask = (uint)stencilTest.BackFuncMask,
-                WriteMask = (uint)stencilTest.BackMask
-            };
+            _encoderStateManager.UpdateStencilState(stencilTest);
+        }
 
-            var frontFace = new MTLStencilDescriptor
-            {
-                StencilFailureOperation = stencilTest.FrontSFail.Convert(),
-                DepthFailureOperation = stencilTest.FrontDpFail.Convert(),
-                DepthStencilPassOperation = stencilTest.FrontDpPass.Convert(),
-                StencilCompareFunction = stencilTest.FrontFunc.Convert(),
-                ReadMask = (uint)stencilTest.FrontFuncMask,
-                WriteMask = (uint)stencilTest.FrontMask
-            };
-
-            var depthStencilState = _renderEncoderState.UpdateStencilState(backFace, frontFace);
-
-            if (_currentEncoderType == EncoderType.Render)
-            {
-                new MTLRenderCommandEncoder(_currentEncoder.Value).SetDepthStencilState(depthStencilState);
-            }
+        public void SetUniformBuffers(ReadOnlySpan<BufferAssignment> buffers)
+        {
+            _encoderStateManager.UpdateUniformBuffers(buffers);
         }
 
         public void SetStorageBuffers(ReadOnlySpan<BufferAssignment> buffers)
         {
-            _storageBuffers = [];
-
-            foreach (BufferAssignment buffer in buffers)
-            {
-                if (buffer.Range.Size != 0)
-                {
-                    // Offset the binding by 15
-                    _storageBuffers.Add(new BufferInfo
-                    {
-                        Handle = buffer.Range.Handle.ToIntPtr(),
-                        Offset = buffer.Range.Offset,
-                        Index = buffer.Binding + 15
-                    });
-                }
-            }
-
-            if (_currentEncoderType == EncoderType.Render)
-            {
-                var renderCommandEncoder = GetOrCreateRenderEncoder();
-                RebindBuffers(renderCommandEncoder);
-            }
+            _encoderStateManager.UpdateStorageBuffers(buffers);
         }
 
         public void SetTextureAndSampler(ShaderStage stage, int binding, ITexture texture, ISampler sampler)
@@ -633,27 +448,18 @@ namespace Ryujinx.Graphics.Metal
             {
                 if (sampler is Sampler samp)
                 {
-                    MTLRenderCommandEncoder renderCommandEncoder;
-                    MTLComputeCommandEncoder computeCommandEncoder;
-
                     var mtlTexture = tex.MTLTexture;
                     var mtlSampler = samp.GetSampler();
                     var index = (ulong)binding;
 
                     switch (stage)
                     {
-                        case ShaderStage.Fragment:
-                            renderCommandEncoder = GetOrCreateRenderEncoder();
-                            renderCommandEncoder.SetFragmentTexture(mtlTexture, index);
-                            renderCommandEncoder.SetFragmentSamplerState(mtlSampler, index);
-                            break;
                         case ShaderStage.Vertex:
-                            renderCommandEncoder = GetOrCreateRenderEncoder();
-                            renderCommandEncoder.SetVertexTexture(mtlTexture, index);
-                            renderCommandEncoder.SetVertexSamplerState(mtlSampler, index);
+                        case ShaderStage.Fragment:
+                            _encoderStateManager.UpdateTextureAndSampler(stage, index, mtlTexture, mtlSampler);
                             break;
                         case ShaderStage.Compute:
-                            computeCommandEncoder = GetOrCreateComputeEncoder();
+                            var computeCommandEncoder = GetOrCreateComputeEncoder();
                             computeCommandEncoder.SetTexture(mtlTexture, index);
                             computeCommandEncoder.SetSamplerState(mtlSampler, index);
                             break;
@@ -669,30 +475,6 @@ namespace Ryujinx.Graphics.Metal
             Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
         }
 
-        public void SetUniformBuffers(ReadOnlySpan<BufferAssignment> buffers)
-        {
-            _uniformBuffers = [];
-
-            foreach (BufferAssignment buffer in buffers)
-            {
-                if (buffer.Range.Size != 0)
-                {
-                    _uniformBuffers.Add(new BufferInfo
-                    {
-                        Handle = buffer.Range.Handle.ToIntPtr(),
-                        Offset = buffer.Range.Offset,
-                        Index = buffer.Binding
-                    });
-                }
-            }
-
-            if (_currentEncoderType == EncoderType.Render)
-            {
-                var renderCommandEncoder = GetOrCreateRenderEncoder();
-                RebindBuffers(renderCommandEncoder);
-            }
-        }
-
         public void SetUserClipDistance(int index, bool enableClip)
         {
             Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
@@ -700,81 +482,17 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetVertexAttribs(ReadOnlySpan<VertexAttribDescriptor> vertexAttribs)
         {
-            for (int i = 0; i < vertexAttribs.Length; i++)
-            {
-                if (!vertexAttribs[i].IsZero)
-                {
-                    // TODO: Format should not be hardcoded
-                    var attrib = _vertexDescriptor.Attributes.Object((ulong)i);
-                    attrib.Format = MTLVertexFormat.Float4;
-                    attrib.BufferIndex = (ulong)vertexAttribs[i].BufferIndex;
-                    attrib.Offset = (ulong)vertexAttribs[i].Offset;
-
-                    var layout = _vertexDescriptor.Layouts.Object((ulong)vertexAttribs[i].BufferIndex);
-                    layout.Stride = 1;
-                }
-            }
+            _encoderStateManager.UpdateVertexAttribs(vertexAttribs);
         }
 
         public void SetVertexBuffers(ReadOnlySpan<VertexBufferDescriptor> vertexBuffers)
         {
-            _vertexBuffers = [];
-
-            for (int i = 0; i < vertexBuffers.Length; i++)
-            {
-                if (vertexBuffers[i].Stride != 0)
-                {
-                    var layout = _vertexDescriptor.Layouts.Object((ulong)i);
-                    layout.Stride = (ulong)vertexBuffers[i].Stride;
-
-                    _vertexBuffers.Add(new BufferInfo
-                    {
-                        Handle = vertexBuffers[i].Buffer.Handle.ToIntPtr(),
-                        Offset = vertexBuffers[i].Buffer.Offset,
-                        Index = i
-                    });
-                }
-            }
-
-            if (_currentEncoderType == EncoderType.Render)
-            {
-                var renderCommandEncoder = GetOrCreateRenderEncoder();
-                RebindBuffers(renderCommandEncoder);
-            }
+            _encoderStateManager.UpdateVertexBuffers(vertexBuffers);
         }
 
-        public unsafe void SetViewports(ReadOnlySpan<Viewport> viewports)
+        public void SetViewports(ReadOnlySpan<Viewport> viewports)
         {
-            static float Clamp(float value)
-            {
-                return Math.Clamp(value, 0f, 1f);
-            }
-
-            var mtlViewports = new MTLViewport[viewports.Length];
-
-            for (int i = 0; i < viewports.Length; i++)
-            {
-                var viewport = viewports[i];
-                mtlViewports[i] = new MTLViewport
-                {
-                    originX = viewport.Region.X,
-                    originY = viewport.Region.Y,
-                    width = viewport.Region.Width,
-                    height = viewport.Region.Height,
-                    znear = Clamp(viewport.DepthNear),
-                    zfar = Clamp(viewport.DepthFar)
-                };
-            }
-
-            _renderEncoderState.UpdateViewport(mtlViewports);
-            if (_currentEncoderType == EncoderType.Render)
-            {
-                fixed (MTLViewport* pMtlViewports = mtlViewports)
-                {
-                    var renderCommandEncoder = GetOrCreateRenderEncoder();
-                    renderCommandEncoder.SetViewports((IntPtr)pMtlViewports, (ulong)viewports.Length);
-                }
-            }
+            _encoderStateManager.UpdateViewports(viewports);
         }
 
         public void TextureBarrier()
