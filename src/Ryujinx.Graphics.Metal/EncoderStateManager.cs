@@ -580,16 +580,8 @@ namespace Ryujinx.Graphics.Metal
 
             for (int i = 0; i < bufferDescriptors.Length; i++)
             {
-                if (usedIndexes.Contains(i))
-                {
-                    var layout = vertexDescriptor.Layouts.Object((ulong)i);
-                    layout.Stride = (ulong)bufferDescriptors[i].Stride;
-                }
-                else
-                {
-                    var layout = vertexDescriptor.Layouts.Object((ulong)i);
-                    layout.Stride = 0;
-                }
+                var layout = vertexDescriptor.Layouts.Object((ulong)i);
+                layout.Stride = usedIndexes.Contains(i) ? (ulong)bufferDescriptors[i].Stride : 0;
             }
 
             return vertexDescriptor;
