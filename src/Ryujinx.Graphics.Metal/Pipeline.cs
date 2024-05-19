@@ -48,15 +48,16 @@ namespace Ryujinx.Graphics.Metal
 
         public MTLRenderCommandEncoder GetOrCreateRenderEncoder()
         {
-            if (_currentEncoder != null)
+            if (_currentEncoder == null || _currentEncoderType != EncoderType.Render)
             {
-                if (_currentEncoderType == EncoderType.Render)
-                {
-                    return new MTLRenderCommandEncoder(_currentEncoder.Value);
-                }
+                BeginRenderPass();
             }
 
-            return BeginRenderPass();
+            var renderCommandEncoder = new MTLRenderCommandEncoder(_currentEncoder.Value);
+
+            _encoderStateManager.RebindState(renderCommandEncoder);
+
+            return renderCommandEncoder;
         }
 
         public MTLBlitCommandEncoder GetOrCreateBlitEncoder()
