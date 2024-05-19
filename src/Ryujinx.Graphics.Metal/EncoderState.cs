@@ -5,7 +5,6 @@ using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
 {
-    // TODO: use this (unused right now)
     public struct DirtyFlags
     {
         public bool Pipeline = false;
