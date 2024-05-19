@@ -565,12 +565,15 @@ namespace Ryujinx.Graphics.Metal
 
             for (int i = 0; i < bufferDescriptors.Length; i++)
             {
-                buffers.Add(new BufferInfo
+                if (bufferDescriptors[i].Buffer.Handle.ToIntPtr() != IntPtr.Zero)
                 {
-                    Handle = bufferDescriptors[i].Buffer.Handle.ToIntPtr(),
-                    Offset = bufferDescriptors[i].Buffer.Offset,
-                    Index = i
-                });
+                    buffers.Add(new BufferInfo
+                    {
+                        Handle = bufferDescriptors[i].Buffer.Handle.ToIntPtr(),
+                        Offset = bufferDescriptors[i].Buffer.Offset,
+                        Index = i
+                    });
+                }
             }
 
             SetBuffers(renderCommandEncoder, buffers);
