@@ -464,7 +464,7 @@ namespace Ryujinx.Graphics.Metal
                 }
             }
 
-            // Inline Update
+            // Inline update
             if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
             {
                 var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
@@ -491,7 +491,7 @@ namespace Ryujinx.Graphics.Metal
                 }
             }
 
-            // Inline Update
+            // Inline update
             if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
             {
                 var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
@@ -504,7 +504,7 @@ namespace Ryujinx.Graphics.Metal
         {
             _currentState.CullMode = enable ? face.Convert() : MTLCullMode.None;
 
-            // Inline Update
+            // Inline update
             if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
             {
                 var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
@@ -517,7 +517,7 @@ namespace Ryujinx.Graphics.Metal
         {
             _currentState.Winding = frontFace.Convert();
 
-            // Inline Update
+            // Inline update
             if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
             {
                 var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
