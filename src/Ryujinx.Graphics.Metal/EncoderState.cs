@@ -10,20 +10,12 @@ namespace Ryujinx.Graphics.Metal
     {
         public bool Pipeline = false;
         public bool DepthStencil = false;
-        public bool CullMode = false;
-        public bool Winding = false;
-        public bool Viewport = false;
-        public bool Scissor = false;
 
         public DirtyFlags() { }
 
         public void MarkAll() {
             Pipeline = true;
             DepthStencil = true;
-            CullMode = true;
-            Winding = true;
-            Viewport = true;
-            Scissor = true;
         }
     }
 
