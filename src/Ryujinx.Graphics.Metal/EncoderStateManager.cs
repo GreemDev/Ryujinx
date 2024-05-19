@@ -117,7 +117,7 @@ namespace Ryujinx.Graphics.Metal
                 }
             }
 
-            renderPipelineDescriptor.VertexDescriptor = _currentState.VertexDescriptor;
+            renderPipelineDescriptor.VertexDescriptor = BuildVertexDescriptor(_currentState.VertexBuffers, _currentState.VertexAttribs);
 
             if (_currentState.VertexFunction != null)
             {
@@ -156,7 +156,7 @@ namespace Ryujinx.Graphics.Metal
             SetDepthClamp(renderCommandEncoder, _currentState.DepthClipMode);
             SetScissors(renderCommandEncoder, _currentState.Scissors);
             SetViewports(renderCommandEncoder, _currentState.Viewports);
-            SetBuffers(renderCommandEncoder, _currentState.VertexBuffers);
+            SetVertexBuffers(renderCommandEncoder, _currentState.VertexBuffers);
             SetBuffers(renderCommandEncoder, _currentState.UniformBuffers, true);
             SetBuffers(renderCommandEncoder, _currentState.StorageBuffers, true);
             SetCullMode(renderCommandEncoder, _currentState.CullMode);
@@ -231,20 +231,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void UpdateVertexAttribs(ReadOnlySpan<VertexAttribDescriptor> vertexAttribs)
         {
-            for (int i = 0; i < vertexAttribs.Length; i++)
-            {
-                if (!vertexAttribs[i].IsZero)
-                {
-                    // TODO: Format should not be hardcoded
-                    var attrib = _currentState.VertexDescriptor.Attributes.Object((ulong)i);
-                    attrib.Format = MTLVertexFormat.Float4;
-                    attrib.BufferIndex = (ulong)vertexAttribs[i].BufferIndex;
-                    attrib.Offset = (ulong)vertexAttribs[i].Offset;
-
-                    var layout = _currentState.VertexDescriptor.Layouts.Object((ulong)vertexAttribs[i].BufferIndex);
-                    layout.Stride = 1;
-                }
-            }
+            _currentState.VertexAttribs = vertexAttribs.ToArray();
 
             // Requires recreating pipeline
             if (_pipeline.CurrentEncoderType == EncoderType.Render)
@@ -255,7 +242,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void UpdateBlendDescriptors(int index, BlendDescriptor blend)
         {
-            _currentState.BlendDescriptors.Add(index, blend);
+            _currentState.BlendDescriptors[index] = blend;
             _currentState.BlendColor = blend.BlendConstant;
 
             // Requires recreating pipeline
@@ -422,33 +409,14 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        // Inlineable
         public void UpdateVertexBuffers(ReadOnlySpan<VertexBufferDescriptor> vertexBuffers)
         {
-            _currentState.VertexBuffers = [];
+            _currentState.VertexBuffers = vertexBuffers.ToArray();
 
-            for (int i = 0; i < vertexBuffers.Length; i++)
+            // Requires recreating pipeline
+            if (_pipeline.CurrentEncoderType == EncoderType.Render)
             {
-                if (vertexBuffers[i].Stride != 0)
-                {
-                    var layout = _currentState.VertexDescriptor.Layouts.Object((ulong)i);
-                    layout.Stride = (ulong)vertexBuffers[i].Stride;
-
-                    _currentState.VertexBuffers.Add(new BufferInfo
-                    {
-                        Handle = vertexBuffers[i].Buffer.Handle.ToIntPtr(),
-                        Offset = vertexBuffers[i].Buffer.Offset,
-                        Index = i
-                    });
-                }
-            }
-
-            // Inline Update
-
-            if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
-            {
-                var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
-                SetBuffers(renderCommandEncoder, _currentState.VertexBuffers);
+                _pipeline.EndCurrentPass();
             }
         }
 
@@ -591,6 +559,58 @@ namespace Ryujinx.Graphics.Metal
                     renderCommandEncoder.SetViewports((IntPtr)pMtlViewports, (ulong)viewports.Length);
                 }
             }
+        }
+
+        private static MTLVertexDescriptor BuildVertexDescriptor(VertexBufferDescriptor[] bufferDescriptors, VertexAttribDescriptor[] attribDescriptors)
+        {
+            var vertexDescriptor = new MTLVertexDescriptor();
+
+            var usedIndexes = new List<int>();
+
+            // TODO: Handle 'zero' buffers
+            for (int i = 0; i < attribDescriptors.Length; i++)
+            {
+                var attrib = vertexDescriptor.Attributes.Object((ulong)i);
+                // TODO: Format should not be hardcoded
+                attrib.Format = MTLVertexFormat.Float4;
+                usedIndexes.Add(attribDescriptors[i].BufferIndex);
+                attrib.BufferIndex = (ulong)attribDescriptors[i].BufferIndex;
+                attrib.Offset = (ulong)attribDescriptors[i].Offset;
+            }
+
+            for (int i = 0; i < bufferDescriptors.Length; i++)
+            {
+                if (usedIndexes.Contains(i))
+                {
+                    var layout = vertexDescriptor.Layouts.Object((ulong)i);
+                    layout.Stride = (ulong)bufferDescriptors[i].Stride;
+                }
+                else
+                {
+                    var layout = vertexDescriptor.Layouts.Object((ulong)i);
+                    layout.Stride = 0;
+                }
+            }
+
+            return vertexDescriptor;
+        }
+
+        private static void SetVertexBuffers(MTLRenderCommandEncoder renderCommandEncoder, VertexBufferDescriptor[] bufferDescriptors)
+        {
+            var buffers = new List<BufferInfo>();
+
+
+            for (int i = 0; i < bufferDescriptors.Length; i++)
+            {
+                buffers.Add(new BufferInfo
+                {
+                    Handle = bufferDescriptors[i].Buffer.Handle.ToIntPtr(),
+                    Offset = bufferDescriptors[i].Buffer.Offset,
+                    Index = i
+                });
+            }
+
+            SetBuffers(renderCommandEncoder, buffers);
         }
 
         private static void SetBuffers(MTLRenderCommandEncoder renderCommandEncoder, List<BufferInfo> buffers, bool fragment = false)

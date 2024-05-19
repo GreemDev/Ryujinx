@@ -19,7 +19,6 @@ namespace Ryujinx.Graphics.Metal
         public Dictionary<ulong, MTLTexture> VertexTextures = new();
         public Dictionary<ulong, MTLSamplerState> VertexSamplers = new();
 
-        public List<BufferInfo> VertexBuffers = [];
         public List<BufferInfo> UniformBuffers = [];
         public List<BufferInfo> StorageBuffers = [];
 
@@ -47,9 +46,11 @@ namespace Ryujinx.Graphics.Metal
         // Changes to attachments take recreation!
         public MTLTexture DepthStencil = default;
         public MTLTexture[] RenderTargets = new MTLTexture[MaxColorAttachments];
-        public MTLVertexDescriptor VertexDescriptor = new();
         public Dictionary<int, BlendDescriptor> BlendDescriptors = new();
         public ColorF BlendColor = new();
+
+        public VertexBufferDescriptor[] VertexBuffers = [];
+        public VertexAttribDescriptor[] VertexAttribs = [];
 
         public EncoderState() { }
     }
