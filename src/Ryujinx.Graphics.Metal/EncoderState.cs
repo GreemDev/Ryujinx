@@ -16,6 +16,15 @@ namespace Ryujinx.Graphics.Metal
         public bool Scissor = false;
 
         public DirtyFlags() { }
+
+        public void MarkAll() {
+            Pipeline = true;
+            DepthStencil = true;
+            CullMode = true;
+            Winding = true;
+            Viewport = true;
+            Scissor = true;
+        }
     }
 
     [SupportedOSPlatform("macos")]

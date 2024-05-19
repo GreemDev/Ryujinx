@@ -98,7 +98,7 @@ namespace Ryujinx.Graphics.Metal
 
             var renderCommandEncoder = _pipeline.CommandBuffer.RenderCommandEncoder(renderPassDescriptor);
 
-            // TODO: set dirty flags all to true
+            _currentState.Dirty.MarkAll();
 
             return renderCommandEncoder;
         }
@@ -107,15 +107,15 @@ namespace Ryujinx.Graphics.Metal
         {
             // TODO: only rebind the dirty state
             SetPipelineState(renderCommandEncoder);
-            SetDepthStencilState(renderCommandEncoder, _currentState.DepthStencilState);
-            SetDepthClamp(renderCommandEncoder, _currentState.DepthClipMode);
-            SetScissors(renderCommandEncoder, _currentState.Scissors);
-            SetViewports(renderCommandEncoder, _currentState.Viewports);
+            SetDepthStencilState(renderCommandEncoder);
+            SetDepthClamp(renderCommandEncoder);
+            SetCullMode(renderCommandEncoder);
+            SetFrontFace(renderCommandEncoder);
+            SetViewports(renderCommandEncoder);
+            SetScissors(renderCommandEncoder);
             SetVertexBuffers(renderCommandEncoder, _currentState.VertexBuffers);
             SetBuffers(renderCommandEncoder, _currentState.UniformBuffers, true);
             SetBuffers(renderCommandEncoder, _currentState.StorageBuffers, true);
-            SetCullMode(renderCommandEncoder, _currentState.CullMode);
-            SetFrontFace(renderCommandEncoder, _currentState.Winding);
             SetTextureAndSampler(renderCommandEncoder, ShaderStage.Vertex, _currentState.VertexTextures, _currentState.VertexSamplers);
             SetTextureAndSampler(renderCommandEncoder, ShaderStage.Fragment, _currentState.FragmentTextures, _currentState.FragmentSamplers);
 
@@ -236,6 +236,9 @@ namespace Ryujinx.Graphics.Metal
 
             _currentState.VertexFunction = prg.VertexFunction;
             _currentState.FragmentFunction = prg.FragmentFunction;
+
+            // Mark dirty
+            _currentState.Dirty.Pipeline = true;
         }
 
         public void UpdateRenderTargets(ITexture[] colors, ITexture depthStencil)
@@ -267,6 +270,9 @@ namespace Ryujinx.Graphics.Metal
         public void UpdateVertexAttribs(ReadOnlySpan<VertexAttribDescriptor> vertexAttribs)
         {
             _currentState.VertexAttribs = vertexAttribs.ToArray();
+
+            // Mark dirty
+            _currentState.Dirty.Pipeline = true;
         }
 
         public void UpdateBlendDescriptors(int index, BlendDescriptor blend)
@@ -313,6 +319,9 @@ namespace Ryujinx.Graphics.Metal
             }
 
             _currentState.DepthStencilState = _device.NewDepthStencilState(descriptor);
+
+            // Mark dirty
+            _currentState.Dirty.DepthStencil = true;
         }
 
         // Inlineable
@@ -334,6 +343,9 @@ namespace Ryujinx.Graphics.Metal
             }
 
             _currentState.DepthStencilState = _device.NewDepthStencilState(descriptor);
+
+            // Mark dirty
+            _currentState.Dirty.DepthStencil = true;
         }
 
         // Inlineable
@@ -366,6 +378,9 @@ namespace Ryujinx.Graphics.Metal
                     y = (ulong)region.Y
                 };
             }
+
+            // Mark dirty
+            _currentState.Dirty.Scissor = true;
         }
 
         // Inlineable
@@ -391,6 +406,9 @@ namespace Ryujinx.Graphics.Metal
                     zfar = Clamp(viewport.DepthFar)
                 };
             }
+
+            // Mark dirty
+            _currentState.Dirty.Viewport = true;
         }
 
         public void UpdateVertexBuffers(ReadOnlySpan<VertexBufferDescriptor> vertexBuffers)
@@ -441,12 +459,18 @@ namespace Ryujinx.Graphics.Metal
         public void UpdateCullMode(bool enable, Face face)
         {
             _currentState.CullMode = enable ? face.Convert() : MTLCullMode.None;
+
+            // Mark dirty
+            _currentState.Dirty.CullMode = true;
         }
 
         // Inlineable
         public void UpdateFrontFace(FrontFace frontFace)
         {
             _currentState.Winding = frontFace.Convert();
+
+            // Mark dirty
+            _currentState.Dirty.Winding = true;
         }
 
         // Inlineable
@@ -465,42 +489,51 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        private static void SetDepthStencilState(MTLRenderCommandEncoder renderCommandEncoder, MTLDepthStencilState? depthStencilState)
+        private void SetDepthStencilState(MTLRenderCommandEncoder renderCommandEncoder)
         {
-            if (depthStencilState != null)
+            if (_currentState.Dirty.DepthStencil)
             {
-                renderCommandEncoder.SetDepthStencilState(depthStencilState.Value);
-            }
-        }
-
-        private static void SetDepthClamp(MTLRenderCommandEncoder renderCommandEncoder, MTLDepthClipMode depthClipMode)
-        {
-            renderCommandEncoder.SetDepthClipMode(depthClipMode);
-        }
-
-        private unsafe static void SetScissors(MTLRenderCommandEncoder renderCommandEncoder, MTLScissorRect[] scissors)
-        {
-            if (scissors.Length > 0)
-            {
-                fixed (MTLScissorRect* pMtlScissors = scissors)
+                if (_currentState.DepthStencilState != null)
                 {
-                    renderCommandEncoder.SetScissorRects((IntPtr)pMtlScissors, (ulong)scissors.Length);
+                    renderCommandEncoder.SetDepthStencilState(_currentState.DepthStencilState.Value);
                 }
             }
         }
 
-        private unsafe static void SetViewports(MTLRenderCommandEncoder renderCommandEncoder, MTLViewport[] viewports)
+        private void SetDepthClamp(MTLRenderCommandEncoder renderCommandEncoder)
         {
-            if (viewports.Length > 0)
+            renderCommandEncoder.SetDepthClipMode(_currentState.DepthClipMode);
+        }
+
+        private unsafe void SetScissors(MTLRenderCommandEncoder renderCommandEncoder)
+        {
+            if (_currentState.Dirty.Scissor)
             {
-                fixed (MTLViewport* pMtlViewports = viewports)
+                if (_currentState.Scissors.Length > 0)
                 {
-                    renderCommandEncoder.SetViewports((IntPtr)pMtlViewports, (ulong)viewports.Length);
+                    fixed (MTLScissorRect* pMtlScissors = _currentState.Scissors)
+                    {
+                        renderCommandEncoder.SetScissorRects((IntPtr)pMtlScissors, (ulong)_currentState.Scissors.Length);
+                    }
                 }
             }
         }
 
-        private static MTLVertexDescriptor BuildVertexDescriptor(VertexBufferDescriptor[] bufferDescriptors, VertexAttribDescriptor[] attribDescriptors)
+        private unsafe void SetViewports(MTLRenderCommandEncoder renderCommandEncoder)
+        {
+            if (_currentState.Dirty.Viewport)
+            {
+                if (_currentState.Viewports.Length > 0)
+                {
+                    fixed (MTLViewport* pMtlViewports = _currentState.Viewports)
+                    {
+                        renderCommandEncoder.SetViewports((IntPtr)pMtlViewports, (ulong)_currentState.Viewports.Length);
+                    }
+                }
+            }
+        }
+
+        private MTLVertexDescriptor BuildVertexDescriptor(VertexBufferDescriptor[] bufferDescriptors, VertexAttribDescriptor[] attribDescriptors)
         {
             var vertexDescriptor = new MTLVertexDescriptor();
             uint indexMask = 0;
@@ -525,7 +558,7 @@ namespace Ryujinx.Graphics.Metal
             return vertexDescriptor;
         }
 
-        private static void SetVertexBuffers(MTLRenderCommandEncoder renderCommandEncoder, VertexBufferDescriptor[] bufferDescriptors)
+        private void SetVertexBuffers(MTLRenderCommandEncoder renderCommandEncoder, VertexBufferDescriptor[] bufferDescriptors)
         {
             var buffers = new List<BufferInfo>();
 
@@ -543,7 +576,7 @@ namespace Ryujinx.Graphics.Metal
             SetBuffers(renderCommandEncoder, buffers);
         }
 
-        private static void SetBuffers(MTLRenderCommandEncoder renderCommandEncoder, List<BufferInfo> buffers, bool fragment = false)
+        private void SetBuffers(MTLRenderCommandEncoder renderCommandEncoder, List<BufferInfo> buffers, bool fragment = false)
         {
             foreach (var buffer in buffers)
             {
@@ -556,17 +589,23 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        private static void SetCullMode(MTLRenderCommandEncoder renderCommandEncoder, MTLCullMode cullMode)
+        private void SetCullMode(MTLRenderCommandEncoder renderCommandEncoder)
         {
-            renderCommandEncoder.SetCullMode(cullMode);
+            if (_currentState.Dirty.CullMode)
+            {
+                renderCommandEncoder.SetCullMode(_currentState.CullMode);
+            }
         }
 
-        private static void SetFrontFace(MTLRenderCommandEncoder renderCommandEncoder, MTLWinding winding)
+        private void SetFrontFace(MTLRenderCommandEncoder renderCommandEncoder)
         {
-            renderCommandEncoder.SetFrontFacingWinding(winding);
+            if (_currentState.Dirty.Winding)
+            {
+                renderCommandEncoder.SetFrontFacingWinding(_currentState.Winding);
+            }
         }
 
-        private static void SetTextureAndSampler(MTLRenderCommandEncoder renderCommandEncoder, ShaderStage stage, Dictionary<ulong, MTLTexture> textures, Dictionary<ulong, MTLSamplerState> samplers)
+        private void SetTextureAndSampler(MTLRenderCommandEncoder renderCommandEncoder, ShaderStage stage, Dictionary<ulong, MTLTexture> textures, Dictionary<ulong, MTLSamplerState> samplers)
         {
             foreach (var texture in textures)
             {
