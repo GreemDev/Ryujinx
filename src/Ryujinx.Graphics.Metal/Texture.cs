@@ -327,12 +327,12 @@ namespace Ryujinx.Graphics.Metal
 
         public void Release()
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            Dispose();
         }
 
         public void Dispose()
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            MTLTexture.SetPurgeableState(MTLPurgeableState.Volatile);
         }
     }
 }
