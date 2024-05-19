@@ -43,9 +43,7 @@ namespace Ryujinx.Graphics.Metal
         public MTLRenderCommandEncoder CreateRenderCommandEncoder()
         {
             // Initialise Pass & State
-
             var renderPassDescriptor = new MTLRenderPassDescriptor();
-            var renderPipelineDescriptor = new MTLRenderPipelineDescriptor();
 
             for (int i = 0; i < EncoderState.MaxColorAttachments; i++)
             {
@@ -95,7 +93,6 @@ namespace Ryujinx.Graphics.Metal
             }
 
             // Initialise Encoder
-
             var renderCommandEncoder = _pipeline.CommandBuffer.RenderCommandEncoder(renderPassDescriptor);
 
             // Mark all state as dirty to ensure it is set on the encoder
@@ -118,99 +115,103 @@ namespace Ryujinx.Graphics.Metal
 
         public void RebindState(MTLRenderCommandEncoder renderCommandEncoder)
         {
-            SetPipelineState(renderCommandEncoder);
-            SetDepthStencilState(renderCommandEncoder);
+            if (_currentState.Dirty.Pipeline)
+            {
+                SetPipelineState(renderCommandEncoder);
+            }
 
-            _currentState.Dirty = new();
+            if (_currentState.Dirty.DepthStencil)
+            {
+                SetDepthStencilState(renderCommandEncoder);
+            }
+
+            _currentState.Dirty.Clear();
         }
 
         private void SetPipelineState(MTLRenderCommandEncoder renderCommandEncoder) {
-            if (_currentState.Dirty.Pipeline)
+            var renderPipelineDescriptor = new MTLRenderPipelineDescriptor();
+
+            for (int i = 0; i < EncoderState.MaxColorAttachments; i++)
             {
-                var renderPipelineDescriptor = new MTLRenderPipelineDescriptor();
-
-                for (int i = 0; i < EncoderState.MaxColorAttachments; i++)
+                if (_currentState.RenderTargets[i] != IntPtr.Zero)
                 {
-                    if (_currentState.RenderTargets[i] != IntPtr.Zero)
-                    {
-                        var pipelineAttachment = renderPipelineDescriptor.ColorAttachments.Object((ulong)i);
-                        pipelineAttachment.PixelFormat = _currentState.RenderTargets[i].PixelFormat;
-                        pipelineAttachment.SourceAlphaBlendFactor = MTLBlendFactor.SourceAlpha;
-                        pipelineAttachment.DestinationAlphaBlendFactor = MTLBlendFactor.OneMinusSourceAlpha;
-                        pipelineAttachment.SourceRGBBlendFactor = MTLBlendFactor.SourceAlpha;
-                        pipelineAttachment.DestinationRGBBlendFactor = MTLBlendFactor.OneMinusSourceAlpha;
+                    var pipelineAttachment = renderPipelineDescriptor.ColorAttachments.Object((ulong)i);
+                    pipelineAttachment.PixelFormat = _currentState.RenderTargets[i].PixelFormat;
+                    pipelineAttachment.SourceAlphaBlendFactor = MTLBlendFactor.SourceAlpha;
+                    pipelineAttachment.DestinationAlphaBlendFactor = MTLBlendFactor.OneMinusSourceAlpha;
+                    pipelineAttachment.SourceRGBBlendFactor = MTLBlendFactor.SourceAlpha;
+                    pipelineAttachment.DestinationRGBBlendFactor = MTLBlendFactor.OneMinusSourceAlpha;
 
-                        if (_currentState.BlendDescriptors.TryGetValue(i, out BlendDescriptor blendDescriptor))
-                        {
-                            pipelineAttachment.SetBlendingEnabled(blendDescriptor.Enable);
-                            pipelineAttachment.AlphaBlendOperation = blendDescriptor.AlphaOp.Convert();
-                            pipelineAttachment.RgbBlendOperation = blendDescriptor.ColorOp.Convert();
-                            pipelineAttachment.SourceAlphaBlendFactor = blendDescriptor.AlphaSrcFactor.Convert();
-                            pipelineAttachment.DestinationAlphaBlendFactor = blendDescriptor.AlphaDstFactor.Convert();
-                            pipelineAttachment.SourceRGBBlendFactor = blendDescriptor.ColorSrcFactor.Convert();
-                            pipelineAttachment.DestinationRGBBlendFactor = blendDescriptor.ColorDstFactor.Convert();
-                        }
+                    if (_currentState.BlendDescriptors.TryGetValue(i, out BlendDescriptor blendDescriptor))
+                    {
+                        pipelineAttachment.SetBlendingEnabled(blendDescriptor.Enable);
+                        pipelineAttachment.AlphaBlendOperation = blendDescriptor.AlphaOp.Convert();
+                        pipelineAttachment.RgbBlendOperation = blendDescriptor.ColorOp.Convert();
+                        pipelineAttachment.SourceAlphaBlendFactor = blendDescriptor.AlphaSrcFactor.Convert();
+                        pipelineAttachment.DestinationAlphaBlendFactor = blendDescriptor.AlphaDstFactor.Convert();
+                        pipelineAttachment.SourceRGBBlendFactor = blendDescriptor.ColorSrcFactor.Convert();
+                        pipelineAttachment.DestinationRGBBlendFactor = blendDescriptor.ColorDstFactor.Convert();
                     }
                 }
-
-                if (_currentState.DepthStencil != IntPtr.Zero)
-                {
-                    switch (_currentState.DepthStencil.PixelFormat)
-                    {
-                        // Depth Only Attachment
-                        case MTLPixelFormat.Depth16Unorm:
-                        case MTLPixelFormat.Depth32Float:
-                            renderPipelineDescriptor.DepthAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
-                            break;
-
-                        // Stencil Only Attachment
-                        case MTLPixelFormat.Stencil8:
-                            renderPipelineDescriptor.StencilAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
-                            break;
-
-                        // Combined Attachment
-                        case MTLPixelFormat.Depth24UnormStencil8:
-                        case MTLPixelFormat.Depth32FloatStencil8:
-                            renderPipelineDescriptor.DepthAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
-                            renderPipelineDescriptor.StencilAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
-                            break;
-                        default:
-                            Logger.Error?.PrintMsg(LogClass.Gpu, $"Unsupported Depth/Stencil Format: {_currentState.DepthStencil.PixelFormat}!");
-                            break;
-                    }
-                }
-
-                renderPipelineDescriptor.VertexDescriptor = BuildVertexDescriptor(_currentState.VertexBuffers, _currentState.VertexAttribs);
-
-                if (_currentState.VertexFunction != null)
-                {
-                    renderPipelineDescriptor.VertexFunction = _currentState.VertexFunction.Value;
-                }
-                else
-                {
-                    return;
-                }
-
-                if (_currentState.FragmentFunction != null)
-                {
-                    renderPipelineDescriptor.FragmentFunction = _currentState.FragmentFunction.Value;
-                }
-
-                var error = new NSError(IntPtr.Zero);
-                var pipelineState = _device.NewRenderPipelineState(renderPipelineDescriptor, ref error);
-                if (error != IntPtr.Zero)
-                {
-                    Logger.Error?.PrintMsg(LogClass.Gpu, $"Failed to create Render Pipeline State: {StringHelper.String(error.LocalizedDescription)}");
-                }
-
-                renderCommandEncoder.SetRenderPipelineState(pipelineState);
-
-                renderCommandEncoder.SetBlendColor(
-                    _currentState.BlendColor.Red,
-                    _currentState.BlendColor.Green,
-                    _currentState.BlendColor.Blue,
-                    _currentState.BlendColor.Alpha);
             }
+
+            if (_currentState.DepthStencil != IntPtr.Zero)
+            {
+                switch (_currentState.DepthStencil.PixelFormat)
+                {
+                    // Depth Only Attachment
+                    case MTLPixelFormat.Depth16Unorm:
+                    case MTLPixelFormat.Depth32Float:
+                        renderPipelineDescriptor.DepthAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
+                        break;
+
+                    // Stencil Only Attachment
+                    case MTLPixelFormat.Stencil8:
+                        renderPipelineDescriptor.StencilAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
+                        break;
+
+                    // Combined Attachment
+                    case MTLPixelFormat.Depth24UnormStencil8:
+                    case MTLPixelFormat.Depth32FloatStencil8:
+                        renderPipelineDescriptor.DepthAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
+                        renderPipelineDescriptor.StencilAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
+                        break;
+                    default:
+                        Logger.Error?.PrintMsg(LogClass.Gpu, $"Unsupported Depth/Stencil Format: {_currentState.DepthStencil.PixelFormat}!");
+                        break;
+                }
+            }
+
+            renderPipelineDescriptor.VertexDescriptor = BuildVertexDescriptor(_currentState.VertexBuffers, _currentState.VertexAttribs);
+
+            if (_currentState.VertexFunction != null)
+            {
+                renderPipelineDescriptor.VertexFunction = _currentState.VertexFunction.Value;
+            }
+            else
+            {
+                return;
+            }
+
+            if (_currentState.FragmentFunction != null)
+            {
+                renderPipelineDescriptor.FragmentFunction = _currentState.FragmentFunction.Value;
+            }
+
+            var error = new NSError(IntPtr.Zero);
+            var pipelineState = _device.NewRenderPipelineState(renderPipelineDescriptor, ref error);
+            if (error != IntPtr.Zero)
+            {
+                Logger.Error?.PrintMsg(LogClass.Gpu, $"Failed to create Render Pipeline State: {StringHelper.String(error.LocalizedDescription)}");
+            }
+
+            renderCommandEncoder.SetRenderPipelineState(pipelineState);
+
+            renderCommandEncoder.SetBlendColor(
+                _currentState.BlendColor.Red,
+                _currentState.BlendColor.Green,
+                _currentState.BlendColor.Blue,
+                _currentState.BlendColor.Alpha);
         }
 
         public void UpdateIndexBuffer(BufferRange buffer, IndexType type)
@@ -551,12 +552,9 @@ namespace Ryujinx.Graphics.Metal
 
         private void SetDepthStencilState(MTLRenderCommandEncoder renderCommandEncoder)
         {
-            if (_currentState.Dirty.DepthStencil)
+            if (_currentState.DepthStencilState != null)
             {
-                if (_currentState.DepthStencilState != null)
-                {
-                    renderCommandEncoder.SetDepthStencilState(_currentState.DepthStencilState.Value);
-                }
+                renderCommandEncoder.SetDepthStencilState(_currentState.DepthStencilState.Value);
             }
         }
 

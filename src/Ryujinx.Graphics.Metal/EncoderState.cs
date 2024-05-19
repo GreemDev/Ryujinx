@@ -16,6 +16,12 @@ namespace Ryujinx.Graphics.Metal
             Pipeline = true;
             DepthStencil = true;
         }
+
+        public void Clear()
+        {
+            Pipeline = false;
+            DepthStencil = false;
+        }
     }
 
     [SupportedOSPlatform("macos")]
