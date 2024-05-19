@@ -564,8 +564,7 @@ namespace Ryujinx.Graphics.Metal
         private static MTLVertexDescriptor BuildVertexDescriptor(VertexBufferDescriptor[] bufferDescriptors, VertexAttribDescriptor[] attribDescriptors)
         {
             var vertexDescriptor = new MTLVertexDescriptor();
-
-            var usedIndexes = new List<int>();
+            uint indexMask = 0;
 
             // TODO: Handle 'zero' buffers
             for (int i = 0; i < attribDescriptors.Length; i++)
@@ -573,7 +572,7 @@ namespace Ryujinx.Graphics.Metal
                 var attrib = vertexDescriptor.Attributes.Object((ulong)i);
                 // TODO: Format should not be hardcoded
                 attrib.Format = MTLVertexFormat.Float4;
-                usedIndexes.Add(attribDescriptors[i].BufferIndex);
+                indexMask |= 1u << attribDescriptors[i].BufferIndex;
                 attrib.BufferIndex = (ulong)attribDescriptors[i].BufferIndex;
                 attrib.Offset = (ulong)attribDescriptors[i].Offset;
             }
@@ -581,7 +580,7 @@ namespace Ryujinx.Graphics.Metal
             for (int i = 0; i < bufferDescriptors.Length; i++)
             {
                 var layout = vertexDescriptor.Layouts.Object((ulong)i);
-                layout.Stride = usedIndexes.Contains(i) ? (ulong)bufferDescriptors[i].Stride : 0;
+                layout.Stride = (indexMask & (1u << i)) != 0 ? (ulong)bufferDescriptors[i].Stride : 0;
             }
 
             return vertexDescriptor;
