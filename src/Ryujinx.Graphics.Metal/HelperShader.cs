@@ -19,8 +19,8 @@ namespace Ryujinx.Graphics.Metal
     class HelperShader : IDisposable
     {
         private const string ShadersSourcePath = "/Ryujinx.Graphics.Metal/Shaders";
+        private readonly Pipeline _pipeline;
         private MTLDevice _device;
-        private Pipeline _pipeline;
 
         private readonly IProgram _programColorBlit;
         private readonly IProgram _programColorClearF;

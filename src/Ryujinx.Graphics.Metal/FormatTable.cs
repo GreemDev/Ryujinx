@@ -186,8 +186,10 @@ namespace Ryujinx.Graphics.Metal
         {
             switch (format)
             {
-                case MTLPixelFormat.Depth24UnormStencil8: return MTLPixelFormat.X24Stencil8;
-                case MTLPixelFormat.Depth32FloatStencil8: return MTLPixelFormat.X32Stencil8;
+                case MTLPixelFormat.Depth24UnormStencil8:
+                    return MTLPixelFormat.X24Stencil8;
+                case MTLPixelFormat.Depth32FloatStencil8:
+                    return MTLPixelFormat.X32Stencil8;
                 default:
                     Logger.Warning?.PrintMsg(LogClass.Gpu, $"Attempted to get stencil format for non packed format {format}!");
                     return MTLPixelFormat.Invalid;

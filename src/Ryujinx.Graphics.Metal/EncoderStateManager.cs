@@ -14,16 +14,15 @@ namespace Ryujinx.Graphics.Metal
     struct EncoderStateManager
     {
         private readonly MTLDevice _device;
-        private Pipeline _pipeline;
+        private readonly Pipeline _pipeline;
 
         private EncoderState _currentState = new();
         private EncoderState _backState = new();
 
-        // Public accessors
-        public MTLBuffer IndexBuffer => _currentState.IndexBuffer;
-        public MTLIndexType IndexType => _currentState.IndexType;
-        public ulong IndexBufferOffset => _currentState.IndexBufferOffset;
-        public PrimitiveTopology Topology => _currentState.Topology;
+        public readonly MTLBuffer IndexBuffer => _currentState.IndexBuffer;
+        public readonly MTLIndexType IndexType => _currentState.IndexType;
+        public readonly ulong IndexBufferOffset => _currentState.IndexBufferOffset;
+        public readonly PrimitiveTopology Topology => _currentState.Topology;
 
         public EncoderStateManager(MTLDevice device, Pipeline pipeline)
         {
@@ -495,7 +494,7 @@ namespace Ryujinx.Graphics.Metal
         }
 
         // Inlineable
-        public void UpdateTextureAndSampler(ShaderStage stage, ulong binding, MTLTexture texture, MTLSamplerState sampler)
+        public readonly void UpdateTextureAndSampler(ShaderStage stage, ulong binding, MTLTexture texture, MTLSamplerState sampler)
         {
             switch (stage)
             {
