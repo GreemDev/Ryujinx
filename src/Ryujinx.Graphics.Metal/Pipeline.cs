@@ -306,7 +306,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetBlendState(AdvancedBlendDescriptor blend)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Advanced blend is not supported in Metal!");
+            // Metal does not support advanced blend.
         }
 
         public void SetBlendState(int index, BlendDescriptor blend)
@@ -361,14 +361,12 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetLineParameters(float width, bool smooth)
         {
-            // Not supported in Metal
-            Logger.Warning?.Print(LogClass.Gpu, "Wide-line is not supported without private Metal API");
+            // Metal does not support wide-lines.
         }
 
         public void SetLogicOpState(bool enable, LogicalOp op)
         {
-            // Not supported in Metal
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            // Metal does not support logic operations.
         }
 
         public void SetMultisampleState(MultisampleDescriptor multisample)
@@ -388,8 +386,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetPolygonMode(PolygonMode frontMode, PolygonMode backMode)
         {
-            // Not supported in Metal
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            // Metal does not support polygon mode.
         }
 
         public void SetPrimitiveRestart(bool enable, int index)
@@ -534,20 +531,17 @@ namespace Ryujinx.Graphics.Metal
 
         public void BeginTransformFeedback(PrimitiveTopology topology)
         {
-            // Metal does not support Transform Feedback
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            // Metal does not support transform feedback.
         }
 
         public void EndTransformFeedback()
         {
-            // Metal does not support Transform Feedback
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            // Metal does not support transform feedback.
         }
 
         public void SetTransformFeedbackBuffers(ReadOnlySpan<BufferRange> buffers)
         {
-            // Metal does not support Transform Feedback
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            // Metal does not support transform feedback.
         }
 
         public void Dispose()
