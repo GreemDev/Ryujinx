@@ -326,7 +326,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetDepthMode(DepthMode mode)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            // Metal does not support depth clip control.
         }
 
         public void SetDepthTest(DepthTestDescriptor depthTest)
