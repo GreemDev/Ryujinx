@@ -311,7 +311,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetBlendState(int index, BlendDescriptor blend)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            _encoderStateManager.UpdateBlendDescriptors(index, blend);
         }
 
         public void SetDepthBias(PolygonModeMask enables, float factor, float units, float clamp)

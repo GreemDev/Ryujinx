@@ -56,12 +56,22 @@ namespace Ryujinx.Graphics.Metal
                     passAttachment.LoadAction = MTLLoadAction.Load;
 
                     var pipelineAttachment = renderPipelineDescriptor.ColorAttachments.Object((ulong)i);
-                    pipelineAttachment.SetBlendingEnabled(true);
                     pipelineAttachment.PixelFormat = _currentState.RenderTargets[i].PixelFormat;
                     pipelineAttachment.SourceAlphaBlendFactor = MTLBlendFactor.SourceAlpha;
                     pipelineAttachment.DestinationAlphaBlendFactor = MTLBlendFactor.OneMinusSourceAlpha;
                     pipelineAttachment.SourceRGBBlendFactor = MTLBlendFactor.SourceAlpha;
                     pipelineAttachment.DestinationRGBBlendFactor = MTLBlendFactor.OneMinusSourceAlpha;
+
+                    if (_currentState.BlendDescriptors.TryGetValue(i, out BlendDescriptor blendDescriptor))
+                    {
+                        pipelineAttachment.SetBlendingEnabled(blendDescriptor.Enable);
+                        pipelineAttachment.AlphaBlendOperation = blendDescriptor.AlphaOp.Convert();
+                        pipelineAttachment.RgbBlendOperation = blendDescriptor.ColorOp.Convert();
+                        pipelineAttachment.SourceAlphaBlendFactor = blendDescriptor.AlphaSrcFactor.Convert();
+                        pipelineAttachment.DestinationAlphaBlendFactor = blendDescriptor.AlphaDstFactor.Convert();
+                        pipelineAttachment.SourceRGBBlendFactor = blendDescriptor.ColorSrcFactor.Convert();
+                        pipelineAttachment.DestinationRGBBlendFactor = blendDescriptor.ColorDstFactor.Convert();
+                    }
                 }
             }
 
@@ -135,6 +145,12 @@ namespace Ryujinx.Graphics.Metal
             var renderCommandEncoder = _pipeline.CommandBuffer.RenderCommandEncoder(renderPassDescriptor);
 
             renderCommandEncoder.SetRenderPipelineState(pipelineState);
+
+            renderCommandEncoder.SetBlendColor(
+                _currentState.BlendColor.Red,
+                _currentState.BlendColor.Green,
+                _currentState.BlendColor.Blue,
+                _currentState.BlendColor.Alpha);
 
             SetDepthStencilState(renderCommandEncoder, _currentState.DepthStencilState);
             SetScissors(renderCommandEncoder, _currentState.Scissors);
@@ -228,6 +244,18 @@ namespace Ryujinx.Graphics.Metal
                     layout.Stride = 1;
                 }
             }
+
+            // Requires recreating pipeline
+            if (_pipeline.CurrentEncoderType == EncoderType.Render)
+            {
+                _pipeline.EndCurrentPass();
+            }
+        }
+
+        public void UpdateBlendDescriptors(int index, BlendDescriptor blend)
+        {
+            _currentState.BlendDescriptors.Add(index, blend);
+            _currentState.BlendColor = blend.BlendConstant;
 
             // Requires recreating pipeline
             if (_pipeline.CurrentEncoderType == EncoderType.Render)

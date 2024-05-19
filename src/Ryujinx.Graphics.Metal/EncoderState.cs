@@ -47,6 +47,8 @@ namespace Ryujinx.Graphics.Metal
         public MTLTexture DepthStencil = default;
         public MTLTexture[] RenderTargets = new MTLTexture[MaxColorAttachments];
         public MTLVertexDescriptor VertexDescriptor = new();
+        public Dictionary<int, BlendDescriptor> BlendDescriptors = new();
+        public ColorF BlendColor = new();
 
         public EncoderState() { }
     }
