@@ -29,6 +29,7 @@ namespace Ryujinx.Graphics.Metal
 
         public MTLDepthStencilState? DepthStencilState = null;
 
+        public MTLDepthClipMode DepthClipMode = MTLDepthClipMode.Clip;
         public MTLCompareFunction DepthCompareFunction = MTLCompareFunction.Always;
         public bool DepthWriteEnabled = false;
 

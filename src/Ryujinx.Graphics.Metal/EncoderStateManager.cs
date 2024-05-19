@@ -153,6 +153,7 @@ namespace Ryujinx.Graphics.Metal
                 _currentState.BlendColor.Alpha);
 
             SetDepthStencilState(renderCommandEncoder, _currentState.DepthStencilState);
+            SetDepthClamp(renderCommandEncoder, _currentState.DepthClipMode);
             SetScissors(renderCommandEncoder, _currentState.Scissors);
             SetViewports(renderCommandEncoder, _currentState.Viewports);
             SetBuffers(renderCommandEncoder, _currentState.VertexBuffers);
@@ -338,6 +339,19 @@ namespace Ryujinx.Graphics.Metal
             {
                 var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
                 SetDepthStencilState(renderCommandEncoder, _currentState.DepthStencilState);
+            }
+        }
+
+        // Inlineable
+        public void UpdateDepthClamp(bool clamp)
+        {
+            _currentState.DepthClipMode = clamp ? MTLDepthClipMode.Clamp : MTLDepthClipMode.Clip;
+
+            // Inline Update
+
+            if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
+            {
+                var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
             }
         }
 
@@ -550,6 +564,11 @@ namespace Ryujinx.Graphics.Metal
             {
                 renderCommandEncoder.SetDepthStencilState(depthStencilState.Value);
             }
+        }
+
+        private static void SetDepthClamp(MTLRenderCommandEncoder renderCommandEncoder, MTLDepthClipMode depthClipMode)
+        {
+            renderCommandEncoder.SetDepthClipMode(depthClipMode);
         }
 
         private unsafe static void SetScissors(MTLRenderCommandEncoder renderCommandEncoder, MTLScissorRect[] scissors)

@@ -321,7 +321,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetDepthClamp(bool clamp)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            _encoderStateManager.UpdateDepthClamp(clamp);
         }
 
         public void SetDepthMode(DepthMode mode)
