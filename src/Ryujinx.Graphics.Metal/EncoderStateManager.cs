@@ -105,6 +105,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void RebindState(MTLRenderCommandEncoder renderCommandEncoder)
         {
+            // TODO: only rebind the dirty state
             SetPipelineState(renderCommandEncoder);
             SetDepthStencilState(renderCommandEncoder, _currentState.DepthStencilState);
             SetDepthClamp(renderCommandEncoder, _currentState.DepthClipMode);
