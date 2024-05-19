@@ -48,8 +48,7 @@ namespace Ryujinx.Graphics.Metal
             var renderPassDescriptor = new MTLRenderPassDescriptor();
             var renderPipelineDescriptor = new MTLRenderPipelineDescriptor();
 
-            const int MaxColorAttachments = 8;
-            for (int i = 0; i < MaxColorAttachments; i++)
+            for (int i = 0; i < EncoderState.MaxColorAttachments; i++)
             {
                 if (_currentState.RenderTargets[i] != IntPtr.Zero)
                 {
@@ -70,40 +69,43 @@ namespace Ryujinx.Graphics.Metal
             var depthAttachment = renderPassDescriptor.DepthAttachment;
             var stencilAttachment = renderPassDescriptor.StencilAttachment;
 
-            switch (_currentState.DepthStencil.PixelFormat)
+            if (_currentState.DepthStencil != IntPtr.Zero)
             {
-                // Depth Only Attachment
-                case MTLPixelFormat.Depth16Unorm:
-                case MTLPixelFormat.Depth32Float:
-                    depthAttachment.Texture = _currentState.DepthStencil;
-                    depthAttachment.LoadAction = MTLLoadAction.Load;
-                    renderPipelineDescriptor.DepthAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
-                    break;
+                switch (_currentState.DepthStencil.PixelFormat)
+                {
+                    // Depth Only Attachment
+                    case MTLPixelFormat.Depth16Unorm:
+                    case MTLPixelFormat.Depth32Float:
+                        depthAttachment.Texture = _currentState.DepthStencil;
+                        depthAttachment.LoadAction = MTLLoadAction.Load;
+                        renderPipelineDescriptor.DepthAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
+                        break;
 
-                // Stencil Only Attachment
-                case MTLPixelFormat.Stencil8:
-                    stencilAttachment.Texture = _currentState.DepthStencil;
-                    stencilAttachment.LoadAction = MTLLoadAction.Load;
-                    renderPipelineDescriptor.StencilAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
-                    break;
+                    // Stencil Only Attachment
+                    case MTLPixelFormat.Stencil8:
+                        stencilAttachment.Texture = _currentState.DepthStencil;
+                        stencilAttachment.LoadAction = MTLLoadAction.Load;
+                        renderPipelineDescriptor.StencilAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
+                        break;
 
-                // Combined Attachment
-                case MTLPixelFormat.Depth24UnormStencil8:
-                case MTLPixelFormat.Depth32FloatStencil8:
-                    depthAttachment.Texture = _currentState.DepthStencil;
-                    depthAttachment.LoadAction = MTLLoadAction.Load;
+                    // Combined Attachment
+                    case MTLPixelFormat.Depth24UnormStencil8:
+                    case MTLPixelFormat.Depth32FloatStencil8:
+                        depthAttachment.Texture = _currentState.DepthStencil;
+                        depthAttachment.LoadAction = MTLLoadAction.Load;
 
-                    var unpackedFormat = FormatTable.PackedStencilToXFormat(_currentState.DepthStencil.PixelFormat);
-                    var stencilView = _currentState.DepthStencil.NewTextureView(unpackedFormat);
-                    stencilAttachment.Texture = stencilView;
-                    stencilAttachment.LoadAction = MTLLoadAction.Load;
+                        var unpackedFormat = FormatTable.PackedStencilToXFormat(_currentState.DepthStencil.PixelFormat);
+                        var stencilView = _currentState.DepthStencil.NewTextureView(unpackedFormat);
+                        stencilAttachment.Texture = stencilView;
+                        stencilAttachment.LoadAction = MTLLoadAction.Load;
 
-                    renderPipelineDescriptor.DepthAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
-                    renderPipelineDescriptor.StencilAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
-                    break;
-                default:
-                    Logger.Error?.PrintMsg(LogClass.Gpu, $"Unsupported Depth/Stencil Format: {_currentState.DepthStencil.PixelFormat}!");
-                    break;
+                        renderPipelineDescriptor.DepthAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
+                        renderPipelineDescriptor.StencilAttachmentPixelFormat = _currentState.DepthStencil.PixelFormat;
+                        break;
+                    default:
+                        Logger.Error?.PrintMsg(LogClass.Gpu, $"Unsupported Depth/Stencil Format: {_currentState.DepthStencil.PixelFormat}!");
+                        break;
+                }
             }
 
             renderPipelineDescriptor.VertexDescriptor = _currentState.VertexDescriptor;
@@ -187,7 +189,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void UpdateRenderTargets(ITexture[] colors, ITexture depthStencil)
         {
-            _currentState.RenderTargets = new MTLTexture[colors.Length];
+            _currentState.RenderTargets = new MTLTexture[EncoderState.MaxColorAttachments];
 
             for (int i = 0; i < colors.Length; i++)
             {

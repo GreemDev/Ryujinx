@@ -8,6 +8,8 @@ namespace Ryujinx.Graphics.Metal
     [SupportedOSPlatform("macos")]
     public struct EncoderState
     {
+        public const int MaxColorAttachments = 8;
+
         public MTLFunction? VertexFunction = null;
         public MTLFunction? FragmentFunction = null;
 
@@ -43,7 +45,7 @@ namespace Ryujinx.Graphics.Metal
 
         // Changes to attachments take recreation!
         public MTLTexture DepthStencil = default;
-        public MTLTexture[] RenderTargets = [];
+        public MTLTexture[] RenderTargets = new MTLTexture[MaxColorAttachments];
         public MTLVertexDescriptor VertexDescriptor = new();
 
         public EncoderState() { }

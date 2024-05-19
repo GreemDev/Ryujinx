@@ -43,6 +43,7 @@ namespace Ryujinx.Graphics.Metal
         {
             var layer = _getMetalLayer();
             layer.Device = _device;
+            layer.FramebufferOnly = false;
 
             _window = new Window(this, layer);
             _pipeline = new Pipeline(_device, _queue);
