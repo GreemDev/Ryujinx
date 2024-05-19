@@ -596,8 +596,7 @@ namespace Ryujinx.Graphics.Metal
             for (int i = 0; i < attribDescriptors.Length; i++)
             {
                 var attrib = vertexDescriptor.Attributes.Object((ulong)i);
-                // TODO: Format should not be hardcoded
-                attrib.Format = MTLVertexFormat.Float4;
+                attrib.Format = attribDescriptors[i].Format.Convert();
                 indexMask |= 1u << attribDescriptors[i].BufferIndex;
                 attrib.BufferIndex = (ulong)attribDescriptors[i].BufferIndex;
                 attrib.Offset = (ulong)attribDescriptors[i].Offset;

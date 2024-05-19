@@ -194,7 +194,36 @@ namespace Ryujinx.Graphics.Metal
                 SwizzleComponent.Green => MTLTextureSwizzle.Green,
                 SwizzleComponent.Blue => MTLTextureSwizzle.Blue,
                 SwizzleComponent.Alpha => MTLTextureSwizzle.Alpha,
-                _ => LogInvalidAndReturn(swizzleComponent, nameof(SwizzleComponent), MTLTextureSwizzle.Zero),
+                _ => LogInvalidAndReturn(swizzleComponent, nameof(SwizzleComponent), MTLTextureSwizzle.Zero)
+            };
+        }
+
+        public static MTLVertexFormat Convert(this Format format)
+        {
+            return format switch
+            {
+                Format.R16Float or Format.R32Float => MTLVertexFormat.Float,
+                Format.R16G16Float or Format.R32G32Float => MTLVertexFormat.Float2,
+                Format.R16G16B16Float or Format.R32G32B32Float or Format.R11G11B10Float => MTLVertexFormat.Float3,
+                Format.R16G16B16A16Float or Format.R32G32B32A32Float => MTLVertexFormat.Float4,
+                Format.R8Uint or Format.R16Uint or Format.R32Uint => MTLVertexFormat.UInt,
+                Format.R8G8Uint or Format.R16G16Uint or Format.R32G32Uint => MTLVertexFormat.UInt2,
+                Format.R8G8B8Uint or Format.R16G16B16Uint or Format.R32G32B32Uint => MTLVertexFormat.UInt3,
+                Format.R8G8B8A8Uint or Format.R16G16B16A16Uint or Format.R32G32B32A32Uint or Format.R10G10B10A2Uint => MTLVertexFormat.UInt4,
+                Format.R8Sint or Format.R16Sint or Format.R32Sint => MTLVertexFormat.Int,
+                Format.R8G8Sint or Format.R16G16Sint or Format.R32G32Sint => MTLVertexFormat.Int2,
+                Format.R8G8B8Sint or Format.R16G16B16Sint or Format.R32G32B32Sint => MTLVertexFormat.Int3,
+                Format.R8G8B8A8Sint or Format.R16G16B16A16Sint or Format.R32G32B32A32Sint => MTLVertexFormat.Int4,
+                Format.R8Unorm or Format.R16Unorm => MTLVertexFormat.UShortNormalized,
+                Format.R8G8Unorm or Format.R16G16Unorm => MTLVertexFormat.UShort2Normalized,
+                Format.R8G8B8Unorm or Format.R16G16B16Unorm => MTLVertexFormat.UShort3Normalized,
+                Format.R8G8B8A8Unorm or Format.R16G16B16A16Unorm or Format.R10G10B10A2Unorm => MTLVertexFormat.UShort4Normalized,
+                Format.R8Snorm or Format.R16Snorm => MTLVertexFormat.ShortNormalized,
+                Format.R8G8Snorm or Format.R16G16Snorm => MTLVertexFormat.Short2Normalized,
+                Format.R8G8B8Snorm or Format.R16G16B16Snorm => MTLVertexFormat.Short3Normalized,
+                Format.R8G8B8A8Snorm or Format.R16G16B16A16Snorm or Format.R10G10B10A2Snorm => MTLVertexFormat.Short4Normalized,
+
+                _ => LogInvalidAndReturn(format, nameof(Format), MTLVertexFormat.Float4)
             };
         }
 
