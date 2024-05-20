@@ -63,6 +63,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
         public static void DeclareLocals(CodeGenContext context, StructuredFunction function, ShaderStage stage)
         {
+            DeclareMemories(context, context.Properties.LocalMemories.Values, isShared: false);
             switch (stage)
             {
                 case ShaderStage.Vertex:
@@ -104,6 +105,15 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 AggregateType.Vector4 | AggregateType.U32 => "uint4",
                 _ => throw new ArgumentException($"Invalid variable type \"{type}\"."),
             };
+        }
+
+        private static void DeclareMemories(CodeGenContext context, IEnumerable<MemoryDefinition> memories, bool isShared)
+        {
+            foreach (var memory in memories)
+            {
+                var typeName = GetVarTypeName(context, memory.Type & ~AggregateType.Array);
+                context.AppendLine($"{typeName} {memory.Name}[{memory.ArrayLength}];");
+            }
         }
 
         private static void DeclareInputAttributes(CodeGenContext context, IEnumerable<IoDefinition> inputs)
