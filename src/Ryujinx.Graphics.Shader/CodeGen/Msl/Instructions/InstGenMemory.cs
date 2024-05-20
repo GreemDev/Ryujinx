@@ -316,7 +316,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     texCall += $"{lodExpr}";
                 }
 
-                texCall += $"){GetMask(texOp.Index)}";
+                texCall += $")";
             }
 
             return texCall;
