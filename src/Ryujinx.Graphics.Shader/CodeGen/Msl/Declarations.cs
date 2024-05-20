@@ -197,7 +197,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                         {
                             IoVariable.Position => "position",
                             IoVariable.PointSize => "point_size",
-                            IoVariable.FragmentOutputColor => "color",
+                            IoVariable.FragmentOutputColor => $"color{ioDefinition.Location}",
                             _ => $"{DefaultNames.OAttributePrefix}{ioDefinition.Location}"
                         };
                         string suffix = ioDefinition.IoVariable switch

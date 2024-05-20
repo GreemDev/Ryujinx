@@ -267,7 +267,8 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 return NumberFormatter.FormatInt(0);
             }
 
-            string textureName = "texture";
+            string samplerName = GetSamplerName(context.Properties, texOp);
+            string textureName = $"tex_{samplerName}";
             string texCall = textureName + ".";
             texCall += $"get_num_samples()";
 
@@ -278,7 +279,8 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
         {
             AstTextureOperation texOp = (AstTextureOperation)operation;
 
-            string textureName = "texture";
+            string samplerName = GetSamplerName(context.Properties, texOp);
+            string textureName = $"tex_{samplerName}";
             string texCall = textureName + ".";
 
             if (texOp.Index == 3)
