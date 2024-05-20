@@ -9,5 +9,10 @@ namespace Ryujinx.Graphics.Metal
         public const int MaxTexturesPerStage = 64;
         public const int MaxCommandBuffersPerQueue = 16;
         public const int MaxTextureBindings = MaxTexturesPerStage * MaxShaderStages;
+        public const int MaxColorAttachments = 8;
+        // TODO: Check this value
+        public const int MaxVertexAttributes = 16;
+        // TODO: Check this value
+        public const int MaxVertexLayouts = 16;
     }
 }

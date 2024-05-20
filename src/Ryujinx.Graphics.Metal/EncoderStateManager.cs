@@ -16,6 +16,8 @@ namespace Ryujinx.Graphics.Metal
         private readonly MTLDevice _device;
         private readonly Pipeline _pipeline;
 
+        private readonly RenderPipelineCache RenderPipelineCache;
+
         private EncoderState _currentState = new();
         private EncoderState _backState = new();
 
@@ -28,6 +30,7 @@ namespace Ryujinx.Graphics.Metal
         {
             _device = device;
             _pipeline = pipeline;
+            RenderPipelineCache = new(device);
         }
 
         public void SwapStates()
@@ -45,7 +48,7 @@ namespace Ryujinx.Graphics.Metal
             // Initialise Pass & State
             var renderPassDescriptor = new MTLRenderPassDescriptor();
 
-            for (int i = 0; i < EncoderState.MaxColorAttachments; i++)
+            for (int i = 0; i < Constants.MaxColorAttachments; i++)
             {
                 if (_currentState.RenderTargets[i] != IntPtr.Zero)
                 {
@@ -131,7 +134,7 @@ namespace Ryujinx.Graphics.Metal
         private void SetPipelineState(MTLRenderCommandEncoder renderCommandEncoder) {
             var renderPipelineDescriptor = new MTLRenderPipelineDescriptor();
 
-            for (int i = 0; i < EncoderState.MaxColorAttachments; i++)
+            for (int i = 0; i < Constants.MaxColorAttachments; i++)
             {
                 if (_currentState.RenderTargets[i] != IntPtr.Zero)
                 {
@@ -198,12 +201,7 @@ namespace Ryujinx.Graphics.Metal
                 renderPipelineDescriptor.FragmentFunction = _currentState.FragmentFunction.Value;
             }
 
-            var error = new NSError(IntPtr.Zero);
-            var pipelineState = _device.NewRenderPipelineState(renderPipelineDescriptor, ref error);
-            if (error != IntPtr.Zero)
-            {
-                Logger.Error?.PrintMsg(LogClass.Gpu, $"Failed to create Render Pipeline State: {StringHelper.String(error.LocalizedDescription)}");
-            }
+            var pipelineState = RenderPipelineCache.GetOrCreate(renderPipelineDescriptor);
 
             renderCommandEncoder.SetRenderPipelineState(pipelineState);
 
@@ -249,7 +247,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void UpdateRenderTargets(ITexture[] colors, ITexture depthStencil)
         {
-            _currentState.RenderTargets = new MTLTexture[EncoderState.MaxColorAttachments];
+            _currentState.RenderTargets = new MTLTexture[Constants.MaxColorAttachments];
 
             for (int i = 0; i < colors.Length; i++)
             {
