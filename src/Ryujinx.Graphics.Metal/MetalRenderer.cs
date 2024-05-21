@@ -51,7 +51,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void BackgroundContextAction(Action action, bool alwaysBackground = false)
         {
-            throw new NotImplementedException();
+            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
         }
 
         public BufferHandle CreateBuffer(int size, BufferAccess access, BufferHandle storageHint)

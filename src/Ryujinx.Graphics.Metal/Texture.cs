@@ -68,11 +68,7 @@ namespace Ryujinx.Graphics.Metal
             slices.location = (ulong)firstLayer;
             slices.length = 1;
 
-            if (info.Target == Target.Texture3D)
-            {
-                slices.length = (ulong)Info.Depth;
-            }
-            else if (info.Target != Target.Cubemap)
+            if (info.Target != Target.Texture3D && info.Target != Target.Cubemap)
             {
                 slices.length = (ulong)Info.Depth;
             }
