@@ -143,11 +143,18 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
                     context.EnterScope();
 
+                    if (context.Definitions.Stage == ShaderStage.Fragment)
+                    {
+                        // TODO: check if it's needed
+                        context.AppendLine("float4 position [[position]];");
+                    }
+
+
                     foreach (var ioDefinition in inputs.OrderBy(x => x.Location))
                     {
                         string type = ioDefinition.IoVariable switch
                         {
-                            IoVariable.Position => "float4",
+                            // IoVariable.Position => "float4",
                             IoVariable.GlobalId => "uint3",
                             IoVariable.VertexId => "uint",
                             IoVariable.VertexIndex => "uint",
@@ -155,7 +162,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                         };
                         string name = ioDefinition.IoVariable switch
                         {
-                            IoVariable.Position => "position",
+                            // IoVariable.Position => "position",
                             IoVariable.GlobalId => "global_id",
                             IoVariable.VertexId => "vertex_id",
                             IoVariable.VertexIndex => "vertex_index",
@@ -163,7 +170,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                         };
                         string suffix = ioDefinition.IoVariable switch
                         {
-                            IoVariable.Position => "[[position]]",
+                            // IoVariable.Position => "[[position]]",
                             IoVariable.GlobalId => "[[thread_position_in_grid]]",
                             IoVariable.VertexId => "[[vertex_id]]",
                             // TODO: Avoid potential redeclaration
