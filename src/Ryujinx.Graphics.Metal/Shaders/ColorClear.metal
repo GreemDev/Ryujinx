@@ -6,11 +6,6 @@ struct VertexOut {
     float4 position [[position]];
 };
 
-struct FragmentOut {
-    float4 color [[color(0)]];
-    float depth [[depth(any)]];
-};
-
 vertex VertexOut vertexMain(ushort vid [[vertex_id]])
 {
     int low = vid & 1;
@@ -27,11 +22,7 @@ vertex VertexOut vertexMain(ushort vid [[vertex_id]])
 }
 
 fragment float4 fragmentMain(VertexOut in [[stage_in]],
-                             constant float clear_color [[buffer(0)]])
+                             constant float4& clear_color [[buffer(0)]])
 {
-    Fragment out;
-
-    out.depth = clear_color;
-
-    return out;
+    return clear_color;
 }

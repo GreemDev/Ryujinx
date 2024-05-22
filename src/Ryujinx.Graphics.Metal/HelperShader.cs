@@ -2,8 +2,10 @@ using Ryujinx.Common;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Shader;
 using Ryujinx.Graphics.Shader.Translation;
+using SharpMetal.Foundation;
 using SharpMetal.Metal;
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
@@ -23,9 +25,7 @@ namespace Ryujinx.Graphics.Metal
         private MTLDevice _device;
 
         private readonly IProgram _programColorBlit;
-        private readonly IProgram _programColorClearF;
-        private readonly IProgram _programColorClearSI;
-        private readonly IProgram _programColorClearUI;
+        private readonly IProgram _programColorClear;
         private readonly IProgram _programDepthStencilClear;
 
         public HelperShader(MTLDevice device, Pipeline pipeline)
@@ -38,6 +38,13 @@ namespace Ryujinx.Graphics.Metal
             [
                 new ShaderSource(blitSource, ShaderStage.Fragment, TargetLanguage.Msl),
                 new ShaderSource(blitSource, ShaderStage.Vertex, TargetLanguage.Msl)
+            ], device);
+
+            var colorClearSource = ReadMsl("ColorClear.metal");
+            _programColorClear = new Program(
+            [
+                new ShaderSource(colorClearSource, ShaderStage.Fragment, TargetLanguage.Msl),
+                new ShaderSource(colorClearSource, ShaderStage.Vertex, TargetLanguage.Msl)
             ], device);
 
             // var colorClearFSource = ReadMsl("ColorClearF.metal");
@@ -93,45 +100,30 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.Finish();
         }
 
-        public void ClearColor(
+        public unsafe void ClearColor(
             Texture dst,
-            uint componentMask,
-            int dstWidth,
-            int dstHeight,
-            ComponentType type,
-            Rectangle<int> scissor)
+            ReadOnlySpan<float> clearColor)
         {
-            Span<Viewport> viewports = stackalloc Viewport[1];
+            const int ClearColorBufferSize = 16;
 
-            viewports[0] = new Viewport(
-                new Rectangle<float>(0, 0, dstWidth, dstHeight),
-                ViewportSwizzle.PositiveX,
-                ViewportSwizzle.PositiveY,
-                ViewportSwizzle.PositiveZ,
-                ViewportSwizzle.PositiveW,
-                0f,
-                1f);
+            var buffer = _device.NewBuffer(ClearColorBufferSize, MTLResourceOptions.ResourceStorageModeManaged);
+            var span = new Span<float>(buffer.Contents.ToPointer(), ClearColorBufferSize);
+            clearColor.CopyTo(span);
 
-            IProgram program;
-
-            if (type == ComponentType.SignedInteger)
+            buffer.DidModifyRange(new NSRange
             {
-                program = _programColorClearSI;
-            }
-            else if (type == ComponentType.UnsignedInteger)
-            {
-                program = _programColorClearUI;
-            }
-            else
-            {
-                program = _programColorClearF;
-            }
+                location = 0,
+                length = ClearColorBufferSize
+            });
 
-            _pipeline.SetProgram(program);
-            // _pipeline.SetRenderTarget(dst, (uint)dstWidth, (uint)dstHeight);
-            _pipeline.SetRenderTargetColorMasks([componentMask]);
-            _pipeline.SetViewports(viewports);
-            _pipeline.SetScissors([scissor]);
+            var handle = buffer.NativePtr;
+            var range = new BufferRange(Unsafe.As<IntPtr, BufferHandle>(ref handle), 0, ClearColorBufferSize);
+
+            _pipeline.SetUniformBuffers([new BufferAssignment(0, range)]);
+
+            _pipeline.SetProgram(_programColorClear);
+            _pipeline.SetRenderTargets([dst], null);
+            // _pipeline.SetRenderTargetColorMasks([componentMask]);
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
             _pipeline.Draw(4, 1, 0, 0);
             _pipeline.Finish();
@@ -196,9 +188,7 @@ namespace Ryujinx.Graphics.Metal
         public void Dispose()
         {
             _programColorBlit.Dispose();
-            _programColorClearF.Dispose();
-            _programColorClearSI.Dispose();
-            _programColorClearUI.Dispose();
+            _programColorClear.Dispose();
             _programDepthStencilClear.Dispose();
             _pipeline.Dispose();
         }

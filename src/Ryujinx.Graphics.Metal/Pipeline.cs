@@ -5,6 +5,7 @@ using SharpMetal.Foundation;
 using SharpMetal.Metal;
 using SharpMetal.QuartzCore;
 using System;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
@@ -203,7 +204,13 @@ namespace Ryujinx.Graphics.Metal
 
         public void ClearRenderTargetColor(int index, int layer, int layerCount, uint componentMask, ColorF color)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            float[] colors = [color.Red, color.Green, color.Blue, color.Alpha];
+
+            Texture target = _encoderStateManager.RenderTargets[index];
+
+            _encoderStateManager.SwapStates();
+
+            _helperShader.ClearColor(target, colors);
         }
 
         public void ClearRenderTargetDepthStencil(int layer, int layerCount, float depthValue, bool depthMask, int stencilValue, int stencilMask)

@@ -25,6 +25,7 @@ namespace Ryujinx.Graphics.Metal
         public readonly MTLIndexType IndexType => _currentState.IndexType;
         public readonly ulong IndexBufferOffset => _currentState.IndexBufferOffset;
         public readonly PrimitiveTopology Topology => _currentState.Topology;
+        public readonly Texture[] RenderTargets => _currentState.RenderTargets;
 
         public EncoderStateManager(MTLDevice device, Pipeline pipeline)
         {
@@ -50,10 +51,10 @@ namespace Ryujinx.Graphics.Metal
 
             for (int i = 0; i < Constants.MaxColorAttachments; i++)
             {
-                if (_currentState.RenderTargets[i] != IntPtr.Zero)
+                if (_currentState.RenderTargets[i] != null)
                 {
                     var passAttachment = renderPassDescriptor.ColorAttachments.Object((ulong)i);
-                    passAttachment.Texture = _currentState.RenderTargets[i];
+                    passAttachment.Texture = _currentState.RenderTargets[i].MTLTexture;
                     passAttachment.LoadAction = MTLLoadAction.Load;
                 }
             }
@@ -136,10 +137,10 @@ namespace Ryujinx.Graphics.Metal
 
             for (int i = 0; i < Constants.MaxColorAttachments; i++)
             {
-                if (_currentState.RenderTargets[i] != IntPtr.Zero)
+                if (_currentState.RenderTargets[i] != null)
                 {
                     var pipelineAttachment = renderPipelineDescriptor.ColorAttachments.Object((ulong)i);
-                    pipelineAttachment.PixelFormat = _currentState.RenderTargets[i].PixelFormat;
+                    pipelineAttachment.PixelFormat = _currentState.RenderTargets[i].MTLTexture.PixelFormat;
                     pipelineAttachment.SourceAlphaBlendFactor = MTLBlendFactor.SourceAlpha;
                     pipelineAttachment.DestinationAlphaBlendFactor = MTLBlendFactor.OneMinusSourceAlpha;
                     pipelineAttachment.SourceRGBBlendFactor = MTLBlendFactor.SourceAlpha;
@@ -247,7 +248,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void UpdateRenderTargets(ITexture[] colors, ITexture depthStencil)
         {
-            _currentState.RenderTargets = new MTLTexture[Constants.MaxColorAttachments];
+            _currentState.RenderTargets = new Texture[Constants.MaxColorAttachments];
 
             for (int i = 0; i < colors.Length; i++)
             {
@@ -256,7 +257,7 @@ namespace Ryujinx.Graphics.Metal
                     continue;
                 }
 
-                _currentState.RenderTargets[i] = tex.MTLTexture;
+                _currentState.RenderTargets[i] = tex;
             }
 
             if (depthStencil is Texture depthTexture)
