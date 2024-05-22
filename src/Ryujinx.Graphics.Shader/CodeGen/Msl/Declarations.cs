@@ -143,24 +143,36 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
                     context.EnterScope();
 
-                    if (context.Definitions.Stage == ShaderStage.Fragment)
-                    {
-                        // TODO: check if it's needed
-                        context.AppendLine("float4 position [[position]];");
-                    }
-
                     foreach (var ioDefinition in inputs.OrderBy(x => x.Location))
                     {
-                        string type = GetVarTypeName(context, context.Definitions.GetUserDefinedType(ioDefinition.Location, isOutput: false));
-                        string name = $"{DefaultNames.IAttributePrefix}{ioDefinition.Location}";
-                        string suffix = context.Definitions.Stage switch
+                        string type = ioDefinition.IoVariable switch
                         {
-                            ShaderStage.Vertex => $" [[attribute({ioDefinition.Location})]]",
-                            ShaderStage.Fragment => $" [[user(loc{ioDefinition.Location})]]",
+                            IoVariable.Position => "float4",
+                            IoVariable.GlobalId => "uint3",
+                            IoVariable.VertexId => "uint",
+                            IoVariable.VertexIndex => "uint",
+                            _ => GetVarTypeName(context, context.Definitions.GetUserDefinedType(ioDefinition.Location, isOutput: false))
+                        };
+                        string name = ioDefinition.IoVariable switch
+                        {
+                            IoVariable.Position => "position",
+                            IoVariable.GlobalId => "global_id",
+                            IoVariable.VertexId => "vertex_id",
+                            IoVariable.VertexIndex => "vertex_index",
+                            _ => $"{DefaultNames.IAttributePrefix}{ioDefinition.Location}"
+                        };
+                        string suffix = ioDefinition.IoVariable switch
+                        {
+                            IoVariable.Position => "[[position]]",
+                            IoVariable.GlobalId => "[[thread_position_in_grid]]",
+                            IoVariable.VertexId => "[[vertex_id]]",
+                            // TODO: Avoid potential redeclaration
+                            IoVariable.VertexIndex => "[[vertex_id]]",
+                            IoVariable.UserDefined => context.Definitions.Stage == ShaderStage.Fragment ? $"[[user(loc{ioDefinition.Location})]]" : $"[[attribute({ioDefinition.Location})]]",
                             _ => ""
                         };
 
-                        context.AppendLine($"{type} {name}{suffix};");
+                        context.AppendLine($"{type} {name} {suffix};");
                     }
 
                     context.LeaveScope(";");
@@ -212,14 +224,14 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                         };
                         string suffix = ioDefinition.IoVariable switch
                         {
-                            IoVariable.Position => " [[position]]",
-                            IoVariable.PointSize => " [[point_size]]",
-                            IoVariable.UserDefined => $" [[user(loc{ioDefinition.Location})]]",
-                            IoVariable.FragmentOutputColor => $" [[color({ioDefinition.Location})]]",
+                            IoVariable.Position => "[[position]]",
+                            IoVariable.PointSize => "[[point_size]]",
+                            IoVariable.UserDefined => $"[[user(loc{ioDefinition.Location})]]",
+                            IoVariable.FragmentOutputColor => $"[[color({ioDefinition.Location})]]",
                             _ => ""
                         };
 
-                        context.AppendLine($"{type} {name}{suffix};");
+                        context.AppendLine($"{type} {name} {suffix};");
                     }
 
                     context.LeaveScope(";");
