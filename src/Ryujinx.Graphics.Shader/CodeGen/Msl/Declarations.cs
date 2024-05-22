@@ -149,7 +149,6 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                         context.AppendLine("float4 position [[position]];");
                     }
 
-
                     foreach (var ioDefinition in inputs.OrderBy(x => x.Location))
                     {
                         string type = ioDefinition.IoVariable switch

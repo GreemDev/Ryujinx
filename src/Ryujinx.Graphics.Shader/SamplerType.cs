@@ -158,16 +158,29 @@ namespace Ryujinx.Graphics.Shader
 
         public static string ToMslTextureType(this SamplerType type)
         {
-            string typeName = (type & SamplerType.Mask) switch
+            string typeName;
+
+            if ((type & SamplerType.Shadow) != 0)
             {
-                SamplerType.None => "texture",
-                SamplerType.Texture1D => "texture1d",
-                SamplerType.TextureBuffer => "texturebuffer",
-                SamplerType.Texture2D => "texture2d",
-                SamplerType.Texture3D => "texture3d",
-                SamplerType.TextureCube => "texturecube",
-                _ => throw new ArgumentException($"Invalid sampler type \"{type}\"."),
-            };
+                typeName = (type & SamplerType.Mask) switch
+                {
+                    SamplerType.Texture2D => "depth2d",
+                    SamplerType.TextureCube => "depthcube",
+                    _ => throw new ArgumentException($"Invalid shadow texture type \"{type}\"."),
+                };
+            }
+            else
+            {
+                typeName = (type & SamplerType.Mask) switch
+                {
+                    SamplerType.Texture1D => "texture1d",
+                    SamplerType.TextureBuffer => "texturebuffer",
+                    SamplerType.Texture2D => "texture2d",
+                    SamplerType.Texture3D => "texture3d",
+                    SamplerType.TextureCube => "texturecube",
+                    _ => throw new ArgumentException($"Invalid texture type \"{type}\"."),
+                };
+            }
 
             if ((type & SamplerType.Multisample) != 0)
             {
