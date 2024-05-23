@@ -12,7 +12,8 @@ namespace Ryujinx.Graphics.Metal
 
         public DirtyFlags() { }
 
-        public void MarkAll() {
+        public void MarkAll()
+        {
             Pipeline = true;
             DepthStencil = true;
         }

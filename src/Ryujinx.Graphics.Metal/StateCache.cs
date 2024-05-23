@@ -1,33 +1,28 @@
-using Ryujinx.Common.Logging;
-using Ryujinx.Graphics.GAL;
-using SharpMetal.Foundation;
-using SharpMetal.Metal;
-using System;
 using System.Collections.Generic;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    public abstract class StateCache<T, DescriptorT, HashT>
+    public abstract class StateCache<T, TDescriptor, THash>
     {
-        private Dictionary<HashT, T> Cache = new();
+        private readonly Dictionary<THash, T> _cache = new();
 
-        protected abstract HashT GetHash(DescriptorT descriptor);
+        protected abstract THash GetHash(TDescriptor descriptor);
 
-        protected abstract T CreateValue(DescriptorT descriptor);
+        protected abstract T CreateValue(TDescriptor descriptor);
 
-        public T GetOrCreate(DescriptorT descriptor)
+        public T GetOrCreate(TDescriptor descriptor)
         {
             var hash = GetHash(descriptor);
-            if (Cache.TryGetValue(hash, out T value))
+            if (_cache.TryGetValue(hash, out T value))
             {
                 return value;
             }
             else
             {
                 var newValue = CreateValue(descriptor);
-                Cache.Add(hash, newValue);
+                _cache.Add(hash, newValue);
 
                 return newValue;
             }

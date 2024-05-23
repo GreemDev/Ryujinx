@@ -1,9 +1,4 @@
-using Ryujinx.Common.Logging;
-using Ryujinx.Graphics.GAL;
-using SharpMetal.Foundation;
 using SharpMetal.Metal;
-using System;
-using System.Collections.Generic;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
@@ -31,36 +26,39 @@ namespace Ryujinx.Graphics.Metal
     {
         private readonly MTLDevice _device;
 
-        public DepthStencilCache(MTLDevice device) {
+        public DepthStencilCache(MTLDevice device)
+        {
             _device = device;
         }
 
-        protected override DepthStencilHash GetHash(MTLDepthStencilDescriptor descriptor) {
-            var hash = new DepthStencilHash();
-
-            // Front face
-            hash.FrontFace = new DepthStencilHash.StencilHash {
-                StencilFailureOperation = descriptor.FrontFaceStencil.StencilFailureOperation,
-                DepthFailureOperation = descriptor.FrontFaceStencil.DepthFailureOperation,
-                DepthStencilPassOperation = descriptor.FrontFaceStencil.DepthStencilPassOperation,
-                StencilCompareFunction = descriptor.FrontFaceStencil.StencilCompareFunction,
-                ReadMask = descriptor.FrontFaceStencil.ReadMask,
-                WriteMask = descriptor.FrontFaceStencil.WriteMask
+        protected override DepthStencilHash GetHash(MTLDepthStencilDescriptor descriptor)
+        {
+            var hash = new DepthStencilHash
+            {
+                // Front face
+                FrontFace = new DepthStencilHash.StencilHash
+                {
+                    StencilFailureOperation = descriptor.FrontFaceStencil.StencilFailureOperation,
+                    DepthFailureOperation = descriptor.FrontFaceStencil.DepthFailureOperation,
+                    DepthStencilPassOperation = descriptor.FrontFaceStencil.DepthStencilPassOperation,
+                    StencilCompareFunction = descriptor.FrontFaceStencil.StencilCompareFunction,
+                    ReadMask = descriptor.FrontFaceStencil.ReadMask,
+                    WriteMask = descriptor.FrontFaceStencil.WriteMask
+                },
+                // Back face
+                BackFace = new DepthStencilHash.StencilHash
+                {
+                    StencilFailureOperation = descriptor.BackFaceStencil.StencilFailureOperation,
+                    DepthFailureOperation = descriptor.BackFaceStencil.DepthFailureOperation,
+                    DepthStencilPassOperation = descriptor.BackFaceStencil.DepthStencilPassOperation,
+                    StencilCompareFunction = descriptor.BackFaceStencil.StencilCompareFunction,
+                    ReadMask = descriptor.BackFaceStencil.ReadMask,
+                    WriteMask = descriptor.BackFaceStencil.WriteMask
+                },
+                // Depth
+                DepthCompareFunction = descriptor.DepthCompareFunction,
+                DepthWriteEnabled = descriptor.DepthWriteEnabled
             };
-
-            // Back face
-            hash.BackFace = new DepthStencilHash.StencilHash {
-                StencilFailureOperation = descriptor.BackFaceStencil.StencilFailureOperation,
-                DepthFailureOperation = descriptor.BackFaceStencil.DepthFailureOperation,
-                DepthStencilPassOperation = descriptor.BackFaceStencil.DepthStencilPassOperation,
-                StencilCompareFunction = descriptor.BackFaceStencil.StencilCompareFunction,
-                ReadMask = descriptor.BackFaceStencil.ReadMask,
-                WriteMask = descriptor.BackFaceStencil.WriteMask
-            };
-
-            // Depth
-            hash.DepthCompareFunction = descriptor.DepthCompareFunction;
-            hash.DepthWriteEnabled = descriptor.DepthWriteEnabled;
 
             return hash;
         }

@@ -10,13 +10,6 @@ using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
 {
-    enum ComponentType
-    {
-        Float,
-        SignedInteger,
-        UnsignedInteger,
-    }
-
     [SupportedOSPlatform("macos")]
     class HelperShader : IDisposable
     {

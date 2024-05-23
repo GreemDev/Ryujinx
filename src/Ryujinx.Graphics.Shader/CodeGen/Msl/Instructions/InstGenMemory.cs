@@ -246,12 +246,6 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             return resourceDefinitions.Textures[textOp.Binding].Name;
         }
 
-        // TODO: Verify that this is valid in MSL
-        private static string GetMask(int index)
-        {
-            return $".{"rgba".AsSpan(index, 1)}";
-        }
-
         private static string GetMaskMultiDest(int mask)
         {
             string swizzle = ".";

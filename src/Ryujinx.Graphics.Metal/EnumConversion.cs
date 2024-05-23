@@ -208,7 +208,7 @@ namespace Ryujinx.Graphics.Metal
                 Format.R16G16B16A16Float => MTLVertexFormat.Half4,
                 Format.R32Float => MTLVertexFormat.Float,
                 Format.R32G32Float => MTLVertexFormat.Float2,
-                Format.R32G32B32Float=> MTLVertexFormat.Float3,
+                Format.R32G32B32Float => MTLVertexFormat.Float3,
                 Format.R11G11B10Float => MTLVertexFormat.FloatRG11B10,
                 Format.R32G32B32A32Float => MTLVertexFormat.Float4,
                 Format.R8Uint => MTLVertexFormat.UChar,

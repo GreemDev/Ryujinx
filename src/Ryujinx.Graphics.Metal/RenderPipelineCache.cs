@@ -1,9 +1,7 @@
 using Ryujinx.Common.Logging;
-using Ryujinx.Graphics.GAL;
 using SharpMetal.Foundation;
 using SharpMetal.Metal;
 using System;
-using System.Collections.Generic;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
@@ -72,16 +70,24 @@ namespace Ryujinx.Graphics.Metal
     {
         private readonly MTLDevice _device;
 
-        public RenderPipelineCache(MTLDevice device) {
+        public RenderPipelineCache(MTLDevice device)
+        {
             _device = device;
         }
 
-        protected override RenderPipelineHash GetHash(MTLRenderPipelineDescriptor descriptor) {
-            var hash = new RenderPipelineHash();
-
-            // Functions
-            hash.VertexFunction = descriptor.VertexFunction;
-            hash.FragmentFunction = descriptor.FragmentFunction;
+        protected override RenderPipelineHash GetHash(MTLRenderPipelineDescriptor descriptor)
+        {
+            var hash = new RenderPipelineHash
+            {
+                // Functions
+                VertexFunction = descriptor.VertexFunction,
+                FragmentFunction = descriptor.FragmentFunction,
+                DepthStencilAttachment = new RenderPipelineHash.DepthStencilAttachmentHash
+                {
+                    DepthPixelFormat = descriptor.DepthAttachmentPixelFormat,
+                    StencilPixelFormat = descriptor.StencilAttachmentPixelFormat
+                },
+            };
 
             // Color Attachments
             for (int i = 0; i < Constants.MaxColorAttachments; i++)
@@ -99,13 +105,6 @@ namespace Ryujinx.Graphics.Metal
                     DestinationAlphaBlendFactor = attachment.DestinationAlphaBlendFactor
                 };
             }
-
-            // Depth stencil attachment
-            hash.DepthStencilAttachment = new RenderPipelineHash.DepthStencilAttachmentHash
-            {
-                DepthPixelFormat = descriptor.DepthAttachmentPixelFormat,
-                StencilPixelFormat = descriptor.StencilAttachmentPixelFormat
-            };
 
             // Vertex descriptor
             hash.VertexDescriptor = new RenderPipelineHash.VertexDescriptorHash();
