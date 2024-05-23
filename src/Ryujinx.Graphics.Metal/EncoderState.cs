@@ -61,7 +61,7 @@ namespace Ryujinx.Graphics.Metal
         public MTLScissorRect[] Scissors = [];
 
         // Changes to attachments take recreation!
-        public MTLTexture DepthStencil = default;
+        public Texture DepthStencil = default;
         public Texture[] RenderTargets = new Texture[Constants.MaxColorAttachments];
         public Dictionary<int, BlendDescriptor> BlendDescriptors = new();
         public ColorF BlendColor = new();

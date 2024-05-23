@@ -215,7 +215,11 @@ namespace Ryujinx.Graphics.Metal
 
         public void ClearRenderTargetDepthStencil(int layer, int layerCount, float depthValue, bool depthMask, int stencilValue, int stencilMask)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            Texture target = _encoderStateManager.DepthStencil;
+
+            _encoderStateManager.SwapStates();
+
+            _helperShader.ClearDepthStencil(target, [depthValue], depthMask, stencilValue, stencilMask);
         }
 
         public void CommandBufferBarrier()

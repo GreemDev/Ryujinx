@@ -47,33 +47,12 @@ namespace Ryujinx.Graphics.Metal
                 new ShaderSource(colorClearSource, ShaderStage.Vertex, TargetLanguage.Msl)
             ], device);
 
-            // var colorClearFSource = ReadMsl("ColorClearF.metal");
-            // _programColorClearF = new Program(
-            // [
-            //     new ShaderSource(colorClearFSource, ShaderStage.Fragment, TargetLanguage.Msl),
-            //     new ShaderSource(colorClearFSource, ShaderStage.Vertex, TargetLanguage.Msl)
-            // ], device);
-            //
-            // var colorClearSiSource = ReadMsl("ColorClearSI.metal");
-            // _programColorClearSI = new Program(
-            // [
-            //     new ShaderSource(colorClearSiSource, ShaderStage.Fragment, TargetLanguage.Msl),
-            //     new ShaderSource(colorClearSiSource, ShaderStage.Vertex, TargetLanguage.Msl)
-            // ], device);
-            //
-            // var colorClearUiSource = ReadMsl("ColorClearUI.metal");
-            // _programColorClearUI = new Program(
-            // [
-            //     new ShaderSource(colorClearUiSource, ShaderStage.Fragment, TargetLanguage.Msl),
-            //     new ShaderSource(colorClearUiSource, ShaderStage.Vertex, TargetLanguage.Msl)
-            // ], device);
-            //
-            // var depthStencilClearSource = ReadMsl("DepthStencilClear.metal");
-            // _programDepthStencilClear = new Program(
-            // [
-            //     new ShaderSource(depthStencilClearSource, ShaderStage.Fragment, TargetLanguage.Msl),
-            //     new ShaderSource(depthStencilClearSource, ShaderStage.Vertex, TargetLanguage.Msl)
-            // ], device);
+            var depthStencilClearSource = ReadMsl("DepthStencilClear.metal");
+            _programDepthStencilClear = new Program(
+            [
+                new ShaderSource(depthStencilClearSource, ShaderStage.Fragment, TargetLanguage.Msl),
+                new ShaderSource(depthStencilClearSource, ShaderStage.Vertex, TargetLanguage.Msl)
+            ], device);
         }
 
         private static string ReadMsl(string fileName)
@@ -129,34 +108,35 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.Finish();
         }
 
-        public void ClearDepthStencil(
+        public unsafe void ClearDepthStencil(
             Texture dst,
-            float depthValue,
+            ReadOnlySpan<float> depthValue,
             bool depthMask,
             int stencilValue,
-            int stencilMask,
-            int dstWidth,
-            int dstHeight,
-            Rectangle<int> scissor)
+            int stencilMask)
         {
-            Span<Viewport> viewports = stackalloc Viewport[1];
+            const int ClearColorBufferSize = 16;
 
-            viewports[0] = new Viewport(
-                new Rectangle<float>(0, 0, dstWidth, dstHeight),
-                ViewportSwizzle.PositiveX,
-                ViewportSwizzle.PositiveY,
-                ViewportSwizzle.PositiveZ,
-                ViewportSwizzle.PositiveW,
-                0f,
-                1f);
+            var buffer = _device.NewBuffer(ClearColorBufferSize, MTLResourceOptions.ResourceStorageModeManaged);
+            var span = new Span<float>(buffer.Contents.ToPointer(), ClearColorBufferSize);
+            depthValue.CopyTo(span);
+
+            buffer.DidModifyRange(new NSRange
+            {
+                location = 0,
+                length = ClearColorBufferSize
+            });
+
+            var handle = buffer.NativePtr;
+            var range = new BufferRange(Unsafe.As<IntPtr, BufferHandle>(ref handle), 0, ClearColorBufferSize);
+
+            _pipeline.SetUniformBuffers([new BufferAssignment(0, range)]);
 
             _pipeline.SetProgram(_programDepthStencilClear);
-            // _pipeline.SetRenderTarget(dst, (uint)dstWidth, (uint)dstHeight);
-            _pipeline.SetViewports(viewports);
-            _pipeline.SetScissors([scissor]);
+            _pipeline.SetRenderTargets([], dst);
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
             _pipeline.SetDepthTest(new DepthTestDescriptor(true, depthMask, CompareOp.Always));
-            _pipeline.SetStencilTest(CreateStencilTestDescriptor(stencilMask != 0, stencilValue, 0xFF, stencilMask));
+            // _pipeline.SetStencilTest(CreateStencilTestDescriptor(stencilMask != 0, stencilValue, 0xFF, stencilMask));
             _pipeline.Draw(4, 1, 0, 0);
             _pipeline.Finish();
         }

@@ -7,8 +7,8 @@ struct VertexOut {
 };
 
 struct FragmentOut {
-    float4 color [[color(0)]];
     float depth [[depth(any)]];
+    uint stencil [[stencil]];
 };
 
 vertex VertexOut vertexMain(ushort vid [[vertex_id]])
@@ -26,12 +26,13 @@ vertex VertexOut vertexMain(ushort vid [[vertex_id]])
     return out;
 }
 
-fragment float4 fragmentMain(VertexOut in [[stage_in]],
-                             constant float clear_color [[buffer(0)]])
+fragment FragmentOut fragmentMain(VertexOut in [[stage_in]],
+                                  constant float& clear_color [[buffer(0)]])
 {
-    Fragment out;
+    FragmentOut out;
 
     out.depth = clear_color;
+    // out.stencil = stencil_clear;
 
     return out;
 }
