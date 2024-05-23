@@ -514,10 +514,9 @@ namespace Ryujinx.Graphics.Metal
 
         public void TextureBarrier()
         {
-            // var renderCommandEncoder = GetOrCreateRenderEncoder();
+            var renderCommandEncoder = GetOrCreateRenderEncoder();
 
-            // renderCommandEncoder.MemoryBarrier(MTLBarrierScope.Textures, );
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            renderCommandEncoder.MemoryBarrier(MTLBarrierScope.Textures, MTLRenderStages.RenderStageFragment, MTLRenderStages.RenderStageFragment);
         }
 
         public void TextureBarrierTiled()
