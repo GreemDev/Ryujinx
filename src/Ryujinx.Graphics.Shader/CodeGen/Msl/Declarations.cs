@@ -219,6 +219,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                         {
                             IoVariable.Position => "float4",
                             IoVariable.PointSize => "float",
+                            IoVariable.FragmentOutputDepth => "float",
                             _ => GetVarTypeName(context, context.Definitions.GetUserDefinedType(ioDefinition.Location, isOutput: true))
                         };
                         string name = ioDefinition.IoVariable switch
@@ -226,6 +227,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                             IoVariable.Position => "position",
                             IoVariable.PointSize => "point_size",
                             IoVariable.FragmentOutputColor => $"color{ioDefinition.Location}",
+                            IoVariable.FragmentOutputDepth => "depth",
                             _ => $"{DefaultNames.OAttributePrefix}{ioDefinition.Location}"
                         };
                         string suffix = ioDefinition.IoVariable switch
@@ -234,6 +236,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                             IoVariable.PointSize => "[[point_size]]",
                             IoVariable.UserDefined => $"[[user(loc{ioDefinition.Location})]]",
                             IoVariable.FragmentOutputColor => $"[[color({ioDefinition.Location})]]",
+                            IoVariable.FragmentOutputDepth => "[[depth(any)]]",
                             _ => ""
                         };
 
