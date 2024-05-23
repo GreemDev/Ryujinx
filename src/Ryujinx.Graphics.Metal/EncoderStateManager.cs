@@ -1,7 +1,6 @@
 using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Shader;
-using SharpMetal.Foundation;
 using SharpMetal.Metal;
 using System;
 using System.Collections.Generic;
@@ -57,6 +56,7 @@ namespace Ryujinx.Graphics.Metal
                     var passAttachment = renderPassDescriptor.ColorAttachments.Object((ulong)i);
                     passAttachment.Texture = _currentState.RenderTargets[i].MTLTexture;
                     passAttachment.LoadAction = MTLLoadAction.Load;
+                    passAttachment.StoreAction = MTLStoreAction.Store;
                 }
             }
 
@@ -72,12 +72,14 @@ namespace Ryujinx.Graphics.Metal
                     case MTLPixelFormat.Depth32Float:
                         depthAttachment.Texture = _currentState.DepthStencil.MTLTexture;
                         depthAttachment.LoadAction = MTLLoadAction.Load;
+                        depthAttachment.StoreAction = MTLStoreAction.Store;
                         break;
 
                     // Stencil Only Attachment
                     case MTLPixelFormat.Stencil8:
                         stencilAttachment.Texture = _currentState.DepthStencil.MTLTexture;
                         stencilAttachment.LoadAction = MTLLoadAction.Load;
+                        stencilAttachment.StoreAction = MTLStoreAction.Store;
                         break;
 
                     // Combined Attachment
@@ -85,11 +87,13 @@ namespace Ryujinx.Graphics.Metal
                     case MTLPixelFormat.Depth32FloatStencil8:
                         depthAttachment.Texture = _currentState.DepthStencil.MTLTexture;
                         depthAttachment.LoadAction = MTLLoadAction.Load;
+                        depthAttachment.StoreAction = MTLStoreAction.Store;
 
                         var unpackedFormat = FormatTable.PackedStencilToXFormat(_currentState.DepthStencil.MTLTexture.PixelFormat);
                         var stencilView = _currentState.DepthStencil.MTLTexture.NewTextureView(unpackedFormat);
                         stencilAttachment.Texture = stencilView;
                         stencilAttachment.LoadAction = MTLLoadAction.Load;
+                        stencilAttachment.StoreAction = MTLStoreAction.Store;
                         break;
                     default:
                         Logger.Error?.PrintMsg(LogClass.Gpu, $"Unsupported Depth/Stencil Format: {_currentState.DepthStencil.MTLTexture.PixelFormat}!");
@@ -385,8 +389,8 @@ namespace Ryujinx.Graphics.Metal
 
                 _currentState.Scissors[i] = new MTLScissorRect
                 {
-                    height = Math.Clamp((ulong)region.Height, 0, (ulong)_currentState.Viewports[i].height),
-                    width = Math.Clamp((ulong)region.Width, 0, (ulong)_currentState.Viewports[i].width),
+                    height = (ulong)region.Height,
+                    width = (ulong)region.Width,
                     x = (ulong)region.X,
                     y = (ulong)region.Y
                 };
