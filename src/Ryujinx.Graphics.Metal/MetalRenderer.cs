@@ -215,17 +215,19 @@ namespace Ryujinx.Graphics.Metal
         {
             var blitEncoder = _pipeline.GetOrCreateBlitEncoder();
 
-            MTLBuffer src = _device.NewBuffer((ulong)data.Length, MTLResourceOptions.ResourceStorageModeManaged);
-            var span = new Span<byte>(src.Contents.ToPointer(), data.Length);
-            data.CopyTo(span);
-            src.DidModifyRange(new NSRange
+            using MTLBuffer src = _device.NewBuffer((ulong)data.Length, MTLResourceOptions.ResourceStorageModeManaged);
             {
-                location = 0,
-                length = (ulong)data.Length
-            });
+                var span = new Span<byte>(src.Contents.ToPointer(), data.Length);
+                data.CopyTo(span);
+                src.DidModifyRange(new NSRange
+                {
+                    location = 0,
+                    length = (ulong)data.Length
+                });
 
-            MTLBuffer dst = new(Unsafe.As<BufferHandle, IntPtr>(ref buffer));
-            blitEncoder.CopyFromBuffer(src, 0, dst, (ulong)offset, (ulong)data.Length);
+                MTLBuffer dst = new(Unsafe.As<BufferHandle, IntPtr>(ref buffer));
+                blitEncoder.CopyFromBuffer(src, 0, dst, (ulong)offset, (ulong)data.Length);
+            }
         }
 
         public void UpdateCounters()

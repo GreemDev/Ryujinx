@@ -329,6 +329,7 @@ namespace Ryujinx.Graphics.Metal
         public void Dispose()
         {
             MTLTexture.SetPurgeableState(MTLPurgeableState.Volatile);
+            MTLTexture.Dispose();
         }
     }
 }

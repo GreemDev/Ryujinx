@@ -63,7 +63,9 @@ namespace Ryujinx.Graphics.Metal
 
         public void Dispose()
         {
-            return;
+            VertexFunction.Dispose();
+            FragmentFunction.Dispose();
+            ComputeFunction.Dispose();
         }
     }
 }
