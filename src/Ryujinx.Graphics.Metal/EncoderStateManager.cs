@@ -16,6 +16,7 @@ namespace Ryujinx.Graphics.Metal
         private readonly Pipeline _pipeline;
 
         private readonly RenderPipelineCache RenderPipelineCache;
+        private readonly DepthStencilCache DepthStencilCache;
 
         private EncoderState _currentState = new();
         private EncoderState _backState = new();
@@ -32,6 +33,7 @@ namespace Ryujinx.Graphics.Metal
             _device = device;
             _pipeline = pipeline;
             RenderPipelineCache = new(device);
+            DepthStencilCache = new(device);
         }
 
         public void SwapStates()
@@ -328,7 +330,7 @@ namespace Ryujinx.Graphics.Metal
                 descriptor.FrontFaceStencil = _currentState.FrontFaceStencil;
             }
 
-            _currentState.DepthStencilState = _device.NewDepthStencilState(descriptor);
+            _currentState.DepthStencilState = DepthStencilCache.GetOrCreate(descriptor);
 
             // Mark dirty
             _currentState.Dirty.DepthStencil = true;
@@ -352,7 +354,7 @@ namespace Ryujinx.Graphics.Metal
                 descriptor.FrontFaceStencil = _currentState.FrontFaceStencil;
             }
 
-            _currentState.DepthStencilState = _device.NewDepthStencilState(descriptor);
+            _currentState.DepthStencilState = DepthStencilCache.GetOrCreate(descriptor);
 
             // Mark dirty
             _currentState.Dirty.DepthStencil = true;
