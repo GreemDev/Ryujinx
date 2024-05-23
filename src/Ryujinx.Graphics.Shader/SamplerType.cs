@@ -174,7 +174,7 @@ namespace Ryujinx.Graphics.Shader
                 typeName = (type & SamplerType.Mask) switch
                 {
                     SamplerType.Texture1D => "texture1d",
-                    SamplerType.TextureBuffer => "texturebuffer",
+                    SamplerType.TextureBuffer => "texture_buffer",
                     SamplerType.Texture2D => "texture2d",
                     SamplerType.Texture3D => "texture3d",
                     SamplerType.TextureCube => "texturecube",
