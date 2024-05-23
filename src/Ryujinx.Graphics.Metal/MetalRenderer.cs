@@ -79,11 +79,7 @@ namespace Ryujinx.Graphics.Metal
         public BufferHandle CreateBuffer(int size, BufferAccess access)
         {
             var buffer = _device.NewBuffer((ulong)size, MTLResourceOptions.ResourceStorageModeShared);
-
-            if (access == BufferAccess.FlushPersistent)
-            {
-                buffer.SetPurgeableState(MTLPurgeableState.NonVolatile);
-            }
+            buffer.SetPurgeableState(MTLPurgeableState.NonVolatile);
 
             var bufferPtr = buffer.NativePtr;
             return Unsafe.As<IntPtr, BufferHandle>(ref bufferPtr);
@@ -140,6 +136,7 @@ namespace Ryujinx.Graphics.Metal
             return new Capabilities(
                 api: TargetApi.Metal,
                 vendorName: HardwareInfoTools.GetVendor(),
+                SystemMemoryType.UnifiedMemory,
                 hasFrontFacingBug: false,
                 hasVectorIndexingBug: true,
                 needsFragmentOutputSpecialization: true,
