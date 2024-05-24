@@ -6,8 +6,7 @@ struct VertexOut {
     float4 position [[position]];
 };
 
-vertex VertexOut vertexMain(ushort vid [[vertex_id]])
-{
+vertex VertexOut vertexMain(ushort vid [[vertex_id]]) {
     int low = vid & 1;
     int high = vid >> 1;
 
@@ -21,8 +20,11 @@ vertex VertexOut vertexMain(ushort vid [[vertex_id]])
     return out;
 }
 
-fragment float4 fragmentMain(VertexOut in [[stage_in]],
-                             constant float4& clear_color [[buffer(0)]])
-{
-    return clear_color;
+struct FragmentOut {
+    float4 color [[color(COLOR_ATTACHMENT_INDEX)]];
+};
+
+fragment FragmentOut fragmentMain(VertexOut in [[stage_in]],
+                                  constant float4& clear_color [[buffer(0)]]) {
+    return {clear_color};
 }

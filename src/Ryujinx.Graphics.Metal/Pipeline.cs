@@ -216,7 +216,7 @@ namespace Ryujinx.Graphics.Metal
 
             Texture target = _encoderStateManager.RenderTargets[index];
 
-            _helperShader.ClearColor(target, colors);
+            _helperShader.ClearColor(target, index, colors);
         }
 
         public void ClearRenderTargetDepthStencil(int layer, int layerCount, float depthValue, bool depthMask, int stencilValue, int stencilMask)

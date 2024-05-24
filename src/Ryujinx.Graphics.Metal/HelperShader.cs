@@ -5,6 +5,7 @@ using Ryujinx.Graphics.Shader.Translation;
 using SharpMetal.Foundation;
 using SharpMetal.Metal;
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
@@ -18,7 +19,7 @@ namespace Ryujinx.Graphics.Metal
         private MTLDevice _device;
 
         private readonly IProgram _programColorBlit;
-        private readonly IProgram _programColorClear;
+        private readonly List<IProgram> _programsColorClear = new();
         private readonly IProgram _programDepthStencilClear;
 
         public HelperShader(MTLDevice device, Pipeline pipeline)
@@ -34,11 +35,15 @@ namespace Ryujinx.Graphics.Metal
             ], device);
 
             var colorClearSource = ReadMsl("ColorClear.metal");
-            _programColorClear = new Program(
-            [
-                new ShaderSource(colorClearSource, ShaderStage.Fragment, TargetLanguage.Msl),
-                new ShaderSource(colorClearSource, ShaderStage.Vertex, TargetLanguage.Msl)
-            ], device);
+            for (int i = 0; i < Constants.MaxColorAttachments; i++)
+            {
+                var crntSource = colorClearSource.Replace("COLOR_ATTACHMENT_INDEX", i.ToString());
+                _programsColorClear.Add(new Program(
+                [
+                    new ShaderSource(crntSource, ShaderStage.Fragment, TargetLanguage.Msl),
+                    new ShaderSource(crntSource, ShaderStage.Vertex, TargetLanguage.Msl)
+                ], device));
+            }
 
             var depthStencilClearSource = ReadMsl("DepthStencilClear.metal");
             _programDepthStencilClear = new Program(
@@ -79,6 +84,7 @@ namespace Ryujinx.Graphics.Metal
 
         public unsafe void ClearColor(
             Texture dst,
+            int index,
             ReadOnlySpan<float> clearColor)
         {
             const int ClearColorBufferSize = 16;
@@ -101,7 +107,7 @@ namespace Ryujinx.Graphics.Metal
 
             _pipeline.SetUniformBuffers([new BufferAssignment(0, range)]);
 
-            _pipeline.SetProgram(_programColorClear);
+            _pipeline.SetProgram(_programsColorClear[index]);
             _pipeline.SetRenderTargets([dst], null);
             // _pipeline.SetRenderTargetColorMasks([componentMask]);
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
@@ -175,7 +181,10 @@ namespace Ryujinx.Graphics.Metal
         public void Dispose()
         {
             _programColorBlit.Dispose();
-            _programColorClear.Dispose();
+            foreach (var programColorClear in _programsColorClear)
+            {
+                programColorClear.Dispose();
+            }
             _programDepthStencilClear.Dispose();
             _pipeline.Dispose();
         }
