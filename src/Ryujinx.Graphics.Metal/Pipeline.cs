@@ -206,6 +206,9 @@ namespace Ryujinx.Graphics.Metal
                 // TODO: Should there be a barrier on render targets?
                 var scope = MTLBarrierScope.Buffers | MTLBarrierScope.Textures;
                 computeCommandEncoder.MemoryBarrier(scope);
+            } else
+            {
+                Logger.Warning?.Print(LogClass.Gpu, "Barrier called outside of a render or compute pass");
             }
         }
 
