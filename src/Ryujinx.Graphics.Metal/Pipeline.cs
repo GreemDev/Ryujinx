@@ -191,7 +191,22 @@ namespace Ryujinx.Graphics.Metal
 
         public void Barrier()
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+
+            if (_currentEncoderType == EncoderType.Render)
+            {
+                var renderCommandEncoder = GetOrCreateRenderEncoder();
+
+                var scope = MTLBarrierScope.Buffers | MTLBarrierScope.Textures | MTLBarrierScope.RenderTargets;
+                MTLRenderStages stages = MTLRenderStages.RenderStageVertex | MTLRenderStages.RenderStageFragment;
+                renderCommandEncoder.MemoryBarrier(scope, stages, stages);
+            } else if (_currentEncoderType == EncoderType.Compute)
+            {
+                var computeCommandEncoder = GetOrCreateComputeEncoder();
+
+                // TODO: Should there be a barrier on render targets?
+                var scope = MTLBarrierScope.Buffers | MTLBarrierScope.Textures;
+                computeCommandEncoder.MemoryBarrier(scope);
+            }
         }
 
         public void ClearBuffer(BufferHandle destination, int offset, int size, uint value)
