@@ -83,7 +83,6 @@ namespace Ryujinx.Graphics.Metal
         }
 
         public unsafe void ClearColor(
-            Texture dst,
             int index,
             ReadOnlySpan<float> clearColor)
         {
@@ -108,7 +107,6 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SetUniformBuffers([new BufferAssignment(0, range)]);
 
             _pipeline.SetProgram(_programsColorClear[index]);
-            _pipeline.SetRenderTargets([dst], null);
             // _pipeline.SetRenderTargetColorMasks([componentMask]);
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
             _pipeline.Draw(4, 1, 0, 0);
@@ -118,7 +116,6 @@ namespace Ryujinx.Graphics.Metal
         }
 
         public unsafe void ClearDepthStencil(
-            Texture dst,
             ReadOnlySpan<float> depthValue,
             bool depthMask,
             int stencilValue,
