@@ -445,26 +445,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetScissors(ReadOnlySpan<Rectangle<int>> regions)
         {
-            // TODO: Test max allowed scissor rects on device
-            var mtlScissorRects = new MTLScissorRect[regions.Length];
-
-            for (int i = 0; i < regions.Length; i++)
-            {
-                var region = regions[i];
-                mtlScissorRects[i] = new MTLScissorRect
-                {
-                    height = (ulong)region.Height,
-                    width = (ulong)region.Width,
-                    x = (ulong)region.X,
-                    y = (ulong)region.Y
-                };
-            }
-
-            fixed (MTLScissorRect* pMtlScissorRects = mtlScissorRects)
-            {
-                var renderCommandEncoder = GetOrCreateRenderEncoder();
-                renderCommandEncoder.SetScissorRects((IntPtr)pMtlScissorRects, (ulong)regions.Length);
-            }
+            _encoderStateManager.UpdateScissors(regions);
         }
 
         public void SetStencilTest(StencilTestDescriptor stencilTest)
@@ -532,28 +513,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetViewports(ReadOnlySpan<Viewport> viewports)
         {
-            // TODO: Test max allowed viewports on device
-            var mtlViewports = new MTLViewport[viewports.Length];
-
-            for (int i = 0; i < viewports.Length; i++)
-            {
-                var viewport = viewports[i];
-                mtlViewports[i] = new MTLViewport
-                {
-                    originX = viewport.Region.X,
-                    originY = viewport.Region.Y,
-                    width = viewport.Region.Width,
-                    height = viewport.Region.Height,
-                    znear = viewport.DepthNear,
-                    zfar = viewport.DepthFar
-                };
-            }
-
-            fixed (MTLViewport* pMtlViewports = mtlViewports)
-            {
-                var renderCommandEncoder = GetOrCreateRenderEncoder();
-                renderCommandEncoder.SetViewports((IntPtr)pMtlViewports, (ulong)viewports.Length);
-            }
+            _encoderStateManager.UpdateViewports(viewports);
         }
 
         public void TextureBarrier()
