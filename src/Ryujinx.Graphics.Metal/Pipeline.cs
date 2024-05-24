@@ -19,26 +19,6 @@ namespace Ryujinx.Graphics.Metal
     }
 
     [SupportedOSPlatform("macos")]
-    struct ColorClear
-    {
-        public int Layer;
-        public int LayerCount;
-        public uint ComponentMask;
-        public ColorF Color;
-    }
-
-    [SupportedOSPlatform("macos")]
-    struct DepthStencilClear
-    {
-        public int Layer;
-        public int LayerCount;
-        public float DepthValue;
-        public bool DepthMask;
-        public int StencilValue;
-        public int StencilMask;
-    }
-
-    [SupportedOSPlatform("macos")]
     class Pipeline : IPipeline, IDisposable
     {
         private readonly MTLDevice _device;
@@ -55,10 +35,6 @@ namespace Ryujinx.Graphics.Metal
         public EncoderType CurrentEncoderType => _currentEncoderType;
 
         private EncoderStateManager _encoderStateManager;
-
-        // Deferred clears
-        private ColorClear?[] _colorClears = new ColorClear?[Constants.MaxColorAttachments];
-        private DepthStencilClear? _depthStencilClear;
 
         public Pipeline(MTLDevice device, MTLCommandQueue commandQueue)
         {
@@ -176,38 +152,6 @@ namespace Ryujinx.Graphics.Metal
             return computeCommandEncoder;
         }
 
-        public void ExecuteDeferredColorClears()
-        {
-            for (int i = 0; i < Constants.MaxColorAttachments; i++)
-            {
-                if (_colorClears[i] != null)
-                {
-                    ColorF color = _colorClears[i].Value.Color;
-                    float[] colors = [color.Red, color.Green, color.Blue, color.Alpha];
-
-                    Texture target = _encoderStateManager.RenderTargets[i];
-
-                    _encoderStateManager.SwapStates();
-
-                    _helperShader.ClearColor(target, colors);
-                }
-                _colorClears[i] = null;
-            }
-        }
-
-        public void ExecuteDeferredDepthStencilClear()
-        {
-            if (_depthStencilClear != null)
-            {
-                Texture target = _encoderStateManager.DepthStencil;
-
-                _encoderStateManager.SwapStates();
-
-                _helperShader.ClearDepthStencil(target, [_depthStencilClear.Value.DepthValue], _depthStencilClear.Value.DepthMask, _depthStencilClear.Value.StencilValue, _depthStencilClear.Value.StencilMask);
-            }
-            _depthStencilClear = null;
-        }
-
         public void Present(CAMetalDrawable drawable, ITexture texture)
         {
             if (texture is not Texture tex)
@@ -259,30 +203,22 @@ namespace Ryujinx.Graphics.Metal
 
         public void ClearRenderTargetColor(int index, int layer, int layerCount, uint componentMask, ColorF color)
         {
-            _colorClears[index] = new ColorClear
-            {
-                Layer = layer,
-                LayerCount = layerCount,
-                ComponentMask = componentMask,
-                Color = color
-            };
+            float[] colors = [color.Red, color.Green, color.Blue, color.Alpha];
 
-            ExecuteDeferredColorClears();
+            Texture target = _encoderStateManager.RenderTargets[index];
+
+            _encoderStateManager.SwapStates();
+
+            _helperShader.ClearColor(target, colors);
         }
 
         public void ClearRenderTargetDepthStencil(int layer, int layerCount, float depthValue, bool depthMask, int stencilValue, int stencilMask)
         {
-            _depthStencilClear = new DepthStencilClear
-            {
-                Layer = layer,
-                LayerCount = layerCount,
-                DepthValue = depthValue,
-                DepthMask = depthMask,
-                StencilValue = stencilValue,
-                StencilMask = stencilMask
-            };
+            Texture target = _encoderStateManager.DepthStencil;
 
-            ExecuteDeferredDepthStencilClear();
+            _encoderStateManager.SwapStates();
+
+            _helperShader.ClearDepthStencil(target, [depthValue], depthMask, stencilValue, stencilMask);
         }
 
         public void CommandBufferBarrier()

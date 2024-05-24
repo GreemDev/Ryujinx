@@ -134,6 +134,7 @@ namespace Ryujinx.Graphics.Metal
                 SetDepthStencilState(renderCommandEncoder);
             }
 
+            // Clear the dirty flags
             _currentState.Dirty.Clear();
         }
 
