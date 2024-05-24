@@ -17,8 +17,8 @@ namespace Ryujinx.Graphics.Metal
         private readonly RenderPipelineCache _renderPipelineCache;
         private readonly DepthStencilCache _depthStencilCache;
 
-        private EncoderState _currentState = new();
-        private EncoderState _backState = new();
+        public EncoderState _currentState = new();
+        public List<EncoderState> _backStates = new();
 
         public readonly MTLBuffer IndexBuffer => _currentState.IndexBuffer;
         public readonly MTLIndexType IndexType => _currentState.IndexType;
@@ -34,13 +34,20 @@ namespace Ryujinx.Graphics.Metal
             _depthStencilCache = new(device);
         }
 
-        public void SwapStates()
+        public void SaveState()
         {
-            (_currentState, _backState) = (_backState, _currentState);
+            _backStates.Add(_currentState);
+        }
 
-            if (_pipeline.CurrentEncoderType == EncoderType.Render)
+        public void RestoreState()
+        {
+            if (_backStates.Count > 0)
             {
-                _pipeline.EndCurrentPass();
+                _currentState = _backStates[_backStates.Count - 1];
+                _backStates.RemoveAt(_backStates.Count - 1);
+            } else
+            {
+                Logger.Error?.Print(LogClass.Gpu, "No state to restore");
             }
         }
 

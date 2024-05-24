@@ -64,12 +64,17 @@ namespace Ryujinx.Graphics.Metal
                 MipFilter = MTLSamplerMipFilter.NotMipmapped
             });
 
+            // Save current state
+            _pipeline.SaveState();
+
             _pipeline.SetProgram(_programColorBlit);
             _pipeline.SetRenderTargets([destination], null);
             _pipeline.SetTextureAndSampler(ShaderStage.Fragment, 0, source, new Sampler(sampler));
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.Triangles);
             _pipeline.Draw(6, 1, 0, 0);
-            _pipeline.Finish();
+
+            // Restore previous state
+            _pipeline.RestoreState();
         }
 
         public unsafe void ClearColor(
@@ -91,6 +96,9 @@ namespace Ryujinx.Graphics.Metal
             var handle = buffer.NativePtr;
             var range = new BufferRange(Unsafe.As<IntPtr, BufferHandle>(ref handle), 0, ClearColorBufferSize);
 
+            // Save current state
+            _pipeline.SaveState();
+
             _pipeline.SetUniformBuffers([new BufferAssignment(0, range)]);
 
             _pipeline.SetProgram(_programColorClear);
@@ -98,7 +106,9 @@ namespace Ryujinx.Graphics.Metal
             // _pipeline.SetRenderTargetColorMasks([componentMask]);
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
             _pipeline.Draw(4, 1, 0, 0);
-            _pipeline.Finish();
+
+            // Restore previous state
+            _pipeline.RestoreState();
         }
 
         public unsafe void ClearDepthStencil(
@@ -123,15 +133,19 @@ namespace Ryujinx.Graphics.Metal
             var handle = buffer.NativePtr;
             var range = new BufferRange(Unsafe.As<IntPtr, BufferHandle>(ref handle), 0, ClearColorBufferSize);
 
+            // Save current state
+            _pipeline.SaveState();
+
             _pipeline.SetUniformBuffers([new BufferAssignment(0, range)]);
 
             _pipeline.SetProgram(_programDepthStencilClear);
-            _pipeline.SetRenderTargets([], dst);
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
             _pipeline.SetDepthTest(new DepthTestDescriptor(true, depthMask, CompareOp.Always));
             // _pipeline.SetStencilTest(CreateStencilTestDescriptor(stencilMask != 0, stencilValue, 0xFF, stencilMask));
             _pipeline.Draw(4, 1, 0, 0);
-            _pipeline.Finish();
+
+            // Restore previous state
+            _pipeline.RestoreState();
         }
 
         private static StencilTestDescriptor CreateStencilTestDescriptor(

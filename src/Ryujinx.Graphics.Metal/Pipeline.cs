@@ -46,6 +46,16 @@ namespace Ryujinx.Graphics.Metal
             _encoderStateManager = new EncoderStateManager(_device, this);
         }
 
+        public void SaveState()
+        {
+            _encoderStateManager.SaveState();
+        }
+
+        public void RestoreState()
+        {
+            _encoderStateManager.RestoreState();
+        }
+
         public MTLRenderCommandEncoder GetOrCreateRenderEncoder()
         {
             MTLRenderCommandEncoder renderCommandEncoder;
@@ -161,7 +171,7 @@ namespace Ryujinx.Graphics.Metal
 
             EndCurrentPass();
 
-            _encoderStateManager.SwapStates();
+            SaveState();
 
             // TODO: Clean this up
             var textureInfo = new TextureCreateInfo((int)drawable.Texture.Width, (int)drawable.Texture.Height, (int)drawable.Texture.Depth, (int)drawable.Texture.MipmapLevelCount, (int)drawable.Texture.SampleCount, 0, 0, 0, Format.B8G8R8A8Unorm, 0, Target.Texture2D, SwizzleComponent.Red, SwizzleComponent.Green, SwizzleComponent.Blue, SwizzleComponent.Alpha);
@@ -169,15 +179,14 @@ namespace Ryujinx.Graphics.Metal
 
             _helperShader.BlitColor(tex, dest);
 
+            EndCurrentPass();
+
             _commandBuffer.PresentDrawable(drawable);
             _commandBuffer.Commit();
 
             _commandBuffer = _commandQueue.CommandBuffer();
-        }
 
-        public void Finish()
-        {
-            _encoderStateManager.SwapStates();
+            RestoreState();
         }
 
         public void Barrier()
@@ -207,16 +216,12 @@ namespace Ryujinx.Graphics.Metal
 
             Texture target = _encoderStateManager.RenderTargets[index];
 
-            _encoderStateManager.SwapStates();
-
             _helperShader.ClearColor(target, colors);
         }
 
         public void ClearRenderTargetDepthStencil(int layer, int layerCount, float depthValue, bool depthMask, int stencilValue, int stencilMask)
         {
             Texture target = _encoderStateManager.DepthStencil;
-
-            _encoderStateManager.SwapStates();
 
             _helperShader.ClearDepthStencil(target, [depthValue], depthMask, stencilValue, stencilMask);
         }
