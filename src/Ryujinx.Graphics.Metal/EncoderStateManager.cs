@@ -17,8 +17,8 @@ namespace Ryujinx.Graphics.Metal
         private readonly RenderPipelineCache _renderPipelineCache;
         private readonly DepthStencilCache _depthStencilCache;
 
-        public EncoderState _currentState = new();
-        public List<EncoderState> _backStates = new();
+        private EncoderState _currentState = new();
+        private List<EncoderState> _backStates = new();
 
         public readonly MTLBuffer IndexBuffer => _currentState.IndexBuffer;
         public readonly MTLIndexType IndexType => _currentState.IndexType;
