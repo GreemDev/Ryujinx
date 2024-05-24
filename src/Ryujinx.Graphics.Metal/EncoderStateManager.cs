@@ -45,6 +45,17 @@ namespace Ryujinx.Graphics.Metal
             {
                 _currentState = _backStates[_backStates.Count - 1];
                 _backStates.RemoveAt(_backStates.Count - 1);
+
+                // Set all the inline state, since it might have changed
+                var renderCommandEncoder = _pipeline.GetOrCreateRenderEncoder();
+                SetDepthClamp(renderCommandEncoder);
+                SetScissors(renderCommandEncoder);
+                SetViewports(renderCommandEncoder);
+                SetVertexBuffers(renderCommandEncoder, _currentState.VertexBuffers);
+                SetBuffers(renderCommandEncoder, _currentState.UniformBuffers, true);
+                SetBuffers(renderCommandEncoder, _currentState.StorageBuffers, true);
+                SetCullMode(renderCommandEncoder);
+                SetFrontFace(renderCommandEncoder);
             } else
             {
                 Logger.Error?.Print(LogClass.Gpu, "No state to restore");
