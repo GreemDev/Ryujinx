@@ -10,7 +10,7 @@ using System.Runtime.Versioning;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    struct EncoderStateManager
+    struct EncoderStateManager : IDisposable
     {
         private readonly Pipeline _pipeline;
 
@@ -32,6 +32,12 @@ namespace Ryujinx.Graphics.Metal
             _pipeline = pipeline;
             _renderPipelineCache = new(device);
             _depthStencilCache = new(device);
+        }
+
+        public void Dispose()
+        {
+            _renderPipelineCache.Dispose();
+            _depthStencilCache.Dispose();
         }
 
         public void SaveState()

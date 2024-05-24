@@ -1,16 +1,25 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    public abstract class StateCache<T, TDescriptor, THash>
+    public abstract class StateCache<T, TDescriptor, THash> : IDisposable where T : IDisposable
     {
         private readonly Dictionary<THash, T> _cache = new();
 
         protected abstract THash GetHash(TDescriptor descriptor);
 
         protected abstract T CreateValue(TDescriptor descriptor);
+
+        public void Dispose()
+        {
+            foreach (T value in _cache.Values)
+            {
+                value.Dispose();
+            }
+        }
 
         public T GetOrCreate(TDescriptor descriptor)
         {
