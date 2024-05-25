@@ -18,7 +18,7 @@ namespace Ryujinx.Graphics.Metal
         private readonly DepthStencilCache _depthStencilCache;
 
         private EncoderState _currentState = new();
-        private List<EncoderState> _backStates = new();
+        private readonly Stack<EncoderState> _backStates = [];
 
         public readonly MTLBuffer IndexBuffer => _currentState.IndexBuffer;
         public readonly MTLIndexType IndexType => _currentState.IndexType;
@@ -44,17 +44,16 @@ namespace Ryujinx.Graphics.Metal
             _depthStencilCache.Dispose();
         }
 
-        public void SaveState()
+        public readonly void SaveState()
         {
-            _backStates.Add(_currentState);
+            _backStates.Push(_currentState);
         }
 
         public void RestoreState()
         {
             if (_backStates.Count > 0)
             {
-                _currentState = _backStates[_backStates.Count - 1];
-                _backStates.RemoveAt(_backStates.Count - 1);
+                _currentState = _backStates.Pop();
 
                 // Set all the inline state, since it might have changed
                 var renderCommandEncoder = _pipeline.GetOrCreateRenderEncoder();
