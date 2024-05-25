@@ -227,29 +227,38 @@ namespace Ryujinx.Graphics.Metal
             var vertexDescriptor = BuildVertexDescriptor(_currentState.VertexBuffers, _currentState.VertexAttribs);
             renderPipelineDescriptor.VertexDescriptor = vertexDescriptor;
 
-            if (_currentState.VertexFunction != null)
+            try
             {
-                renderPipelineDescriptor.VertexFunction = _currentState.VertexFunction.Value;
-            }
+                if (_currentState.VertexFunction != null)
+                {
+                    renderPipelineDescriptor.VertexFunction = _currentState.VertexFunction.Value;
+                }
+                else
+                {
+                    return;
+                }
 
-            if (_currentState.FragmentFunction != null)
+                if (_currentState.FragmentFunction != null)
+                {
+                    renderPipelineDescriptor.FragmentFunction = _currentState.FragmentFunction.Value;
+                }
+
+                var pipelineState = _renderPipelineCache.GetOrCreate(renderPipelineDescriptor);
+
+                renderCommandEncoder.SetRenderPipelineState(pipelineState);
+
+                renderCommandEncoder.SetBlendColor(
+                    _currentState.BlendColor.Red,
+                    _currentState.BlendColor.Green,
+                    _currentState.BlendColor.Blue,
+                    _currentState.BlendColor.Alpha);
+            }
+            finally
             {
-                renderPipelineDescriptor.FragmentFunction = _currentState.FragmentFunction.Value;
+                // Cleanup
+                renderPipelineDescriptor.Dispose();
+                vertexDescriptor.Dispose();
             }
-
-            var pipelineState = _renderPipelineCache.GetOrCreate(renderPipelineDescriptor);
-
-            renderCommandEncoder.SetRenderPipelineState(pipelineState);
-
-            renderCommandEncoder.SetBlendColor(
-                _currentState.BlendColor.Red,
-                _currentState.BlendColor.Green,
-                _currentState.BlendColor.Blue,
-                _currentState.BlendColor.Alpha);
-
-            // Cleanup
-            renderPipelineDescriptor.Dispose();
-            vertexDescriptor.Dispose();
         }
 
         public void UpdateIndexBuffer(BufferRange buffer, IndexType type)
