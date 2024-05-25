@@ -196,7 +196,35 @@ namespace Ryujinx.Graphics.Metal
 
         public PinnedSpan<byte> GetData(int layer, int level)
         {
-            throw new NotImplementedException();
+            var blitCommandEncoder = _pipeline.GetOrCreateBlitEncoder();
+
+            ulong bytesPerRow = (ulong)Info.GetMipStride(level);
+            ulong length = bytesPerRow * (ulong)Info.Height;
+            ulong bytesPerImage = 0;
+            if (MTLTexture.TextureType == MTLTextureType.Type3D)
+            {
+                bytesPerImage = length;
+            }
+
+            unsafe
+            {
+                var mtlBuffer = _device.NewBuffer(length, MTLResourceOptions.ResourceStorageModeShared);
+
+                blitCommandEncoder.CopyFromTexture(
+                    MTLTexture,
+                    (ulong)layer,
+                    (ulong)level,
+                    new MTLOrigin(),
+                    new MTLSize { width = MTLTexture.Width, height = MTLTexture.Height, depth = MTLTexture.Depth },
+                    mtlBuffer,
+                    0,
+                    bytesPerRow,
+                    bytesPerImage
+                );
+
+                // TODO: Dispose the buffer
+                return new PinnedSpan<byte>(mtlBuffer.Contents.ToPointer(), (int)length);
+            }
         }
 
         // TODO: Handle array formats
