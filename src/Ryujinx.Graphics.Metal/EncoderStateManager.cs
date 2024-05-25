@@ -66,7 +66,8 @@ namespace Ryujinx.Graphics.Metal
                 SetBuffers(renderCommandEncoder, _currentState.StorageBuffers, true);
                 SetCullMode(renderCommandEncoder);
                 SetFrontFace(renderCommandEncoder);
-            } else
+            }
+            else
             {
                 Logger.Error?.Print(LogClass.Gpu, "No state to restore");
             }
@@ -302,7 +303,8 @@ namespace Ryujinx.Graphics.Metal
             if (depthStencil is Texture depthTexture)
             {
                 _currentState.DepthStencil = depthTexture;
-            } else if (depthStencil == null)
+            }
+            else if (depthStencil == null)
             {
                 _currentState.DepthStencil = null;
             }

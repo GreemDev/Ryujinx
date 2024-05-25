@@ -202,14 +202,16 @@ namespace Ryujinx.Graphics.Metal
                 var scope = MTLBarrierScope.Buffers | MTLBarrierScope.Textures | MTLBarrierScope.RenderTargets;
                 MTLRenderStages stages = MTLRenderStages.RenderStageVertex | MTLRenderStages.RenderStageFragment;
                 renderCommandEncoder.MemoryBarrier(scope, stages, stages);
-            } else if (_currentEncoderType == EncoderType.Compute)
+            }
+            else if (_currentEncoderType == EncoderType.Compute)
             {
                 var computeCommandEncoder = GetOrCreateComputeEncoder();
 
                 // TODO: Should there be a barrier on render targets?
                 var scope = MTLBarrierScope.Buffers | MTLBarrierScope.Textures;
                 computeCommandEncoder.MemoryBarrier(scope);
-            } else
+            }
+            else
             {
                 Logger.Warning?.Print(LogClass.Gpu, "Barrier called outside of a render or compute pass");
             }
