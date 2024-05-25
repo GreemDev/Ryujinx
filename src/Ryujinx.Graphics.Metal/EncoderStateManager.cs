@@ -416,11 +416,6 @@ namespace Ryujinx.Graphics.Metal
         {
             int maxScissors = Math.Min(regions.Length, _currentState.Viewports.Length);
 
-            if (maxScissors == 0)
-            {
-                return;
-            }
-
             _currentState.Scissors = new MTLScissorRect[maxScissors];
 
             for (int i = 0; i < maxScissors; i++)

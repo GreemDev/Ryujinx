@@ -74,8 +74,8 @@ namespace Ryujinx.Graphics.Metal
 
             _pipeline.SetProgram(_programColorBlit);
             // Viewport and scissor needs to be set before render pass begin so as not to bind the old ones
-            //_pipeline.SetViewports([]);
-            //_pipeline.SetScissors([]);
+            _pipeline.SetViewports([]);
+            _pipeline.SetScissors([]);
             _pipeline.SetRenderTargets([destination], null);
             _pipeline.SetTextureAndSampler(ShaderStage.Fragment, 0, source, new Sampler(sampler));
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.Triangles);
