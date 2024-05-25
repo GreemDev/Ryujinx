@@ -73,6 +73,8 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SaveState();
 
             _pipeline.SetProgram(_programColorBlit);
+            _pipeline.SetFaceCulling(false, Face.Front);
+            _pipeline.SetDepthTest(new DepthTestDescriptor(false, false, CompareOp.Always));
             // Viewport and scissor needs to be set before render pass begin so as not to bind the old ones
             _pipeline.SetViewports([]);
             _pipeline.SetScissors([]);
@@ -110,6 +112,8 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SetUniformBuffers([new BufferAssignment(0, range)]);
 
             _pipeline.SetProgram(_programsColorClear[index]);
+            _pipeline.SetFaceCulling(false, Face.Front);
+            _pipeline.SetDepthTest(new DepthTestDescriptor(false, false, CompareOp.Always));
             // _pipeline.SetRenderTargetColorMasks([componentMask]);
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
             _pipeline.Draw(4, 1, 0, 0);
@@ -145,6 +149,8 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SetUniformBuffers([new BufferAssignment(0, range)]);
 
             _pipeline.SetProgram(_programDepthStencilClear);
+            _pipeline.SetFaceCulling(false, Face.Front);
+            _pipeline.SetDepthTest(new DepthTestDescriptor(false, false, CompareOp.Always));
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
             _pipeline.SetDepthTest(new DepthTestDescriptor(true, depthMask, CompareOp.Always));
             // _pipeline.SetStencilTest(CreateStencilTestDescriptor(stencilMask != 0, stencilValue, 0xFF, stencilMask));
