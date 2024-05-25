@@ -223,7 +223,7 @@ namespace Ryujinx.Graphics.Metal
                 );
 
                 // TODO: Dispose the buffer
-                return new PinnedSpan<byte>(mtlBuffer.Contents.ToPointer(), (int)length);
+                return new PinnedSpan<byte>(mtlBuffer.Contents.ToPointer(), (int)length, () => mtlBuffer.Dispose());
             }
         }
 
