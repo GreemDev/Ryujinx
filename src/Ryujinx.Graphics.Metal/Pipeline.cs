@@ -187,6 +187,9 @@ namespace Ryujinx.Graphics.Metal
             _commandBuffer = _commandQueue.CommandBuffer();
 
             RestoreState();
+
+            // Cleanup
+            dest.Dispose();
         }
 
         public void Barrier()
