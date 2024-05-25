@@ -298,6 +298,9 @@ namespace Ryujinx.Graphics.Metal
             if (depthStencil is Texture depthTexture)
             {
                 _currentState.DepthStencil = depthTexture;
+            } else if (depthStencil == null)
+            {
+                _currentState.DepthStencil = null;
             }
 
             // Requires recreating pipeline
