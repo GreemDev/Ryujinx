@@ -222,7 +222,6 @@ namespace Ryujinx.Graphics.Metal
                     bytesPerImage
                 );
 
-                // TODO: Dispose the buffer
                 return new PinnedSpan<byte>(mtlBuffer.Contents.ToPointer(), (int)length, () => mtlBuffer.Dispose());
             }
         }
@@ -278,6 +277,9 @@ namespace Ryujinx.Graphics.Metal
                     depth = Math.Max(1, depth >> 1);
                 }
             }
+
+            // Cleanup
+            mtlBuffer.Dispose();
         }
 
         public void SetData(IMemoryOwner<byte> data, int layer, int level)
@@ -309,6 +311,9 @@ namespace Ryujinx.Graphics.Metal
                     (ulong)level,
                     new MTLOrigin()
                 );
+
+                // Cleanup
+                mtlBuffer.Dispose();
             }
         }
 
@@ -341,6 +346,9 @@ namespace Ryujinx.Graphics.Metal
                     (ulong)level,
                     new MTLOrigin { x = (ulong)region.X, y = (ulong)region.Y }
                 );
+
+                // Cleanup
+                mtlBuffer.Dispose();
             }
         }
 
