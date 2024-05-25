@@ -36,6 +36,10 @@ namespace Ryujinx.Graphics.Metal
 
         public void Dispose()
         {
+            // State
+            _currentState.FrontFaceStencil.Dispose();
+            _currentState.BackFaceStencil.Dispose();
+
             _renderPipelineCache.Dispose();
             _depthStencilCache.Dispose();
         }
@@ -327,18 +331,11 @@ namespace Ryujinx.Graphics.Metal
         // Inlineable
         public void UpdateStencilState(StencilTestDescriptor stencilTest)
         {
-            var backFace = new MTLStencilDescriptor
-            {
-                StencilFailureOperation = stencilTest.BackSFail.Convert(),
-                DepthFailureOperation = stencilTest.BackDpFail.Convert(),
-                DepthStencilPassOperation = stencilTest.BackDpPass.Convert(),
-                StencilCompareFunction = stencilTest.BackFunc.Convert(),
-                ReadMask = (uint)stencilTest.BackFuncMask,
-                WriteMask = (uint)stencilTest.BackMask
-            };
-            _currentState.BackFaceStencil = backFace;
+            // Cleanup old state
+            _currentState.FrontFaceStencil.Dispose();
+            _currentState.BackFaceStencil.Dispose();
 
-            var frontFace = new MTLStencilDescriptor
+            _currentState.FrontFaceStencil = new MTLStencilDescriptor
             {
                 StencilFailureOperation = stencilTest.FrontSFail.Convert(),
                 DepthFailureOperation = stencilTest.FrontDpFail.Convert(),
@@ -347,7 +344,16 @@ namespace Ryujinx.Graphics.Metal
                 ReadMask = (uint)stencilTest.FrontFuncMask,
                 WriteMask = (uint)stencilTest.FrontMask
             };
-            _currentState.FrontFaceStencil = frontFace;
+
+            _currentState.BackFaceStencil = new MTLStencilDescriptor
+            {
+                StencilFailureOperation = stencilTest.BackSFail.Convert(),
+                DepthFailureOperation = stencilTest.BackDpFail.Convert(),
+                DepthStencilPassOperation = stencilTest.BackDpPass.Convert(),
+                StencilCompareFunction = stencilTest.BackFunc.Convert(),
+                ReadMask = (uint)stencilTest.BackFuncMask,
+                WriteMask = (uint)stencilTest.BackMask
+            };
 
             _currentState.StencilTestEnabled = stencilTest.TestEnable;
 
@@ -370,8 +376,6 @@ namespace Ryujinx.Graphics.Metal
 
             // Cleanup
             descriptor.Dispose();
-            frontFace.Dispose();
-            backFace.Dispose();
         }
 
         // Inlineable
