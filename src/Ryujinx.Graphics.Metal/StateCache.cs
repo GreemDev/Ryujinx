@@ -19,6 +19,8 @@ namespace Ryujinx.Graphics.Metal
             {
                 value.Dispose();
             }
+
+            GC.SuppressFinalize(this);
         }
 
         public T GetOrCreate(TDescriptor descriptor)
