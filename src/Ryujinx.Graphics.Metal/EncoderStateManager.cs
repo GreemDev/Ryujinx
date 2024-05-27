@@ -25,11 +25,22 @@ namespace Ryujinx.Graphics.Metal
         public readonly ulong IndexBufferOffset => _currentState.IndexBufferOffset;
         public readonly PrimitiveTopology Topology => _currentState.Topology;
 
-        public EncoderStateManager(MTLDevice device, Pipeline pipeline)
+        // RGBA32F is the biggest format
+        private const int ZeroBufferSize = 4 * 4;
+        private readonly MTLBuffer _zeroBuffer;
+
+        public unsafe EncoderStateManager(MTLDevice device, Pipeline pipeline)
         {
             _pipeline = pipeline;
             _renderPipelineCache = new(device);
             _depthStencilCache = new(device);
+
+            // Zero buffer
+            byte[] zeros = new byte[ZeroBufferSize];
+            fixed (byte* ptr = zeros)
+            {
+                _zeroBuffer = device.NewBuffer((IntPtr)ptr, ZeroBufferSize, MTLResourceOptions.ResourceStorageModeShared);
+            }
         }
 
         public void Dispose()
@@ -661,10 +672,17 @@ namespace Ryujinx.Graphics.Metal
             var vertexDescriptor = new MTLVertexDescriptor();
             uint indexMask = 0;
 
-            // TODO: Handle 'zero' buffers
             for (int i = 0; i < attribDescriptors.Length; i++)
             {
-                if (!attribDescriptors[i].IsZero)
+                if (attribDescriptors[i].IsZero)
+                {
+                    var attrib = vertexDescriptor.Attributes.Object((ulong)i);
+                    attrib.Format = attribDescriptors[i].Format.Convert();
+                    indexMask |= 1u << bufferDescriptors.Length;
+                    attrib.BufferIndex = (ulong)bufferDescriptors.Length;
+                    attrib.Offset = 0;
+                }
+                else
                 {
                     var attrib = vertexDescriptor.Attributes.Object((ulong)i);
                     attrib.Format = attribDescriptors[i].Format.Convert();
@@ -672,16 +690,19 @@ namespace Ryujinx.Graphics.Metal
                     attrib.BufferIndex = (ulong)attribDescriptors[i].BufferIndex;
                     attrib.Offset = (ulong)attribDescriptors[i].Offset;
                 }
-                else
-                {
-                    // Logger.Warning?.PrintMsg(LogClass.Gpu, "Unhandled IsZero buffer!");
-                }
             }
 
             for (int i = 0; i < bufferDescriptors.Length; i++)
             {
                 var layout = vertexDescriptor.Layouts.Object((ulong)i);
                 layout.Stride = (indexMask & (1u << i)) != 0 ? (ulong)bufferDescriptors[i].Stride : 0;
+            }
+
+            // Zero buffer
+            if ((indexMask & (1u << bufferDescriptors.Length)) != 0)
+            {
+                var layout = vertexDescriptor.Layouts.Object((ulong)bufferDescriptors.Length);
+                layout.Stride = ZeroBufferSize;
             }
 
             return vertexDescriptor;
@@ -703,6 +724,14 @@ namespace Ryujinx.Graphics.Metal
                     });
                 }
             }
+
+            // Zero buffer
+            buffers.Add(new BufferInfo
+            {
+                Handle = _zeroBuffer.NativePtr,
+                Offset = 0,
+                Index = bufferDescriptors.Length
+            });
 
             SetBuffers(renderCommandEncoder, buffers);
         }

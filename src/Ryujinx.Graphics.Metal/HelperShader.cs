@@ -74,10 +74,10 @@ namespace Ryujinx.Graphics.Metal
 
             Span<float> region = stackalloc float[RegionBufferSize / sizeof(float)];
 
-            region[0] = srcRegion.X1 / src.Width;
-            region[1] = srcRegion.X2 / src.Width;
-            region[2] = srcRegion.Y1 / src.Height;
-            region[3] = srcRegion.Y2 / src.Height;
+            region[0] = srcRegion.X1 / (float)src.Width;
+            region[1] = srcRegion.X2 / (float)src.Width;
+            region[2] = srcRegion.Y1 / (float)src.Height;
+            region[3] = srcRegion.Y2 / (float)src.Height;
 
             if (dstRegion.X1 > dstRegion.X2)
             {
