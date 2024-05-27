@@ -191,6 +191,16 @@ namespace Ryujinx.Graphics.Metal
             dst.Dispose();
         }
 
+        public void BlitColor(
+            ITexture src,
+            ITexture dst,
+            Extents2D srcRegion,
+            Extents2D dstRegion,
+            bool linearFilter)
+        {
+            _helperShader.BlitColor(src, dst, srcRegion, dstRegion, linearFilter);
+        }
+
         public void Barrier()
         {
 
