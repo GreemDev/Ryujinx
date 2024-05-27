@@ -186,8 +186,8 @@ namespace Ryujinx.Graphics.Metal
                 maximumComputeSharedMemorySize: (int)_device.MaxThreadgroupMemoryLength,
                 maximumSupportedAnisotropy: 0,
                 shaderSubgroupSize: 256,
-                storageBufferOffsetAlignment: 0,
-                textureBufferOffsetAlignment: 0,
+                storageBufferOffsetAlignment: 16,
+                textureBufferOffsetAlignment: 16,
                 gatherBiasPrecision: 0
             );
         }

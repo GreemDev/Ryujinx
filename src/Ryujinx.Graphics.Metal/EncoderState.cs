@@ -31,11 +31,11 @@ namespace Ryujinx.Graphics.Metal
         public MTLFunction? VertexFunction = null;
         public MTLFunction? FragmentFunction = null;
 
-        public Dictionary<ulong, MTLTexture> FragmentTextures = new();
-        public Dictionary<ulong, MTLSamplerState> FragmentSamplers = new();
+        public MTLTexture[] FragmentTextures = new MTLTexture[Constants.MaxTextures];
+        public MTLSamplerState[] FragmentSamplers = new MTLSamplerState[Constants.MaxSamplers];
 
-        public Dictionary<ulong, MTLTexture> VertexTextures = new();
-        public Dictionary<ulong, MTLSamplerState> VertexSamplers = new();
+        public MTLTexture[] VertexTextures = new MTLTexture[Constants.MaxTextures];
+        public MTLSamplerState[] VertexSamplers = new MTLSamplerState[Constants.MaxSamplers];
 
         public List<BufferInfo> UniformBuffers = [];
         public List<BufferInfo> StorageBuffers = [];
@@ -56,7 +56,7 @@ namespace Ryujinx.Graphics.Metal
 
         public PrimitiveTopology Topology = PrimitiveTopology.Triangles;
         public MTLCullMode CullMode = MTLCullMode.None;
-        public MTLWinding Winding = MTLWinding.Clockwise;
+        public MTLWinding Winding = MTLWinding.CounterClockwise;
 
         public MTLViewport[] Viewports = [];
         public MTLScissorRect[] Scissors = [];
@@ -64,7 +64,7 @@ namespace Ryujinx.Graphics.Metal
         // Changes to attachments take recreation!
         public Texture DepthStencil = default;
         public Texture[] RenderTargets = new Texture[Constants.MaxColorAttachments];
-        public Dictionary<int, BlendDescriptor> BlendDescriptors = new();
+        public BlendDescriptor?[] BlendDescriptors = new BlendDescriptor?[Constants.MaxColorAttachments];
         public ColorF BlendColor = new();
 
         public VertexBufferDescriptor[] VertexBuffers = [];
@@ -74,5 +74,20 @@ namespace Ryujinx.Graphics.Metal
         public DirtyFlags Dirty = new();
 
         public EncoderState() { }
+
+        public EncoderState Clone()
+        {
+            // Certain state (like viewport and scissor) doesn't need to be cloned, as it is always reacreated when assigned to
+            EncoderState clone = this;
+            clone.FragmentTextures = (MTLTexture[])FragmentTextures.Clone();
+            clone.FragmentSamplers = (MTLSamplerState[])FragmentSamplers.Clone();
+            clone.VertexTextures = (MTLTexture[])VertexTextures.Clone();
+            clone.VertexSamplers = (MTLSamplerState[])VertexSamplers.Clone();
+            clone.BlendDescriptors = (BlendDescriptor?[])BlendDescriptors.Clone();
+            clone.VertexBuffers = (VertexBufferDescriptor[])VertexBuffers.Clone();
+            clone.VertexAttribs = (VertexAttribDescriptor[])VertexAttribs.Clone();
+
+            return clone;
+        }
     }
 }

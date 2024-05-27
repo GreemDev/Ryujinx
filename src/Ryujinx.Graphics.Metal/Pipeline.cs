@@ -51,6 +51,11 @@ namespace Ryujinx.Graphics.Metal
             _encoderStateManager.SaveState();
         }
 
+        public void SaveAndResetState()
+        {
+            _encoderStateManager.SaveAndResetState();
+        }
+
         public void RestoreState()
         {
             _encoderStateManager.RestoreState();
@@ -242,7 +247,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void ClearRenderTargetDepthStencil(int layer, int layerCount, float depthValue, bool depthMask, int stencilValue, int stencilMask)
         {
-            _helperShader.ClearDepthStencil([depthValue], depthMask, stencilValue, stencilMask);
+            _helperShader.ClearDepthStencil(depthValue, depthMask, stencilValue, stencilMask);
         }
 
         public void CommandBufferBarrier()
