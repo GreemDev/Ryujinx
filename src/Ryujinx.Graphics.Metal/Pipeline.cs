@@ -174,10 +174,6 @@ namespace Ryujinx.Graphics.Metal
 
         public void Present(CAMetalDrawable drawable, Texture src, Extents2D srcRegion, Extents2D dstRegion, bool isLinear)
         {
-            EndCurrentPass();
-
-            SaveState();
-
             // TODO: Clean this up
             var textureInfo = new TextureCreateInfo((int)drawable.Texture.Width, (int)drawable.Texture.Height, (int)drawable.Texture.Depth, (int)drawable.Texture.MipmapLevelCount, (int)drawable.Texture.SampleCount, 0, 0, 0, Format.B8G8R8A8Unorm, 0, Target.Texture2D, SwizzleComponent.Red, SwizzleComponent.Green, SwizzleComponent.Blue, SwizzleComponent.Alpha);
             var dst = new Texture(_device, this, textureInfo, drawable.Texture, 0, 0);
@@ -190,8 +186,6 @@ namespace Ryujinx.Graphics.Metal
             _commandBuffer.Commit();
 
             _commandBuffer = _commandQueue.CommandBuffer();
-
-            RestoreState();
 
             // Cleanup
             dst.Dispose();
