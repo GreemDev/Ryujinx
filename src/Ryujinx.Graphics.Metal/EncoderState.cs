@@ -78,7 +78,7 @@ namespace Ryujinx.Graphics.Metal
 
         public EncoderState() { }
 
-        public EncoderState Clone()
+        public readonly EncoderState Clone()
         {
             // Certain state (like viewport and scissor) doesn't need to be cloned, as it is always reacreated when assigned to
             EncoderState clone = this;

@@ -18,16 +18,16 @@ namespace Ryujinx.Graphics.Metal
 
         private int _width;
         private int _height;
-        private bool _vsyncEnabled;
+        // private bool _vsyncEnabled;
         private AntiAliasing _currentAntiAliasing;
         private bool _updateEffect;
         private IPostProcessingEffect _effect;
         private IScalingFilter _scalingFilter;
         private bool _isLinear;
-        private float _scalingFilterLevel;
+        // private float _scalingFilterLevel;
         private bool _updateScalingFilter;
         private ScalingFilter _currentScalingFilter;
-        private bool _colorSpacePassthroughEnabled;
+        // private bool _colorSpacePassthroughEnabled;
 
         public Window(MetalRenderer renderer, CAMetalLayer metalLayer)
         {
@@ -119,7 +119,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void ChangeVSyncMode(bool vsyncEnabled)
         {
-            _vsyncEnabled = vsyncEnabled;
+            // _vsyncEnabled = vsyncEnabled;
         }
 
         public void SetAntiAliasing(AntiAliasing effect)
@@ -148,13 +148,13 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetScalingFilterLevel(float level)
         {
-            _scalingFilterLevel = level;
+            // _scalingFilterLevel = level;
             _updateScalingFilter = true;
         }
 
         public void SetColorSpacePassthrough(bool colorSpacePassThroughEnabled)
         {
-            _colorSpacePassthroughEnabled = colorSpacePassThroughEnabled;
+            // _colorSpacePassthroughEnabled = colorSpacePassThroughEnabled;
         }
 
         private void UpdateEffect()
@@ -177,7 +177,7 @@ namespace Ryujinx.Graphics.Metal
                     case AntiAliasing.SmaaMedium:
                     case AntiAliasing.SmaaHigh:
                     case AntiAliasing.SmaaUltra:
-                        var quality = _currentAntiAliasing - AntiAliasing.SmaaLow;
+                        // var quality = _currentAntiAliasing - AntiAliasing.SmaaLow;
                         Logger.Warning?.PrintMsg(LogClass.Gpu, "SMAA not implemented for Metal backend!");
                         break;
                 }
