@@ -73,6 +73,9 @@ namespace Ryujinx.Graphics.Metal
         // Dirty flags
         public DirtyFlags Dirty = new();
 
+        // Only to be used for present
+        public bool ClearLoadAction = false;
+
         public EncoderState() { }
 
         public EncoderState Clone()

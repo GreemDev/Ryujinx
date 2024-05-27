@@ -24,8 +24,6 @@ namespace Ryujinx.Graphics.Metal
         public readonly MTLIndexType IndexType => _currentState.IndexType;
         public readonly ulong IndexBufferOffset => _currentState.IndexBufferOffset;
         public readonly PrimitiveTopology Topology => _currentState.Topology;
-        public readonly Texture[] RenderTargets => _currentState.RenderTargets;
-        public readonly Texture DepthStencil => _currentState.DepthStencil;
 
         public EncoderStateManager(MTLDevice device, Pipeline pipeline)
         {
@@ -82,6 +80,11 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
+        public void SetClearLoadAction(bool clear)
+        {
+            _currentState.ClearLoadAction = clear;
+        }
+
         public MTLRenderCommandEncoder CreateRenderCommandEncoder()
         {
             // Initialise Pass & State
@@ -93,7 +96,7 @@ namespace Ryujinx.Graphics.Metal
                 {
                     var passAttachment = renderPassDescriptor.ColorAttachments.Object((ulong)i);
                     passAttachment.Texture = _currentState.RenderTargets[i].MTLTexture;
-                    passAttachment.LoadAction = MTLLoadAction.Load;
+                    passAttachment.LoadAction = _currentState.ClearLoadAction ? MTLLoadAction.Clear : MTLLoadAction.Load;
                     passAttachment.StoreAction = MTLStoreAction.Store;
                 }
             }
@@ -661,11 +664,18 @@ namespace Ryujinx.Graphics.Metal
             // TODO: Handle 'zero' buffers
             for (int i = 0; i < attribDescriptors.Length; i++)
             {
-                var attrib = vertexDescriptor.Attributes.Object((ulong)i);
-                attrib.Format = attribDescriptors[i].Format.Convert();
-                indexMask |= 1u << attribDescriptors[i].BufferIndex;
-                attrib.BufferIndex = (ulong)attribDescriptors[i].BufferIndex;
-                attrib.Offset = (ulong)attribDescriptors[i].Offset;
+                if (!attribDescriptors[i].IsZero)
+                {
+                    var attrib = vertexDescriptor.Attributes.Object((ulong)i);
+                    attrib.Format = attribDescriptors[i].Format.Convert();
+                    indexMask |= 1u << attribDescriptors[i].BufferIndex;
+                    attrib.BufferIndex = (ulong)attribDescriptors[i].BufferIndex;
+                    attrib.Offset = (ulong)attribDescriptors[i].Offset;
+                }
+                else
+                {
+                    // Logger.Warning?.PrintMsg(LogClass.Gpu, "Unhandled IsZero buffer!");
+                }
             }
 
             for (int i = 0; i < bufferDescriptors.Length; i++)

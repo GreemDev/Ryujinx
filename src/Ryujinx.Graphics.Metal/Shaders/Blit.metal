@@ -2,32 +2,23 @@
 
 using namespace metal;
 
-// ------------------
-// Simple Blit Shader
-// ------------------
-
-constant float2 quadVertices[] = {
-    float2(-1, -1),
-    float2(-1,  1),
-    float2( 1,  1),
-    float2(-1, -1),
-    float2( 1,  1),
-    float2( 1, -1)
-};
-
 struct CopyVertexOut {
     float4 position [[position]];
     float2 uv;
 };
 
-vertex CopyVertexOut vertexMain(unsigned short vid [[vertex_id]]) {
-    float2 position = quadVertices[vid];
-
+vertex CopyVertexOut vertexMain(uint vid [[vertex_id]],
+                                const device float* texCoord [[buffer(0)]]) {
     CopyVertexOut out;
 
-    out.position = float4(position, 0, 1);
-    out.position.y = -out.position.y;
-    out.uv = position * 0.5f + 0.5f;
+    int low = vid & 1;
+    int high = vid >> 1;
+    out.uv.x = texCoord[low];
+    out.uv.y = texCoord[2 + high];
+    out.position.x = (float(low) - 0.5f) * 2.0f;
+    out.position.y = (float(high) - 0.5f) * 2.0f;
+    out.position.z = 0.0f;
+    out.position.w = 1.0f;
 
     return out;
 }

@@ -61,6 +61,11 @@ namespace Ryujinx.Graphics.Metal
             _encoderStateManager.RestoreState();
         }
 
+        public void SetClearLoadAction(bool clear)
+        {
+            _encoderStateManager.SetClearLoadAction(clear);
+        }
+
         public MTLRenderCommandEncoder GetOrCreateRenderEncoder()
         {
             MTLRenderCommandEncoder renderCommandEncoder;
@@ -167,22 +172,17 @@ namespace Ryujinx.Graphics.Metal
             return computeCommandEncoder;
         }
 
-        public void Present(CAMetalDrawable drawable, ITexture texture)
+        public void Present(CAMetalDrawable drawable, Texture src, Extents2D srcRegion, Extents2D dstRegion, bool isLinear)
         {
-            if (texture is not Texture tex)
-            {
-                return;
-            }
-
             EndCurrentPass();
 
             SaveState();
 
             // TODO: Clean this up
             var textureInfo = new TextureCreateInfo((int)drawable.Texture.Width, (int)drawable.Texture.Height, (int)drawable.Texture.Depth, (int)drawable.Texture.MipmapLevelCount, (int)drawable.Texture.SampleCount, 0, 0, 0, Format.B8G8R8A8Unorm, 0, Target.Texture2D, SwizzleComponent.Red, SwizzleComponent.Green, SwizzleComponent.Blue, SwizzleComponent.Alpha);
-            var dest = new Texture(_device, this, textureInfo, drawable.Texture, 0, 0);
+            var dst = new Texture(_device, this, textureInfo, drawable.Texture, 0, 0);
 
-            _helperShader.BlitColor(tex, dest);
+            _helperShader.BlitColor(src, dst, srcRegion, dstRegion, isLinear);
 
             EndCurrentPass();
 
@@ -194,7 +194,7 @@ namespace Ryujinx.Graphics.Metal
             RestoreState();
 
             // Cleanup
-            dest.Dispose();
+            dst.Dispose();
         }
 
         public void Barrier()
@@ -338,9 +338,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void DrawTexture(ITexture texture, ISampler sampler, Extents2DF srcRegion, Extents2DF dstRegion)
         {
-            // var renderCommandEncoder = GetOrCreateRenderEncoder();
-
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            _helperShader.DrawTexture(texture, sampler, srcRegion, dstRegion);
         }
 
         public void SetAlphaTest(bool enable, float reference, CompareOp op)

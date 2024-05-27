@@ -16,6 +16,8 @@ namespace Ryujinx.Graphics.Metal
         private readonly Pipeline _pipeline;
         private MTLDevice _device;
 
+        private readonly ISampler _samplerLinear;
+        private readonly ISampler _samplerNearest;
         private readonly IProgram _programColorBlit;
         private readonly List<IProgram> _programsColorClear = new();
         private readonly IProgram _programDepthStencilClear;
@@ -24,6 +26,9 @@ namespace Ryujinx.Graphics.Metal
         {
             _device = device;
             _pipeline = pipeline;
+
+            _samplerNearest = new Sampler(_device, SamplerCreateInfo.Create(MinFilter.Nearest, MagFilter.Nearest));
+            _samplerLinear = new Sampler(_device, SamplerCreateInfo.Create(MinFilter.Linear, MagFilter.Linear));
 
             var blitSource = ReadMsl("Blit.metal");
             _programColorBlit = new Program(
@@ -56,28 +61,140 @@ namespace Ryujinx.Graphics.Metal
             return EmbeddedResources.ReadAllText(string.Join('/', ShadersSourcePath, fileName));
         }
 
-        public void BlitColor(
-            ITexture source,
-            ITexture destination)
+        public unsafe void BlitColor(
+            ITexture src,
+            ITexture dst,
+            Extents2D srcRegion,
+            Extents2D dstRegion,
+            bool linearFilter)
         {
-            var sampler = _device.NewSamplerState(new MTLSamplerDescriptor
+            const int RegionBufferSize = 16;
+
+            var sampler = linearFilter ? _samplerLinear : _samplerNearest;
+
+            Span<float> region = stackalloc float[RegionBufferSize / sizeof(float)];
+
+            region[0] = srcRegion.X1 / src.Width;
+            region[1] = srcRegion.X2 / src.Width;
+            region[2] = srcRegion.Y1 / src.Height;
+            region[3] = srcRegion.Y2 / src.Height;
+
+            if (dstRegion.X1 > dstRegion.X2)
             {
-                MinFilter = MTLSamplerMinMagFilter.Nearest,
-                MagFilter = MTLSamplerMinMagFilter.Nearest,
-                MipFilter = MTLSamplerMipFilter.NotMipmapped
-            });
+                (region[0], region[1]) = (region[1], region[0]);
+            }
+
+            if (dstRegion.Y1 > dstRegion.Y2)
+            {
+                (region[2], region[3]) = (region[3], region[2]);
+            }
+
+            var rect = new Rectangle<float>(
+                MathF.Min(dstRegion.X1, dstRegion.X2),
+                MathF.Min(dstRegion.Y1, dstRegion.Y2),
+                MathF.Abs(dstRegion.X2 - dstRegion.X1),
+                MathF.Abs(dstRegion.Y2 - dstRegion.Y1));
+
+            Span<Viewport> viewports = stackalloc Viewport[1];
+
+            viewports[0] = new Viewport(
+                rect,
+                ViewportSwizzle.PositiveX,
+                ViewportSwizzle.PositiveY,
+                ViewportSwizzle.PositiveZ,
+                ViewportSwizzle.PositiveW,
+                0f,
+                1f);
+
+            int dstWidth = dst.Width;
+            int dstHeight = dst.Height;
 
             // Save current state
             _pipeline.SaveAndResetState();
 
             _pipeline.SetProgram(_programColorBlit);
-            // Viewport and scissor needs to be set before render pass begin so as not to bind the old ones
-            _pipeline.SetViewports([]);
-            _pipeline.SetScissors([]);
-            _pipeline.SetRenderTargets([destination], null);
-            _pipeline.SetTextureAndSampler(ShaderStage.Fragment, 0, source, new Sampler(sampler));
-            _pipeline.SetPrimitiveTopology(PrimitiveTopology.Triangles);
-            _pipeline.Draw(6, 1, 0, 0);
+            _pipeline.SetViewports(viewports);
+            _pipeline.SetScissors(stackalloc Rectangle<int>[] { new Rectangle<int>(0, 0, dstWidth, dstHeight) });
+            _pipeline.SetRenderTargets([dst], null);
+            _pipeline.SetClearLoadAction(true);
+            _pipeline.SetTextureAndSampler(ShaderStage.Fragment, 0, src, sampler);
+            _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
+
+            fixed (float* ptr = region)
+            {
+                _pipeline.GetOrCreateRenderEncoder().SetVertexBytes((IntPtr)ptr, RegionBufferSize, 0);
+            }
+
+            _pipeline.Draw(4, 1, 0, 0);
+
+            // Restore previous state
+            _pipeline.RestoreState();
+        }
+
+        public unsafe void DrawTexture(
+            ITexture src,
+            ISampler srcSampler,
+            Extents2DF srcRegion,
+            Extents2DF dstRegion)
+        {
+            const int RegionBufferSize = 16;
+
+            Span<float> region = stackalloc float[RegionBufferSize / sizeof(float)];
+
+            region[0] = srcRegion.X1 / src.Width;
+            region[1] = srcRegion.X2 / src.Width;
+            region[2] = srcRegion.Y1 / src.Height;
+            region[3] = srcRegion.Y2 / src.Height;
+
+            if (dstRegion.X1 > dstRegion.X2)
+            {
+                (region[0], region[1]) = (region[1], region[0]);
+            }
+
+            if (dstRegion.Y1 > dstRegion.Y2)
+            {
+                (region[2], region[3]) = (region[3], region[2]);
+            }
+
+            Span<Viewport> viewports = stackalloc Viewport[1];
+            Span<Rectangle<int>> scissors = stackalloc Rectangle<int>[1];
+
+            var rect = new Rectangle<float>(
+                MathF.Min(dstRegion.X1, dstRegion.X2),
+                MathF.Min(dstRegion.Y1, dstRegion.Y2),
+                MathF.Abs(dstRegion.X2 - dstRegion.X1),
+                MathF.Abs(dstRegion.Y2 - dstRegion.Y1));
+
+            viewports[0] = new Viewport(
+                rect,
+                ViewportSwizzle.PositiveX,
+                ViewportSwizzle.PositiveY,
+                ViewportSwizzle.PositiveZ,
+                ViewportSwizzle.PositiveW,
+                0f,
+                1f);
+
+            scissors[0] = new Rectangle<int>(0, 0, 0xFFFF, 0xFFFF);
+
+            // Save current state
+            _pipeline.SaveState();
+
+            _pipeline.SetProgram(_programColorBlit);
+            _pipeline.SetViewports(viewports);
+            _pipeline.SetScissors(scissors);
+            _pipeline.SetTextureAndSampler(ShaderStage.Fragment, 0, src, srcSampler);
+            _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
+            _pipeline.SetFaceCulling(false, Face.FrontAndBack);
+            // For some reason this results in a SIGSEGV
+            // _pipeline.SetStencilTest(CreateStencilTestDescriptor(false));
+            _pipeline.SetDepthTest(new DepthTestDescriptor(false, false, CompareOp.Always));
+
+            fixed (float* ptr = region)
+            {
+                _pipeline.GetOrCreateRenderEncoder().SetVertexBytes((IntPtr)ptr, RegionBufferSize, 0);
+            }
+
+            _pipeline.Draw(4, 1, 0, 0);
 
             // Restore previous state
             _pipeline.RestoreState();
@@ -169,6 +286,8 @@ namespace Ryujinx.Graphics.Metal
             }
             _programDepthStencilClear.Dispose();
             _pipeline.Dispose();
+            _samplerLinear.Dispose();
+            _samplerNearest.Dispose();
         }
     }
 }
