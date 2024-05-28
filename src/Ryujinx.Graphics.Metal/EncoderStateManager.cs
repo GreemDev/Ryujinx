@@ -141,9 +141,7 @@ namespace Ryujinx.Graphics.Metal
                         depthAttachment.LoadAction = MTLLoadAction.Load;
                         depthAttachment.StoreAction = MTLStoreAction.Store;
 
-                        var unpackedFormat = FormatTable.PackedStencilToXFormat(_currentState.DepthStencil.MTLTexture.PixelFormat);
-                        var stencilView = _currentState.DepthStencil.MTLTexture.NewTextureView(unpackedFormat);
-                        stencilAttachment.Texture = stencilView;
+                        stencilAttachment.Texture = _currentState.DepthStencil.MTLTexture;
                         stencilAttachment.LoadAction = MTLLoadAction.Load;
                         stencilAttachment.StoreAction = MTLStoreAction.Store;
                         break;
