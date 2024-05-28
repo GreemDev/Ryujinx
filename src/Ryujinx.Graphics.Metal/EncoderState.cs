@@ -1,6 +1,7 @@
 using Ryujinx.Graphics.GAL;
 using SharpMetal.Metal;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
@@ -64,6 +65,8 @@ namespace Ryujinx.Graphics.Metal
         // Changes to attachments take recreation!
         public Texture DepthStencil = default;
         public Texture[] RenderTargets = new Texture[Constants.MaxColorAttachments];
+
+        public MTLColorWriteMask[] RenderTargetMasks = Enumerable.Repeat(MTLColorWriteMask.All, Constants.MaxColorAttachments).ToArray();
         public BlendDescriptor?[] BlendDescriptors = new BlendDescriptor?[Constants.MaxColorAttachments];
         public ColorF BlendColor = new();
 

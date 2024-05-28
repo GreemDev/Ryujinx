@@ -461,7 +461,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetRenderTargetColorMasks(ReadOnlySpan<uint> componentMask)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            _encoderStateManager.UpdateRenderTargetColorMasks(componentMask);
         }
 
         public void SetRenderTargets(ITexture[] colors, ITexture depthStencil)

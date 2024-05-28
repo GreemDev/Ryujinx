@@ -207,6 +207,7 @@ namespace Ryujinx.Graphics.Metal
                     pipelineAttachment.DestinationAlphaBlendFactor = MTLBlendFactor.OneMinusSourceAlpha;
                     pipelineAttachment.SourceRGBBlendFactor = MTLBlendFactor.SourceAlpha;
                     pipelineAttachment.DestinationRGBBlendFactor = MTLBlendFactor.OneMinusSourceAlpha;
+                    pipelineAttachment.WriteMask = _currentState.RenderTargetMasks[i];
 
                     if (_currentState.BlendDescriptors[i] != null)
                     {
@@ -340,6 +341,34 @@ namespace Ryujinx.Graphics.Metal
             else if (depthStencil == null)
             {
                 _currentState.DepthStencil = null;
+            }
+
+            // Requires recreating pipeline
+            if (_pipeline.CurrentEncoderType == EncoderType.Render)
+            {
+                _pipeline.EndCurrentPass();
+            }
+        }
+
+        public void UpdateRenderTargetColorMasks(ReadOnlySpan<uint> componentMask)
+        {
+            _currentState.RenderTargetMasks = new MTLColorWriteMask[Constants.MaxColorAttachments];
+
+            for (int i = 0; i < componentMask.Length; i++)
+            {
+                bool red = (componentMask[i] & (0x1 << 0)) != 0;
+                bool green = (componentMask[i] & (0x1 << 1)) != 0;
+                bool blue = (componentMask[i] & (0x1 << 2)) != 0;
+                bool alpha = (componentMask[i] & (0x1 << 3)) != 0;
+
+                var mask = MTLColorWriteMask.None;
+
+                mask |= red ? MTLColorWriteMask.Red : 0;
+                mask |= green ? MTLColorWriteMask.Green : 0;
+                mask |= blue ? MTLColorWriteMask.Blue : 0;
+                mask |= alpha ? MTLColorWriteMask.Alpha : 0;
+
+                _currentState.RenderTargetMasks[i] = mask;
             }
 
             // Requires recreating pipeline
