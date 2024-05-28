@@ -81,6 +81,7 @@ namespace Ryujinx.Graphics.Metal
                 SetBuffers(renderCommandEncoder, _currentState.StorageBuffers, true);
                 SetCullMode(renderCommandEncoder);
                 SetFrontFace(renderCommandEncoder);
+                SetStencilRefValue(renderCommandEncoder);
 
                 // Mark the other state as dirty
                 _currentState.Dirty.MarkAll();
@@ -161,6 +162,7 @@ namespace Ryujinx.Graphics.Metal
             SetDepthClamp(renderCommandEncoder);
             SetCullMode(renderCommandEncoder);
             SetFrontFace(renderCommandEncoder);
+            SetStencilRefValue(renderCommandEncoder);
             SetViewports(renderCommandEncoder);
             SetScissors(renderCommandEncoder);
             SetVertexBuffers(renderCommandEncoder, _currentState.VertexBuffers);
@@ -433,6 +435,8 @@ namespace Ryujinx.Graphics.Metal
 
             _currentState.DepthStencilState = _depthStencilCache.GetOrCreate(descriptor);
 
+            UpdateStencilRefValue(stencilTest.FrontFuncRef, stencilTest.BackFuncRef);
+
             // Mark dirty
             _currentState.Dirty.DepthStencil = true;
 
@@ -635,6 +639,19 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
+        private void UpdateStencilRefValue(int frontRef, int backRef)
+        {
+            _currentState.FrontRefValue = frontRef;
+            _currentState.BackRefValue = backRef;
+
+            // Inline update
+            if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
+            {
+                var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
+                SetStencilRefValue(renderCommandEncoder);
+            }
+        }
+
         // Inlineable
         public readonly void UpdateTextureAndSampler(ShaderStage stage, ulong binding, MTLTexture texture, MTLSamplerState sampler)
         {
@@ -784,6 +801,11 @@ namespace Ryujinx.Graphics.Metal
         private readonly void SetFrontFace(MTLRenderCommandEncoder renderCommandEncoder)
         {
             renderCommandEncoder.SetFrontFacingWinding(_currentState.Winding);
+        }
+
+        private readonly void SetStencilRefValue(MTLRenderCommandEncoder renderCommandEncoder)
+        {
+            renderCommandEncoder.SetStencilReferenceValues((uint)_currentState.FrontRefValue, (uint)_currentState.BackRefValue);
         }
 
         private static void SetTextureAndSampler(MTLRenderCommandEncoder renderCommandEncoder, ShaderStage stage, MTLTexture[] textures, MTLSamplerState[] samplers)
