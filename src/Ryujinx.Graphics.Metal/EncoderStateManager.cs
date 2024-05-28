@@ -740,13 +740,26 @@ namespace Ryujinx.Graphics.Metal
             {
                 var layout = vertexDescriptor.Layouts.Object((ulong)i);
                 layout.Stride = (indexMask & (1u << i)) != 0 ? (ulong)bufferDescriptors[i].Stride : 0;
+
+                if (bufferDescriptors[i].Divisor > 0)
+                {
+                    layout.StepFunction = MTLVertexStepFunction.PerInstance;
+                    layout.StepRate = (ulong)bufferDescriptors[i].Divisor;
+                }
+                else
+                {
+                    layout.StepFunction = MTLVertexStepFunction.PerVertex;
+                    layout.StepRate = 1;
+                }
             }
 
             // Zero buffer
             if ((indexMask & (1u << bufferDescriptors.Length)) != 0)
             {
                 var layout = vertexDescriptor.Layouts.Object((ulong)bufferDescriptors.Length);
-                layout.Stride = ZeroBufferSize;
+                layout.Stride = 1;
+                layout.StepFunction = MTLVertexStepFunction.Constant;
+                layout.StepRate = 0;
             }
 
             return vertexDescriptor;
