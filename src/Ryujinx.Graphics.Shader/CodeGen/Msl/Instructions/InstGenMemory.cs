@@ -153,6 +153,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             bool isGather = (texOp.Flags & TextureFlags.Gather) != 0;
             bool isShadow = (texOp.Type & SamplerType.Shadow) != 0;
             bool intCoords = (texOp.Flags & TextureFlags.IntCoords) != 0;
+            bool hasLodLevel = (texOp.Flags & TextureFlags.LodLevel) != 0;
 
             bool isArray = (texOp.Type & SamplerType.Array) != 0;
 
@@ -232,6 +233,11 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             if (isShadow)
             {
                 texCall += ", " + Src(AggregateType.S32);
+            }
+
+            if (hasLodLevel)
+            {
+                texCall += $", level({Src(coordType)})";
             }
 
             // TODO: Support offsets
