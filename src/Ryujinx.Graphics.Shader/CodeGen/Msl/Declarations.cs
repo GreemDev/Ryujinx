@@ -219,6 +219,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                         {
                             IoVariable.Position => "float4",
                             IoVariable.PointSize => "float",
+                            IoVariable.FragmentOutputColor => GetVarTypeName(context, context.Definitions.GetFragmentOutputColorType(ioDefinition.Location)),
                             IoVariable.FragmentOutputDepth => "float",
                             _ => GetVarTypeName(context, context.Definitions.GetUserDefinedType(ioDefinition.Location, isOutput: true))
                         };
