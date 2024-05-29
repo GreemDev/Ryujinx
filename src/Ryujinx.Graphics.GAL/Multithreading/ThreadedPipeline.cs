@@ -63,9 +63,9 @@ namespace Ryujinx.Graphics.GAL.Multithreading
             _renderer.QueueCommand();
         }
 
-        public void DispatchCompute(int groupsX, int groupsY, int groupsZ)
+        public void DispatchCompute(int groupsX, int groupsY, int groupsZ, int groupSizeX, int groupSizeY, int groupSizeZ)
         {
-            _renderer.New<DispatchComputeCommand>().Set(groupsX, groupsY, groupsZ);
+            _renderer.New<DispatchComputeCommand>().Set(groupsX, groupsY, groupsZ, groupSizeX, groupSizeY, groupSizeZ);
             _renderer.QueueCommand();
         }
 

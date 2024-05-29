@@ -69,7 +69,6 @@ namespace Ryujinx.Graphics.Metal
         public MTLRenderCommandEncoder GetOrCreateRenderEncoder()
         {
             MTLRenderCommandEncoder renderCommandEncoder;
-
             if (_currentEncoder == null || _currentEncoderType != EncoderType.Render)
             {
                 renderCommandEncoder = BeginRenderPass();
@@ -79,7 +78,7 @@ namespace Ryujinx.Graphics.Metal
                 renderCommandEncoder = new MTLRenderCommandEncoder(_currentEncoder.Value);
             }
 
-            _encoderStateManager.RebindState(renderCommandEncoder);
+            _encoderStateManager.RebindRenderState(renderCommandEncoder);
 
             return renderCommandEncoder;
         }
@@ -99,15 +98,19 @@ namespace Ryujinx.Graphics.Metal
 
         public MTLComputeCommandEncoder GetOrCreateComputeEncoder()
         {
-            if (_currentEncoder != null)
+            MTLComputeCommandEncoder computeCommandEncoder;
+            if (_currentEncoder == null || _currentEncoderType != EncoderType.Compute)
             {
-                if (_currentEncoderType == EncoderType.Compute)
-                {
-                    return new MTLComputeCommandEncoder(_currentEncoder.Value);
-                }
+                computeCommandEncoder = BeginComputePass();
+            }
+            else
+            {
+                computeCommandEncoder = new MTLComputeCommandEncoder(_currentEncoder.Value);
             }
 
-            return BeginComputePass();
+            _encoderStateManager.RebindComputeState(computeCommandEncoder);
+
+            return computeCommandEncoder;
         }
 
         public void EndCurrentPass()
@@ -164,8 +167,7 @@ namespace Ryujinx.Graphics.Metal
         {
             EndCurrentPass();
 
-            var descriptor = new MTLComputePassDescriptor();
-            var computeCommandEncoder = _commandBuffer.ComputeCommandEncoder(descriptor);
+            var computeCommandEncoder = _encoderStateManager.CreateComputeCommandEncoder();
 
             _currentEncoder = computeCommandEncoder;
             _currentEncoderType = EncoderType.Compute;
@@ -274,9 +276,13 @@ namespace Ryujinx.Graphics.Metal
                 (ulong)size);
         }
 
-        public void DispatchCompute(int groupsX, int groupsY, int groupsZ)
+        public void DispatchCompute(int groupsX, int groupsY, int groupsZ, int groupSizeX, int groupSizeY, int groupSizeZ)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            var computeCommandEncoder = GetOrCreateComputeEncoder();
+
+            computeCommandEncoder.DispatchThreadgroups(
+                new MTLSize{width = (ulong)groupsX, height = (ulong)groupsY, depth = (ulong)groupsZ},
+                new MTLSize{width = (ulong)groupSizeX, height = (ulong)groupSizeY, depth = (ulong)groupSizeZ});
         }
 
         public void Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance)
@@ -397,7 +403,10 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetImage(ShaderStage stage, int binding, ITexture texture, Format imageFormat)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            if (texture is TextureBase tex)
+            {
+                _encoderStateManager.UpdateTexture(stage, (ulong)binding, tex);
+            }
         }
 
         public void SetImageArray(ShaderStage stage, int binding, IImageArray array)
@@ -491,28 +500,14 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetTextureAndSampler(ShaderStage stage, int binding, ITexture texture, ISampler sampler)
         {
-            if (texture is Texture tex)
+            if (texture is TextureBase tex)
             {
                 if (sampler is Sampler samp)
                 {
-                    var mtlTexture = tex.MTLTexture;
                     var mtlSampler = samp.GetSampler();
                     var index = (ulong)binding;
 
-                    switch (stage)
-                    {
-                        case ShaderStage.Vertex:
-                        case ShaderStage.Fragment:
-                            _encoderStateManager.UpdateTextureAndSampler(stage, index, mtlTexture, mtlSampler);
-                            break;
-                        case ShaderStage.Compute:
-                            var computeCommandEncoder = GetOrCreateComputeEncoder();
-                            computeCommandEncoder.SetTexture(mtlTexture, index);
-                            computeCommandEncoder.SetSamplerState(mtlSampler, index);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(stage), stage, "Unsupported shader stage!");
-                    }
+                    _encoderStateManager.UpdateTextureAndSampler(stage, index, tex, mtlSampler);
                 }
             }
         }

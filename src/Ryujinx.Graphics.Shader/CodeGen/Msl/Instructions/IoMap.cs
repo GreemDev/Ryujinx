@@ -35,7 +35,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 IoVariable.ThreadId => ("thread_position_in_threadgroup", AggregateType.Vector3 | AggregateType.U32),
                 IoVariable.VertexId => ("vertex_id", AggregateType.S32),
                 // gl_VertexIndex does not have a direct equivalent in MSL
-                IoVariable.VertexIndex => ("vertex_index", AggregateType.U32),
+                IoVariable.VertexIndex => ("vertex_id", AggregateType.U32),
                 IoVariable.ViewportIndex => ("viewport_array_index", AggregateType.S32),
                 IoVariable.FragmentCoord => ("in.position", AggregateType.Vector4 | AggregateType.FP32),
                 _ => (null, AggregateType.Invalid),

@@ -12,11 +12,16 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
             var functon = context.GetFunction(funcId.Value);
 
-            string[] args = new string[operation.SourcesCount - 1];
+            int argCount = operation.SourcesCount - 1;
+            string[] args = new string[argCount + CodeGenContext.additionalArgCount];
 
-            for (int i = 0; i < args.Length; i++)
+            // Additional arguments
+            args[0] = "support_buffer";
+
+            int argIndex = CodeGenContext.additionalArgCount;
+            for (int i = 0; i < argCount; i++)
             {
-                args[i] = GetSourceExpr(context, operation.GetSource(i + 1), functon.GetArgumentType(i));
+                args[argIndex++] = GetSourceExpr(context, operation.GetSource(i + 1), functon.GetArgumentType(i));
             }
 
             return $"{functon.Name}({string.Join(", ", args)})";

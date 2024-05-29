@@ -861,7 +861,7 @@ namespace Ryujinx.Graphics.Vulkan
                 _pipeline.SetStorageBuffers(1, sbRanges);
 
                 _pipeline.SetProgram(_programStrideChange);
-                _pipeline.DispatchCompute(1 + elems / ConvertElementsPerWorkgroup, 1, 1);
+                _pipeline.DispatchCompute(1 + elems / ConvertElementsPerWorkgroup, 1, 1, 0, 0, 0);
 
                 _pipeline.Finish(gd, cbs);
             }
@@ -1044,7 +1044,7 @@ namespace Ryujinx.Graphics.Vulkan
                     int dispatchX = (Math.Min(srcView.Info.Width, dstView.Info.Width) + 31) / 32;
                     int dispatchY = (Math.Min(srcView.Info.Height, dstView.Info.Height) + 31) / 32;
 
-                    _pipeline.DispatchCompute(dispatchX, dispatchY, 1);
+                    _pipeline.DispatchCompute(dispatchX, dispatchY, 1, 0, 0, 0);
 
                     if (srcView != src)
                     {
@@ -1170,7 +1170,7 @@ namespace Ryujinx.Graphics.Vulkan
                     _pipeline.SetTextureAndSamplerIdentitySwizzle(ShaderStage.Compute, 0, srcView, null);
                     _pipeline.SetImage(ShaderStage.Compute, 0, dstView.GetView(format));
 
-                    _pipeline.DispatchCompute(dispatchX, dispatchY, 1);
+                    _pipeline.DispatchCompute(dispatchX, dispatchY, 1, 0, 0, 0);
 
                     if (srcView != src)
                     {
@@ -1582,7 +1582,7 @@ namespace Ryujinx.Graphics.Vulkan
             _pipeline.SetStorageBuffers(stackalloc[] { new BufferAssignment(3, patternScoped.Range) });
 
             _pipeline.SetProgram(_programConvertIndirectData);
-            _pipeline.DispatchCompute(1, 1, 1);
+            _pipeline.DispatchCompute(1, 1, 1, 0, 0, 0);
 
             BufferHolder.InsertBufferBarrier(
                 gd,
@@ -1684,7 +1684,7 @@ namespace Ryujinx.Graphics.Vulkan
             _pipeline.SetStorageBuffers(1, sbRanges);
 
             _pipeline.SetProgram(_programConvertD32S8ToD24S8);
-            _pipeline.DispatchCompute(1 + inSize / ConvertElementsPerWorkgroup, 1, 1);
+            _pipeline.DispatchCompute(1 + inSize / ConvertElementsPerWorkgroup, 1, 1, 0, 0, 0);
 
             _pipeline.Finish(gd, cbs);
 

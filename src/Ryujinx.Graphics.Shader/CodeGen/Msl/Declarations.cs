@@ -54,6 +54,9 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             DeclareInputAttributes(context, info.IoDefinitions.Where(x => IsUserDefined(x, StorageKind.Input)));
             context.AppendLine();
             DeclareOutputAttributes(context, info.IoDefinitions.Where(x => x.StorageKind == StorageKind.Output));
+            context.AppendLine();
+            DeclareBufferStructures(context, context.Properties.ConstantBuffers.Values);
+            DeclareBufferStructures(context, context.Properties.StorageBuffers.Values);
         }
 
         static bool IsUserDefined(IoDefinition ioDefinition, StorageKind storageKind)
@@ -111,8 +114,41 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
         {
             foreach (var memory in memories)
             {
+                string arraySize = "";
+                if ((memory.Type & AggregateType.Array) != 0)
+                {
+                    arraySize = $"[{memory.ArrayLength}]";
+                }
                 var typeName = GetVarTypeName(context, memory.Type & ~AggregateType.Array);
-                context.AppendLine($"{typeName} {memory.Name}[{memory.ArrayLength}];");
+                context.AppendLine($"{typeName} {memory.Name}{arraySize};");
+            }
+        }
+
+        private static void DeclareBufferStructures(CodeGenContext context, IEnumerable<BufferDefinition> buffers)
+        {
+            foreach (BufferDefinition buffer in buffers)
+            {
+                context.AppendLine($"struct Struct_{buffer.Name}");
+                context.EnterScope();
+
+                foreach (StructureField field in buffer.Type.Fields)
+                {
+                    if (field.Type.HasFlag(AggregateType.Array) && field.ArrayLength > 0)
+                    {
+                        string typeName = GetVarTypeName(context, field.Type & ~AggregateType.Array);
+
+                        context.AppendLine($"{typeName} {field.Name}[{field.ArrayLength}];");
+                    }
+                    else
+                    {
+                        string typeName = GetVarTypeName(context, field.Type & ~AggregateType.Array);
+
+                        context.AppendLine($"{typeName} {field.Name};");
+                    }
+                }
+
+                context.LeaveScope(";");
+                context.AppendLine();
             }
         }
 
@@ -124,7 +160,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             }
             else
             {
-                if (inputs.Any())
+                if (inputs.Any() || context.Definitions.Stage == ShaderStage.Fragment)
                 {
                     string prefix = "";
 
@@ -135,9 +171,6 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                             break;
                         case ShaderStage.Fragment:
                             context.AppendLine($"struct FragmentIn");
-                            break;
-                        case ShaderStage.Compute:
-                            context.AppendLine($"struct KernelIn");
                             break;
                     }
 

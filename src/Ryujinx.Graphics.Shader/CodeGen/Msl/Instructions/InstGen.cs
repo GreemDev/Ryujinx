@@ -134,7 +134,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     case Instruction.Load:
                         return Load(context, operation);
                     case Instruction.Lod:
-                        return "|| LOD ||";
+                        return Lod(context, operation);
                     case Instruction.MemoryBarrier:
                         return "|| MEMORY BARRIER ||";
                     case Instruction.Store:

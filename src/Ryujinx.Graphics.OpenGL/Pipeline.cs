@@ -205,7 +205,7 @@ namespace Ryujinx.Graphics.OpenGL
             Buffer.Copy(source, destination, srcOffset, dstOffset, size);
         }
 
-        public void DispatchCompute(int groupsX, int groupsY, int groupsZ)
+        public void DispatchCompute(int groupsX, int groupsY, int groupsZ, int groupSizeX, int groupSizeY, int groupSizeZ)
         {
             if (!_program.IsLinked)
             {

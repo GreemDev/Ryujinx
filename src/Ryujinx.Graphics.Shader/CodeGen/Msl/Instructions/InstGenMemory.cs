@@ -24,6 +24,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 inputsCount--;
             }
 
+            string fieldName = "";
             switch (storageKind)
             {
                 case StorageKind.ConstantBuffer:
@@ -45,6 +46,15 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
                     StructureField field = buffer.Type.Fields[fieldIndex.Value];
                     varName = buffer.Name;
+                    if ((field.Type & AggregateType.Array) != 0 && field.ArrayLength == 0)
+                    {
+                        // Unsized array, the buffer is indexed instead of the field
+                        fieldName = "." + field.Name;
+                    }
+                    else
+                    {
+                        varName += "->" + field.Name;
+                    }
                     varType = field.Type;
                     break;
 
@@ -126,6 +136,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     varName += $"[{GetSourceExpr(context, src, AggregateType.S32)}]";
                 }
             }
+            varName += fieldName;
 
             if (isStore)
             {
@@ -139,6 +150,37 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
         public static string Load(CodeGenContext context, AstOperation operation)
         {
             return GenerateLoadOrStore(context, operation, isStore: false);
+        }
+
+        // TODO: check this
+        public static string Lod(CodeGenContext context, AstOperation operation)
+        {
+            AstTextureOperation texOp = (AstTextureOperation)operation;
+
+            int coordsCount = texOp.Type.GetDimensions();
+            int coordsIndex = 0;
+
+            string samplerName = GetSamplerName(context.Properties, texOp);
+
+            string coordsExpr;
+
+            if (coordsCount > 1)
+            {
+                string[] elems = new string[coordsCount];
+
+                for (int index = 0; index < coordsCount; index++)
+                {
+                    elems[index] = GetSourceExpr(context, texOp.GetSource(coordsIndex + index), AggregateType.FP32);
+                }
+
+                coordsExpr = "float" + coordsCount + "(" + string.Join(", ", elems) + ")";
+            }
+            else
+            {
+                coordsExpr = GetSourceExpr(context, texOp.GetSource(coordsIndex), AggregateType.FP32);
+            }
+
+            return $"tex_{samplerName}.calculate_unclamped_lod(samp_{samplerName}, {coordsExpr}){GetMaskMultiDest(texOp.Index)}";
         }
 
         public static string Store(CodeGenContext context, AstOperation operation)
@@ -176,11 +218,13 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             }
             else
             {
-                texCall += "sample";
-
                 if (isGather)
                 {
-                    texCall += "_gather";
+                    texCall += "gather";
+                }
+                else
+                {
+                    texCall += "sample";
                 }
 
                 if (isShadow)
@@ -188,22 +232,31 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     texCall += "_compare";
                 }
 
-                texCall += $"(samp_{samplerName}";
+                texCall += $"(samp_{samplerName}, ";
             }
 
             int coordsCount = texOp.Type.GetDimensions();
 
             int pCount = coordsCount;
 
+            bool appended = false;
             void Append(string str)
             {
-                texCall += ", " + str;
+                if (appended)
+                {
+                    texCall += ", ";
+                }
+                else {
+                    appended = true;
+                }
+                texCall += str;
             }
 
             AggregateType coordType = intCoords ? AggregateType.S32 : AggregateType.FP32;
 
             string AssemblePVector(int count)
             {
+                string coords;
                 if (count > 1)
                 {
                     string[] elems = new string[count];
@@ -213,14 +266,16 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                         elems[index] = Src(coordType);
                     }
 
-                    string prefix = intCoords ? "int" : "float";
-
-                    return prefix + count + "(" + string.Join(", ", elems) + ")";
+                    coords = string.Join(", ", elems);
                 }
                 else
                 {
-                    return Src(coordType);
+                    coords = Src(coordType);
                 }
+
+                string prefix = intCoords ? "uint" : "float";
+
+                return prefix + (count > 1 ? count : "") + "(" + coords + ")";
             }
 
             Append(AssemblePVector(pCount));
@@ -254,6 +309,11 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
         private static string GetMaskMultiDest(int mask)
         {
+            if (mask == 0x0)
+            {
+                return "";
+            }
+
             string swizzle = ".";
 
             for (int i = 0; i < 4; i++)

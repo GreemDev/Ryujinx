@@ -200,7 +200,7 @@ namespace Ryujinx.Graphics.Gpu.Engine.Compute
 
             _channel.BufferManager.CommitComputeBindings();
 
-            _context.Renderer.Pipeline.DispatchCompute(qmd.CtaRasterWidth, qmd.CtaRasterHeight, qmd.CtaRasterDepth);
+            _context.Renderer.Pipeline.DispatchCompute(qmd.CtaRasterWidth, qmd.CtaRasterHeight, qmd.CtaRasterDepth, qmd.CtaThreadDimension0, qmd.CtaThreadDimension1, qmd.CtaThreadDimension2);
 
             _3dEngine.ForceShaderUpdate();
         }

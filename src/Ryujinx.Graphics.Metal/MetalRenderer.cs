@@ -97,9 +97,12 @@ namespace Ryujinx.Graphics.Metal
 
         public ITexture CreateTexture(TextureCreateInfo info)
         {
-            var texture = new Texture(_device, _pipeline, info);
+            if (info.Target == Target.TextureBuffer)
+            {
+                return new TextureBuffer(_device, _pipeline, info);
+            }
 
-            return texture;
+            return new Texture(_device, _pipeline, info);
         }
 
         public ITextureArray CreateTextureArray(int size, bool isBuffer)

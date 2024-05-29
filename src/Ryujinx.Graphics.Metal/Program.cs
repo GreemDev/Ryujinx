@@ -26,7 +26,7 @@ namespace Ryujinx.Graphics.Metal
                 var shaderLibrary = device.NewLibrary(StringHelper.NSString(shader.Code), new MTLCompileOptions(IntPtr.Zero), ref libraryError);
                 if (libraryError != IntPtr.Zero)
                 {
-                    Logger.Warning?.Print(LogClass.Gpu, $"Shader linking failed: \n{StringHelper.String(libraryError.LocalizedDescription)}");
+                    Logger.Warning?.Print(LogClass.Gpu, $"{shader.Stage} shader linking failed: \n{StringHelper.String(libraryError.LocalizedDescription)}");
                     _status = ProgramLinkStatus.Failure;
                     return;
                 }
@@ -34,7 +34,7 @@ namespace Ryujinx.Graphics.Metal
                 switch (shaders[index].Stage)
                 {
                     case ShaderStage.Compute:
-                        ComputeFunction = shaderLibrary.NewFunction(StringHelper.NSString("computeMain"));
+                        ComputeFunction = shaderLibrary.NewFunction(StringHelper.NSString("kernelMain"));
                         break;
                     case ShaderStage.Vertex:
                         VertexFunction = shaderLibrary.NewFunction(StringHelper.NSString("vertexMain"));
