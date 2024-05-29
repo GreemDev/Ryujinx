@@ -180,6 +180,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                     {
                         // TODO: check if it's needed
                         context.AppendLine("float4 position [[position]];");
+                        context.AppendLine("bool front_facing [[front_facing]];");
                     }
 
                     foreach (var ioDefinition in inputs.OrderBy(x => x.Location))
