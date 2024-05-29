@@ -414,6 +414,11 @@ namespace Ryujinx.Graphics.Metal
             Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
         }
 
+        public void SetImageArraySeparate(ShaderStage stage, int setIndex, IImageArray array)
+        {
+            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+        }
+
         public void SetLineParameters(float width, bool smooth)
         {
             // Metal does not support wide-lines.
@@ -513,6 +518,11 @@ namespace Ryujinx.Graphics.Metal
         }
 
         public void SetTextureArray(ShaderStage stage, int binding, ITextureArray array)
+        {
+            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+        }
+
+        public void SetTextureArraySeparate(ShaderStage stage, int setIndex, ITextureArray array)
         {
             Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
         }

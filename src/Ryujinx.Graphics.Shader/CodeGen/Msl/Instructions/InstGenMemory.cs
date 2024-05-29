@@ -305,7 +305,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
         private static string GetSamplerName(ShaderProperties resourceDefinitions, AstTextureOperation textOp)
         {
-            return resourceDefinitions.Textures[textOp.Binding].Name;
+            return resourceDefinitions.Textures[textOp.GetTextureSetAndBinding()].Name;
         }
 
         private static string GetMaskMultiDest(int mask)
@@ -362,7 +362,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             }
             else
             {
-                context.Properties.Textures.TryGetValue(texOp.Binding, out TextureDefinition definition);
+                context.Properties.Textures.TryGetValue(texOp.GetTextureSetAndBinding(), out TextureDefinition definition);
                 bool hasLod = !definition.Type.HasFlag(SamplerType.Multisample) && (definition.Type & SamplerType.Mask) != SamplerType.TextureBuffer;
                 texCall += "get_";
 
