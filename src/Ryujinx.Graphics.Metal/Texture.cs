@@ -201,7 +201,6 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        // TODO: Handle array formats
         public unsafe void SetData(IMemoryOwner<byte> data)
         {
             var blitCommandEncoder = _pipeline.GetOrCreateBlitEncoder();
@@ -215,14 +214,14 @@ namespace Ryujinx.Graphics.Metal
             int height = Info.Height;
             int depth = Info.Depth;
             int levels = Info.GetLevelsClamped();
+            int layers = Info.GetLayers();
             bool is3D = Info.Target == Target.Texture3D;
 
             int offset = 0;
 
             for (int level = 0; level < levels; level++)
             {
-                int mipSize = Info.GetMipSize(level);
-
+                int mipSize = Info.GetMipSize2D(level);
                 int endOffset = offset + mipSize;
 
                 if ((uint)endOffset > (uint)dataSpan.Length)
@@ -230,19 +229,22 @@ namespace Ryujinx.Graphics.Metal
                     return;
                 }
 
-                blitCommandEncoder.CopyFromBuffer(
-                    mtlBuffer,
-                    (ulong)offset,
-                    (ulong)Info.GetMipStride(level),
-                    (ulong)mipSize,
-                    new MTLSize { width = (ulong)width, height = (ulong)height, depth = is3D ? (ulong)depth : 1 },
-                    _mtlTexture,
-                    0,
-                    (ulong)level,
-                    new MTLOrigin()
-                );
+                for (int layer = 0; layer < layers; layer++)
+                {
+                    blitCommandEncoder.CopyFromBuffer(
+                        mtlBuffer,
+                        (ulong)offset,
+                        (ulong)Info.GetMipStride(level),
+                        (ulong)mipSize,
+                        new MTLSize { width = (ulong)width, height = (ulong)height, depth = is3D ? (ulong)depth : 1 },
+                        _mtlTexture,
+                        (ulong)layer,
+                        (ulong)level,
+                        new MTLOrigin()
+                    );
 
-                offset += mipSize;
+                    offset += mipSize;
+                }
 
                 width = Math.Max(1, width >> 1);
                 height = Math.Max(1, height >> 1);
