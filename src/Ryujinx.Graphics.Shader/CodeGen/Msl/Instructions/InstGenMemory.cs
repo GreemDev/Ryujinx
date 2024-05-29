@@ -283,17 +283,17 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
             if (isArray)
             {
-                texCall += ", " + Src(AggregateType.S32);
+                Append(Src(AggregateType.S32));
             }
 
             if (isShadow)
             {
-                texCall += ", " + Src(AggregateType.S32);
+                Append(Src(AggregateType.S32));
             }
 
             if (hasLodLevel)
             {
-                texCall += $", level({Src(coordType)})";
+                Append("level({Src(coordType)})");
             }
 
             // TODO: Support offsets
@@ -343,7 +343,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             string samplerName = GetSamplerName(context.Properties, texOp);
             string textureName = $"tex_{samplerName}";
             string texCall = textureName + ".";
-            texCall += $"get_num_samples()";
+            texCall += "get_num_samples()";
 
             return texCall;
         }
@@ -358,7 +358,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
             if (texOp.Index == 3)
             {
-                texCall += $"get_num_mip_levels()";
+                texCall += "get_num_mip_levels()";
             }
             else
             {
@@ -389,7 +389,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     texCall += $"{lodExpr}";
                 }
 
-                texCall += $")";
+                texCall += ")";
             }
 
             return texCall;
