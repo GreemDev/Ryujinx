@@ -246,7 +246,8 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 {
                     texCall += ", ";
                 }
-                else {
+                else
+                {
                     appended = true;
                 }
                 texCall += str;

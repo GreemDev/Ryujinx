@@ -281,8 +281,8 @@ namespace Ryujinx.Graphics.Metal
             var computeCommandEncoder = GetOrCreateComputeEncoder();
 
             computeCommandEncoder.DispatchThreadgroups(
-                new MTLSize{width = (ulong)groupsX, height = (ulong)groupsY, depth = (ulong)groupsZ},
-                new MTLSize{width = (ulong)groupSizeX, height = (ulong)groupSizeY, depth = (ulong)groupSizeZ});
+                new MTLSize { width = (ulong)groupsX, height = (ulong)groupsY, depth = (ulong)groupsZ },
+                new MTLSize { width = (ulong)groupSizeX, height = (ulong)groupSizeY, depth = (ulong)groupSizeZ });
         }
 
         public void Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance)

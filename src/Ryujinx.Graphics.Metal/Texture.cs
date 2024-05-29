@@ -1,4 +1,3 @@
-using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.GAL;
 using SharpMetal.Foundation;
 using SharpMetal.Metal;
