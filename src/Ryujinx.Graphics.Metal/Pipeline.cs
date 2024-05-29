@@ -205,26 +205,29 @@ namespace Ryujinx.Graphics.Metal
 
         public void Barrier()
         {
-
-            if (_currentEncoderType == EncoderType.Render)
+            switch (_currentEncoderType)
             {
-                var renderCommandEncoder = GetOrCreateRenderEncoder();
+                case EncoderType.Render:
+                    {
+                        var renderCommandEncoder = GetOrCreateRenderEncoder();
 
-                var scope = MTLBarrierScope.Buffers | MTLBarrierScope.Textures | MTLBarrierScope.RenderTargets;
-                MTLRenderStages stages = MTLRenderStages.RenderStageVertex | MTLRenderStages.RenderStageFragment;
-                renderCommandEncoder.MemoryBarrier(scope, stages, stages);
-            }
-            else if (_currentEncoderType == EncoderType.Compute)
-            {
-                var computeCommandEncoder = GetOrCreateComputeEncoder();
+                        var scope = MTLBarrierScope.Buffers | MTLBarrierScope.Textures | MTLBarrierScope.RenderTargets;
+                        MTLRenderStages stages = MTLRenderStages.RenderStageVertex | MTLRenderStages.RenderStageFragment;
+                        renderCommandEncoder.MemoryBarrier(scope, stages, stages);
+                        break;
+                    }
+                case EncoderType.Compute:
+                    {
+                        var computeCommandEncoder = GetOrCreateComputeEncoder();
 
-                // TODO: Should there be a barrier on render targets?
-                var scope = MTLBarrierScope.Buffers | MTLBarrierScope.Textures;
-                computeCommandEncoder.MemoryBarrier(scope);
-            }
-            else
-            {
-                Logger.Warning?.Print(LogClass.Gpu, "Barrier called outside of a render or compute pass");
+                        // TODO: Should there be a barrier on render targets?
+                        var scope = MTLBarrierScope.Buffers | MTLBarrierScope.Textures;
+                        computeCommandEncoder.MemoryBarrier(scope);
+                        break;
+                    }
+                default:
+                    Logger.Warning?.Print(LogClass.Gpu, "Barrier called outside of a render or compute pass");
+                    break;
             }
         }
 

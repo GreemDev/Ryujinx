@@ -54,11 +54,6 @@ namespace Ryujinx.Graphics.Metal
             Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
         }
 
-        public BufferHandle CreateBuffer(int size, BufferAccess access, BufferHandle storageHint)
-        {
-            return CreateBuffer(size, access);
-        }
-
         public BufferHandle CreateBuffer(IntPtr pointer, int size)
         {
             var buffer = _device.NewBuffer(pointer, (ulong)size, MTLResourceOptions.ResourceStorageModeShared);
