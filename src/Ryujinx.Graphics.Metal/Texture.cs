@@ -98,15 +98,31 @@ namespace Ryujinx.Graphics.Metal
 
             if (destination is Texture destinationTexture)
             {
-                blitCommandEncoder.CopyFromTexture(
-                    _mtlTexture,
-                    (ulong)firstLayer,
-                    (ulong)firstLevel,
-                    destinationTexture._mtlTexture,
-                    (ulong)firstLayer,
-                    (ulong)firstLevel,
-                    _mtlTexture.ArrayLength,
-                    _mtlTexture.MipmapLevelCount);
+                if (destinationTexture.Info.Target == Target.Texture3D)
+                {
+                    blitCommandEncoder.CopyFromTexture(
+                        _mtlTexture,
+                        0,
+                        (ulong)firstLevel,
+                        new MTLOrigin { x = 0, y = 0, z = (ulong)firstLayer },
+                        new MTLSize { width = (ulong)Math.Min(Info.Width, destinationTexture.Info.Width), height = (ulong)Math.Min(Info.Height, destinationTexture.Info.Height), depth = 1},
+                        destinationTexture._mtlTexture,
+                        0,
+                        (ulong)firstLevel,
+                        new MTLOrigin { x = 0, y = 0, z = (ulong)firstLayer });
+                }
+                else
+                {
+                    blitCommandEncoder.CopyFromTexture(
+                        _mtlTexture,
+                        (ulong)firstLayer,
+                        (ulong)firstLevel,
+                        destinationTexture._mtlTexture,
+                        (ulong)firstLayer,
+                        (ulong)firstLevel,
+                        _mtlTexture.ArrayLength,
+                        _mtlTexture.MipmapLevelCount);
+                }
             }
         }
 
@@ -116,15 +132,31 @@ namespace Ryujinx.Graphics.Metal
 
             if (destination is Texture destinationTexture)
             {
-                blitCommandEncoder.CopyFromTexture(
-                    _mtlTexture,
-                    (ulong)srcLayer,
-                    (ulong)srcLevel,
-                    destinationTexture._mtlTexture,
-                    (ulong)dstLayer,
-                    (ulong)dstLevel,
-                    _mtlTexture.ArrayLength,
-                    _mtlTexture.MipmapLevelCount);
+                if (destinationTexture.Info.Target == Target.Texture3D)
+                {
+                    blitCommandEncoder.CopyFromTexture(
+                        _mtlTexture,
+                        0,
+                        (ulong)srcLevel,
+                        new MTLOrigin { x = 0, y = 0, z = (ulong)srcLayer },
+                        new MTLSize { width = (ulong)Math.Min(Info.Width, destinationTexture.Info.Width), height = (ulong)Math.Min(Info.Height, destinationTexture.Info.Height), depth = 1},
+                        destinationTexture._mtlTexture,
+                        0,
+                        (ulong)dstLevel,
+                        new MTLOrigin { x = 0, y = 0, z = (ulong)dstLayer });
+                }
+                else
+                {
+                    blitCommandEncoder.CopyFromTexture(
+                        _mtlTexture,
+                        (ulong)srcLayer,
+                        (ulong)srcLevel,
+                        destinationTexture._mtlTexture,
+                        (ulong)dstLayer,
+                        (ulong)dstLevel,
+                        _mtlTexture.ArrayLength,
+                        _mtlTexture.MipmapLevelCount);
+                }
             }
         }
 
