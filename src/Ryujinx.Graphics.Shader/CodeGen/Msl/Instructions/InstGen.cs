@@ -145,6 +145,10 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                         return TextureQuerySamples(context, operation);
                     case Instruction.TextureQuerySize:
                         return TextureQuerySize(context, operation);
+                    case Instruction.PackHalf2x16:
+                        return PackHalf2x16(context, operation);
+                    case Instruction.UnpackHalf2x16:
+                        return UnpackHalf2x16(context, operation);
                     case Instruction.VectorExtract:
                         return VectorExtract(context, operation);
                     case Instruction.VoteAllEqual:

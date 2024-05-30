@@ -92,7 +92,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             Add(Instruction.LoopBreak,                InstType.OpNullary,      "break");
             Add(Instruction.LoopContinue,             InstType.OpNullary,      "continue");
             Add(Instruction.PackDouble2x32,           0); // MSL does not have a 64-bit FP
-            Add(Instruction.PackHalf2x16,             InstType.CallUnary,      "pack_half_to_unorm2x16");
+            Add(Instruction.PackHalf2x16,             InstType.Special);
             Add(Instruction.Maximum,                  InstType.CallBinary,     "max");
             Add(Instruction.MaximumU32,               InstType.CallBinary,     "max");
             Add(Instruction.MemoryBarrier,            InstType.Special);
@@ -123,7 +123,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             Add(Instruction.TextureQuerySize,         InstType.Special);
             Add(Instruction.Truncate,                 InstType.CallUnary,      "trunc");
             Add(Instruction.UnpackDouble2x32,         0); // MSL does not have a 64-bit FP
-            Add(Instruction.UnpackHalf2x16,           InstType.CallUnary,      "unpack_unorm2x16_to_half");
+            Add(Instruction.UnpackHalf2x16,           InstType.Special);
             Add(Instruction.VectorExtract,            InstType.Special);
             Add(Instruction.VoteAll,                  InstType.CallUnary,      "simd_all");
             Add(Instruction.VoteAllEqual,             InstType.Special);

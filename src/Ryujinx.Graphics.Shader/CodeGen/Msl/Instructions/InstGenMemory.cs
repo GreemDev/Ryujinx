@@ -394,5 +394,30 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
             return texCall;
         }
+
+        public static string PackHalf2x16(CodeGenContext context, AstOperation operation)
+        {
+            IAstNode src0 = operation.GetSource(0);
+            IAstNode src1 = operation.GetSource(1);
+
+            string src0Expr = GetSourceExpr(context, src0, GetSrcVarType(operation.Inst, 0));
+            string src1Expr = GetSourceExpr(context, src1, GetSrcVarType(operation.Inst, 1));
+
+            return $"as_type<uint>(half2({src0Expr}, {src1Expr}))";
+        }
+
+        public static string UnpackHalf2x16(CodeGenContext context, AstOperation operation)
+        {
+            IAstNode src = operation.GetSource(0);
+
+            string srcExpr = GetSourceExpr(context, src, GetSrcVarType(operation.Inst, 0));
+
+            return $"float2(as_type<half2>({srcExpr})){GetMask(operation.Index)}";
+        }
+
+        private static string GetMask(int index)
+        {
+            return $".{"xy".AsSpan(index, 1)}";
+        }
     }
 }
