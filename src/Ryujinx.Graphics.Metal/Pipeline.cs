@@ -252,12 +252,26 @@ namespace Ryujinx.Graphics.Metal
             float[] colors = [color.Red, color.Green, color.Blue, color.Alpha];
             var dst = _encoderStateManager.RenderTarget;
 
+            // TODO: Remove workaround for Wonder which has an invalid texture due to unsupported format
+            if (dst == null)
+            {
+                Logger.Warning?.PrintMsg(LogClass.Gpu, "Attempted to clear invalid render target!");
+                return;
+            }
+
             _helperShader.ClearColor(index, colors, componentMask, dst.Width, dst.Height);
         }
 
         public void ClearRenderTargetDepthStencil(int layer, int layerCount, float depthValue, bool depthMask, int stencilValue, int stencilMask)
         {
             var depthStencil = _encoderStateManager.DepthStencil;
+
+            // TODO: Remove workaround for Wonder which has an invalid texture due to unsupported format
+            if (depthStencil == null)
+            {
+                Logger.Warning?.PrintMsg(LogClass.Gpu, "Attempted to clear invalid depth stencil!");
+                return;
+            }
 
             _helperShader.ClearDepthStencil(depthValue, depthMask, stencilValue, stencilMask, depthStencil.Width, depthStencil.Height);
         }
