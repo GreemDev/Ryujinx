@@ -293,7 +293,14 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
             if (hasLodLevel)
             {
-                Append($"level({Src(coordType)})");
+                if (intCoords)
+                {
+                    Append(Src(coordType));
+                }
+                else
+                {
+                    Append($"level({Src(coordType)})");
+                }
             }
 
             // TODO: Support offsets
