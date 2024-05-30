@@ -202,19 +202,35 @@ namespace Ryujinx.Graphics.Metal
 
         public unsafe void ClearColor(
             int index,
-            ReadOnlySpan<float> clearColor)
+            ReadOnlySpan<float> clearColor,
+            uint componentMask,
+            int dstWidth,
+            int dstHeight)
         {
             const int ClearColorBufferSize = 16;
 
             // Save current state
             _pipeline.SaveState();
 
+            Span<Viewport> viewports = stackalloc Viewport[1];
+
+            // TODO: Set exact viewport!
+            viewports[0] = new Viewport(
+                new Rectangle<float>(0, 0, dstWidth, dstHeight),
+                ViewportSwizzle.PositiveX,
+                ViewportSwizzle.PositiveY,
+                ViewportSwizzle.PositiveZ,
+                ViewportSwizzle.PositiveW,
+                0f,
+                1f);
+
             _pipeline.SetProgram(_programsColorClear[index]);
             _pipeline.SetBlendState(index, new BlendDescriptor(false, new ColorF(0f, 0f, 0f, 1f), BlendOp.Add, BlendFactor.One, BlendFactor.Zero, BlendOp.Add, BlendFactor.One, BlendFactor.Zero));
             _pipeline.SetFaceCulling(false, Face.Front);
             _pipeline.SetDepthTest(new DepthTestDescriptor(false, false, CompareOp.Always));
-            // _pipeline.SetRenderTargetColorMasks([componentMask]);
+            _pipeline.SetRenderTargetColorMasks([componentMask]);
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
+            _pipeline.SetViewports(viewports);
 
             fixed (float* ptr = clearColor)
             {
@@ -231,7 +247,9 @@ namespace Ryujinx.Graphics.Metal
             float depthValue,
             bool depthMask,
             int stencilValue,
-            int stencilMask)
+            int stencilMask,
+            int dstWidth,
+            int dstHeight)
         {
             const int ClearDepthBufferSize = 4;
 
@@ -240,10 +258,22 @@ namespace Ryujinx.Graphics.Metal
             // Save current state
             _pipeline.SaveState();
 
+            Span<Viewport> viewports = stackalloc Viewport[1];
+
+            viewports[0] = new Viewport(
+                new Rectangle<float>(0, 0, dstWidth, dstHeight),
+                ViewportSwizzle.PositiveX,
+                ViewportSwizzle.PositiveY,
+                ViewportSwizzle.PositiveZ,
+                ViewportSwizzle.PositiveW,
+                0f,
+                1f);
+
             _pipeline.SetProgram(_programDepthStencilClear);
             _pipeline.SetFaceCulling(false, Face.Front);
             _pipeline.SetDepthTest(new DepthTestDescriptor(false, false, CompareOp.Always));
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
+            _pipeline.SetViewports(viewports);
             _pipeline.SetDepthTest(new DepthTestDescriptor(true, depthMask, CompareOp.Always));
             // _pipeline.SetStencilTest(CreateStencilTestDescriptor(stencilMask != 0, stencilValue, 0xFF, stencilMask));
             _pipeline.GetOrCreateRenderEncoder().SetFragmentBytes(ptr, ClearDepthBufferSize, 0);

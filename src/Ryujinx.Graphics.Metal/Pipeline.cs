@@ -250,13 +250,16 @@ namespace Ryujinx.Graphics.Metal
         public void ClearRenderTargetColor(int index, int layer, int layerCount, uint componentMask, ColorF color)
         {
             float[] colors = [color.Red, color.Green, color.Blue, color.Alpha];
+            var dst = _encoderStateManager.RenderTarget;
 
-            _helperShader.ClearColor(index, colors);
+            _helperShader.ClearColor(index, colors, componentMask, dst.Width, dst.Height);
         }
 
         public void ClearRenderTargetDepthStencil(int layer, int layerCount, float depthValue, bool depthMask, int stencilValue, int stencilMask)
         {
-            _helperShader.ClearDepthStencil(depthValue, depthMask, stencilValue, stencilMask);
+            var depthStencil = _encoderStateManager.DepthStencil;
+
+            _helperShader.ClearDepthStencil(depthValue, depthMask, stencilValue, stencilMask, depthStencil.Width, depthStencil.Height);
         }
 
         public void CommandBufferBarrier()
