@@ -148,7 +148,7 @@ namespace Ryujinx.Graphics.Metal
                 supportsBgraFormat: true,
                 supportsR4G4Format: false,
                 supportsR4G4B4A4Format: true,
-                supportsScaledVertexFormats: true,
+                supportsScaledVertexFormats: false,
                 supportsSnormBufferTextureFormat: true,
                 supportsSparseBuffer: false,
                 supports5BitComponentFormat: true,
