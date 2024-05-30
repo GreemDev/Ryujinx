@@ -136,7 +136,7 @@ namespace Ryujinx.Graphics.Metal
                 vendorName: HardwareInfoTools.GetVendor(),
                 SystemMemoryType.UnifiedMemory,
                 hasFrontFacingBug: false,
-                hasVectorIndexingBug: true,
+                hasVectorIndexingBug: false,
                 needsFragmentOutputSpecialization: true,
                 reduceShaderPrecision: true,
                 supportsAstcCompression: true,
