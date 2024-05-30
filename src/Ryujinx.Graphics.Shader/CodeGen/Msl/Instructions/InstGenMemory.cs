@@ -1,3 +1,4 @@
+using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.Shader.IntermediateRepresentation;
 using Ryujinx.Graphics.Shader.StructuredIr;
 using Ryujinx.Graphics.Shader.Translation;
@@ -193,11 +194,15 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             AstTextureOperation texOp = (AstTextureOperation)operation;
 
             bool isGather = (texOp.Flags & TextureFlags.Gather) != 0;
-            bool isShadow = (texOp.Type & SamplerType.Shadow) != 0;
+            bool hasDerivatives = (texOp.Flags & TextureFlags.Derivatives) != 0;
             bool intCoords = (texOp.Flags & TextureFlags.IntCoords) != 0;
+            bool hasLodBias = (texOp.Flags & TextureFlags.LodBias) != 0;
             bool hasLodLevel = (texOp.Flags & TextureFlags.LodLevel) != 0;
+            bool hasOffset = (texOp.Flags & TextureFlags.Offset) != 0;
+            bool hasOffsets = (texOp.Flags & TextureFlags.Offsets) != 0;
 
             bool isArray = (texOp.Type & SamplerType.Array) != 0;
+            bool isShadow = (texOp.Type & SamplerType.Shadow) != 0;
 
             bool colorIsVector = isGather || !isShadow;
 
@@ -291,6 +296,16 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 Append(Src(AggregateType.S32));
             }
 
+            if (hasDerivatives)
+            {
+                Logger.Warning?.PrintMsg(LogClass.Gpu, "Unused sampler derivatives!");
+            }
+
+            if (hasLodBias)
+            {
+                Logger.Warning?.PrintMsg(LogClass.Gpu, "Unused sample LOD bias!");
+            }
+
             if (hasLodLevel)
             {
                 if (intCoords)
@@ -303,7 +318,37 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 }
             }
 
-            // TODO: Support offsets
+            string AssembleOffsetVector(int count)
+            {
+                if (count > 1)
+                {
+                    string[] elems = new string[count];
+
+                    for (int index = 0; index < count; index++)
+                    {
+                        elems[index] = Src(AggregateType.S32);
+                    }
+
+                    return "int" + count + "(" + string.Join(", ", elems) + ")";
+                }
+                else
+                {
+                    return Src(AggregateType.S32);
+                }
+            }
+
+            // TODO: Support reads with offsets
+            if (!intCoords)
+            {
+                if (hasOffset)
+                {
+                    Append(AssembleOffsetVector(coordsCount));
+                }
+                else if (hasOffsets)
+                {
+                    Logger.Warning?.PrintMsg(LogClass.Gpu, "Multiple offsets on gathers are not yet supported!");
+                }
+            }
 
             texCall += ")" + (colorIsVector ? GetMaskMultiDest(texOp.Index) : "");
 

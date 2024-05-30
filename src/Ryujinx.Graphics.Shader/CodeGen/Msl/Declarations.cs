@@ -220,7 +220,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             }
         }
 
-        private static void DeclareOutputAttributes(CodeGenContext context, IEnumerable<IoDefinition> inputs)
+        private static void DeclareOutputAttributes(CodeGenContext context, IEnumerable<IoDefinition> outputs)
         {
             if (context.Definitions.IaIndexing)
             {
@@ -228,7 +228,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             }
             else
             {
-                if (inputs.Any())
+                if (outputs.Any() || context.Definitions.Stage == ShaderStage.Fragment)
                 {
                     string prefix = "";
 
@@ -247,7 +247,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
                     context.EnterScope();
 
-                    foreach (var ioDefinition in inputs.OrderBy(x => x.Location))
+                    foreach (var ioDefinition in outputs.OrderBy(x => x.Location))
                     {
                         string type = ioDefinition.IoVariable switch
                         {

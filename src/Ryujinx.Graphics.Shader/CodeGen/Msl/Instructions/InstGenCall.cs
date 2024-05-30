@@ -13,12 +13,13 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             var functon = context.GetFunction(funcId.Value);
 
             int argCount = operation.SourcesCount - 1;
-            string[] args = new string[argCount + CodeGenContext.additionalArgCount];
+            string[] args = new string[argCount + CodeGenContext.AdditionalArgCount];
 
             // Additional arguments
-            args[0] = "support_buffer";
+            args[0] = "in";
+            args[1] = "support_buffer";
 
-            int argIndex = CodeGenContext.additionalArgCount;
+            int argIndex = CodeGenContext.AdditionalArgCount;
             for (int i = 0; i < argCount; i++)
             {
                 args[argIndex++] = GetSourceExpr(context, operation.GetSource(i + 1), functon.GetArgumentType(i));

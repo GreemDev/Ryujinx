@@ -33,6 +33,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 IoVariable.PrimitiveId => ("primitive_id", AggregateType.S32),
                 IoVariable.UserDefined => GetUserDefinedVariableName(definitions, location, component, isOutput, isPerPatch),
                 IoVariable.ThreadId => ("thread_position_in_threadgroup", AggregateType.Vector3 | AggregateType.U32),
+                IoVariable.SubgroupLaneId => ("thread_index_in_simdgroup", AggregateType.U32),
                 IoVariable.VertexId => ("vertex_id", AggregateType.S32),
                 // gl_VertexIndex does not have a direct equivalent in MSL
                 IoVariable.VertexIndex => ("vertex_id", AggregateType.U32),

@@ -63,14 +63,15 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             ShaderStage stage,
             bool isMainFunc = false)
         {
-            int additionalArgCount = isMainFunc ? 0 : CodeGenContext.additionalArgCount;
+            int additionalArgCount = isMainFunc ? 0 : CodeGenContext.AdditionalArgCount;
 
             string[] args = new string[additionalArgCount + function.InArguments.Length + function.OutArguments.Length];
 
             // All non-main functions need to be able to access the support_buffer as well
             if (!isMainFunc)
             {
-                args[0] = "constant Struct_support_buffer* support_buffer";
+                args[0] = "FragmentIn in";
+                args[1] = "constant Struct_support_buffer* support_buffer";
             }
 
             int argIndex = additionalArgCount;
@@ -135,6 +136,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                     args = args.Append("uint3 threadgroup_position_in_grid [[threadgroup_position_in_grid]]").ToArray();
                     args = args.Append("uint3 thread_position_in_grid [[thread_position_in_grid]]").ToArray();
                     args = args.Append("uint3 thread_position_in_threadgroup [[thread_position_in_threadgroup]]").ToArray();
+                    args = args.Append("uint thread_index_in_simdgroup [[thread_index_in_simdgroup]]").ToArray();
                 }
 
                 foreach (var constantBuffer in context.Properties.ConstantBuffers.Values)
