@@ -21,6 +21,7 @@ namespace Ryujinx.Graphics.Metal
             public MTLBlendFactor DestinationRGBBlendFactor;
             public MTLBlendFactor SourceAlphaBlendFactor;
             public MTLBlendFactor DestinationAlphaBlendFactor;
+            public MTLColorWriteMask WriteMask;
         }
         [System.Runtime.CompilerServices.InlineArray(Constants.MaxColorAttachments)]
         public struct ColorAttachmentHashArray
@@ -39,8 +40,8 @@ namespace Ryujinx.Graphics.Metal
             public struct AttributeHash
             {
                 public MTLVertexFormat Format;
-                public int Offset;
-                public int BufferIndex;
+                public ulong Offset;
+                public ulong BufferIndex;
             }
             [System.Runtime.CompilerServices.InlineArray(Constants.MaxVertexAttributes)]
             public struct AttributeHashArray
@@ -50,10 +51,9 @@ namespace Ryujinx.Graphics.Metal
             public AttributeHashArray Attributes;
             public struct LayoutHash
             {
-                public MTLVertexFormat Format;
-                public int Stride;
-                public int StepFunction;
-                public int StepRate;
+                public ulong Stride;
+                public MTLVertexStepFunction StepFunction;
+                public ulong StepRate;
             }
             [System.Runtime.CompilerServices.InlineArray(Constants.MaxVertexLayouts)]
             public struct LayoutHashArray
@@ -63,6 +63,102 @@ namespace Ryujinx.Graphics.Metal
             public LayoutHashArray Layouts;
         }
         public VertexDescriptorHash VertexDescriptor;
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not RenderPipelineHash other)
+            {
+                return false;
+            }
+
+            if (VertexFunction != other.VertexFunction)
+            {
+                return false;
+            }
+            if (FragmentFunction != other.FragmentFunction)
+            {
+                return false;
+            }
+            if (DepthStencilAttachment.DepthPixelFormat != other.DepthStencilAttachment.DepthPixelFormat)
+            {
+                return false;
+            }
+            if (DepthStencilAttachment.StencilPixelFormat != other.DepthStencilAttachment.StencilPixelFormat)
+            {
+                return false;
+            }
+            for (int i = 0; i < Constants.MaxColorAttachments; i++)
+            {
+                if (ColorAttachments[i].PixelFormat != other.ColorAttachments[i].PixelFormat)
+                {
+                    return false;
+                }
+                if (ColorAttachments[i].BlendingEnabled != other.ColorAttachments[i].BlendingEnabled)
+                {
+                    return false;
+                }
+                if (ColorAttachments[i].RgbBlendOperation != other.ColorAttachments[i].RgbBlendOperation)
+                {
+                    return false;
+                }
+                if (ColorAttachments[i].AlphaBlendOperation != other.ColorAttachments[i].AlphaBlendOperation)
+                {
+                    return false;
+                }
+                if (ColorAttachments[i].SourceRGBBlendFactor != other.ColorAttachments[i].SourceRGBBlendFactor)
+                {
+                    return false;
+                }
+                if (ColorAttachments[i].DestinationRGBBlendFactor != other.ColorAttachments[i].DestinationRGBBlendFactor)
+                {
+                    return false;
+                }
+                if (ColorAttachments[i].SourceAlphaBlendFactor != other.ColorAttachments[i].SourceAlphaBlendFactor)
+                {
+                    return false;
+                }
+                if (ColorAttachments[i].DestinationAlphaBlendFactor != other.ColorAttachments[i].DestinationAlphaBlendFactor)
+                {
+                    return false;
+                }
+                if (ColorAttachments[i].WriteMask != other.ColorAttachments[i].WriteMask)
+                {
+                    return false;
+                }
+            }
+            for (int i = 0; i < Constants.MaxVertexAttributes; i++)
+            {
+                if (VertexDescriptor.Attributes[i].Format != other.VertexDescriptor.Attributes[i].Format)
+                {
+                    return false;
+                }
+                if (VertexDescriptor.Attributes[i].Offset != other.VertexDescriptor.Attributes[i].Offset)
+                {
+                    return false;
+                }
+                if (VertexDescriptor.Attributes[i].BufferIndex != other.VertexDescriptor.Attributes[i].BufferIndex)
+                {
+                    return false;
+                }
+            }
+            for (int i = 0; i < Constants.MaxVertexLayouts; i++)
+            {
+                if (VertexDescriptor.Layouts[i].Stride != other.VertexDescriptor.Layouts[i].Stride)
+                {
+                    return false;
+                }
+                if (VertexDescriptor.Layouts[i].StepFunction != other.VertexDescriptor.Layouts[i].StepFunction)
+                {
+                    return false;
+                }
+                if (VertexDescriptor.Layouts[i].StepRate != other.VertexDescriptor.Layouts[i].StepRate)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 
     [SupportedOSPlatform("macos")]
@@ -102,7 +198,8 @@ namespace Ryujinx.Graphics.Metal
                     SourceRGBBlendFactor = attachment.SourceRGBBlendFactor,
                     DestinationRGBBlendFactor = attachment.DestinationRGBBlendFactor,
                     SourceAlphaBlendFactor = attachment.SourceAlphaBlendFactor,
-                    DestinationAlphaBlendFactor = attachment.DestinationAlphaBlendFactor
+                    DestinationAlphaBlendFactor = attachment.DestinationAlphaBlendFactor,
+                    WriteMask = attachment.WriteMask
                 };
             }
 
@@ -116,8 +213,8 @@ namespace Ryujinx.Graphics.Metal
                 hash.VertexDescriptor.Attributes[i] = new RenderPipelineHash.VertexDescriptorHash.AttributeHash
                 {
                     Format = attribute.Format,
-                    Offset = (int)attribute.Offset,
-                    BufferIndex = (int)attribute.BufferIndex
+                    Offset = attribute.Offset,
+                    BufferIndex = attribute.BufferIndex
                 };
             }
 
@@ -127,9 +224,9 @@ namespace Ryujinx.Graphics.Metal
                 var layout = descriptor.VertexDescriptor.Layouts.Object((ulong)i);
                 hash.VertexDescriptor.Layouts[i] = new RenderPipelineHash.VertexDescriptorHash.LayoutHash
                 {
-                    Stride = (int)layout.Stride,
-                    StepFunction = (int)layout.StepFunction,
-                    StepRate = (int)layout.StepRate
+                    Stride = layout.Stride,
+                    StepFunction = layout.StepFunction,
+                    StepRate = layout.StepRate
                 };
             }
 
