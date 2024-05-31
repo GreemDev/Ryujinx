@@ -180,6 +180,11 @@ namespace Ryujinx.Graphics.Metal
                 }
             }
 
+            if (mtlFormat == MTLPixelFormat.Invalid)
+            {
+                Logger.Error?.PrintMsg(LogClass.Gpu, $"Application requested {format}, no direct equivalent was found!");
+            }
+
             return mtlFormat;
         }
     }
