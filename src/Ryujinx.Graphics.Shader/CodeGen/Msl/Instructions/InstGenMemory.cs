@@ -293,7 +293,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
             if (isShadow)
             {
-                Append(Src(AggregateType.S32));
+                Append(Src(AggregateType.FP32));
             }
 
             if (hasDerivatives)
