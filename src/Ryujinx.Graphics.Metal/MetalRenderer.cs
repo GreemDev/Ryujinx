@@ -220,11 +220,6 @@ namespace Ryujinx.Graphics.Metal
             {
                 var span = new Span<byte>(src.Contents.ToPointer(), data.Length);
                 data.CopyTo(span);
-                src.DidModifyRange(new NSRange
-                {
-                    location = 0,
-                    length = (ulong)data.Length
-                });
 
                 MTLBuffer dst = new(Unsafe.As<BufferHandle, IntPtr>(ref buffer));
                 blitEncoder.CopyFromBuffer(src, 0, dst, (ulong)offset, (ulong)data.Length);
