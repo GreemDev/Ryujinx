@@ -388,7 +388,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetDepthBias(PolygonModeMask enables, float factor, float units, float clamp)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            _encoderStateManager.UpdateDepthBias(units, factor, clamp);
         }
 
         public void SetDepthClamp(bool clamp)

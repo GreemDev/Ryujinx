@@ -51,6 +51,10 @@ namespace Ryujinx.Graphics.Metal
         public MTLCompareFunction DepthCompareFunction = MTLCompareFunction.Always;
         public bool DepthWriteEnabled = false;
 
+        public float DepthBias;
+        public float SlopeScale;
+        public float Clamp;
+
         public MTLStencilDescriptor BackFaceStencil = new();
         public MTLStencilDescriptor FrontFaceStencil = new();
         public int BackRefValue = 0;

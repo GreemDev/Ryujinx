@@ -79,6 +79,7 @@ namespace Ryujinx.Graphics.Metal
                 // Set all the inline state, since it might have changed
                 var renderCommandEncoder = _pipeline.GetOrCreateRenderEncoder();
                 SetDepthClamp(renderCommandEncoder);
+                SetDepthBias(renderCommandEncoder);
                 SetScissors(renderCommandEncoder);
                 SetViewports(renderCommandEncoder);
                 SetVertexBuffers(renderCommandEncoder, _currentState.VertexBuffers);
@@ -165,6 +166,7 @@ namespace Ryujinx.Graphics.Metal
 
             // Rebind all the state
             SetDepthClamp(renderCommandEncoder);
+            SetDepthBias(renderCommandEncoder);
             SetCullMode(renderCommandEncoder);
             SetFrontFace(renderCommandEncoder);
             SetStencilRefValue(renderCommandEncoder);
@@ -562,6 +564,21 @@ namespace Ryujinx.Graphics.Metal
         }
 
         // Inlineable
+        public void UpdateDepthBias(float depthBias, float slopeScale, float clamp)
+        {
+            _currentState.DepthBias = depthBias;
+            _currentState.SlopeScale = slopeScale;
+            _currentState.Clamp = clamp;
+
+            // Inline update
+            if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
+            {
+                var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
+                SetDepthBias(renderCommandEncoder);
+            }
+        }
+
+        // Inlineable
         public void UpdateScissors(ReadOnlySpan<Rectangle<int>> regions)
         {
             int maxScissors = Math.Min(regions.Length, _currentState.Viewports.Length);
@@ -837,6 +854,11 @@ namespace Ryujinx.Graphics.Metal
         private readonly void SetDepthClamp(MTLRenderCommandEncoder renderCommandEncoder)
         {
             renderCommandEncoder.SetDepthClipMode(_currentState.DepthClipMode);
+        }
+
+        private readonly void SetDepthBias(MTLRenderCommandEncoder renderCommandEncoder)
+        {
+            renderCommandEncoder.SetDepthBias(_currentState.DepthBias, _currentState.SlopeScale, _currentState.Clamp);
         }
 
         private unsafe void SetScissors(MTLRenderCommandEncoder renderCommandEncoder)
