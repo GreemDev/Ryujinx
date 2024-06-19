@@ -4,8 +4,8 @@ using Ryujinx.Graphics.Shader;
 using SharpMetal.Metal;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
+using BufferAssignment = Ryujinx.Graphics.GAL.BufferAssignment;
 
 namespace Ryujinx.Graphics.Metal
 {
@@ -13,6 +13,7 @@ namespace Ryujinx.Graphics.Metal
     struct EncoderStateManager : IDisposable
     {
         private readonly Pipeline _pipeline;
+        private readonly BufferManager _bufferManager;
 
         private readonly RenderPipelineCache _renderPipelineCache;
         private readonly ComputePipelineCache _computePipelineCache;
@@ -21,7 +22,7 @@ namespace Ryujinx.Graphics.Metal
         private EncoderState _currentState = new();
         private readonly Stack<EncoderState> _backStates = [];
 
-        public readonly MTLBuffer IndexBuffer => _currentState.IndexBuffer;
+        public readonly BufferRange IndexBuffer => _currentState.IndexBuffer;
         public readonly MTLIndexType IndexType => _currentState.IndexType;
         public readonly ulong IndexBufferOffset => _currentState.IndexBufferOffset;
         public readonly PrimitiveTopology Topology => _currentState.Topology;
@@ -30,11 +31,13 @@ namespace Ryujinx.Graphics.Metal
 
         // RGBA32F is the biggest format
         private const int ZeroBufferSize = 4 * 4;
-        private readonly MTLBuffer _zeroBuffer;
+        private readonly BufferHandle _zeroBuffer;
 
-        public unsafe EncoderStateManager(MTLDevice device, Pipeline pipeline)
+        public unsafe EncoderStateManager(MTLDevice device, BufferManager bufferManager, Pipeline pipeline)
         {
             _pipeline = pipeline;
+            _bufferManager = bufferManager;
+
             _renderPipelineCache = new(device);
             _computePipelineCache = new(device);
             _depthStencilCache = new(device);
@@ -43,7 +46,7 @@ namespace Ryujinx.Graphics.Metal
             byte[] zeros = new byte[ZeroBufferSize];
             fixed (byte* ptr = zeros)
             {
-                _zeroBuffer = device.NewBuffer((IntPtr)ptr, ZeroBufferSize, MTLResourceOptions.ResourceStorageModeShared);
+                _zeroBuffer = _bufferManager.Create((IntPtr)ptr, ZeroBufferSize);
             }
         }
 
@@ -355,8 +358,7 @@ namespace Ryujinx.Graphics.Metal
             {
                 _currentState.IndexType = type.Convert();
                 _currentState.IndexBufferOffset = (ulong)buffer.Offset;
-                var handle = buffer.Handle;
-                _currentState.IndexBuffer = new(Unsafe.As<BufferHandle, IntPtr>(ref handle));
+                _currentState.IndexBuffer = buffer;
             }
         }
 
@@ -657,20 +659,7 @@ namespace Ryujinx.Graphics.Metal
         // Inlineable
         public void UpdateUniformBuffers(ReadOnlySpan<BufferAssignment> buffers)
         {
-            _currentState.UniformBuffers = [];
-
-            foreach (BufferAssignment buffer in buffers)
-            {
-                if (buffer.Range.Size != 0)
-                {
-                    _currentState.UniformBuffers.Add(new BufferInfo
-                    {
-                        Handle = buffer.Range.Handle.ToIntPtr(),
-                        Offset = buffer.Range.Offset,
-                        Index = buffer.Binding
-                    });
-                }
-            }
+            _currentState.UniformBuffers = buffers.ToArray();
 
             // Inline update
             if (_pipeline.CurrentEncoder != null)
@@ -691,20 +680,13 @@ namespace Ryujinx.Graphics.Metal
         // Inlineable
         public void UpdateStorageBuffers(ReadOnlySpan<BufferAssignment> buffers)
         {
-            _currentState.StorageBuffers = [];
+            _currentState.StorageBuffers = buffers.ToArray();
 
-            foreach (BufferAssignment buffer in buffers)
+            for (int i = 0; i < _currentState.StorageBuffers.Length; i++)
             {
-                if (buffer.Range.Size != 0)
-                {
-                    // TODO: DONT offset the binding by 15
-                    _currentState.StorageBuffers.Add(new BufferInfo
-                    {
-                        Handle = buffer.Range.Handle.ToIntPtr(),
-                        Offset = buffer.Range.Offset,
-                        Index = buffer.Binding + 15
-                    });
-                }
+                BufferAssignment buffer = _currentState.StorageBuffers[i];
+                // TODO: DONT offset the binding by 15
+                _currentState.StorageBuffers[i] = new BufferAssignment(buffer.Binding + 15, buffer.Range);
             }
 
             // Inline update
@@ -956,50 +938,51 @@ namespace Ryujinx.Graphics.Metal
 
         private void SetVertexBuffers(MTLRenderCommandEncoder renderCommandEncoder, VertexBufferDescriptor[] bufferDescriptors)
         {
-            var buffers = new List<BufferInfo>();
+            var buffers = new List<BufferAssignment>();
 
             for (int i = 0; i < bufferDescriptors.Length; i++)
             {
-                if (bufferDescriptors[i].Buffer.Handle.ToIntPtr() != IntPtr.Zero)
-                {
-                    buffers.Add(new BufferInfo
-                    {
-                        Handle = bufferDescriptors[i].Buffer.Handle.ToIntPtr(),
-                        Offset = bufferDescriptors[i].Buffer.Offset,
-                        Index = i
-                    });
-                }
+                buffers.Add(new BufferAssignment(i, bufferDescriptors[i].Buffer));
             }
 
             // Zero buffer
-            buffers.Add(new BufferInfo
-            {
-                Handle = _zeroBuffer.NativePtr,
-                Offset = 0,
-                Index = bufferDescriptors.Length
-            });
+            buffers.Add(new BufferAssignment(
+                bufferDescriptors.Length,
+                new BufferRange(_zeroBuffer, 0, ZeroBufferSize)));
 
-            SetRenderBuffers(renderCommandEncoder, buffers);
+            SetRenderBuffers(renderCommandEncoder, buffers.ToArray());
         }
 
-        private readonly void SetRenderBuffers(MTLRenderCommandEncoder renderCommandEncoder, List<BufferInfo> buffers, bool fragment = false)
+        private readonly void SetRenderBuffers(MTLRenderCommandEncoder renderCommandEncoder, BufferAssignment[] buffers, bool fragment = false)
         {
             foreach (var buffer in buffers)
             {
-                renderCommandEncoder.SetVertexBuffer(new MTLBuffer(buffer.Handle), (ulong)buffer.Offset, (ulong)buffer.Index);
+                var range = buffer.Range;
+                var autoBuffer = _bufferManager.GetBuffer(range.Handle, range.Offset, range.Size, range.Write);
 
-                if (fragment)
+                if (autoBuffer != null)
                 {
-                    renderCommandEncoder.SetFragmentBuffer(new MTLBuffer(buffer.Handle), (ulong)buffer.Offset, (ulong)buffer.Index);
+                    var mtlBuffer = autoBuffer.Get(_pipeline.CurrentCommandBuffer).Value;
+
+                    renderCommandEncoder.SetVertexBuffer(mtlBuffer, (ulong)range.Offset, (ulong)buffer.Binding);
+
+                    if (fragment)
+                    {
+                        renderCommandEncoder.SetFragmentBuffer(mtlBuffer, (ulong)range.Offset, (ulong)buffer.Binding);
+                    }
                 }
             }
         }
 
-        private readonly void SetComputeBuffers(MTLComputeCommandEncoder computeCommandEncoder, List<BufferInfo> buffers)
+        private readonly void SetComputeBuffers(MTLComputeCommandEncoder computeCommandEncoder, BufferAssignment[] buffers)
         {
             foreach (var buffer in buffers)
             {
-                computeCommandEncoder.SetBuffer(new MTLBuffer(buffer.Handle), (ulong)buffer.Offset, (ulong)buffer.Index);
+                var range = buffer.Range;
+                var mtlBuffer = _bufferManager.GetBuffer(range.Handle, range.Offset, range.Size, range.Write).Get(_pipeline.CurrentCommandBuffer).Value;
+
+                computeCommandEncoder.SetBuffer(mtlBuffer, (ulong)range.Offset, (ulong)buffer.Binding);
+
             }
         }
 

@@ -3,15 +3,14 @@ using SharpMetal.Foundation;
 using SharpMetal.Metal;
 using System;
 using System.Buffers;
-using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    class Texture : TextureBase, ITexture
+    public class Texture : TextureBase, ITexture
     {
-        public Texture(MTLDevice device, Pipeline pipeline, TextureCreateInfo info) : base(device, pipeline, info)
+        public Texture(MTLDevice device, MetalRenderer renderer, Pipeline pipeline, TextureCreateInfo info) : base(device, renderer, pipeline, info)
         {
             var descriptor = new MTLTextureDescriptor
             {
@@ -38,7 +37,7 @@ namespace Ryujinx.Graphics.Metal
             _mtlTexture = _device.NewTexture(descriptor);
         }
 
-        public Texture(MTLDevice device, Pipeline pipeline, TextureCreateInfo info, MTLTexture sourceTexture, int firstLayer, int firstLevel) : base(device, pipeline, info)
+        public Texture(MTLDevice device, MetalRenderer renderer, Pipeline pipeline, TextureCreateInfo info, MTLTexture sourceTexture, int firstLayer, int firstLevel) : base(device, renderer, pipeline, info)
         {
             var pixelFormat = FormatTable.GetFormat(Info.Format);
             var textureType = Info.Target.Convert();
@@ -168,6 +167,9 @@ namespace Ryujinx.Graphics.Metal
         public void CopyTo(BufferRange range, int layer, int level, int stride)
         {
             var blitCommandEncoder = _pipeline.GetOrCreateBlitEncoder();
+            var cbs = _pipeline.CurrentCommandBuffer;
+
+            int outSize = Info.GetMipSize(level);
 
             ulong bytesPerRow = (ulong)Info.GetMipStride(level);
             ulong bytesPerImage = 0;
@@ -176,8 +178,8 @@ namespace Ryujinx.Graphics.Metal
                 bytesPerImage = bytesPerRow * (ulong)Info.Height;
             }
 
-            var handle = range.Handle;
-            MTLBuffer mtlBuffer = new(Unsafe.As<BufferHandle, IntPtr>(ref handle));
+            var autoBuffer = _renderer.BufferManager.GetBuffer(range.Handle, true);
+            var mtlBuffer = autoBuffer.Get(cbs, range.Offset, outSize).Value;
 
             blitCommandEncoder.CopyFromTexture(
                 _mtlTexture,
@@ -193,7 +195,7 @@ namespace Ryujinx.Graphics.Metal
 
         public ITexture CreateView(TextureCreateInfo info, int firstLayer, int firstLevel)
         {
-            return new Texture(_device, _pipeline, info, _mtlTexture, firstLayer, firstLevel);
+            return new Texture(_device, _renderer, _pipeline, info, _mtlTexture, firstLayer, firstLevel);
         }
 
         public PinnedSpan<byte> GetData()
@@ -215,6 +217,7 @@ namespace Ryujinx.Graphics.Metal
 
             unsafe
             {
+
                 var mtlBuffer = _device.NewBuffer(length, MTLResourceOptions.ResourceStorageModeShared);
 
                 blitCommandEncoder.CopyFromTexture(

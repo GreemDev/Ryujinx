@@ -6,13 +6,14 @@ using System.Runtime.Versioning;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    abstract class TextureBase : IDisposable
+    public abstract class TextureBase : IDisposable
     {
         private bool _disposed;
 
         protected readonly TextureCreateInfo _info;
         protected readonly Pipeline _pipeline;
         protected readonly MTLDevice _device;
+        protected readonly MetalRenderer _renderer;
 
         protected MTLTexture _mtlTexture;
 
@@ -21,9 +22,10 @@ namespace Ryujinx.Graphics.Metal
         public int Height => Info.Height;
         public int Depth => Info.Depth;
 
-        public TextureBase(MTLDevice device, Pipeline pipeline, TextureCreateInfo info)
+        public TextureBase(MTLDevice device, MetalRenderer renderer, Pipeline pipeline, TextureCreateInfo info)
         {
             _device = device;
+            _renderer = renderer;
             _pipeline = pipeline;
             _info = info;
         }

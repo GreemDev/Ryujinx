@@ -10,7 +10,7 @@ using System.Runtime.Versioning;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    class HelperShader : IDisposable
+    public class HelperShader : IDisposable
     {
         private const string ShadersSourcePath = "/Ryujinx.Graphics.Metal/Shaders";
         private readonly Pipeline _pipeline;

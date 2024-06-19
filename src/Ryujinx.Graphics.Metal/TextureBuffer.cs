@@ -2,33 +2,32 @@ using Ryujinx.Graphics.GAL;
 using SharpMetal.Metal;
 using System;
 using System.Buffers;
-using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    class TextureBuffer : Texture, ITexture
+    class TextureBuffer : ITexture
     {
-        private MTLBuffer? _bufferHandle;
+        private readonly MetalRenderer _renderer;
+
+        private BufferHandle _bufferHandle;
         private int _offset;
         private int _size;
 
-        public TextureBuffer(MTLDevice device, Pipeline pipeline, TextureCreateInfo info) : base(device, pipeline, info) { }
+        private int _bufferCount;
 
-        public void CreateView()
+        public int Width { get; }
+        public int Height { get; }
+
+        public MTLPixelFormat MtlFormat { get; }
+
+        public TextureBuffer(MetalRenderer renderer, TextureCreateInfo info)
         {
-            var descriptor = new MTLTextureDescriptor
-            {
-                PixelFormat = FormatTable.GetFormat(Info.Format),
-                Usage = MTLTextureUsage.ShaderRead | MTLTextureUsage.ShaderWrite,
-                StorageMode = MTLStorageMode.Shared,
-                TextureType = Info.Target.Convert(),
-                Width = (ulong)Info.Width,
-                Height = (ulong)Info.Height
-            };
-
-            _mtlTexture = _bufferHandle.Value.NewTexture(descriptor, (ulong)_offset, (ulong)_size);
+            _renderer = renderer;
+            Width = info.Width;
+            Height = info.Height;
+            MtlFormat = FormatTable.GetFormat(info.Format);
         }
 
         public void CopyTo(ITexture destination, int firstLayer, int firstLevel)
@@ -51,10 +50,9 @@ namespace Ryujinx.Graphics.Metal
             throw new NotSupportedException();
         }
 
-        // TODO: Implement this method
         public PinnedSpan<byte> GetData()
         {
-            throw new NotImplementedException();
+            return _renderer.GetBufferData(_bufferHandle, _offset, _size);
         }
 
         public PinnedSpan<byte> GetData(int layer, int level)
@@ -67,10 +65,14 @@ namespace Ryujinx.Graphics.Metal
             throw new NotImplementedException();
         }
 
+        public void Release()
+        {
+
+        }
+
         public void SetData(IMemoryOwner<byte> data)
         {
-            // TODO
-            //_gd.SetBufferData(_bufferHandle, _offset, data.Memory.Span);
+            _renderer.SetBufferData(_bufferHandle, _offset, data.Memory.Span);
             data.Dispose();
         }
 
@@ -86,25 +88,20 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetStorage(BufferRange buffer)
         {
-            if (buffer.Handle != BufferHandle.Null)
+            if (_bufferHandle == buffer.Handle &&
+                _offset == buffer.Offset &&
+                _size == buffer.Size &&
+                _bufferCount == _renderer.BufferManager.BufferCount)
             {
-                var handle = buffer.Handle;
-                MTLBuffer bufferHandle = new(Unsafe.As<BufferHandle, IntPtr>(ref handle));
-                if (_bufferHandle == bufferHandle &&
-                    _offset == buffer.Offset &&
-                    _size == buffer.Size)
-                {
-                    return;
-                }
-
-                _bufferHandle = bufferHandle;
-                _offset = buffer.Offset;
-                _size = buffer.Size;
-
-                Release();
-
-                CreateView();
+                return;
             }
+
+            _bufferHandle = buffer.Handle;
+            _offset = buffer.Offset;
+            _size = buffer.Size;
+            _bufferCount = _renderer.BufferManager.BufferCount;
+
+            Release();
         }
     }
 }
