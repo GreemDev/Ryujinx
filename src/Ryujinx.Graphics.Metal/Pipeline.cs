@@ -76,7 +76,7 @@ namespace Ryujinx.Graphics.Metal
             _encoderStateManager.SetClearLoadAction(clear);
         }
 
-        public MTLRenderCommandEncoder GetOrCreateRenderEncoder()
+        public MTLRenderCommandEncoder GetOrCreateRenderEncoder(bool forDraw = false)
         {
             MTLRenderCommandEncoder renderCommandEncoder;
             if (_currentEncoder == null || _currentEncoderType != EncoderType.Render)
@@ -88,7 +88,10 @@ namespace Ryujinx.Graphics.Metal
                 renderCommandEncoder = new MTLRenderCommandEncoder(_currentEncoder.Value);
             }
 
-            _encoderStateManager.RebindRenderState(renderCommandEncoder);
+            if (forDraw)
+            {
+                _encoderStateManager.RebindRenderState(renderCommandEncoder);
+            }
 
             return renderCommandEncoder;
         }
@@ -325,7 +328,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance)
         {
-            var renderCommandEncoder = GetOrCreateRenderEncoder();
+            var renderCommandEncoder = GetOrCreateRenderEncoder(true);
 
             // TODO: Support topology re-indexing to provide support for TriangleFans
             var primitiveType = _encoderStateManager.Topology.Convert();
@@ -340,7 +343,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void DrawIndexed(int indexCount, int instanceCount, int firstIndex, int firstVertex, int firstInstance)
         {
-            var renderCommandEncoder = GetOrCreateRenderEncoder();
+            var renderCommandEncoder = GetOrCreateRenderEncoder(true);
 
             // TODO: Support topology re-indexing to provide support for TriangleFans
             var primitiveType = _encoderStateManager.Topology.Convert();
@@ -360,28 +363,28 @@ namespace Ryujinx.Graphics.Metal
 
         public void DrawIndexedIndirect(BufferRange indirectBuffer)
         {
-            // var renderCommandEncoder = GetOrCreateRenderEncoder();
+            // var renderCommandEncoder = GetOrCreateRenderEncoder(true);
 
             Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
         }
 
         public void DrawIndexedIndirectCount(BufferRange indirectBuffer, BufferRange parameterBuffer, int maxDrawCount, int stride)
         {
-            // var renderCommandEncoder = GetOrCreateRenderEncoder();
+            // var renderCommandEncoder = GetOrCreateRenderEncoder(true);
 
             Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
         }
 
         public void DrawIndirect(BufferRange indirectBuffer)
         {
-            // var renderCommandEncoder = GetOrCreateRenderEncoder();
+            // var renderCommandEncoder = GetOrCreateRenderEncoder(true);
 
             Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
         }
 
         public void DrawIndirectCount(BufferRange indirectBuffer, BufferRange parameterBuffer, int maxDrawCount, int stride)
         {
-            // var renderCommandEncoder = GetOrCreateRenderEncoder();
+            // var renderCommandEncoder = GetOrCreateRenderEncoder(true);
 
             Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
         }

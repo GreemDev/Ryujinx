@@ -46,12 +46,7 @@ namespace Ryujinx.Graphics.Metal
             levels.length = (ulong)Info.Levels;
             NSRange slices;
             slices.location = (ulong)firstLayer;
-            slices.length = 1;
-
-            if (info.Target != Target.Texture3D && info.Target != Target.Cubemap)
-            {
-                slices.length = (ulong)Info.Depth;
-            }
+            slices.length = (ulong)Info.Depth;
 
             var swizzle = GetSwizzle(info, pixelFormat);
 

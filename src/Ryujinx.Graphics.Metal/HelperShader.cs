@@ -122,7 +122,7 @@ namespace Ryujinx.Graphics.Metal
 
             fixed (float* ptr = region)
             {
-                _pipeline.GetOrCreateRenderEncoder().SetVertexBytes((IntPtr)ptr, RegionBufferSize, 0);
+                _pipeline.GetOrCreateRenderEncoder(true).SetVertexBytes((IntPtr)ptr, RegionBufferSize, 0);
             }
 
             _pipeline.Draw(4, 1, 0, 0);
@@ -191,7 +191,7 @@ namespace Ryujinx.Graphics.Metal
 
             fixed (float* ptr = region)
             {
-                _pipeline.GetOrCreateRenderEncoder().SetVertexBytes((IntPtr)ptr, RegionBufferSize, 0);
+                _pipeline.GetOrCreateRenderEncoder(true).SetVertexBytes((IntPtr)ptr, RegionBufferSize, 0);
             }
 
             _pipeline.Draw(4, 1, 0, 0);
@@ -234,7 +234,7 @@ namespace Ryujinx.Graphics.Metal
 
             fixed (float* ptr = clearColor)
             {
-                _pipeline.GetOrCreateRenderEncoder().SetFragmentBytes((IntPtr)ptr, ClearColorBufferSize, 0);
+                _pipeline.GetOrCreateRenderEncoder(true).SetFragmentBytes((IntPtr)ptr, ClearColorBufferSize, 0);
             }
 
             _pipeline.Draw(4, 1, 0, 0);
@@ -276,7 +276,7 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SetViewports(viewports);
             _pipeline.SetDepthTest(new DepthTestDescriptor(true, depthMask, CompareOp.Always));
             // _pipeline.SetStencilTest(CreateStencilTestDescriptor(stencilMask != 0, stencilValue, 0xFF, stencilMask));
-            _pipeline.GetOrCreateRenderEncoder().SetFragmentBytes(ptr, ClearDepthBufferSize, 0);
+            _pipeline.GetOrCreateRenderEncoder(true).SetFragmentBytes(ptr, ClearDepthBufferSize, 0);
             _pipeline.Draw(4, 1, 0, 0);
 
             // Restore previous state
