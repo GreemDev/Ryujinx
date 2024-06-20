@@ -17,20 +17,21 @@ namespace Ryujinx.Graphics.Metal
         private readonly Func<CAMetalLayer> _getMetalLayer;
 
         private Pipeline _pipeline;
-        private HelperShader _helperShader;
-        private BufferManager _bufferManager;
         private Window _window;
-        private CommandBufferPool _commandBufferPool;
 
         public event EventHandler<ScreenCaptureImageInfo> ScreenCaptured;
         public bool PreferThreading => true;
+
         public IPipeline Pipeline => _pipeline;
         public IWindow Window => _window;
-        public HelperShader HelperShader => _helperShader;
-        public BufferManager BufferManager => _bufferManager;
-        public CommandBufferPool CommandBufferPool => _commandBufferPool;
-        public Action<Action> InterruptAction { get; private set; }
-        public SyncManager SyncManager { get; private set; }
+
+        internal MTLCommandQueue BackgroundQueue { get; private set; }
+        internal HelperShader HelperShader { get; private set; }
+        internal BufferManager BufferManager { get; private set; }
+        internal CommandBufferPool CommandBufferPool { get; private set; }
+        internal BackgroundResources BackgroundResources { get; private set; }
+        internal Action<Action> InterruptAction { get; private set; }
+        internal SyncManager SyncManager { get; private set; }
 
         public MetalRenderer(Func<CAMetalLayer> metalLayer)
         {
@@ -42,6 +43,8 @@ namespace Ryujinx.Graphics.Metal
             }
 
             _queue = _device.NewCommandQueue(CommandBufferPool.MaxCommandBuffers);
+            BackgroundQueue = _device.NewCommandQueue(CommandBufferPool.MaxCommandBuffers);
+
             _getMetalLayer = metalLayer;
         }
 
@@ -51,14 +54,15 @@ namespace Ryujinx.Graphics.Metal
             layer.Device = _device;
             layer.FramebufferOnly = false;
 
-            _commandBufferPool = new CommandBufferPool(_device, _queue);
+            CommandBufferPool = new CommandBufferPool(_device, _queue);
             _window = new Window(this, layer);
             _pipeline = new Pipeline(_device, this, _queue);
-            _bufferManager = new BufferManager(_device, this, _pipeline);
+            BufferManager = new BufferManager(_device, this, _pipeline);
 
-            _pipeline.InitEncoderStateManager(_bufferManager);
+            _pipeline.InitEncoderStateManager(BufferManager);
 
-            _helperShader = new HelperShader(_device, this, _pipeline);
+            BackgroundResources = new BackgroundResources(this, _pipeline);
+            HelperShader = new HelperShader(_device, this, _pipeline);
             SyncManager = new SyncManager(this);
         }
 
@@ -69,12 +73,12 @@ namespace Ryujinx.Graphics.Metal
 
         public BufferHandle CreateBuffer(int size, BufferAccess access)
         {
-            return _bufferManager.CreateWithHandle(size);
+            return BufferManager.CreateWithHandle(size);
         }
 
         public BufferHandle CreateBuffer(IntPtr pointer, int size)
         {
-            return _bufferManager.Create(pointer, size);
+            return BufferManager.Create(pointer, size);
         }
 
         public BufferHandle CreateBufferSparse(ReadOnlySpan<BufferRange> storageBuffers)
@@ -125,12 +129,12 @@ namespace Ryujinx.Graphics.Metal
 
         public void DeleteBuffer(BufferHandle buffer)
         {
-            _bufferManager.Delete(buffer);
+            BufferManager.Delete(buffer);
         }
 
         public PinnedSpan<byte> GetBufferData(BufferHandle buffer, int offset, int size)
         {
-            return _bufferManager.GetData(buffer, offset, size);
+            return BufferManager.GetData(buffer, offset, size);
         }
 
         public Capabilities GetCapabilities()
@@ -218,7 +222,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetBufferData(BufferHandle buffer, int offset, ReadOnlySpan<byte> data)
         {
-            _bufferManager.SetData(buffer, offset, data, _pipeline.CurrentCommandBuffer, _pipeline.EndRenderPassDelegate);
+            BufferManager.SetData(buffer, offset, data, _pipeline.CurrentCommandBuffer, _pipeline.EndRenderPassDelegate);
         }
 
         public void UpdateCounters()
@@ -259,7 +263,7 @@ namespace Ryujinx.Graphics.Metal
             SyncManager.RegisterFlush();
 
             // Periodically free unused regions of the staging buffer to avoid doing it all at once.
-            _bufferManager.StagingBuffer.FreeCompleted();
+            BufferManager.StagingBuffer.FreeCompleted();
         }
 
         public void SetInterruptAction(Action<Action> interruptAction)
@@ -274,6 +278,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void Dispose()
         {
+            BackgroundResources.Dispose();
             _pipeline.Dispose();
             _window.Dispose();
         }
