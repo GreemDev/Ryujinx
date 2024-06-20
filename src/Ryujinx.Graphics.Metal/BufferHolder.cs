@@ -190,6 +190,18 @@ namespace Ryujinx.Graphics.Metal
                 }
             }
 
+            if (cbs != null &&
+                _pipeline.RenderPassActive &&
+                !(_buffer.HasCommandBufferDependency(cbs.Value) &&
+                  _waitable.IsBufferRangeInUse(cbs.Value.CommandBufferIndex, offset, dataSize)))
+            {
+                // If the buffer hasn't been used on the command buffer yet, try to preload the data.
+                // This avoids ending and beginning render passes on each buffer data upload.
+
+                cbs = _pipeline.PreloadCbs;
+                endRenderPass = null;
+            }
+
             if (allowCbsWait)
             {
                 _renderer.BufferManager.StagingBuffer.PushData(_renderer.CommandBufferPool, cbs, endRenderPass, this, offset, data);
@@ -331,6 +343,8 @@ namespace Ryujinx.Graphics.Metal
 
         public void Dispose()
         {
+            _pipeline.FlushCommandsIfWeightExceeding(_buffer, (ulong)Size);
+
             _buffer.Dispose();
             _cachedConvertedBuffers.Dispose();
 

@@ -20,16 +20,21 @@ namespace Ryujinx.Graphics.Metal
     [SupportedOSPlatform("macos")]
     class Pipeline : IPipeline, IDisposable
     {
+        private const ulong MinByteWeightForFlush = 256 * 1024 * 1024; // MiB
+
         private readonly MTLDevice _device;
         private readonly MetalRenderer _renderer;
         private EncoderStateManager _encoderStateManager;
+        private ulong _byteWeight;
 
         public readonly Action EndRenderPassDelegate;
         public MTLCommandBuffer CommandBuffer;
 
+        internal CommandBufferScoped? PreloadCbs { get; private set; }
         internal CommandBufferScoped Cbs { get; private set; }
         internal MTLCommandEncoder? CurrentEncoder { get; private set; }
         internal EncoderType CurrentEncoderType { get; private set; } = EncoderType.None;
+        internal bool RenderPassActive { get; private set; }
 
         public Pipeline(MTLDevice device, MetalRenderer renderer)
         {
@@ -133,6 +138,7 @@ namespace Ryujinx.Graphics.Metal
                     case EncoderType.Render:
                         new MTLRenderCommandEncoder(CurrentEncoder.Value).EndEncoding();
                         CurrentEncoder = null;
+                        RenderPassActive = false;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -150,6 +156,7 @@ namespace Ryujinx.Graphics.Metal
 
             CurrentEncoder = renderCommandEncoder;
             CurrentEncoderType = EncoderType.Render;
+            RenderPassActive = true;
 
             return renderCommandEncoder;
         }
@@ -198,11 +205,43 @@ namespace Ryujinx.Graphics.Metal
             dst.Dispose();
         }
 
+        public void FlushCommandsIfWeightExceeding(IAuto disposedResource, ulong byteWeight)
+        {
+            bool usedByCurrentCb = disposedResource.HasCommandBufferDependency(Cbs);
+
+            if (PreloadCbs != null && !usedByCurrentCb)
+            {
+                usedByCurrentCb = disposedResource.HasCommandBufferDependency(PreloadCbs.Value);
+            }
+
+            if (usedByCurrentCb)
+            {
+                // Since we can only free memory after the command buffer that uses a given resource was executed,
+                // keeping the command buffer might cause a high amount of memory to be in use.
+                // To prevent that, we force submit command buffers if the memory usage by resources
+                // in use by the current command buffer is above a given limit, and those resources were disposed.
+                _byteWeight += byteWeight;
+
+                if (_byteWeight >= MinByteWeightForFlush)
+                {
+                    FlushCommandsImpl();
+                }
+            }
+        }
+
         public void FlushCommandsImpl()
         {
             SaveState();
 
             EndCurrentPass();
+
+            _byteWeight = 0;
+
+            if (PreloadCbs != null)
+            {
+                PreloadCbs.Value.Dispose();
+                PreloadCbs = null;
+            }
 
             CommandBuffer = (Cbs = _renderer.CommandBufferPool.ReturnAndRent(Cbs)).CommandBuffer;
             _renderer.RegisterFlush();
