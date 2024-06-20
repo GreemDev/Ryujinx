@@ -285,6 +285,9 @@ namespace Ryujinx.Graphics.Metal
                 1f);
 
             _pipeline.SetProgram(_programsColorClear[index]);
+            _pipeline.SetBlendState(index, new BlendDescriptor(false, new ColorF(0f, 0f, 0f, 1f), BlendOp.Add, BlendFactor.One, BlendFactor.Zero, BlendOp.Add, BlendFactor.One, BlendFactor.Zero));
+            _pipeline.SetFaceCulling(false, Face.Front);
+            _pipeline.SetDepthTest(new DepthTestDescriptor(false, false, CompareOp.Always));
             _pipeline.SetRenderTargetColorMasks([componentMask]);
             _pipeline.SetViewports(viewports);
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
