@@ -150,7 +150,12 @@ namespace Ryujinx.Graphics.Metal
             Extents2DF srcRegion,
             Extents2DF dstRegion)
         {
+            // Save current state
+            _pipeline.SaveState();
+
             const int RegionBufferSize = 16;
+
+            _pipeline.SetTextureAndSampler(ShaderStage.Fragment, 0, src, srcSampler);
 
             Span<float> region = stackalloc float[RegionBufferSize / sizeof(float)];
 
@@ -169,12 +174,11 @@ namespace Ryujinx.Graphics.Metal
                 (region[2], region[3]) = (region[3], region[2]);
             }
 
-            // var bufferHandle = _renderer.BufferManager.CreateWithHandle(RegionBufferSize);
-            // _renderer.BufferManager.SetData<float>(bufferHandle, 0, region);
-            // _pipeline.SetUniformBuffers([new BufferAssignment(0, new BufferRange(bufferHandle, 0, RegionBufferSize))]);
+            var bufferHandle = _renderer.BufferManager.CreateWithHandle(RegionBufferSize);
+            _renderer.BufferManager.SetData<float>(bufferHandle, 0, region);
+            _pipeline.SetUniformBuffers([new BufferAssignment(0, new BufferRange(bufferHandle, 0, RegionBufferSize))]);
 
             Span<Viewport> viewports = stackalloc Viewport[1];
-            Span<Rectangle<int>> scissors = stackalloc Rectangle<int>[1];
 
             var rect = new Rectangle<float>(
                 MathF.Min(dstRegion.X1, dstRegion.X2),
@@ -191,27 +195,12 @@ namespace Ryujinx.Graphics.Metal
                 0f,
                 1f);
 
-            scissors[0] = new Rectangle<int>(0, 0, 0xFFFF, 0xFFFF);
-
-            // Save current state
-            _pipeline.SaveState();
-
             _pipeline.SetProgram(_programColorBlit);
             _pipeline.SetViewports(viewports);
-            _pipeline.SetScissors(scissors);
-            _pipeline.SetTextureAndSampler(ShaderStage.Fragment, 0, src, srcSampler);
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
-            _pipeline.SetFaceCulling(false, Face.FrontAndBack);
-            // For some reason this results in a SIGSEGV
-            // _pipeline.SetStencilTest(CreateStencilTestDescriptor(false));
-            _pipeline.SetDepthTest(new DepthTestDescriptor(false, false, CompareOp.Always));
-
-            fixed (float* ptr = region)
-            {
-                _pipeline.GetOrCreateRenderEncoder(true).SetVertexBytes((IntPtr)ptr, RegionBufferSize, 0);
-            }
-
             _pipeline.Draw(4, 1, 0, 0);
+
+            _renderer.BufferManager.Delete(bufferHandle);
 
             // Restore previous state
             _pipeline.RestoreState();
@@ -249,16 +238,13 @@ namespace Ryujinx.Graphics.Metal
             shaderParams[3] = srcOffset;
 
             using var buffer = _renderer.BufferManager.ReserveOrCreate(cbs, ParamsBufferSize);
-
             buffer.Holder.SetDataUnchecked<int>(buffer.Offset, shaderParams);
-
             _pipeline.SetUniformBuffers([new BufferAssignment(0, buffer.Range)]);
 
             Span<Auto<DisposableBuffer>> sbRanges = new Auto<DisposableBuffer>[2];
 
             sbRanges[0] = srcBuffer;
             sbRanges[1] = dstBuffer;
-
             _pipeline.SetStorageBuffers(1, sbRanges);
 
             _pipeline.SetProgram(_programStrideChange);
@@ -275,10 +261,16 @@ namespace Ryujinx.Graphics.Metal
             int dstWidth,
             int dstHeight)
         {
-            const int ClearColorBufferSize = 16;
-
             // Save current state
             _pipeline.SaveState();
+
+            const int ClearColorBufferSize = 16;
+
+            // TODO: Flush
+
+            using var buffer = _renderer.BufferManager.ReserveOrCreate(_pipeline.CurrentCommandBuffer, ClearColorBufferSize);
+            buffer.Holder.SetDataUnchecked(buffer.Offset, clearColor);
+            _pipeline.SetUniformBuffers([new BufferAssignment(0, buffer.Range)]);
 
             Span<Viewport> viewports = stackalloc Viewport[1];
 
@@ -293,18 +285,9 @@ namespace Ryujinx.Graphics.Metal
                 1f);
 
             _pipeline.SetProgram(_programsColorClear[index]);
-            _pipeline.SetBlendState(index, new BlendDescriptor(false, new ColorF(0f, 0f, 0f, 1f), BlendOp.Add, BlendFactor.One, BlendFactor.Zero, BlendOp.Add, BlendFactor.One, BlendFactor.Zero));
-            _pipeline.SetFaceCulling(false, Face.Front);
-            _pipeline.SetDepthTest(new DepthTestDescriptor(false, false, CompareOp.Always));
             _pipeline.SetRenderTargetColorMasks([componentMask]);
-            _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
             _pipeline.SetViewports(viewports);
-
-            fixed (float* ptr = clearColor)
-            {
-                _pipeline.GetOrCreateRenderEncoder(true).SetFragmentBytes((IntPtr)ptr, ClearColorBufferSize, 0);
-            }
-
+            _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
             _pipeline.Draw(4, 1, 0, 0);
 
             // Restore previous state
@@ -343,6 +326,7 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
             _pipeline.SetViewports(viewports);
             _pipeline.SetDepthTest(new DepthTestDescriptor(true, depthMask, CompareOp.Always));
+            // TODO: Figure out why this causes a crash
             // _pipeline.SetStencilTest(CreateStencilTestDescriptor(stencilMask != 0, stencilValue, 0xFF, stencilMask));
             _pipeline.GetOrCreateRenderEncoder(true).SetFragmentBytes(ptr, ClearDepthBufferSize, 0);
             _pipeline.Draw(4, 1, 0, 0);
