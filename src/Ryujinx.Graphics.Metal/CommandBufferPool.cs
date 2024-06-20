@@ -7,14 +7,12 @@ using System.Runtime.Versioning;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    public class CommandBufferPool : IDisposable
+    class CommandBufferPool : IDisposable
     {
         public const int MaxCommandBuffers = 16;
 
         private readonly int _totalCommandBuffers;
         private readonly int _totalCommandBuffersMask;
-
-        private readonly MTLDevice _device;
         private readonly MTLCommandQueue _queue;
 
         [SupportedOSPlatform("macos")]
@@ -45,9 +43,8 @@ namespace Ryujinx.Graphics.Metal
         private int _queuedCount;
         private int _inUseCount;
 
-        public CommandBufferPool(MTLDevice device, MTLCommandQueue queue)
+        public CommandBufferPool(MTLCommandQueue queue)
         {
-            _device = device;
             _queue = queue;
 
             _totalCommandBuffers = MaxCommandBuffers;

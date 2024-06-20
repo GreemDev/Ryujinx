@@ -5,7 +5,7 @@ using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
 {
-    public struct DirtyFlags
+    struct DirtyFlags
     {
         public bool RenderPipeline = false;
         public bool ComputePipeline = false;
@@ -21,7 +21,7 @@ namespace Ryujinx.Graphics.Metal
         }
     }
 
-    public record struct BufferRef
+    record struct BufferRef
     {
         public Auto<DisposableBuffer> Buffer;
         public int Index;

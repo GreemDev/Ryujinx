@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Ryujinx.Graphics.Metal
 {
-    public interface IAuto
+    interface IAuto
     {
         bool HasCommandBufferDependency(CommandBufferScoped cbs);
 
@@ -14,13 +14,13 @@ namespace Ryujinx.Graphics.Metal
         void DecrementReferenceCount();
     }
 
-    public interface IAutoPrivate : IAuto
+    interface IAutoPrivate : IAuto
     {
         void AddCommandBufferDependencies(CommandBufferScoped cbs);
     }
 
     [SupportedOSPlatform("macos")]
-    public class Auto<T> : IAutoPrivate, IDisposable where T : IDisposable
+    class Auto<T> : IAutoPrivate, IDisposable where T : IDisposable
     {
         private int _referenceCount;
         private T _value;

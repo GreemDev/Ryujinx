@@ -5,7 +5,7 @@ using System.Runtime.Versioning;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    public readonly struct CommandBufferScoped : IDisposable
+    readonly struct CommandBufferScoped : IDisposable
     {
         private readonly CommandBufferPool _pool;
         public MTLCommandBuffer CommandBuffer { get; }

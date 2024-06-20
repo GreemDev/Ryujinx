@@ -21,7 +21,6 @@ namespace Ryujinx.Graphics.Metal
 
         public event EventHandler<ScreenCaptureImageInfo> ScreenCaptured;
         public bool PreferThreading => true;
-
         public IPipeline Pipeline => _pipeline;
         public IWindow Window => _window;
 
@@ -54,9 +53,9 @@ namespace Ryujinx.Graphics.Metal
             layer.Device = _device;
             layer.FramebufferOnly = false;
 
-            CommandBufferPool = new CommandBufferPool(_device, _queue);
+            CommandBufferPool = new CommandBufferPool(_queue);
             _window = new Window(this, layer);
-            _pipeline = new Pipeline(_device, this, _queue);
+            _pipeline = new Pipeline(_device, this);
             BufferManager = new BufferManager(_device, this, _pipeline);
 
             _pipeline.InitEncoderStateManager(BufferManager);
@@ -222,7 +221,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetBufferData(BufferHandle buffer, int offset, ReadOnlySpan<byte> data)
         {
-            BufferManager.SetData(buffer, offset, data, _pipeline.CurrentCommandBuffer, _pipeline.EndRenderPassDelegate);
+            BufferManager.SetData(buffer, offset, data, _pipeline.Cbs, _pipeline.EndRenderPassDelegate);
         }
 
         public void UpdateCounters()

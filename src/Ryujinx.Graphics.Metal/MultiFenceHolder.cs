@@ -8,7 +8,7 @@ namespace Ryujinx.Graphics.Metal
     /// Holder for multiple host GPU fences.
     /// </summary>
     [SupportedOSPlatform("macos")]
-    public class MultiFenceHolder
+    class MultiFenceHolder
     {
         private const int BufferUsageTrackingGranularity = 4096;
 

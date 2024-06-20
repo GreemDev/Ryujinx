@@ -4,7 +4,7 @@ using System.Runtime.Versioning;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    public struct DepthStencilHash
+    struct DepthStencilHash
     {
         public struct StencilHash
         {
@@ -22,7 +22,7 @@ namespace Ryujinx.Graphics.Metal
     }
 
     [SupportedOSPlatform("macos")]
-    public class DepthStencilCache : StateCache<MTLDepthStencilState, MTLDepthStencilDescriptor, DepthStencilHash>
+    class DepthStencilCache : StateCache<MTLDepthStencilState, MTLDepthStencilDescriptor, DepthStencilHash>
     {
         private readonly MTLDevice _device;
 

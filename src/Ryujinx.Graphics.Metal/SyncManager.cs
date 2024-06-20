@@ -7,7 +7,7 @@ using System.Runtime.Versioning;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    public class SyncManager
+    class SyncManager
     {
         private class SyncHandle
         {

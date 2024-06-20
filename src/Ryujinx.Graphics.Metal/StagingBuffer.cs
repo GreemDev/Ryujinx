@@ -8,7 +8,7 @@ using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
 {
-    public readonly struct StagingBufferReserved
+    readonly struct StagingBufferReserved
     {
         public readonly BufferHolder Buffer;
         public readonly int Offset;
@@ -23,7 +23,7 @@ namespace Ryujinx.Graphics.Metal
     }
 
     [SupportedOSPlatform("macos")]
-    public class StagingBuffer : IDisposable
+    class StagingBuffer : IDisposable
     {
         private const int BufferSize = 32 * 1024 * 1024;
 

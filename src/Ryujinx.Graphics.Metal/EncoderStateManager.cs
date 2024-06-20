@@ -360,7 +360,7 @@ namespace Ryujinx.Graphics.Metal
                 {
                     _currentState.IndexType = MTLIndexType.UInt16;
                     _currentState.IndexBufferOffset = (ulong)buffer.Offset;
-                    _currentState.IndexBuffer = _bufferManager.GetBufferI8ToI16(_pipeline.CurrentCommandBuffer, buffer.Handle, buffer.Offset, buffer.Size);
+                    _currentState.IndexBuffer = _bufferManager.GetBufferI8ToI16(_pipeline.Cbs, buffer.Handle, buffer.Offset, buffer.Size);
                 }
                 else
                 {
@@ -1036,12 +1036,12 @@ namespace Ryujinx.Graphics.Metal
                 if (range.HasValue)
                 {
                     offset = range.Value.Offset;
-                    mtlBuffer = autoBuffer.Get(_pipeline.CurrentCommandBuffer, offset, range.Value.Size, range.Value.Write).Value;
+                    mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Value.Size, range.Value.Write).Value;
 
                 }
                 else
                 {
-                    mtlBuffer = autoBuffer.Get(_pipeline.CurrentCommandBuffer).Value;
+                    mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
                 }
 
                 renderCommandEncoder.SetVertexBuffer(mtlBuffer, (ulong)offset, (ulong)index);
@@ -1072,12 +1072,12 @@ namespace Ryujinx.Graphics.Metal
                 if (range.HasValue)
                 {
                     offset = range.Value.Offset;
-                    mtlBuffer = autoBuffer.Get(_pipeline.CurrentCommandBuffer, offset, range.Value.Size, range.Value.Write).Value;
+                    mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Value.Size, range.Value.Write).Value;
 
                 }
                 else
                 {
-                    mtlBuffer = autoBuffer.Get(_pipeline.CurrentCommandBuffer).Value;
+                    mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
                 }
 
                 computeCommandEncoder.SetBuffer(mtlBuffer, (ulong)offset, (ulong)index);

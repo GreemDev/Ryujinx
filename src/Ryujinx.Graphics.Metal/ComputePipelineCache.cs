@@ -7,7 +7,7 @@ using System.Runtime.Versioning;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    public class ComputePipelineCache : StateCache<MTLComputePipelineState, MTLFunction, MTLFunction>
+    class ComputePipelineCache : StateCache<MTLComputePipelineState, MTLFunction, MTLFunction>
     {
         private readonly MTLDevice _device;
 

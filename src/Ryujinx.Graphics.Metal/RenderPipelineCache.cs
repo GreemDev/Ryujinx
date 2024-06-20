@@ -7,7 +7,7 @@ using System.Runtime.Versioning;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    public struct RenderPipelineHash
+    struct RenderPipelineHash
     {
         public MTLFunction VertexFunction;
         public MTLFunction FragmentFunction;
@@ -162,7 +162,7 @@ namespace Ryujinx.Graphics.Metal
     }
 
     [SupportedOSPlatform("macos")]
-    public class RenderPipelineCache : StateCache<MTLRenderPipelineState, MTLRenderPipelineDescriptor, RenderPipelineHash>
+    class RenderPipelineCache : StateCache<MTLRenderPipelineState, MTLRenderPipelineDescriptor, RenderPipelineHash>
     {
         private readonly MTLDevice _device;
 

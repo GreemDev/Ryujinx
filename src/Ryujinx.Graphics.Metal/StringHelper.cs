@@ -5,7 +5,7 @@ using System.Runtime.Versioning;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    public class StringHelper
+    class StringHelper
     {
         public static NSString NSString(string source)
         {

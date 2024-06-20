@@ -6,7 +6,7 @@ using System.Runtime.Versioning;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    public abstract class TextureBase : IDisposable
+    abstract class TextureBase : IDisposable
     {
         private bool _disposed;
 

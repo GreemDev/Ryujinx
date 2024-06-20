@@ -1,11 +1,10 @@
-using SharpMetal.Metal;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
 {
-    public interface ICacheKey : IDisposable
+    interface ICacheKey : IDisposable
     {
         bool KeyEqual(ICacheKey other);
     }
@@ -116,7 +115,7 @@ namespace Ryujinx.Graphics.Metal
     }
 
     [SupportedOSPlatform("macos")]
-    public readonly struct Dependency
+    readonly struct Dependency
     {
         private readonly BufferHolder _buffer;
         private readonly int _offset;

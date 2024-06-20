@@ -8,7 +8,7 @@ using System.Threading;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    public class BufferHolder : IDisposable
+    class BufferHolder : IDisposable
     {
         private CacheByRange<BufferHolder> _cachedConvertedBuffers;
 

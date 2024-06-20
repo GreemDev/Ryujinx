@@ -5,7 +5,7 @@ using System.Runtime.Versioning;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    public abstract class StateCache<T, TDescriptor, THash> : IDisposable where T : IDisposable
+    abstract class StateCache<T, TDescriptor, THash> : IDisposable where T : IDisposable
     {
         private readonly Dictionary<THash, T> _cache = new();
 

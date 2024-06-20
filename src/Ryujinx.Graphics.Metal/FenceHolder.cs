@@ -6,7 +6,7 @@ using System.Threading;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    public class FenceHolder : IDisposable
+    class FenceHolder : IDisposable
     {
         private MTLCommandBuffer _fence;
         private int _referenceCount;
