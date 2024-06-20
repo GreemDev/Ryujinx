@@ -79,9 +79,14 @@ namespace Ryujinx.Graphics.Metal
             Extents2D dstRegion,
             bool linearFilter)
         {
+            // Save current state
+            _pipeline.SaveAndResetState();
+
             const int RegionBufferSize = 16;
 
             var sampler = linearFilter ? _samplerLinear : _samplerNearest;
+
+            _pipeline.SetTextureAndSampler(ShaderStage.Fragment, 0, src, sampler);
 
             Span<float> region = stackalloc float[RegionBufferSize / sizeof(float)];
 
@@ -100,9 +105,9 @@ namespace Ryujinx.Graphics.Metal
                 (region[2], region[3]) = (region[3], region[2]);
             }
 
-            // using var buffer = _renderer.BufferManager.ReserveOrCreate(cbs, RegionBufferSize);
-            // buffer.Holder.SetDataUnchecked<float>(buffer.Offset, region);
-            // _pipeline.SetUniformBuffers([new BufferAssignment(0, buffer.Range)]);
+            using var buffer = _renderer.BufferManager.ReserveOrCreate(cbs, RegionBufferSize);
+            buffer.Holder.SetDataUnchecked<float>(buffer.Offset, region);
+            _pipeline.SetUniformBuffers([new BufferAssignment(0, buffer.Range)]);
 
             var rect = new Rectangle<float>(
                 MathF.Min(dstRegion.X1, dstRegion.X2),
@@ -121,25 +126,18 @@ namespace Ryujinx.Graphics.Metal
                 0f,
                 1f);
 
+            _pipeline.SetProgram(_programColorBlit);
+
             int dstWidth = dst.Width;
             int dstHeight = dst.Height;
 
-            // Save current state
-            _pipeline.SaveAndResetState();
-
-            _pipeline.SetProgram(_programColorBlit);
-            _pipeline.SetViewports(viewports);
-            _pipeline.SetScissors(stackalloc Rectangle<int>[] { new Rectangle<int>(0, 0, dstWidth, dstHeight) });
             _pipeline.SetRenderTargets([dst], null);
+            _pipeline.SetScissors(stackalloc Rectangle<int>[] { new Rectangle<int>(0, 0, dstWidth, dstHeight) });
+
             _pipeline.SetClearLoadAction(true);
-            _pipeline.SetTextureAndSampler(ShaderStage.Fragment, 0, src, sampler);
+
+            _pipeline.SetViewports(viewports);
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
-
-            fixed (float* ptr = region)
-            {
-                _pipeline.GetOrCreateRenderEncoder(true).SetVertexBytes((IntPtr)ptr, RegionBufferSize, 0);
-            }
-
             _pipeline.Draw(4, 1, 0, 0);
 
             // Restore previous state
