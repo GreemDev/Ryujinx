@@ -1,4 +1,3 @@
-using Ryujinx.Common.Memory;
 using Ryujinx.Graphics.GAL;
 using SharpMetal.Metal;
 using System.Linq;

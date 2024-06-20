@@ -485,10 +485,6 @@ namespace Ryujinx.Graphics.Metal
         // Inlineable
         public void UpdateStencilState(StencilTestDescriptor stencilTest)
         {
-            // Cleanup old state
-            _currentState.FrontFaceStencil.Dispose();
-            _currentState.BackFaceStencil.Dispose();
-
             _currentState.FrontFaceStencil = new MTLStencilDescriptor
             {
                 StencilFailureOperation = stencilTest.FrontSFail.Convert(),

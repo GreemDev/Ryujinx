@@ -329,8 +329,7 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
             _pipeline.SetViewports(viewports);
             _pipeline.SetDepthTest(new DepthTestDescriptor(true, depthMask, CompareOp.Always));
-            // TODO: Figure out why this causes a crash
-            // _pipeline.SetStencilTest(CreateStencilTestDescriptor(stencilMask != 0, stencilValue, 0xFF, stencilMask));
+            _pipeline.SetStencilTest(CreateStencilTestDescriptor(stencilMask != 0, stencilValue, 0xFF, stencilMask));
             _pipeline.GetOrCreateRenderEncoder(true).SetFragmentBytes(ptr, ClearDepthBufferSize, 0);
             _pipeline.Draw(4, 1, 0, 0);
 
