@@ -58,7 +58,7 @@ namespace Ryujinx.Graphics.Metal
 
             _pipeline.InitEncoderStateManager(_bufferManager);
 
-            _helperShader = new HelperShader(_device, _pipeline);
+            _helperShader = new HelperShader(_device, this, _pipeline);
             SyncManager = new SyncManager(this);
         }
 

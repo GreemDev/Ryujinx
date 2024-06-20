@@ -153,6 +153,16 @@ namespace Ryujinx.Graphics.Metal
             return null;
         }
 
+        public Auto<DisposableBuffer> GetBufferI8ToI16(CommandBufferScoped cbs, BufferHandle handle, int offset, int size)
+        {
+            if (TryGetBuffer(handle, out var holder))
+            {
+                return holder.GetBufferI8ToI16(cbs, offset, size);
+            }
+
+            return null;
+        }
+
         public PinnedSpan<byte> GetData(BufferHandle handle, int offset, int size)
         {
             if (TryGetBuffer(handle, out var holder))

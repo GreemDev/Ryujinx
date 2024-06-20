@@ -12,7 +12,9 @@ namespace Ryujinx.Graphics.Metal
     [SupportedOSPlatform("macos")]
     public class HelperShader : IDisposable
     {
+        private const int ConvertElementsPerWorkgroup = 32 * 100; // Work group size of 32 times 100 elements.
         private const string ShadersSourcePath = "/Ryujinx.Graphics.Metal/Shaders";
+        private readonly MetalRenderer _renderer;
         private readonly Pipeline _pipeline;
         private MTLDevice _device;
 
@@ -21,10 +23,12 @@ namespace Ryujinx.Graphics.Metal
         private readonly IProgram _programColorBlit;
         private readonly List<IProgram> _programsColorClear = new();
         private readonly IProgram _programDepthStencilClear;
+        private readonly IProgram _programStrideChange;
 
-        public HelperShader(MTLDevice device, Pipeline pipeline)
+        public HelperShader(MTLDevice device, MetalRenderer renderer, Pipeline pipeline)
         {
             _device = device;
+            _renderer = renderer;
             _pipeline = pipeline;
 
             _samplerNearest = new Sampler(_device, SamplerCreateInfo.Create(MinFilter.Nearest, MagFilter.Nearest));
@@ -54,6 +58,12 @@ namespace Ryujinx.Graphics.Metal
                 new ShaderSource(depthStencilClearSource, ShaderStage.Fragment, TargetLanguage.Msl),
                 new ShaderSource(depthStencilClearSource, ShaderStage.Vertex, TargetLanguage.Msl)
             ], device);
+
+            var strideChangeSource = ReadMsl("ChangeBufferStride.metal");
+            _programStrideChange = new Program(
+            [
+                new ShaderSource(strideChangeSource, ShaderStage.Compute, TargetLanguage.Msl)
+            ], device);
         }
 
         private static string ReadMsl(string fileName)
@@ -62,6 +72,7 @@ namespace Ryujinx.Graphics.Metal
         }
 
         public unsafe void BlitColor(
+            CommandBufferScoped cbs,
             ITexture src,
             ITexture dst,
             Extents2D srcRegion,
@@ -88,6 +99,10 @@ namespace Ryujinx.Graphics.Metal
             {
                 (region[2], region[3]) = (region[3], region[2]);
             }
+
+            // using var buffer = _renderer.BufferManager.ReserveOrCreate(cbs, RegionBufferSize);
+            // buffer.Holder.SetDataUnchecked<float>(buffer.Offset, region);
+            // _pipeline.SetUniformBuffers([new BufferAssignment(0, buffer.Range)]);
 
             var rect = new Rectangle<float>(
                 MathF.Min(dstRegion.X1, dstRegion.X2),
@@ -156,6 +171,10 @@ namespace Ryujinx.Graphics.Metal
                 (region[2], region[3]) = (region[3], region[2]);
             }
 
+            // var bufferHandle = _renderer.BufferManager.CreateWithHandle(RegionBufferSize);
+            // _renderer.BufferManager.SetData<float>(bufferHandle, 0, region);
+            // _pipeline.SetUniformBuffers([new BufferAssignment(0, new BufferRange(bufferHandle, 0, RegionBufferSize))]);
+
             Span<Viewport> viewports = stackalloc Viewport[1];
             Span<Rectangle<int>> scissors = stackalloc Rectangle<int>[1];
 
@@ -195,6 +214,57 @@ namespace Ryujinx.Graphics.Metal
             }
 
             _pipeline.Draw(4, 1, 0, 0);
+
+            // Restore previous state
+            _pipeline.RestoreState();
+        }
+
+        public void ConvertI8ToI16(CommandBufferScoped cbs, BufferHolder src, BufferHolder dst, int srcOffset, int size)
+        {
+            ChangeStride(cbs, src, dst, srcOffset, size, 1, 2);
+        }
+
+        public unsafe void ChangeStride(
+            CommandBufferScoped cbs,
+            BufferHolder src,
+            BufferHolder dst,
+            int srcOffset,
+            int size,
+            int stride,
+            int newStride)
+        {
+            int elems = size / stride;
+
+            var srcBuffer = src.GetBuffer();
+            var dstBuffer = dst.GetBuffer();
+
+            const int ParamsBufferSize = 16;
+
+            // Save current state
+            _pipeline.SaveAndResetState();
+
+            Span<int> shaderParams = stackalloc int[ParamsBufferSize / sizeof(int)];
+
+            shaderParams[0] = stride;
+            shaderParams[1] = newStride;
+            shaderParams[2] = size;
+            shaderParams[3] = srcOffset;
+
+            using var buffer = _renderer.BufferManager.ReserveOrCreate(cbs, ParamsBufferSize);
+
+            buffer.Holder.SetDataUnchecked<int>(buffer.Offset, shaderParams);
+
+            _pipeline.SetUniformBuffers([new BufferAssignment(0, buffer.Range)]);
+
+            Span<Auto<DisposableBuffer>> sbRanges = new Auto<DisposableBuffer>[2];
+
+            sbRanges[0] = srcBuffer;
+            sbRanges[1] = dstBuffer;
+
+            _pipeline.SetStorageBuffers(1, sbRanges);
+
+            _pipeline.SetProgram(_programStrideChange);
+            _pipeline.DispatchCompute(1 + elems / ConvertElementsPerWorkgroup, 1, 1, 64, 1, 1);
 
             // Restore previous state
             _pipeline.RestoreState();

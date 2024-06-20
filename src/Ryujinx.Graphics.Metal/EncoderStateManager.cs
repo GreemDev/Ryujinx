@@ -22,7 +22,7 @@ namespace Ryujinx.Graphics.Metal
         private EncoderState _currentState = new();
         private readonly Stack<EncoderState> _backStates = [];
 
-        public readonly BufferRange IndexBuffer => _currentState.IndexBuffer;
+        public readonly Auto<DisposableBuffer> IndexBuffer => _currentState.IndexBuffer;
         public readonly MTLIndexType IndexType => _currentState.IndexType;
         public readonly ulong IndexBufferOffset => _currentState.IndexBufferOffset;
         public readonly PrimitiveTopology Topology => _currentState.Topology;
@@ -356,9 +356,18 @@ namespace Ryujinx.Graphics.Metal
         {
             if (buffer.Handle != BufferHandle.Null)
             {
-                _currentState.IndexType = type.Convert();
-                _currentState.IndexBufferOffset = (ulong)buffer.Offset;
-                _currentState.IndexBuffer = buffer;
+                if (type == GAL.IndexType.UByte)
+                {
+                    _currentState.IndexType = MTLIndexType.UInt16;
+                    _currentState.IndexBufferOffset = (ulong)buffer.Offset;
+                    _currentState.IndexBuffer = _bufferManager.GetBufferI8ToI16(_pipeline.CurrentCommandBuffer, buffer.Handle, buffer.Offset, buffer.Size);
+                }
+                else
+                {
+                    _currentState.IndexType = type.Convert();
+                    _currentState.IndexBufferOffset = (ulong)buffer.Offset;
+                    _currentState.IndexBuffer = _bufferManager.GetBuffer(buffer.Handle, false);
+                }
             }
         }
 
@@ -659,7 +668,20 @@ namespace Ryujinx.Graphics.Metal
         // Inlineable
         public void UpdateUniformBuffers(ReadOnlySpan<BufferAssignment> buffers)
         {
-            _currentState.UniformBuffers = buffers.ToArray();
+            _currentState.UniformBuffers = new BufferRef[buffers.Length];
+
+            for (int i = 0; i < buffers.Length; i++)
+            {
+                var assignment = buffers[i];
+                var buffer = assignment.Range;
+                int index = assignment.Binding;
+
+                Auto<DisposableBuffer> mtlBuffer = buffer.Handle == BufferHandle.Null
+                    ? null
+                    : _bufferManager.GetBuffer(buffer.Handle, buffer.Write);
+
+                _currentState.UniformBuffers[i] = new BufferRef(mtlBuffer, index, ref buffer);
+            }
 
             // Inline update
             if (_pipeline.CurrentEncoder != null)
@@ -680,13 +702,49 @@ namespace Ryujinx.Graphics.Metal
         // Inlineable
         public void UpdateStorageBuffers(ReadOnlySpan<BufferAssignment> buffers)
         {
-            _currentState.StorageBuffers = buffers.ToArray();
+            _currentState.StorageBuffers = new BufferRef[buffers.Length];
 
-            for (int i = 0; i < _currentState.StorageBuffers.Length; i++)
+            for (int i = 0; i < buffers.Length; i++)
             {
-                BufferAssignment buffer = _currentState.StorageBuffers[i];
-                // TODO: DONT offset the binding by 15
-                _currentState.StorageBuffers[i] = new BufferAssignment(buffer.Binding + 15, buffer.Range);
+                var assignment = buffers[i];
+                var buffer = assignment.Range;
+                // TODO: Dont do this
+                int index = assignment.Binding + 15;
+
+                Auto<DisposableBuffer> mtlBuffer = buffer.Handle == BufferHandle.Null
+                    ? null
+                    : _bufferManager.GetBuffer(buffer.Handle, buffer.Write);
+
+                _currentState.StorageBuffers[i] = new BufferRef(mtlBuffer, index, ref buffer);
+            }
+
+            // Inline update
+            if (_pipeline.CurrentEncoder != null)
+            {
+                if (_pipeline.CurrentEncoderType == EncoderType.Render)
+                {
+                    var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
+                    SetRenderBuffers(renderCommandEncoder, _currentState.StorageBuffers, true);
+                }
+                else if (_pipeline.CurrentEncoderType == EncoderType.Compute)
+                {
+                    var computeCommandEncoder = new MTLComputeCommandEncoder(_pipeline.CurrentEncoder.Value);
+                    SetComputeBuffers(computeCommandEncoder, _currentState.StorageBuffers);
+                }
+            }
+        }
+
+        // Inlineable
+        public void UpdateStorageBuffers(int first, ReadOnlySpan<Auto<DisposableBuffer>> buffers)
+        {
+            _currentState.StorageBuffers = new BufferRef[buffers.Length];
+
+            for (int i = 0; i < buffers.Length; i++)
+            {
+                var mtlBuffer = buffers[i];
+                int index = first + i;
+
+                _currentState.StorageBuffers[i] = new BufferRef(mtlBuffer, index);
             }
 
             // Inline update
@@ -938,51 +996,95 @@ namespace Ryujinx.Graphics.Metal
 
         private void SetVertexBuffers(MTLRenderCommandEncoder renderCommandEncoder, VertexBufferDescriptor[] bufferDescriptors)
         {
-            var buffers = new List<BufferAssignment>();
+            var buffers = new List<BufferRef>();
 
             for (int i = 0; i < bufferDescriptors.Length; i++)
             {
-                buffers.Add(new BufferAssignment(i, bufferDescriptors[i].Buffer));
+                Auto<DisposableBuffer> mtlBuffer = bufferDescriptors[i].Buffer.Handle == BufferHandle.Null
+                    ? null
+                    : _bufferManager.GetBuffer(bufferDescriptors[i].Buffer.Handle, bufferDescriptors[i].Buffer.Write);
+
+                var range = bufferDescriptors[i].Buffer;
+
+                buffers.Add(new BufferRef(mtlBuffer, i, ref range));
             }
 
+            var zeroBufferRange = new BufferRange(_zeroBuffer, 0, ZeroBufferSize);
+
+            Auto<DisposableBuffer> zeroBuffer = _zeroBuffer == BufferHandle.Null
+                ? null
+                : _bufferManager.GetBuffer(_zeroBuffer, false);
+
             // Zero buffer
-            buffers.Add(new BufferAssignment(
-                bufferDescriptors.Length,
-                new BufferRange(_zeroBuffer, 0, ZeroBufferSize)));
+            buffers.Add(new BufferRef(zeroBuffer, bufferDescriptors.Length, ref zeroBufferRange));
 
             SetRenderBuffers(renderCommandEncoder, buffers.ToArray());
         }
 
-        private readonly void SetRenderBuffers(MTLRenderCommandEncoder renderCommandEncoder, BufferAssignment[] buffers, bool fragment = false)
+        private readonly void SetRenderBuffers(MTLRenderCommandEncoder renderCommandEncoder, BufferRef[] buffers, bool fragment = false)
         {
-            foreach (var buffer in buffers)
+            for (int i = 0; i < buffers.Length; i++)
             {
-                var range = buffer.Range;
-                var autoBuffer = _bufferManager.GetBuffer(range.Handle, range.Offset, range.Size, range.Write);
+                var range = buffers[i].Range;
+                var autoBuffer = buffers[i].Buffer;
+                var offset = 0;
+                var index = buffers[i].Index;
 
-                if (autoBuffer != null)
+                if (autoBuffer == null)
                 {
-                    var mtlBuffer = autoBuffer.Get(_pipeline.CurrentCommandBuffer).Value;
+                    continue;
+                }
 
-                    renderCommandEncoder.SetVertexBuffer(mtlBuffer, (ulong)range.Offset, (ulong)buffer.Binding);
+                MTLBuffer mtlBuffer;
 
-                    if (fragment)
-                    {
-                        renderCommandEncoder.SetFragmentBuffer(mtlBuffer, (ulong)range.Offset, (ulong)buffer.Binding);
-                    }
+                if (range.HasValue)
+                {
+                    offset = range.Value.Offset;
+                    mtlBuffer = autoBuffer.Get(_pipeline.CurrentCommandBuffer, offset, range.Value.Size, range.Value.Write).Value;
+
+                }
+                else
+                {
+                    mtlBuffer = autoBuffer.Get(_pipeline.CurrentCommandBuffer).Value;
+                }
+
+                renderCommandEncoder.SetVertexBuffer(mtlBuffer, (ulong)offset, (ulong)index);
+
+                if (fragment)
+                {
+                    renderCommandEncoder.SetFragmentBuffer(mtlBuffer, (ulong)offset, (ulong)index);
                 }
             }
         }
 
-        private readonly void SetComputeBuffers(MTLComputeCommandEncoder computeCommandEncoder, BufferAssignment[] buffers)
+        private readonly void SetComputeBuffers(MTLComputeCommandEncoder computeCommandEncoder, BufferRef[] buffers)
         {
-            foreach (var buffer in buffers)
+            for (int i = 0; i < buffers.Length; i++)
             {
-                var range = buffer.Range;
-                var mtlBuffer = _bufferManager.GetBuffer(range.Handle, range.Offset, range.Size, range.Write).Get(_pipeline.CurrentCommandBuffer).Value;
+                var range = buffers[i].Range;
+                var autoBuffer = buffers[i].Buffer;
+                var offset = 0;
+                var index = buffers[i].Index;
 
-                computeCommandEncoder.SetBuffer(mtlBuffer, (ulong)range.Offset, (ulong)buffer.Binding);
+                if (autoBuffer == null)
+                {
+                    continue;
+                }
 
+                MTLBuffer mtlBuffer;
+
+                if (range.HasValue)
+                {
+                    offset = range.Value.Offset;
+                    mtlBuffer = autoBuffer.Get(_pipeline.CurrentCommandBuffer, offset, range.Value.Size, range.Value.Write).Value;
+
+                }
+                else
+                {
+                    mtlBuffer = autoBuffer.Get(_pipeline.CurrentCommandBuffer).Value;
+                }
+
+                computeCommandEncoder.SetBuffer(mtlBuffer, (ulong)offset, (ulong)index);
             }
         }
 

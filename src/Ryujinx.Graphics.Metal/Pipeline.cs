@@ -193,7 +193,7 @@ namespace Ryujinx.Graphics.Metal
             var textureInfo = new TextureCreateInfo((int)drawable.Texture.Width, (int)drawable.Texture.Height, (int)drawable.Texture.Depth, (int)drawable.Texture.MipmapLevelCount, (int)drawable.Texture.SampleCount, 0, 0, 0, Format.B8G8R8A8Unorm, 0, Target.Texture2D, SwizzleComponent.Red, SwizzleComponent.Green, SwizzleComponent.Blue, SwizzleComponent.Alpha);
             var dst = new Texture(_device, _renderer, this, textureInfo, drawable.Texture, 0, 0);
 
-            _renderer.HelperShader.BlitColor(src, dst, srcRegion, dstRegion, isLinear);
+            _renderer.HelperShader.BlitColor(Cbs, src, dst, srcRegion, dstRegion, isLinear);
 
             EndCurrentPass();
 
@@ -227,7 +227,7 @@ namespace Ryujinx.Graphics.Metal
             Extents2D dstRegion,
             bool linearFilter)
         {
-            _renderer.HelperShader.BlitColor(src, dst, srcRegion, dstRegion, linearFilter);
+            _renderer.HelperShader.BlitColor(Cbs, src, dst, srcRegion, dstRegion, linearFilter);
         }
 
         public void Barrier()
@@ -348,7 +348,7 @@ namespace Ryujinx.Graphics.Metal
             // TODO: Support topology re-indexing to provide support for TriangleFans
             var primitiveType = _encoderStateManager.Topology.Convert();
 
-            var indexBuffer = _renderer.BufferManager.GetBuffer(_encoderStateManager.IndexBuffer.Handle, false);
+            var indexBuffer = _encoderStateManager.IndexBuffer;
 
             renderCommandEncoder.DrawIndexedPrimitives(
                 primitiveType,
@@ -544,6 +544,11 @@ namespace Ryujinx.Graphics.Metal
         public void SetStorageBuffers(ReadOnlySpan<BufferAssignment> buffers)
         {
             _encoderStateManager.UpdateStorageBuffers(buffers);
+        }
+
+        public void SetStorageBuffers(int first, ReadOnlySpan<Auto<DisposableBuffer>> buffers)
+        {
+            _encoderStateManager.UpdateStorageBuffers(first, buffers);
         }
 
         public void SetTextureAndSampler(ShaderStage stage, int binding, ITexture texture, ISampler sampler)

@@ -10,6 +10,8 @@ namespace Ryujinx.Graphics.Metal
     [SupportedOSPlatform("macos")]
     public class BufferHolder : IDisposable
     {
+        private CacheByRange<BufferHolder> _cachedConvertedBuffers;
+
         public int Size { get; }
 
         private readonly IntPtr _map;
@@ -271,9 +273,66 @@ namespace Ryujinx.Graphics.Metal
             _waitable.WaitForFences(offset, size);
         }
 
+        private bool BoundToRange(int offset, ref int size)
+        {
+            if (offset >= Size)
+            {
+                return false;
+            }
+
+            size = Math.Min(Size - offset, size);
+
+            return true;
+        }
+
+        public Auto<DisposableBuffer> GetBufferI8ToI16(CommandBufferScoped cbs, int offset, int size)
+        {
+            if (!BoundToRange(offset, ref size))
+            {
+                return null;
+            }
+
+            var key = new I8ToI16CacheKey(_renderer);
+
+            if (!_cachedConvertedBuffers.TryGetValue(offset, size, key, out var holder))
+            {
+                holder = _renderer.BufferManager.Create((size * 2 + 3) & ~3);
+
+                _renderer.HelperShader.ConvertI8ToI16(cbs, this, holder, offset, size);
+
+                key.SetBuffer(holder.GetBuffer());
+
+                _cachedConvertedBuffers.Add(offset, size, key, holder);
+            }
+
+            return holder.GetBuffer();
+        }
+
+        public bool TryGetCachedConvertedBuffer(int offset, int size, ICacheKey key, out BufferHolder holder)
+        {
+            return _cachedConvertedBuffers.TryGetValue(offset, size, key, out holder);
+        }
+
+        public void AddCachedConvertedBuffer(int offset, int size, ICacheKey key, BufferHolder holder)
+        {
+            _cachedConvertedBuffers.Add(offset, size, key, holder);
+        }
+
+        public void AddCachedConvertedBufferDependency(int offset, int size, ICacheKey key, Dependency dependency)
+        {
+            _cachedConvertedBuffers.AddDependency(offset, size, key, dependency);
+        }
+
+        public void RemoveCachedConvertedBuffer(int offset, int size, ICacheKey key)
+        {
+            _cachedConvertedBuffers.Remove(offset, size, key);
+        }
+
+
         public void Dispose()
         {
             _buffer.Dispose();
+            _cachedConvertedBuffers.Dispose();
 
             _flushLock.EnterWriteLock();
 

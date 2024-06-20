@@ -1,3 +1,4 @@
+using Ryujinx.Common.Memory;
 using Ryujinx.Graphics.GAL;
 using SharpMetal.Metal;
 using System.Linq;
@@ -21,6 +22,26 @@ namespace Ryujinx.Graphics.Metal
         }
     }
 
+    public record struct BufferRef
+    {
+        public Auto<DisposableBuffer> Buffer;
+        public int Index;
+        public BufferRange? Range;
+
+        public BufferRef(Auto<DisposableBuffer> buffer, int index)
+        {
+            Buffer = buffer;
+            Index = index;
+        }
+
+        public BufferRef(Auto<DisposableBuffer> buffer, int index, ref BufferRange range)
+        {
+            Buffer = buffer;
+            Index = index;
+            Range = range;
+        }
+    }
+
     [SupportedOSPlatform("macos")]
     struct EncoderState
     {
@@ -37,10 +58,10 @@ namespace Ryujinx.Graphics.Metal
         public TextureBase[] ComputeTextures = new TextureBase[Constants.MaxTextures];
         public MTLSamplerState[] ComputeSamplers = new MTLSamplerState[Constants.MaxSamplers];
 
-        public BufferAssignment[] UniformBuffers = [];
-        public BufferAssignment[] StorageBuffers = [];
+        public BufferRef[] UniformBuffers = [];
+        public BufferRef[] StorageBuffers = [];
 
-        public BufferRange IndexBuffer = default;
+        public Auto<DisposableBuffer> IndexBuffer = default;
         public MTLIndexType IndexType = MTLIndexType.UInt16;
         public ulong IndexBufferOffset = 0;
 
