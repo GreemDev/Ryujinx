@@ -67,11 +67,11 @@ namespace Ryujinx.Graphics.Metal
         {
             if (offset == 0 && size == Size)
             {
-                // TODO: Cache converted buffers
+                _cachedConvertedBuffers.Clear();
             }
             else
             {
-                // TODO: Cache converted buffers
+                _cachedConvertedBuffers.ClearRange(offset, size);
             }
         }
 
