@@ -26,7 +26,7 @@ namespace Ryujinx.Graphics.Metal
         public readonly MTLIndexType IndexType => _currentState.IndexType;
         public readonly ulong IndexBufferOffset => _currentState.IndexBufferOffset;
         public readonly PrimitiveTopology Topology => _currentState.Topology;
-        public readonly Texture RenderTarget => _currentState.RenderTargets[0];
+        public readonly Texture[] RenderTargets => _currentState.RenderTargets;
         public readonly Texture DepthStencil => _currentState.DepthStencil;
 
         // RGBA32F is the biggest format

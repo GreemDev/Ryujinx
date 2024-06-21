@@ -307,7 +307,7 @@ namespace Ryujinx.Graphics.Metal
         public void ClearRenderTargetColor(int index, int layer, int layerCount, uint componentMask, ColorF color)
         {
             float[] colors = [color.Red, color.Green, color.Blue, color.Alpha];
-            var dst = _encoderStateManager.RenderTarget;
+            var dst = _encoderStateManager.RenderTargets[index];
 
             // TODO: Remove workaround for Wonder which has an invalid texture due to unsupported format
             if (dst == null)
