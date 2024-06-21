@@ -15,17 +15,17 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             _infoTable = new InstInfo[(int)Instruction.Count];
 
 #pragma warning disable IDE0055 // Disable formatting
-            Add(Instruction.AtomicAdd,                InstType.AtomicBinary,   "atomic_add_explicit");
-            Add(Instruction.AtomicAnd,                InstType.AtomicBinary,   "atomic_and_explicit");
+            Add(Instruction.AtomicAdd,                InstType.AtomicBinary,   "atomic_fetch_add_explicit");
+            Add(Instruction.AtomicAnd,                InstType.AtomicBinary,   "atomic_fetch_and_explicit");
             Add(Instruction.AtomicCompareAndSwap,     InstType.AtomicBinary,   "atomic_compare_exchange_weak_explicit");
-            Add(Instruction.AtomicMaxU32,             InstType.AtomicBinary,   "atomic_max_explicit");
-            Add(Instruction.AtomicMinU32,             InstType.AtomicBinary,   "atomic_min_explicit");
-            Add(Instruction.AtomicOr,                 InstType.AtomicBinary,   "atomic_or_explicit");
+            Add(Instruction.AtomicMaxU32,             InstType.AtomicBinary,   "atomic_fetch_max_explicit");
+            Add(Instruction.AtomicMinU32,             InstType.AtomicBinary,   "atomic_fetch_min_explicit");
+            Add(Instruction.AtomicOr,                 InstType.AtomicBinary,   "atomic_fetch_or_explicit");
             Add(Instruction.AtomicSwap,               InstType.AtomicBinary,   "atomic_exchange_explicit");
-            Add(Instruction.AtomicXor,                InstType.AtomicBinary,   "atomic_xor_explicit");
+            Add(Instruction.AtomicXor,                InstType.AtomicBinary,   "atomic_fetch_xor_explicit");
             Add(Instruction.Absolute,                 InstType.CallUnary,      "abs");
             Add(Instruction.Add,                      InstType.OpBinaryCom,    "+",  2);
-            Add(Instruction.Ballot,                   InstType.CallUnary,      "simd_ballot");
+            Add(Instruction.Ballot,                   InstType.Special);
             Add(Instruction.Barrier,                  InstType.Special);
             Add(Instruction.BitCount,                 InstType.CallUnary,      "popcount");
             Add(Instruction.BitfieldExtractS32,       InstType.CallTernary,    "extract_bits");

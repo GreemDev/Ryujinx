@@ -70,16 +70,26 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             {
                 DeclareMemories(context, context.Properties.LocalMemories.Values, isShared: false);
                 DeclareMemories(context, context.Properties.SharedMemories.Values, isShared: true);
-            }
 
-            switch (stage)
-            {
-                case ShaderStage.Vertex:
-                    context.AppendLine("VertexOut out;");
-                    break;
-                case ShaderStage.Fragment:
-                    context.AppendLine("FragmentOut out;");
-                    break;
+                switch (stage)
+                {
+                    case ShaderStage.Vertex:
+                        context.AppendLine("VertexOut out;");
+                        // TODO: Only add if necessary
+                        context.AppendLine("uint instance_index = instance_id + base_instance;");
+                        break;
+                    case ShaderStage.Fragment:
+                        context.AppendLine("FragmentOut out;");
+                        break;
+                }
+
+                // TODO: Only add if necessary
+                if (stage != ShaderStage.Compute)
+                {
+                    // MSL does not give us access to [[thread_index_in_simdgroup]]
+                    // outside compute. But we may still need to provide this value in frag/vert.
+                    context.AppendLine("uint thread_index_in_simdgroup = simd_prefix_exclusive_sum(1);");
+                }
             }
 
             foreach (AstOperand decl in function.Locals)
@@ -90,15 +100,18 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             }
         }
 
-        public static string GetVarTypeName(CodeGenContext context, AggregateType type)
+        public static string GetVarTypeName(CodeGenContext context, AggregateType type, bool atomic = false)
         {
+            var s32 = atomic ? "atomic_int" : "int";
+            var u32 = atomic ? "atomic_uint" : "uint";
+
             return type switch
             {
                 AggregateType.Void => "void",
                 AggregateType.Bool => "bool",
                 AggregateType.FP32 => "float",
-                AggregateType.S32 => "int",
-                AggregateType.U32 => "uint",
+                AggregateType.S32 => s32,
+                AggregateType.U32 => u32,
                 AggregateType.Vector2 | AggregateType.Bool => "bool2",
                 AggregateType.Vector2 | AggregateType.FP32 => "float2",
                 AggregateType.Vector2 | AggregateType.S32 => "int2",

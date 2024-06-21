@@ -17,15 +17,16 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
         {
             var returnValue = ioVariable switch
             {
-                IoVariable.BaseInstance => ("base_instance", AggregateType.S32),
-                IoVariable.BaseVertex => ("base_vertex", AggregateType.S32),
+                IoVariable.BaseInstance => ("base_instance", AggregateType.U32),
+                IoVariable.BaseVertex => ("base_vertex", AggregateType.U32),
                 IoVariable.CtaId => ("threadgroup_position_in_grid", AggregateType.Vector3 | AggregateType.U32),
                 IoVariable.ClipDistance => ("clip_distance", AggregateType.Array | AggregateType.FP32),
                 IoVariable.FragmentOutputColor => ($"out.color{location}", AggregateType.Vector4 | AggregateType.FP32),
                 IoVariable.FragmentOutputDepth => ("out.depth", AggregateType.FP32),
                 IoVariable.FrontFacing => ("in.front_facing", AggregateType.Bool),
                 IoVariable.GlobalId => ("thread_position_in_grid", AggregateType.Vector3 | AggregateType.U32),
-                IoVariable.InstanceId => ("instance_id", AggregateType.S32),
+                IoVariable.InstanceId => ("instance_id", AggregateType.U32),
+                IoVariable.InstanceIndex => ("instance_index", AggregateType.U32),
                 IoVariable.InvocationId => ("INVOCATION_ID", AggregateType.S32),
                 IoVariable.PointCoord => ("point_coord", AggregateType.Vector2 | AggregateType.FP32),
                 IoVariable.PointSize => ("out.point_size", AggregateType.FP32),

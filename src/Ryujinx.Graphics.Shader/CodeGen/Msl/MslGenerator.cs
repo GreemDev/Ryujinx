@@ -137,6 +137,8 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 {
                     args = args.Append("uint vertex_id [[vertex_id]]").ToArray();
                     args = args.Append("uint instance_id [[instance_id]]").ToArray();
+                    args = args.Append("uint base_instance [[base_instance]]").ToArray();
+                    args = args.Append("uint base_vertex [[base_vertex]]").ToArray();
                 }
                 else if (stage == ShaderStage.Compute)
                 {
