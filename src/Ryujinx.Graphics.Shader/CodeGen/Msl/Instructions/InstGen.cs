@@ -2,7 +2,7 @@ using Ryujinx.Graphics.Shader.IntermediateRepresentation;
 using Ryujinx.Graphics.Shader.StructuredIr;
 using Ryujinx.Graphics.Shader.Translation;
 using System;
-
+using System.Text;
 using static Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions.InstGenCall;
 using static Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions.InstGenHelper;
 using static Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions.InstGenMemory;
@@ -39,11 +39,20 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
                 int arity = (int)(info.Type & InstType.ArityMask);
 
-                string args = string.Empty;
+                StringBuilder builder = new();
 
-                if (atomic)
+                if (atomic && (operation.StorageKind == StorageKind.StorageBuffer || operation.StorageKind == StorageKind.SharedMemory))
                 {
-                    // Hell
+                    builder.Append(GenerateLoadOrStore(context, operation, isStore: false));
+
+                    AggregateType dstType = operation.Inst == Instruction.AtomicMaxS32 || operation.Inst == Instruction.AtomicMinS32
+                        ? AggregateType.S32
+                        : AggregateType.U32;
+
+                    for (int argIndex = operation.SourcesCount - arity + 2; argIndex < operation.SourcesCount; argIndex++)
+                    {
+                        builder.Append($", {GetSourceExpr(context, operation.GetSource(argIndex), dstType)}");
+                    }
                 }
                 else
                 {
@@ -51,16 +60,16 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     {
                         if (argIndex != 0)
                         {
-                            args += ", ";
+                            builder.Append(", ");
                         }
 
                         AggregateType dstType = GetSrcVarType(inst, argIndex);
 
-                        args += GetSourceExpr(context, operation.GetSource(argIndex), dstType);
+                        builder.Append(GetSourceExpr(context, operation.GetSource(argIndex), dstType));
                     }
                 }
 
-                return info.OpName + '(' + args + ')';
+                return $"{info.OpName}({builder})";
             }
             else if ((info.Type & InstType.Op) != 0)
             {
@@ -110,7 +119,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 switch (inst & Instruction.Mask)
                 {
                     case Instruction.Barrier:
-                        return "|| BARRIER ||";
+                        return "threadgroup_barrier(mem_flags::mem_threadgroup)";
                     case Instruction.Call:
                         return Call(context, operation);
                     case Instruction.FSIBegin:

@@ -10,25 +10,21 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
         public static bool TryFormat(int value, AggregateType dstType, out string formatted)
         {
-            if (dstType == AggregateType.FP32)
+            switch (dstType)
             {
-                return TryFormatFloat(BitConverter.Int32BitsToSingle(value), out formatted);
-            }
-            else if (dstType == AggregateType.S32)
-            {
-                formatted = FormatInt(value);
-            }
-            else if (dstType == AggregateType.U32)
-            {
-                formatted = FormatUint((uint)value);
-            }
-            else if (dstType == AggregateType.Bool)
-            {
-                formatted = value != 0 ? "true" : "false";
-            }
-            else
-            {
-                throw new ArgumentException($"Invalid variable type \"{dstType}\".");
+                case AggregateType.FP32:
+                    return TryFormatFloat(BitConverter.Int32BitsToSingle(value), out formatted);
+                case AggregateType.S32:
+                    formatted = FormatInt(value);
+                    break;
+                case AggregateType.U32:
+                    formatted = FormatUint((uint)value);
+                    break;
+                case AggregateType.Bool:
+                    formatted = value != 0 ? "true" : "false";
+                    break;
+                default:
+                    throw new ArgumentException($"Invalid variable type \"{dstType}\".");
             }
 
             return true;
@@ -65,18 +61,12 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
         public static string FormatInt(int value, AggregateType dstType)
         {
-            if (dstType == AggregateType.S32)
+            return dstType switch
             {
-                return FormatInt(value);
-            }
-            else if (dstType == AggregateType.U32)
-            {
-                return FormatUint((uint)value);
-            }
-            else
-            {
-                throw new ArgumentException($"Invalid variable type \"{dstType}\".");
-            }
+                AggregateType.S32 => FormatInt(value),
+                AggregateType.U32 => FormatUint((uint)value),
+                _ => throw new ArgumentException($"Invalid variable type \"{dstType}\".")
+            };
         }
 
         public static string FormatInt(int value)

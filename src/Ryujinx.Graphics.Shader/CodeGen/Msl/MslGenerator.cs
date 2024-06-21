@@ -44,7 +44,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             context.AppendLine(GetFunctionSignature(context, function, stage, isMainFunc));
             context.EnterScope();
 
-            Declarations.DeclareLocals(context, function, stage);
+            Declarations.DeclareLocals(context, function, stage, isMainFunc);
 
             PrintBlock(context, function.MainBlock, isMainFunc);
 
@@ -63,15 +63,22 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             ShaderStage stage,
             bool isMainFunc = false)
         {
-            int additionalArgCount = isMainFunc ? 0 : CodeGenContext.AdditionalArgCount;
+            int additionalArgCount = isMainFunc ? 0 : CodeGenContext.AdditionalArgCount + (context.Definitions.Stage != ShaderStage.Compute ? 1 : 0);
 
             string[] args = new string[additionalArgCount + function.InArguments.Length + function.OutArguments.Length];
 
             // All non-main functions need to be able to access the support_buffer as well
             if (!isMainFunc)
             {
-                args[0] = "FragmentIn in";
-                args[1] = "constant Struct_support_buffer* support_buffer";
+                if (stage != ShaderStage.Compute)
+                {
+                    args[0] = stage == ShaderStage.Vertex ? "VertexIn in" : "FragmentIn in";
+                    args[1] = $"constant {DefaultNames.StructPrefix}_support_buffer* support_buffer";
+                }
+                else
+                {
+                    args[0] = $"constant {DefaultNames.StructPrefix}_support_buffer* support_buffer";
+                }
             }
 
             int argIndex = additionalArgCount;
@@ -141,13 +148,13 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
                 foreach (var constantBuffer in context.Properties.ConstantBuffers.Values)
                 {
-                    args = args.Append($"constant Struct_{constantBuffer.Name}* {constantBuffer.Name} [[buffer({constantBuffer.Binding})]]").ToArray();
+                    args = args.Append($"constant {DefaultNames.StructPrefix}_{constantBuffer.Name}* {constantBuffer.Name} [[buffer({constantBuffer.Binding})]]").ToArray();
                 }
 
                 foreach (var storageBuffers in context.Properties.StorageBuffers.Values)
                 {
                     // Offset the binding by 15 to avoid clashing with the constant buffers
-                    args = args.Append($"device Struct_{storageBuffers.Name}* {storageBuffers.Name} [[buffer({storageBuffers.Binding + 15})]]").ToArray();
+                    args = args.Append($"device {DefaultNames.StructPrefix}_{storageBuffers.Name}* {storageBuffers.Name} [[buffer({storageBuffers.Binding + 15})]]").ToArray();
                 }
 
                 foreach (var texture in context.Properties.Textures.Values)
@@ -162,7 +169,10 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 }
             }
 
-            return $"{funcKeyword} {returnType} {funcName ?? function.Name}({string.Join(", ", args)})";
+            var funcPrefix = $"{funcKeyword} {returnType} {funcName ?? function.Name}(";
+            var indent = new string(' ', funcPrefix.Length);
+
+            return $"{funcPrefix}{string.Join($", \n{indent}", args)})";
         }
 
         private static void PrintBlock(CodeGenContext context, AstBlock block, bool isMainFunction)

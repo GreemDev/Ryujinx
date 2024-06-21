@@ -47,15 +47,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
                     StructureField field = buffer.Type.Fields[fieldIndex.Value];
                     varName = buffer.Name;
-                    if ((field.Type & AggregateType.Array) != 0 && field.ArrayLength == 0)
-                    {
-                        // Unsized array, the buffer is indexed instead of the field
-                        fieldName = "." + field.Name;
-                    }
-                    else
-                    {
-                        varName += "->" + field.Name;
-                    }
+                    varName += "->" + field.Name;
                     varType = field.Type;
                     break;
 
