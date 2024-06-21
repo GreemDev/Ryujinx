@@ -195,7 +195,63 @@ namespace Ryujinx.Graphics.Metal
 
         public PinnedSpan<byte> GetData()
         {
-            throw new NotImplementedException();
+            var blitCommandEncoder = _pipeline.GetOrCreateBlitEncoder();
+
+            ulong length = 0;
+
+            for (int level = 0; level < Info.Levels; level++)
+            {
+                length += (ulong)Info.GetMipSize(level);
+            }
+
+            unsafe
+            {
+                var mtlBuffer = _device.NewBuffer(length, MTLResourceOptions.ResourceStorageModeShared);
+
+                int width = Info.Width;
+                int height = Info.Height;
+                int depth = Info.Depth;
+                int levels = Info.GetLevelsClamped();
+                int layers = Info.GetLayers();
+                bool is3D = Info.Target == Target.Texture3D;
+
+                int offset = 0;
+
+                for (int level = 0; level < levels; level++)
+                {
+                    int mipSize = Info.GetMipSize2D(level);
+                    int endOffset = offset + mipSize;
+
+                    for (int layer = 0; layer < layers; layer++)
+                    {
+                        blitCommandEncoder.CopyFromTexture(
+                            _mtlTexture,
+                            (ulong)layer,
+                            (ulong)level,
+                            new MTLOrigin(),
+                            new MTLSize { width = (ulong)width, height = (ulong)height, depth = is3D ? (ulong)depth : 1 },
+                            mtlBuffer,
+                            (ulong)offset,
+                            (ulong)Info.GetMipStride(level),
+                            (ulong)mipSize
+                        );
+
+                        offset += mipSize;
+                    }
+
+                    width = Math.Max(1, width >> 1);
+                    height = Math.Max(1, height >> 1);
+
+                    if (is3D)
+                    {
+                        depth = Math.Max(1, depth >> 1);
+                    }
+                }
+
+                // TODO: wait
+
+                return new PinnedSpan<byte>(mtlBuffer.Contents.ToPointer(), (int)length, () => mtlBuffer.Dispose());
+            }
         }
 
         public PinnedSpan<byte> GetData(int layer, int level)
