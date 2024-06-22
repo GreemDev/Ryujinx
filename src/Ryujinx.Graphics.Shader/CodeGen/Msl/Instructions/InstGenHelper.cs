@@ -71,10 +71,9 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             Add(Instruction.ExponentB2,               InstType.CallUnary,      "exp2");
             Add(Instruction.FSIBegin,                 InstType.Special);
             Add(Instruction.FSIEnd,                   InstType.Special);
-            // TODO: LSB and MSB Implementations https://github.com/KhronosGroup/SPIRV-Cross/blob/bccaa94db814af33d8ef05c153e7c34d8bd4d685/reference/shaders-msl-no-opt/asm/comp/bitscan.asm.comp#L8
-            Add(Instruction.FindLSB,                  InstType.Special);
-            Add(Instruction.FindMSBS32,               InstType.Special);
-            Add(Instruction.FindMSBU32,               InstType.Special);
+            Add(Instruction.FindLSB,                  InstType.CallUnary,      HelperFunctionNames.FindLSB);
+            Add(Instruction.FindMSBS32,               InstType.CallUnary,      HelperFunctionNames.FindMSBS32);
+            Add(Instruction.FindMSBU32,               InstType.CallUnary,      HelperFunctionNames.FindMSBU32);
             Add(Instruction.Floor,                    InstType.CallUnary,      "floor");
             Add(Instruction.FusedMultiplyAdd,         InstType.CallTernary,    "fma");
             Add(Instruction.GroupMemoryBarrier,       InstType.Special);
@@ -117,7 +116,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             Add(Instruction.SquareRoot,               InstType.CallUnary,      "sqrt");
             Add(Instruction.Store,                    InstType.Special);
             Add(Instruction.Subtract,                 InstType.OpBinary,       "-",  2);
-            Add(Instruction.SwizzleAdd,               InstType.CallTernary,    HelperFunctionNames.SwizzleAdd);
+            Add(Instruction.SwizzleAdd,               InstType.Special);
             Add(Instruction.TextureSample,            InstType.Special);
             Add(Instruction.TextureQuerySamples,      InstType.Special);
             Add(Instruction.TextureQuerySize,         InstType.Special);

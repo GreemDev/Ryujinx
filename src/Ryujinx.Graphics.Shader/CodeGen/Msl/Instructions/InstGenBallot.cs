@@ -17,5 +17,14 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
             return $"uint4(as_type<uint2>((simd_vote::vote_t)simd_ballot({arg})), 0, 0).{component}";
         }
+
+        public static string VoteAllEqual(CodeGenContext context, AstOperation operation)
+        {
+            AggregateType dstType = GetSrcVarType(operation.Inst, 0);
+
+            string arg = GetSourceExpr(context, operation.GetSource(0), dstType);
+
+            return $"simd_all({arg}) || !simd_any({arg})";
+        }
     }
 }

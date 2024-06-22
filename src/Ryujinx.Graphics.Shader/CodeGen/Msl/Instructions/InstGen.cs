@@ -4,6 +4,7 @@ using Ryujinx.Graphics.Shader.Translation;
 using System;
 using System.Text;
 using static Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions.InstGenBallot;
+using static Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions.InstGenBarrier;
 using static Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions.InstGenCall;
 using static Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions.InstGenHelper;
 using static Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions.InstGenMemory;
@@ -123,19 +124,13 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     case Instruction.Ballot:
                         return Ballot(context, operation);
                     case Instruction.Barrier:
-                        return "threadgroup_barrier(mem_flags::mem_threadgroup)";
+                        return Barrier(context, operation);
                     case Instruction.Call:
                         return Call(context, operation);
                     case Instruction.FSIBegin:
                         return "|| FSI BEGIN ||";
                     case Instruction.FSIEnd:
                         return "|| FSI END ||";
-                    case Instruction.FindLSB:
-                        return "|| FIND LSB ||";
-                    case Instruction.FindMSBS32:
-                        return "|| FIND MSB S32 ||";
-                    case Instruction.FindMSBU32:
-                        return "|| FIND MSB U32 ||";
                     case Instruction.GroupMemoryBarrier:
                         return "|| FIND GROUP MEMORY BARRIER ||";
                     case Instruction.ImageLoad:
@@ -152,6 +147,8 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                         return "|| MEMORY BARRIER ||";
                     case Instruction.Store:
                         return Store(context, operation);
+                    case Instruction.SwizzleAdd:
+                        return "|| SWIZZLE ADD ||";
                     case Instruction.TextureSample:
                         return TextureSample(context, operation);
                     case Instruction.TextureQuerySamples:
@@ -165,7 +162,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     case Instruction.VectorExtract:
                         return VectorExtract(context, operation);
                     case Instruction.VoteAllEqual:
-                        return "|| VOTE ALL EQUAL ||";
+                        return VoteAllEqual(context, operation);
                 }
             }
 

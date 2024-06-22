@@ -1,3 +1,4 @@
+using Ryujinx.Common;
 using Ryujinx.Graphics.Shader.IntermediateRepresentation;
 using Ryujinx.Graphics.Shader.StructuredIr;
 using Ryujinx.Graphics.Shader.Translation;
@@ -57,6 +58,21 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             context.AppendLine();
             DeclareBufferStructures(context, context.Properties.ConstantBuffers.Values);
             DeclareBufferStructures(context, context.Properties.StorageBuffers.Values);
+
+            if ((info.HelperFunctionsMask & HelperFunctionsMask.FindLSB) != 0)
+            {
+                AppendHelperFunction(context, "Ryujinx.Graphics.Shader/CodeGen/Msl/HelperFunctions/FindLSB.metal");
+            }
+
+            if ((info.HelperFunctionsMask & HelperFunctionsMask.FindMSBS32) != 0)
+            {
+                AppendHelperFunction(context, "Ryujinx.Graphics.Shader/CodeGen/Msl/HelperFunctions/FindMSBS32.metal");
+            }
+
+            if ((info.HelperFunctionsMask & HelperFunctionsMask.FindMSBU32) != 0)
+            {
+                AppendHelperFunction(context, "Ryujinx.Graphics.Shader/CodeGen/Msl/HelperFunctions/FindMSBU32.metal");
+            }
         }
 
         static bool IsUserDefined(IoDefinition ioDefinition, StorageKind storageKind)
@@ -309,6 +325,16 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                     context.LeaveScope(";");
                 }
             }
+        }
+
+        private static void AppendHelperFunction(CodeGenContext context, string filename)
+        {
+            string code = EmbeddedResources.ReadAllText(filename);
+
+            code = code.Replace("\t", CodeGenContext.Tab);
+
+            context.AppendLine(code);
+            context.AppendLine();
         }
     }
 }
