@@ -294,6 +294,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                         // TODO: check if it's needed
                         context.AppendLine("float4 position [[position, invariant]];");
                         context.AppendLine("bool front_facing [[front_facing]];");
+                        context.AppendLine("float2 point_coord [[point_coord]];");
                     }
 
                     foreach (var ioDefinition in inputs.OrderBy(x => x.Location))
@@ -304,7 +305,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                             IoVariable.GlobalId => "uint3",
                             IoVariable.VertexId => "uint",
                             IoVariable.VertexIndex => "uint",
-                            IoVariable.PointCoord => "float2",
+                            // IoVariable.PointCoord => "float2",
                             _ => GetVarTypeName(context.Definitions.GetUserDefinedType(ioDefinition.Location, isOutput: false))
                         };
                         string name = ioDefinition.IoVariable switch
@@ -313,7 +314,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                             IoVariable.GlobalId => "global_id",
                             IoVariable.VertexId => "vertex_id",
                             IoVariable.VertexIndex => "vertex_index",
-                            IoVariable.PointCoord => "point_coord",
+                            // IoVariable.PointCoord => "point_coord",
                             _ => $"{Defaults.IAttributePrefix}{ioDefinition.Location}"
                         };
                         string suffix = ioDefinition.IoVariable switch
@@ -323,7 +324,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                             IoVariable.VertexId => "[[vertex_id]]",
                             // TODO: Avoid potential redeclaration
                             IoVariable.VertexIndex => "[[vertex_id]]",
-                            IoVariable.PointCoord => "[[point_coord]]",
+                            // IoVariable.PointCoord => "[[point_coord]]",
                             IoVariable.UserDefined => context.Definitions.Stage == ShaderStage.Fragment ? $"[[user(loc{ioDefinition.Location})]]" : $"[[attribute({ioDefinition.Location})]]",
                             _ => ""
                         };
