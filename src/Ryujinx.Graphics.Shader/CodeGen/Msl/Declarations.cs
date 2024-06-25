@@ -56,8 +56,9 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             context.AppendLine();
             DeclareOutputAttributes(context, info.IoDefinitions.Where(x => x.StorageKind == StorageKind.Output));
             context.AppendLine();
-            DeclareBufferStructures(context, context.Properties.ConstantBuffers.Values);
-            DeclareBufferStructures(context, context.Properties.StorageBuffers.Values);
+            DeclareBufferStructures(context, context.Properties.ConstantBuffers.Values, true);
+            DeclareBufferStructures(context, context.Properties.StorageBuffers.Values, false);
+            DeclareTextures(context, context.Properties.Textures.Values);
 
             if ((info.HelperFunctionsMask & HelperFunctionsMask.FindLSB) != 0)
             {
@@ -112,11 +113,11 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             {
                 string name = context.OperandManager.DeclareLocal(decl);
 
-                context.AppendLine(GetVarTypeName(context, decl.VarType) + " " + name + ";");
+                context.AppendLine(GetVarTypeName(decl.VarType) + " " + name + ";");
             }
         }
 
-        public static string GetVarTypeName(CodeGenContext context, AggregateType type, bool atomic = false)
+        public static string GetVarTypeName(AggregateType type, bool atomic = false)
         {
             var s32 = atomic ? "atomic_int" : "int";
             var u32 = atomic ? "atomic_uint" : "uint";
@@ -155,21 +156,36 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 {
                     arraySize = $"[{memory.ArrayLength}]";
                 }
-                var typeName = GetVarTypeName(context, memory.Type & ~AggregateType.Array);
+                var typeName = GetVarTypeName(memory.Type & ~AggregateType.Array);
                 context.AppendLine($"{prefix}{typeName} {memory.Name}{arraySize};");
             }
         }
 
-        private static void DeclareBufferStructures(CodeGenContext context, IEnumerable<BufferDefinition> buffers)
+        private static void DeclareBufferStructures(CodeGenContext context, IEnumerable<BufferDefinition> buffers, bool constant)
         {
+            var name = constant ? "ConstantBuffers" : "StorageBuffers";
+            var count = constant ? Defaults.MaxUniformBuffersPerStage : Defaults.MaxStorageBuffersPerStage;
+            var addressSpace = constant ? "constant" : "device";
+
+            var argBufferPointers = new string[count];
+
             foreach (BufferDefinition buffer in buffers)
             {
-                context.AppendLine($"struct {DefaultNames.StructPrefix}_{buffer.Name}");
+                var needsPadding = buffer.Layout == BufferLayout.Std140;
+
+                argBufferPointers[buffer.Binding] = $"{addressSpace} {Defaults.StructPrefix}_{buffer.Name}* {buffer.Name};";
+
+                context.AppendLine($"struct {Defaults.StructPrefix}_{buffer.Name}");
                 context.EnterScope();
 
                 foreach (StructureField field in buffer.Type.Fields)
                 {
-                    string typeName = GetVarTypeName(context, field.Type & ~AggregateType.Array);
+                    var type = field.Type;
+                    type |= (needsPadding && (field.Type & AggregateType.Array) != 0) ? AggregateType.Vector4 : AggregateType.Invalid;
+
+                    type &= ~AggregateType.Array;
+
+                    string typeName = GetVarTypeName(type);
                     string arraySuffix = "";
 
                     if (field.Type.HasFlag(AggregateType.Array))
@@ -191,6 +207,62 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 context.LeaveScope(";");
                 context.AppendLine();
             }
+
+            context.AppendLine($"struct {name}");
+            context.EnterScope();
+
+            for (int i = 0; i < argBufferPointers.Length; i++)
+            {
+                if (argBufferPointers[i] == null)
+                {
+                    // We need to pad the struct definition in order to read
+                    // non-contiguous resources correctly.
+                    context.AppendLine($"ulong padding_{i};");
+                }
+                else
+                {
+                    context.AppendLine(argBufferPointers[i]);
+                }
+            }
+
+            context.LeaveScope(";");
+            context.AppendLine();
+        }
+
+        private static void DeclareTextures(CodeGenContext context, IEnumerable<TextureDefinition> textures)
+        {
+            context.AppendLine("struct Textures");
+            context.EnterScope();
+
+            var argBufferPointers = new string[Defaults.MaxTexturesPerStage * 2];
+
+            foreach (TextureDefinition texture in textures)
+            {
+                var textureTypeName = texture.Type.ToMslTextureType();
+                argBufferPointers[texture.Binding] = $"{textureTypeName} tex_{texture.Name};";
+
+                if (!texture.Separate)
+                {
+                    argBufferPointers[Defaults.MaxTexturesPerStage + texture.Binding] = $"sampler samp_{texture.Name};";
+                }
+            }
+
+            for (int i = 0; i < argBufferPointers.Length; i++)
+            {
+                if (argBufferPointers[i] == null)
+                {
+                    // We need to pad the struct definition in order to read
+                    // non-contiguous resources correctly.
+                    context.AppendLine($"ulong padding_{i};");
+                }
+                else
+                {
+                    context.AppendLine(argBufferPointers[i]);
+                }
+            }
+
+            context.LeaveScope(";");
+            context.AppendLine();
         }
 
         private static void DeclareInputAttributes(CodeGenContext context, IEnumerable<IoDefinition> inputs)
@@ -201,7 +273,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             }
             else
             {
-                if (inputs.Any() || context.Definitions.Stage == ShaderStage.Fragment)
+                if (inputs.Any() || context.Definitions.Stage != ShaderStage.Compute)
                 {
                     string prefix = "";
 
@@ -220,7 +292,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                     if (context.Definitions.Stage == ShaderStage.Fragment)
                     {
                         // TODO: check if it's needed
-                        context.AppendLine("float4 position [[position]];");
+                        context.AppendLine("float4 position [[position, invariant]];");
                         context.AppendLine("bool front_facing [[front_facing]];");
                     }
 
@@ -233,7 +305,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                             IoVariable.VertexId => "uint",
                             IoVariable.VertexIndex => "uint",
                             IoVariable.PointCoord => "float2",
-                            _ => GetVarTypeName(context, context.Definitions.GetUserDefinedType(ioDefinition.Location, isOutput: false))
+                            _ => GetVarTypeName(context.Definitions.GetUserDefinedType(ioDefinition.Location, isOutput: false))
                         };
                         string name = ioDefinition.IoVariable switch
                         {
@@ -242,11 +314,11 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                             IoVariable.VertexId => "vertex_id",
                             IoVariable.VertexIndex => "vertex_index",
                             IoVariable.PointCoord => "point_coord",
-                            _ => $"{DefaultNames.IAttributePrefix}{ioDefinition.Location}"
+                            _ => $"{Defaults.IAttributePrefix}{ioDefinition.Location}"
                         };
                         string suffix = ioDefinition.IoVariable switch
                         {
-                            // IoVariable.Position => "[[position]]",
+                            // IoVariable.Position => "[[position, invariant]]",
                             IoVariable.GlobalId => "[[thread_position_in_grid]]",
                             IoVariable.VertexId => "[[vertex_id]]",
                             // TODO: Avoid potential redeclaration
@@ -297,9 +369,9 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                         {
                             IoVariable.Position => "float4",
                             IoVariable.PointSize => "float",
-                            IoVariable.FragmentOutputColor => GetVarTypeName(context, context.Definitions.GetFragmentOutputColorType(ioDefinition.Location)),
+                            IoVariable.FragmentOutputColor => GetVarTypeName(context.Definitions.GetFragmentOutputColorType(ioDefinition.Location)),
                             IoVariable.FragmentOutputDepth => "float",
-                            _ => GetVarTypeName(context, context.Definitions.GetUserDefinedType(ioDefinition.Location, isOutput: true))
+                            _ => GetVarTypeName(context.Definitions.GetUserDefinedType(ioDefinition.Location, isOutput: true))
                         };
                         string name = ioDefinition.IoVariable switch
                         {
@@ -307,11 +379,11 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                             IoVariable.PointSize => "point_size",
                             IoVariable.FragmentOutputColor => $"color{ioDefinition.Location}",
                             IoVariable.FragmentOutputDepth => "depth",
-                            _ => $"{DefaultNames.OAttributePrefix}{ioDefinition.Location}"
+                            _ => $"{Defaults.OAttributePrefix}{ioDefinition.Location}"
                         };
                         string suffix = ioDefinition.IoVariable switch
                         {
-                            IoVariable.Position => "[[position]]",
+                            IoVariable.Position => "[[position, invariant]]",
                             IoVariable.PointSize => "[[point_size]]",
                             IoVariable.UserDefined => $"[[user(loc{ioDefinition.Location})]]",
                             IoVariable.FragmentOutputColor => $"[[color({ioDefinition.Location})]]",

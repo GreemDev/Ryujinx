@@ -60,8 +60,8 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
         private static (string, AggregateType) GetUserDefinedVariableName(ShaderDefinitions definitions, int location, int component, bool isOutput, bool isPerPatch)
         {
             string name = isPerPatch
-                ? DefaultNames.PerPatchAttributePrefix
-                : (isOutput ? DefaultNames.OAttributePrefix : DefaultNames.IAttributePrefix);
+                ? Defaults.PerPatchAttributePrefix
+                : (isOutput ? Defaults.OAttributePrefix : Defaults.IAttributePrefix);
 
             if (location < 0)
             {

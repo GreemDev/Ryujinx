@@ -49,8 +49,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                         ? AggregateType.S32
                         : AggregateType.U32;
 
-                    builder.Append($"(device {Declarations.GetVarTypeName(context, dstType, true)}*)&{GenerateLoadOrStore(context, operation, isStore: false)}");
-
+                    builder.Append($"(device {Declarations.GetVarTypeName(dstType, true)}*)&{GenerateLoadOrStore(context, operation, isStore: false)}");
 
                     for (int argIndex = operation.SourcesCount - arity + 2; argIndex < operation.SourcesCount; argIndex++)
                     {

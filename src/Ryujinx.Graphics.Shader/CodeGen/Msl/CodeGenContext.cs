@@ -9,7 +9,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
         public const string Tab = "    ";
 
         // The number of additional arguments that every function (except for the main one) must have (for instance support_buffer)
-        public const int AdditionalArgCount = 1;
+        public const int AdditionalArgCount = 2;
 
         public StructuredFunction CurrentFunction { get; set; }
 

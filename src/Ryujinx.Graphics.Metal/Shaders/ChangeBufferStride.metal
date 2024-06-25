@@ -2,19 +2,40 @@
 
 using namespace metal;
 
-kernel void kernelMain(constant int4& stride_arguments [[buffer(0)]],
-                       device uint8_t* in_data [[buffer(1)]],
-                       device uint8_t* out_data [[buffer(2)]],
+struct StrideArguments {
+    int4 data;
+};
+
+struct InData {
+    uint8_t data[1];
+};
+
+struct OutData {
+    uint8_t data[1];
+};
+
+struct ConstantBuffers {
+    constant StrideArguments* stride_arguments;
+};
+
+struct StorageBuffers {
+    ulong padding;
+    device InData* in_data;
+    device OutData* out_data;
+};
+
+kernel void kernelMain(constant ConstantBuffers &constant_buffers [[buffer(20)]],
+                       device StorageBuffers &storage_buffers [[buffer(21)]],
                        uint3 thread_position_in_grid [[thread_position_in_grid]],
                        uint3 threads_per_threadgroup [[threads_per_threadgroup]],
                        uint3 threadgroups_per_grid [[threads_per_grid]])
 {
     // Determine what slice of the stride copies this invocation will perform.
 
-    int sourceStride = stride_arguments.x;
-    int targetStride = stride_arguments.y;
-    int bufferSize = stride_arguments.z;
-    int sourceOffset = stride_arguments.w;
+    int sourceStride = constant_buffers.stride_arguments->data.x;
+    int targetStride = constant_buffers.stride_arguments->data.y;
+    int bufferSize = constant_buffers.stride_arguments->data.z;
+    int sourceOffset = constant_buffers.stride_arguments->data.w;
 
     int strideRemainder = targetStride - sourceStride;
     int invocations = int(threads_per_threadgroup.x * threadgroups_per_grid.x);
@@ -42,11 +63,11 @@ kernel void kernelMain(constant int4& stride_arguments [[buffer(0)]],
     // Perform the copies for this region
     for (int i = 0; i < copyCount; i++) {
         for (int j = 0; j < sourceStride; j++) {
-            out_data[dstOffset++] = in_data[srcOffset++];
+            storage_buffers.out_data->data[dstOffset++] = storage_buffers.in_data->data[srcOffset++];
         }
 
         for (int j = 0; j < strideRemainder; j++) {
-            out_data[dstOffset++] = uint8_t(0);
+            storage_buffers.out_data->data[dstOffset++] = uint8_t(0);
         }
     }
 }

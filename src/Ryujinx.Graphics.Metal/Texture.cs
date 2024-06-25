@@ -46,7 +46,7 @@ namespace Ryujinx.Graphics.Metal
             levels.length = (ulong)Info.Levels;
             NSRange slices;
             slices.location = (ulong)firstLayer;
-            slices.length = (ulong)info.GetDepthOrLayers();
+            slices.length = textureType == MTLTextureType.Type3D ? 1 : (ulong)info.GetDepthOrLayers();
 
             var swizzle = GetSwizzle(info, pixelFormat);
 
@@ -287,14 +287,15 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        public unsafe void SetData(IMemoryOwner<byte> data)
+        public void SetData(IMemoryOwner<byte> data)
         {
             var blitCommandEncoder = _pipeline.GetOrCreateBlitEncoder();
 
             var dataSpan = data.Memory.Span;
-            var mtlBuffer = _device.NewBuffer((ulong)dataSpan.Length, MTLResourceOptions.ResourceStorageModeShared);
-            var bufferSpan = new Span<byte>(mtlBuffer.Contents.ToPointer(), dataSpan.Length);
-            dataSpan.CopyTo(bufferSpan);
+
+            var buffer = _renderer.BufferManager.Create(dataSpan.Length);
+            buffer.SetDataUnchecked(0, dataSpan);
+            var mtlBuffer = buffer.GetBuffer(false).Get(_pipeline.Cbs).Value;
 
             int width = Info.Width;
             int height = Info.Height;
@@ -342,7 +343,7 @@ namespace Ryujinx.Graphics.Metal
             }
 
             // Cleanup
-            mtlBuffer.Dispose();
+            buffer.Dispose();
         }
 
         public void SetData(IMemoryOwner<byte> data, int layer, int level)
@@ -356,28 +357,26 @@ namespace Ryujinx.Graphics.Metal
                 bytesPerImage = bytesPerRow * (ulong)Info.Height;
             }
 
-            unsafe
-            {
-                var dataSpan = data.Memory.Span;
-                var mtlBuffer = _device.NewBuffer((ulong)dataSpan.Length, MTLResourceOptions.ResourceStorageModeShared);
-                var bufferSpan = new Span<byte>(mtlBuffer.Contents.ToPointer(), dataSpan.Length);
-                dataSpan.CopyTo(bufferSpan);
+            var dataSpan = data.Memory.Span;
 
-                blitCommandEncoder.CopyFromBuffer(
-                    mtlBuffer,
-                    0,
-                    bytesPerRow,
-                    bytesPerImage,
-                    new MTLSize { width = _mtlTexture.Width, height = _mtlTexture.Height, depth = _mtlTexture.Depth },
-                    _mtlTexture,
-                    (ulong)layer,
-                    (ulong)level,
-                    new MTLOrigin()
-                );
+            var buffer = _renderer.BufferManager.Create(dataSpan.Length);
+            buffer.SetDataUnchecked(0, dataSpan);
+            var mtlBuffer = buffer.GetBuffer(false).Get(_pipeline.Cbs).Value;
 
-                // Cleanup
-                mtlBuffer.Dispose();
-            }
+            blitCommandEncoder.CopyFromBuffer(
+                mtlBuffer,
+                0,
+                bytesPerRow,
+                bytesPerImage,
+                new MTLSize { width = _mtlTexture.Width, height = _mtlTexture.Height, depth = _mtlTexture.Depth },
+                _mtlTexture,
+                (ulong)layer,
+                (ulong)level,
+                new MTLOrigin()
+            );
+
+            // Cleanup
+            buffer.Dispose();
         }
 
         public void SetData(IMemoryOwner<byte> data, int layer, int level, Rectangle<int> region)
@@ -391,28 +390,26 @@ namespace Ryujinx.Graphics.Metal
                 bytesPerImage = bytesPerRow * (ulong)Info.Height;
             }
 
-            unsafe
-            {
-                var dataSpan = data.Memory.Span;
-                var mtlBuffer = _device.NewBuffer((ulong)dataSpan.Length, MTLResourceOptions.ResourceStorageModeShared);
-                var bufferSpan = new Span<byte>(mtlBuffer.Contents.ToPointer(), dataSpan.Length);
-                dataSpan.CopyTo(bufferSpan);
+            var dataSpan = data.Memory.Span;
 
-                blitCommandEncoder.CopyFromBuffer(
-                    mtlBuffer,
-                    0,
-                    bytesPerRow,
-                    bytesPerImage,
-                    new MTLSize { width = (ulong)region.Width, height = (ulong)region.Height, depth = 1 },
-                    _mtlTexture,
-                    (ulong)layer,
-                    (ulong)level,
-                    new MTLOrigin { x = (ulong)region.X, y = (ulong)region.Y }
-                );
+            var buffer = _renderer.BufferManager.Create(dataSpan.Length);
+            buffer.SetDataUnchecked(0, dataSpan);
+            var mtlBuffer = buffer.GetBuffer(false).Get(_pipeline.Cbs).Value;
 
-                // Cleanup
-                mtlBuffer.Dispose();
-            }
+            blitCommandEncoder.CopyFromBuffer(
+                mtlBuffer,
+                0,
+                bytesPerRow,
+                bytesPerImage,
+                new MTLSize { width = (ulong)region.Width, height = (ulong)region.Height, depth = 1 },
+                _mtlTexture,
+                (ulong)layer,
+                (ulong)level,
+                new MTLOrigin { x = (ulong)region.X, y = (ulong)region.Y }
+            );
+
+            // Cleanup
+            buffer.Dispose();
         }
 
         public void SetStorage(BufferRange buffer)

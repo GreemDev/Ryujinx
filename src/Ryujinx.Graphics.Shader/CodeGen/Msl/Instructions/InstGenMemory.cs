@@ -19,6 +19,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             int srcIndex = 0;
             bool isStoreOrAtomic = operation.Inst == Instruction.Store || operation.Inst.IsAtomic();
             int inputsCount = isStoreOrAtomic ? operation.SourcesCount - 1 : operation.SourcesCount;
+            bool fieldHasPadding = false;
 
             if (operation.Inst == Instruction.AtomicCompareAndSwap)
             {
@@ -46,7 +47,15 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     }
 
                     StructureField field = buffer.Type.Fields[fieldIndex.Value];
-                    varName = buffer.Name;
+
+                    fieldHasPadding = buffer.Layout == BufferLayout.Std140
+                                      && ((field.Type & AggregateType.Vector4) == 0)
+                                      && ((field.Type & AggregateType.Array) != 0);
+
+                    varName = storageKind == StorageKind.ConstantBuffer
+                        ? "constant_buffers"
+                        : "storage_buffers";
+                    varName += "." + buffer.Name;
                     varName += "->" + field.Name;
                     varType = field.Type;
                     break;
@@ -130,6 +139,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 }
             }
             varName += fieldName;
+            varName += fieldHasPadding ? ".x" : "";
 
             if (isStore)
             {
@@ -173,7 +183,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 coordsExpr = GetSourceExpr(context, texOp.GetSource(coordsIndex), AggregateType.FP32);
             }
 
-            return $"tex_{samplerName}.calculate_unclamped_lod(samp_{samplerName}, {coordsExpr}){GetMaskMultiDest(texOp.Index)}";
+            return $"textures.tex_{samplerName}.calculate_unclamped_lod(textures.samp_{samplerName}, {coordsExpr}){GetMaskMultiDest(texOp.Index)}";
         }
 
         public static string Store(CodeGenContext context, AstOperation operation)
@@ -199,7 +209,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             bool colorIsVector = isGather || !isShadow;
 
             string samplerName = GetSamplerName(context.Properties, texOp);
-            string texCall = $"tex_{samplerName}";
+            string texCall = $"textures.tex_{samplerName}";
             texCall += ".";
 
             int srcIndex = 0;
@@ -229,7 +239,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     texCall += "_compare";
                 }
 
-                texCall += $"(samp_{samplerName}, ";
+                texCall += $"(textures.samp_{samplerName}, ";
             }
 
             int coordsCount = texOp.Type.GetDimensions();
@@ -385,7 +395,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             }
 
             string samplerName = GetSamplerName(context.Properties, texOp);
-            string textureName = $"tex_{samplerName}";
+            string textureName = $"textures.tex_{samplerName}";
             string texCall = textureName + ".";
             texCall += "get_num_samples()";
 
@@ -397,7 +407,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             AstTextureOperation texOp = (AstTextureOperation)operation;
 
             string samplerName = GetSamplerName(context.Properties, texOp);
-            string textureName = $"tex_{samplerName}";
+            string textureName = $"textures.tex_{samplerName}";
             string texCall = textureName + ".";
 
             if (texOp.Index == 3)

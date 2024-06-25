@@ -21,11 +21,13 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             if (context.Definitions.Stage != ShaderStage.Compute)
             {
                 args[0] = "in";
-                args[1] = "support_buffer";
+                args[1] = "constant_buffers";
+                args[2] = "storage_buffers";
             }
             else
             {
-                args[0] = "support_buffer";
+                args[0] = "constant_buffers";
+                args[1] = "storage_buffers";
             }
 
             int argIndex = additionalArgCount;

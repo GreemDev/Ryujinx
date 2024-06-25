@@ -11,6 +11,14 @@ struct FragmentOut {
     uint stencil [[stencil]];
 };
 
+struct ClearDepth {
+    float data;
+};
+
+struct ConstantBuffers {
+    constant ClearDepth* clear_depth;
+};
+
 vertex VertexOut vertexMain(ushort vid [[vertex_id]]) {
     int low = vid & 1;
     int high = vid >> 1;
@@ -26,10 +34,10 @@ vertex VertexOut vertexMain(ushort vid [[vertex_id]]) {
 }
 
 fragment FragmentOut fragmentMain(VertexOut in [[stage_in]],
-                                  constant float& clear_depth [[buffer(0)]]) {
+                                  constant ConstantBuffers &constant_buffers [[buffer(20)]]) {
     FragmentOut out;
 
-    out.depth = clear_depth;
+    out.depth = constant_buffers.clear_depth->data;
     // out.stencil = stencil_clear;
 
     return out;

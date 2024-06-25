@@ -6,6 +6,14 @@ struct VertexOut {
     float4 position [[position]];
 };
 
+struct ClearColor {
+    float4 data;
+};
+
+struct ConstantBuffers {
+    constant ClearColor* clear_color;
+};
+
 vertex VertexOut vertexMain(ushort vid [[vertex_id]]) {
     int low = vid & 1;
     int high = vid >> 1;
@@ -25,6 +33,6 @@ struct FragmentOut {
 };
 
 fragment FragmentOut fragmentMain(VertexOut in [[stage_in]],
-                                  constant float4& clear_color [[buffer(0)]]) {
-    return {clear_color};
+                                  constant ConstantBuffers &constant_buffers [[buffer(20)]]) {
+    return {constant_buffers.clear_color->data};
 }

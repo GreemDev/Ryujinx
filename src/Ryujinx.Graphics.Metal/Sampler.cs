@@ -27,7 +27,8 @@ namespace Ryujinx.Graphics.Metal
                 MaxAnisotropy = Math.Max((uint)info.MaxAnisotropy, 1),
                 SAddressMode = info.AddressU.Convert(),
                 TAddressMode = info.AddressV.Convert(),
-                RAddressMode = info.AddressP.Convert()
+                RAddressMode = info.AddressP.Convert(),
+                SupportArgumentBuffers = true
             });
 
             _mtlSamplerState = samplerState;

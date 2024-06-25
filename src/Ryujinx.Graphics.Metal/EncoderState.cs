@@ -1,42 +1,49 @@
 using Ryujinx.Graphics.GAL;
 using SharpMetal.Metal;
+using System;
 using System.Linq;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
 {
-    struct DirtyFlags
+    [Flags]
+    enum DirtyFlags
     {
-        public bool RenderPipeline = false;
-        public bool ComputePipeline = false;
-        public bool DepthStencil = false;
+        None = 0,
+        RenderPipeline = 1 << 0,
+        ComputePipeline = 1 << 1,
+        DepthStencil = 1 << 2,
+        DepthClamp = 1 << 3,
+        DepthBias = 1 << 4,
+        CullMode = 1 << 5,
+        FrontFace = 1 << 6,
+        StencilRef = 1 << 7,
+        Viewports = 1 << 8,
+        Scissors = 1 << 9,
+        VertexBuffers = 1 << 10,
+        Buffers = 1 << 11,
+        VertexTextures = 1 << 12,
+        FragmentTextures = 1 << 13,
+        ComputeTextures = 1 << 14,
 
-        public DirtyFlags() { }
-
-        public void MarkAll()
-        {
-            RenderPipeline = true;
-            ComputePipeline = true;
-            DepthStencil = true;
-        }
+        RenderAll = RenderPipeline | DepthStencil | DepthClamp | DepthBias | CullMode | FrontFace | StencilRef | Viewports | Scissors | VertexBuffers | Buffers | VertexTextures | FragmentTextures,
+        ComputeAll = ComputePipeline | Buffers | ComputeTextures,
+        All = RenderAll | ComputeAll,
     }
 
     record struct BufferRef
     {
         public Auto<DisposableBuffer> Buffer;
-        public int Index;
         public BufferRange? Range;
 
-        public BufferRef(Auto<DisposableBuffer> buffer, int index)
+        public BufferRef(Auto<DisposableBuffer> buffer)
         {
             Buffer = buffer;
-            Index = index;
         }
 
-        public BufferRef(Auto<DisposableBuffer> buffer, int index, ref BufferRange range)
+        public BufferRef(Auto<DisposableBuffer> buffer, ref BufferRange range)
         {
             Buffer = buffer;
-            Index = index;
             Range = range;
         }
     }
@@ -48,17 +55,17 @@ namespace Ryujinx.Graphics.Metal
         public MTLFunction? FragmentFunction = null;
         public MTLFunction? ComputeFunction = null;
 
-        public TextureBase[] FragmentTextures = new TextureBase[Constants.MaxTextures];
-        public MTLSamplerState[] FragmentSamplers = new MTLSamplerState[Constants.MaxSamplers];
+        public TextureBase[] FragmentTextures = new TextureBase[Constants.MaxTexturesPerStage];
+        public MTLSamplerState[] FragmentSamplers = new MTLSamplerState[Constants.MaxTexturesPerStage];
 
-        public TextureBase[] VertexTextures = new TextureBase[Constants.MaxTextures];
-        public MTLSamplerState[] VertexSamplers = new MTLSamplerState[Constants.MaxSamplers];
+        public TextureBase[] VertexTextures = new TextureBase[Constants.MaxTexturesPerStage];
+        public MTLSamplerState[] VertexSamplers = new MTLSamplerState[Constants.MaxTexturesPerStage];
 
-        public TextureBase[] ComputeTextures = new TextureBase[Constants.MaxTextures];
-        public MTLSamplerState[] ComputeSamplers = new MTLSamplerState[Constants.MaxSamplers];
+        public TextureBase[] ComputeTextures = new TextureBase[Constants.MaxTexturesPerStage];
+        public MTLSamplerState[] ComputeSamplers = new MTLSamplerState[Constants.MaxTexturesPerStage];
 
-        public BufferRef[] UniformBuffers = [];
-        public BufferRef[] StorageBuffers = [];
+        public BufferRef[] UniformBuffers = new BufferRef[Constants.MaxUniformBuffersPerStage];
+        public BufferRef[] StorageBuffers = new BufferRef[Constants.MaxStorageBuffersPerStage];
 
         public Auto<DisposableBuffer> IndexBuffer = default;
         public MTLIndexType IndexType = MTLIndexType.UInt16;
@@ -99,7 +106,7 @@ namespace Ryujinx.Graphics.Metal
         public VertexAttribDescriptor[] VertexAttribs = [];
 
         // Dirty flags
-        public DirtyFlags Dirty = new();
+        public DirtyFlags Dirty = DirtyFlags.None;
 
         // Only to be used for present
         public bool ClearLoadAction = false;
@@ -119,6 +126,8 @@ namespace Ryujinx.Graphics.Metal
             clone.BlendDescriptors = (BlendDescriptor?[])BlendDescriptors.Clone();
             clone.VertexBuffers = (VertexBufferDescriptor[])VertexBuffers.Clone();
             clone.VertexAttribs = (VertexAttribDescriptor[])VertexAttribs.Clone();
+            clone.UniformBuffers = (BufferRef[])UniformBuffers.Clone();
+            clone.StorageBuffers = (BufferRef[])StorageBuffers.Clone();
 
             return clone;
         }

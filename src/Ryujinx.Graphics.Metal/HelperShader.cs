@@ -77,7 +77,8 @@ namespace Ryujinx.Graphics.Metal
             ITexture dst,
             Extents2D srcRegion,
             Extents2D dstRegion,
-            bool linearFilter)
+            bool linearFilter,
+            bool clear = false)
         {
             // Save current state
             _pipeline.SaveAndResetState();
@@ -134,7 +135,7 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SetRenderTargets([dst], null);
             _pipeline.SetScissors(stackalloc Rectangle<int>[] { new Rectangle<int>(0, 0, dstWidth, dstHeight) });
 
-            _pipeline.SetClearLoadAction(true);
+            _pipeline.SetClearLoadAction(clear);
 
             _pipeline.SetViewports(viewports);
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
@@ -305,12 +306,14 @@ namespace Ryujinx.Graphics.Metal
             int dstWidth,
             int dstHeight)
         {
-            const int ClearDepthBufferSize = 4;
-
-            IntPtr ptr = new(&depthValue);
-
             // Save current state
             _pipeline.SaveState();
+
+            const int ClearDepthBufferSize = 4;
+
+            using var buffer = _renderer.BufferManager.ReserveOrCreate(_pipeline.Cbs, ClearDepthBufferSize);
+            buffer.Holder.SetDataUnchecked(buffer.Offset, new ReadOnlySpan<float>(ref depthValue));
+            _pipeline.SetUniformBuffers([new BufferAssignment(0, buffer.Range)]);
 
             Span<Viewport> viewports = stackalloc Viewport[1];
 
@@ -330,7 +333,6 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SetViewports(viewports);
             _pipeline.SetDepthTest(new DepthTestDescriptor(true, depthMask, CompareOp.Always));
             _pipeline.SetStencilTest(CreateStencilTestDescriptor(stencilMask != 0, stencilValue, 0xFF, stencilMask));
-            _pipeline.GetOrCreateRenderEncoder(true).SetFragmentBytes(ptr, ClearDepthBufferSize, 0);
             _pipeline.Draw(4, 1, 0, 0);
 
             // Restore previous state

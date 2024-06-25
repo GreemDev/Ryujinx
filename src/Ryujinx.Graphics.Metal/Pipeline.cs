@@ -104,7 +104,7 @@ namespace Ryujinx.Graphics.Metal
             return BeginBlitPass();
         }
 
-        public MTLComputeCommandEncoder GetOrCreateComputeEncoder()
+        public MTLComputeCommandEncoder GetOrCreateComputeEncoder(bool forDispatch = false)
         {
             MTLComputeCommandEncoder computeCommandEncoder;
             if (CurrentEncoder == null || CurrentEncoderType != EncoderType.Compute)
@@ -116,7 +116,10 @@ namespace Ryujinx.Graphics.Metal
                 computeCommandEncoder = new MTLComputeCommandEncoder(CurrentEncoder.Value);
             }
 
-            _encoderStateManager.RebindComputeState(computeCommandEncoder);
+            if (forDispatch)
+            {
+                _encoderStateManager.RebindComputeState(computeCommandEncoder);
+            }
 
             return computeCommandEncoder;
         }
@@ -190,7 +193,7 @@ namespace Ryujinx.Graphics.Metal
             var textureInfo = new TextureCreateInfo((int)drawable.Texture.Width, (int)drawable.Texture.Height, (int)drawable.Texture.Depth, (int)drawable.Texture.MipmapLevelCount, (int)drawable.Texture.SampleCount, 0, 0, 0, Format.B8G8R8A8Unorm, 0, Target.Texture2D, SwizzleComponent.Red, SwizzleComponent.Green, SwizzleComponent.Blue, SwizzleComponent.Alpha);
             var dst = new Texture(_device, _renderer, this, textureInfo, drawable.Texture, 0, 0);
 
-            _renderer.HelperShader.BlitColor(Cbs, src, dst, srcRegion, dstRegion, isLinear);
+            _renderer.HelperShader.BlitColor(Cbs, src, dst, srcRegion, dstRegion, isLinear, true);
 
             EndCurrentPass();
 
@@ -348,7 +351,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void DispatchCompute(int groupsX, int groupsY, int groupsZ, int groupSizeX, int groupSizeY, int groupSizeZ)
         {
-            var computeCommandEncoder = GetOrCreateComputeEncoder();
+            var computeCommandEncoder = GetOrCreateComputeEncoder(true);
 
             computeCommandEncoder.DispatchThreadgroups(
                 new MTLSize { width = (ulong)groupsX, height = (ulong)groupsY, depth = (ulong)groupsZ },

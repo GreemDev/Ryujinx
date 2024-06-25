@@ -20,7 +20,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
         public string DeclareLocal(AstOperand operand)
         {
-            string name = $"{DefaultNames.LocalNamePrefix}_{_locals.Count}";
+            string name = $"{Defaults.LocalNamePrefix}_{_locals.Count}";
 
             _locals.Add(operand, name);
 
@@ -34,14 +34,14 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 OperandType.Argument => GetArgumentName(operand.Value),
                 OperandType.Constant => NumberFormatter.FormatInt(operand.Value),
                 OperandType.LocalVariable => _locals[operand],
-                OperandType.Undefined => DefaultNames.UndefinedName,
+                OperandType.Undefined => Defaults.UndefinedName,
                 _ => throw new ArgumentException($"Invalid operand type \"{operand.Type}\"."),
             };
         }
 
         public static string GetArgumentName(int argIndex)
         {
-            return $"{DefaultNames.ArgumentNamePrefix}{argIndex}";
+            return $"{Defaults.ArgumentNamePrefix}{argIndex}";
         }
 
         public static AggregateType GetNodeDestType(CodeGenContext context, IAstNode node)
