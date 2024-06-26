@@ -90,6 +90,7 @@ namespace Ryujinx.Graphics.Metal
         public PrimitiveTopology Topology = PrimitiveTopology.Triangles;
         public MTLCullMode CullMode = MTLCullMode.None;
         public MTLWinding Winding = MTLWinding.CounterClockwise;
+        public bool CullBoth = false;
 
         public MTLViewport[] Viewports = [];
         public MTLScissorRect[] Scissors = [];

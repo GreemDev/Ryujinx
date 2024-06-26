@@ -12,6 +12,7 @@ namespace Ryujinx.Graphics.Metal
     [SupportedOSPlatform("macos")]
     struct EncoderStateManager : IDisposable
     {
+        private readonly MTLDevice _device;
         private readonly Pipeline _pipeline;
         private readonly BufferManager _bufferManager;
 
@@ -35,6 +36,7 @@ namespace Ryujinx.Graphics.Metal
 
         public unsafe EncoderStateManager(MTLDevice device, BufferManager bufferManager, Pipeline pipeline)
         {
+            _device = device;
             _pipeline = pipeline;
             _bufferManager = bufferManager;
 
@@ -533,7 +535,7 @@ namespace Ryujinx.Graphics.Metal
                 descriptor.FrontFaceStencil = _currentState.FrontFaceStencil;
             }
 
-            _currentState.DepthStencilState = _depthStencilCache.GetOrCreate(descriptor);
+            _currentState.DepthStencilState = _device.NewDepthStencilState(descriptor);
 
             UpdateStencilRefValue(stencilTest.FrontFuncRef, stencilTest.BackFuncRef);
 
@@ -547,7 +549,7 @@ namespace Ryujinx.Graphics.Metal
         public void UpdateDepthState(DepthTestDescriptor depthTest)
         {
             _currentState.DepthCompareFunction = depthTest.TestEnable ? depthTest.Func.Convert() : MTLCompareFunction.Always;
-            _currentState.DepthWriteEnabled = depthTest.WriteEnable;
+            _currentState.DepthWriteEnabled = depthTest.TestEnable && depthTest.WriteEnable;
 
             var descriptor = new MTLDepthStencilDescriptor
             {
@@ -561,7 +563,7 @@ namespace Ryujinx.Graphics.Metal
                 descriptor.FrontFaceStencil = _currentState.FrontFaceStencil;
             }
 
-            _currentState.DepthStencilState = _depthStencilCache.GetOrCreate(descriptor);
+            _currentState.DepthStencilState = _device.NewDepthStencilState(descriptor);
 
             // Mark dirty
             _currentState.Dirty |= DirtyFlags.DepthStencil;
@@ -741,18 +743,27 @@ namespace Ryujinx.Graphics.Metal
         // Inlineable
         public void UpdateCullMode(bool enable, Face face)
         {
+            var dirtyScissor = (face == Face.FrontAndBack) != _currentState.CullBoth;
+
             _currentState.CullMode = enable ? face.Convert() : MTLCullMode.None;
+            _currentState.CullBoth = face == Face.FrontAndBack;
 
             // Inline update
             if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
             {
                 var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
                 SetCullMode(renderCommandEncoder);
+                SetScissors(renderCommandEncoder);
                 return;
             }
 
             // Mark dirty
             _currentState.Dirty |= DirtyFlags.CullMode;
+
+            if (dirtyScissor)
+            {
+                _currentState.Dirty |= DirtyFlags.Scissors;
+            }
         }
 
         // Inlineable
@@ -862,11 +873,21 @@ namespace Ryujinx.Graphics.Metal
 
         private unsafe void SetScissors(MTLRenderCommandEncoder renderCommandEncoder)
         {
-            if (_currentState.Scissors.Length > 0)
+            var isTriangles = (_currentState.Topology == PrimitiveTopology.Triangles) ||
+                              (_currentState.Topology == PrimitiveTopology.TriangleStrip);
+
+            if (_currentState.CullBoth && isTriangles)
             {
-                fixed (MTLScissorRect* pMtlScissors = _currentState.Scissors)
+                renderCommandEncoder.SetScissorRect(new MTLScissorRect { x = 0, y = 0, width = 0, height = 0});
+            }
+            else
+            {
+                if (_currentState.Scissors.Length > 0)
                 {
-                    renderCommandEncoder.SetScissorRects((IntPtr)pMtlScissors, (ulong)_currentState.Scissors.Length);
+                    fixed (MTLScissorRect* pMtlScissors = _currentState.Scissors)
+                    {
+                        renderCommandEncoder.SetScissorRects((IntPtr)pMtlScissors, (ulong)_currentState.Scissors.Length);
+                    }
                 }
             }
         }
