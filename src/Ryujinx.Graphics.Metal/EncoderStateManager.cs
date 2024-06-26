@@ -4,6 +4,7 @@ using Ryujinx.Graphics.Shader;
 using SharpMetal.Metal;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using BufferAssignment = Ryujinx.Graphics.GAL.BufferAssignment;
 
@@ -1040,7 +1041,7 @@ namespace Ryujinx.Graphics.Metal
         {
             var usage = constant ? MTLResourceUsage.Read : MTLResourceUsage.Write;
 
-            ulong[] resourceIds = new ulong[buffers.Length];
+            Span<ulong> resourceIds = stackalloc ulong[buffers.Length];
 
             for (int i = 0; i < buffers.Length; i++)
             {
@@ -1073,7 +1074,7 @@ namespace Ryujinx.Graphics.Metal
             var sizeOfArgumentBuffer = sizeof(ulong) * buffers.Length;
 
             var argBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, sizeOfArgumentBuffer);
-            argBuffer.Holder.SetDataUnchecked(argBuffer.Offset, new ReadOnlySpan<ulong>(resourceIds));
+            argBuffer.Holder.SetDataUnchecked(argBuffer.Offset, MemoryMarshal.AsBytes(resourceIds));
 
             return argBuffer.Range;
         }
@@ -1082,7 +1083,7 @@ namespace Ryujinx.Graphics.Metal
         {
             var usage = constant ? MTLResourceUsage.Read : MTLResourceUsage.Write;
 
-            ulong[] resourceIds = new ulong[buffers.Length];
+            Span<ulong> resourceIds = stackalloc ulong[buffers.Length];
 
             for (int i = 0; i < buffers.Length; i++)
             {
@@ -1115,7 +1116,7 @@ namespace Ryujinx.Graphics.Metal
             var sizeOfArgumentBuffer = sizeof(ulong) * buffers.Length;
 
             var argBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, sizeOfArgumentBuffer);
-            argBuffer.Holder.SetDataUnchecked(argBuffer.Offset, new ReadOnlySpan<ulong>(resourceIds));
+            argBuffer.Holder.SetDataUnchecked(argBuffer.Offset, MemoryMarshal.AsBytes(resourceIds));
 
             return argBuffer.Range;
         }
@@ -1163,7 +1164,7 @@ namespace Ryujinx.Graphics.Metal
         {
             var renderStage = stage == ShaderStage.Vertex ? MTLRenderStages.RenderStageVertex : MTLRenderStages.RenderStageFragment;
 
-            ulong[] resourceIds = new ulong[textures.Length + samplers.Length];
+            Span<ulong> resourceIds = stackalloc ulong[textures.Length + samplers.Length];
 
             for (int i = 0; i < textures.Length; i++)
             {
@@ -1193,14 +1194,14 @@ namespace Ryujinx.Graphics.Metal
             var sizeOfArgumentBuffer = sizeof(ulong) * (textures.Length + samplers.Length);
 
             var argBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, sizeOfArgumentBuffer);
-            argBuffer.Holder.SetDataUnchecked(argBuffer.Offset, new ReadOnlySpan<ulong>(resourceIds));
+            argBuffer.Holder.SetDataUnchecked(argBuffer.Offset, MemoryMarshal.AsBytes(resourceIds));
 
             return argBuffer.Range;
         }
 
         private readonly BufferRange CreateArgumentBufferForComputeEncoder(MTLComputeCommandEncoder computeCommandEncoder, TextureBase[] textures, MTLSamplerState[] samplers)
         {
-            ulong[] resourceIds = new ulong[textures.Length + samplers.Length];
+            Span<ulong> resourceIds = stackalloc ulong[textures.Length + samplers.Length];
 
             for (int i = 0; i < textures.Length; i++)
             {
@@ -1230,7 +1231,7 @@ namespace Ryujinx.Graphics.Metal
             var sizeOfArgumentBuffer = sizeof(ulong) * (textures.Length + samplers.Length);
 
             var argBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, sizeOfArgumentBuffer);
-            argBuffer.Holder.SetDataUnchecked(argBuffer.Offset, new ReadOnlySpan<ulong>(resourceIds));
+            argBuffer.Holder.SetDataUnchecked(argBuffer.Offset, MemoryMarshal.AsBytes(resourceIds));
 
             return argBuffer.Range;
         }
