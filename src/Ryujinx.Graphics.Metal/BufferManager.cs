@@ -63,6 +63,7 @@ namespace Ryujinx.Graphics.Metal
 
         public BufferHandle Create(nint pointer, int size)
         {
+            // TODO: This is the wrong Metal method, we need no-copy which SharpMetal isn't giving us.
             var buffer = _device.NewBuffer(pointer, (ulong)size, MTLResourceOptions.ResourceStorageModeShared);
 
             if (buffer == IntPtr.Zero)
