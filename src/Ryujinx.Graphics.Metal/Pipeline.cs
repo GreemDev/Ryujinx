@@ -30,6 +30,9 @@ namespace Ryujinx.Graphics.Metal
         public readonly Action EndRenderPassDelegate;
         public MTLCommandBuffer CommandBuffer;
 
+        public IndexBufferPattern QuadsToTrisPattern;
+        public IndexBufferPattern TriFanToTrisPattern;
+
         internal CommandBufferScoped? PreloadCbs { get; private set; }
         internal CommandBufferScoped Cbs { get; private set; }
         internal MTLCommandEncoder? CurrentEncoder { get; private set; }
@@ -49,6 +52,9 @@ namespace Ryujinx.Graphics.Metal
         internal void InitEncoderStateManager(BufferManager bufferManager)
         {
             _encoderStateManager = new EncoderStateManager(_device, bufferManager, this);
+
+            QuadsToTrisPattern = new IndexBufferPattern(_renderer, 4, 6, 0, [0, 1, 2, 0, 2, 3], 4, false);
+            TriFanToTrisPattern = new IndexBufferPattern(_renderer, 3, 3, 2, [int.MinValue, -1, 0], 1, true);
         }
 
         public void SaveState()
@@ -360,25 +366,89 @@ namespace Ryujinx.Graphics.Metal
 
         public void Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance)
         {
+            if (vertexCount == 0)
+            {
+                return;
+            }
+
             var renderCommandEncoder = GetOrCreateRenderEncoder(true);
 
-            // TODO: Support topology re-indexing to provide support for TriangleFans
-            var primitiveType = _encoderStateManager.Topology.Convert();
+            if (TopologyUnsupported(_encoderStateManager.Topology))
+            {
+                var pattern = GetIndexBufferPattern();
 
-            renderCommandEncoder.DrawPrimitives(
-                primitiveType,
-                (ulong)firstVertex,
-                (ulong)vertexCount,
-                (ulong)instanceCount,
-                (ulong)firstInstance);
+                BufferHandle handle = pattern.GetRepeatingBuffer(vertexCount, out int indexCount);
+                var buffer = _renderer.BufferManager.GetBuffer(handle, false);
+                var mtlBuffer = buffer.Get(Cbs, 0, indexCount * sizeof(int)).Value;
+
+                var primitiveType = TopologyRemap(_encoderStateManager.Topology).Convert();
+
+                renderCommandEncoder.DrawIndexedPrimitives(
+                    primitiveType,
+                    (ulong)indexCount,
+                    MTLIndexType.UInt32,
+                    mtlBuffer,
+                    0);
+            }
+            else
+            {
+                var primitiveType = TopologyRemap(_encoderStateManager.Topology).Convert();
+
+                renderCommandEncoder.DrawPrimitives(
+                    primitiveType,
+                    (ulong)firstVertex,
+                    (ulong)vertexCount,
+                    (ulong)instanceCount,
+                    (ulong)firstInstance);
+            }
+        }
+
+        private IndexBufferPattern GetIndexBufferPattern()
+        {
+            return _encoderStateManager.Topology switch
+            {
+                PrimitiveTopology.Quads => QuadsToTrisPattern,
+                PrimitiveTopology.TriangleFan or PrimitiveTopology.Polygon => TriFanToTrisPattern,
+                _ => throw new NotSupportedException($"Unsupported topology: {_encoderStateManager.Topology}"),
+            };
+        }
+
+        private PrimitiveTopology TopologyRemap(PrimitiveTopology topology)
+        {
+            return topology switch
+            {
+                PrimitiveTopology.Quads => PrimitiveTopology.Triangles,
+                PrimitiveTopology.QuadStrip => PrimitiveTopology.TriangleStrip,
+                PrimitiveTopology.TriangleFan or PrimitiveTopology.Polygon => PrimitiveTopology.Triangles,
+                _ => topology,
+            };
+        }
+
+        private bool TopologyUnsupported(PrimitiveTopology topology)
+        {
+            return topology switch
+            {
+                PrimitiveTopology.Quads or PrimitiveTopology.TriangleFan or PrimitiveTopology.Polygon => true,
+                _ => false,
+            };
         }
 
         public void DrawIndexed(int indexCount, int instanceCount, int firstIndex, int firstVertex, int firstInstance)
         {
+            if (indexCount == 0)
+            {
+                return;
+            }
+
             var renderCommandEncoder = GetOrCreateRenderEncoder(true);
 
-            // TODO: Support topology re-indexing to provide support for TriangleFans
-            var primitiveType = _encoderStateManager.Topology.Convert();
+            // TODO: Reindex unsupported topologies
+            if (TopologyUnsupported(_encoderStateManager.Topology))
+            {
+                Logger.Warning?.Print(LogClass.Gpu, $"Drawing indexed with unsupported topology: {_encoderStateManager.Topology}");
+            }
+
+            var primitiveType = TopologyRemap(_encoderStateManager.Topology).Convert();
 
             var indexBuffer = _encoderStateManager.IndexBuffer;
 
