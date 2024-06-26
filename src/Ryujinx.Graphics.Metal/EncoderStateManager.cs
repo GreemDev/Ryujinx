@@ -378,7 +378,7 @@ namespace Ryujinx.Graphics.Metal
                 if (type == GAL.IndexType.UByte)
                 {
                     _currentState.IndexType = MTLIndexType.UInt16;
-                    _currentState.IndexBufferOffset = (ulong)buffer.Offset;
+                    _currentState.IndexBufferOffset = 0;
                     _currentState.IndexBuffer = _bufferManager.GetBufferI8ToI16(_pipeline.Cbs, buffer.Handle, buffer.Offset, buffer.Size);
                 }
                 else
