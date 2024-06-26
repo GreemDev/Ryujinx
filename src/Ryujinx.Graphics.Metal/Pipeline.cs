@@ -428,7 +428,9 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetAlphaTest(bool enable, float reference, CompareOp op)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            // This is currently handled using shader specialization, as Metal does not support alpha test.
+            // In the future, we may want to use this to write the reference value into the support buffer,
+            // to avoid creating one version of the shader per reference value used.
         }
 
         public void SetBlendState(AdvancedBlendDescriptor blend)
