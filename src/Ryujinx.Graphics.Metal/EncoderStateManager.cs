@@ -497,6 +497,9 @@ namespace Ryujinx.Graphics.Metal
         {
             _currentState.BlendDescriptors[index] = blend;
             _currentState.BlendColor = blend.BlendConstant;
+
+            // Mark dirty
+            _currentState.Dirty |= DirtyFlags.RenderPipeline;
         }
 
         // Inlineable
