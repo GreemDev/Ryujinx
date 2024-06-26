@@ -14,9 +14,11 @@ namespace Ryujinx.Graphics.Metal
         {
             (MTLSamplerMinMagFilter minFilter, MTLSamplerMipFilter mipFilter) = info.MinFilter.Convert();
 
+            MTLSamplerBorderColor borderColor = GetConstrainedBorderColor(info.BorderColor, out _);
+
             var samplerState = device.NewSamplerState(new MTLSamplerDescriptor
             {
-                BorderColor = MTLSamplerBorderColor.TransparentBlack,
+                BorderColor = borderColor,
                 MinFilter = minFilter,
                 MagFilter = info.MagFilter.Convert(),
                 MipFilter = mipFilter,
@@ -37,6 +39,37 @@ namespace Ryujinx.Graphics.Metal
         public Sampler(MTLSamplerState samplerState)
         {
             _mtlSamplerState = samplerState;
+        }
+
+        private static MTLSamplerBorderColor GetConstrainedBorderColor(ColorF arbitraryBorderColor, out bool cantConstrain)
+        {
+            float r = arbitraryBorderColor.Red;
+            float g = arbitraryBorderColor.Green;
+            float b = arbitraryBorderColor.Blue;
+            float a = arbitraryBorderColor.Alpha;
+
+            if (r == 0f && g == 0f && b == 0f)
+            {
+                if (a == 1f)
+                {
+                    cantConstrain = false;
+                    return MTLSamplerBorderColor.OpaqueBlack;
+                }
+
+                if (a == 0f)
+                {
+                    cantConstrain = false;
+                    return MTLSamplerBorderColor.TransparentBlack;
+                }
+            }
+            else if (r == 1f && g == 1f && b == 1f && a == 1f)
+            {
+                cantConstrain = false;
+                return MTLSamplerBorderColor.OpaqueWhite;
+            }
+
+            cantConstrain = true;
+            return MTLSamplerBorderColor.OpaqueBlack;
         }
 
         public MTLSamplerState GetSampler()
