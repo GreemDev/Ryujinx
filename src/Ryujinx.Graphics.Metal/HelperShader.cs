@@ -309,7 +309,7 @@ namespace Ryujinx.Graphics.Metal
             // Save current state
             _pipeline.SaveState();
 
-            const int ClearDepthBufferSize = 4;
+            const int ClearDepthBufferSize = 16;
 
             using var buffer = _renderer.BufferManager.ReserveOrCreate(_pipeline.Cbs, ClearDepthBufferSize);
             buffer.Holder.SetDataUnchecked(buffer.Offset, new ReadOnlySpan<float>(ref depthValue));
@@ -328,7 +328,6 @@ namespace Ryujinx.Graphics.Metal
 
             _pipeline.SetProgram(_programDepthStencilClear);
             _pipeline.SetFaceCulling(false, Face.Front);
-            _pipeline.SetDepthTest(new DepthTestDescriptor(false, false, CompareOp.Always));
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
             _pipeline.SetViewports(viewports);
             _pipeline.SetDepthTest(new DepthTestDescriptor(true, depthMask, CompareOp.Always));

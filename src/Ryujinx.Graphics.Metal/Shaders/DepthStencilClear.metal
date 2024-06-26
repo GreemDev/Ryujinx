@@ -8,7 +8,6 @@ struct VertexOut {
 
 struct FragmentOut {
     float depth [[depth(any)]];
-    uint stencil [[stencil]];
 };
 
 struct ClearDepth {
@@ -38,7 +37,6 @@ fragment FragmentOut fragmentMain(VertexOut in [[stage_in]],
     FragmentOut out;
 
     out.depth = constant_buffers.clear_depth->data;
-    // out.stencil = stencil_clear;
 
     return out;
 }
