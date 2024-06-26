@@ -27,6 +27,11 @@ namespace Ryujinx.Graphics.Metal
             public List<IAuto> Dependants;
             public List<MultiFenceHolder> Waitables;
 
+            public void Reinitialize(MTLCommandQueue queue)
+            {
+                CommandBuffer = queue.CommandBuffer();
+            }
+
             public void Initialize(MTLCommandQueue queue)
             {
                 CommandBuffer = queue.CommandBuffer();
@@ -218,7 +223,7 @@ namespace Ryujinx.Graphics.Metal
                 commandBuffer.Commit();
 
                 // Replace entry with new MTLCommandBuffer
-                entry.Initialize(_queue);
+                entry.Reinitialize(_queue);
 
                 int ptr = (_queuedIndexesPtr + _queuedCount) % _totalCommandBuffers;
                 _queuedIndexes[ptr] = cbIndex;
