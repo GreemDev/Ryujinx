@@ -98,6 +98,9 @@ namespace Ryujinx.Graphics.Metal
         // Changes to attachments take recreation!
         public Texture DepthStencil = default;
         public Texture[] RenderTargets = new Texture[Constants.MaxColorAttachments];
+        public ITexture PreMaskDepthStencil = default;
+        public ITexture[] PreMaskRenderTargets;
+        public bool FramebufferUsingColorWriteMask;
 
         public MTLColorWriteMask[] RenderTargetMasks = Enumerable.Repeat(MTLColorWriteMask.All, Constants.MaxColorAttachments).ToArray();
         public BlendDescriptor?[] BlendDescriptors = new BlendDescriptor?[Constants.MaxColorAttachments];
