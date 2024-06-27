@@ -285,14 +285,10 @@ namespace Ryujinx.Graphics.Metal
                     {
                         var computeCommandEncoder = GetOrCreateComputeEncoder();
 
-                        // TODO: Should there be a barrier on render targets?
-                        var scope = MTLBarrierScope.Buffers | MTLBarrierScope.Textures;
+                        var scope = MTLBarrierScope.Buffers | MTLBarrierScope.Textures | MTLBarrierScope.RenderTargets;;
                         computeCommandEncoder.MemoryBarrier(scope);
                         break;
                     }
-                default:
-                    Logger.Warning?.Print(LogClass.Gpu, "Barrier called outside of a render or compute pass");
-                    break;
             }
         }
 
@@ -344,7 +340,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void CommandBufferBarrier()
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            Barrier();
         }
 
         public void CopyBuffer(BufferHandle src, BufferHandle dst, int srcOffset, int dstOffset, int size)
@@ -701,9 +697,12 @@ namespace Ryujinx.Graphics.Metal
 
         public void TextureBarrier()
         {
-            var renderCommandEncoder = GetOrCreateRenderEncoder();
+            if (CurrentEncoderType == EncoderType.Render)
+            {
+                var renderCommandEncoder = GetOrCreateRenderEncoder();
 
-            renderCommandEncoder.MemoryBarrier(MTLBarrierScope.Textures, MTLRenderStages.RenderStageFragment, MTLRenderStages.RenderStageFragment);
+                renderCommandEncoder.MemoryBarrier(MTLBarrierScope.Textures, MTLRenderStages.RenderStageFragment, MTLRenderStages.RenderStageFragment);
+            }
         }
 
         public void TextureBarrierTiled()
