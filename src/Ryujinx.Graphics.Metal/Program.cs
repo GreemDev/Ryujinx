@@ -16,6 +16,10 @@ namespace Ryujinx.Graphics.Metal
         public MTLFunction FragmentFunction;
         public MTLFunction ComputeFunction;
 
+        private HashTableSlim<PipelineUid, MTLRenderPipelineState> _graphicsPipelineCache;
+        private MTLComputePipelineState? _computePipelineCache;
+        private bool _firstBackgroundUse;
+
         public Program(ShaderSource[] shaders, MTLDevice device)
         {
             for (int index = 0; index < shaders.Length; index++)
@@ -62,8 +66,64 @@ namespace Ryujinx.Graphics.Metal
             return ""u8.ToArray();
         }
 
+        public void AddGraphicsPipeline(ref PipelineUid key, MTLRenderPipelineState pipeline)
+        {
+            (_graphicsPipelineCache ??= new()).Add(ref key, pipeline);
+        }
+
+        public void AddComputePipeline(MTLComputePipelineState pipeline)
+        {
+            _computePipelineCache = pipeline;
+        }
+
+        public bool TryGetGraphicsPipeline(ref PipelineUid key, out MTLRenderPipelineState pipeline)
+        {
+            if (_graphicsPipelineCache == null)
+            {
+                pipeline = default;
+                return false;
+            }
+
+            if (!_graphicsPipelineCache.TryGetValue(ref key, out pipeline))
+            {
+                if (_firstBackgroundUse)
+                {
+                    Logger.Warning?.Print(LogClass.Gpu, "Background pipeline compile missed on draw - incorrect pipeline state?");
+                    _firstBackgroundUse = false;
+                }
+
+                return false;
+            }
+
+            _firstBackgroundUse = false;
+
+            return true;
+        }
+
+        public bool TryGetComputePipeline(out MTLComputePipelineState pipeline)
+        {
+            if (_computePipelineCache.HasValue)
+            {
+                pipeline = _computePipelineCache.Value;
+                return true;
+            }
+
+            pipeline = default;
+            return false;
+        }
+
         public void Dispose()
         {
+            if (_graphicsPipelineCache != null)
+            {
+                foreach (MTLRenderPipelineState pipeline in _graphicsPipelineCache.Values)
+                {
+                    pipeline.Dispose();
+                }
+            }
+
+            _computePipelineCache?.Dispose();
+
             VertexFunction.Dispose();
             FragmentFunction.Dispose();
             ComputeFunction.Dispose();

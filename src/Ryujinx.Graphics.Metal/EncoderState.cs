@@ -1,4 +1,6 @@
+using Ryujinx.Common.Memory;
 using Ryujinx.Graphics.GAL;
+using Ryujinx.Graphics.Metal.State;
 using SharpMetal.Metal;
 using System;
 using System.Linq;
@@ -48,12 +50,29 @@ namespace Ryujinx.Graphics.Metal
         }
     }
 
-    [SupportedOSPlatform("macos")]
-    struct EncoderState
+    struct PredrawState
     {
-        public MTLFunction? VertexFunction = null;
-        public MTLFunction? FragmentFunction = null;
-        public MTLFunction? ComputeFunction = null;
+        public MTLCullMode CullMode;
+        public DepthStencilUid DepthStencilUid;
+        public PrimitiveTopology Topology;
+        public MTLViewport[] Viewports;
+    }
+
+    struct RenderTargetCopy
+    {
+        public MTLScissorRect[] Scissors;
+        public Texture DepthStencil;
+        public Texture[] RenderTargets;
+    }
+
+    [SupportedOSPlatform("macos")]
+    class EncoderState
+    {
+        public Program RenderProgram = null;
+        public Program ComputeProgram = null;
+
+        public PipelineState Pipeline;
+        public DepthStencilUid DepthStencilUid;
 
         public TextureBase[] FragmentTextures = new TextureBase[Constants.MaxTexturesPerStage];
         public MTLSamplerState[] FragmentSamplers = new MTLSamplerState[Constants.MaxTexturesPerStage];
@@ -71,21 +90,14 @@ namespace Ryujinx.Graphics.Metal
         public MTLIndexType IndexType = MTLIndexType.UInt16;
         public ulong IndexBufferOffset = 0;
 
-        public MTLDepthStencilState? DepthStencilState = null;
-
         public MTLDepthClipMode DepthClipMode = MTLDepthClipMode.Clip;
-        public MTLCompareFunction DepthCompareFunction = MTLCompareFunction.Always;
-        public bool DepthWriteEnabled = false;
 
         public float DepthBias;
         public float SlopeScale;
         public float Clamp;
 
-        public MTLStencilDescriptor BackFaceStencil = new();
-        public MTLStencilDescriptor FrontFaceStencil = new();
         public int BackRefValue = 0;
         public int FrontRefValue = 0;
-        public bool StencilTestEnabled = false;
 
         public PrimitiveTopology Topology = PrimitiveTopology.Triangles;
         public MTLCullMode CullMode = MTLCullMode.None;
@@ -102,8 +114,7 @@ namespace Ryujinx.Graphics.Metal
         public ITexture[] PreMaskRenderTargets;
         public bool FramebufferUsingColorWriteMask;
 
-        public MTLColorWriteMask[] RenderTargetMasks = Enumerable.Repeat(MTLColorWriteMask.All, Constants.MaxColorAttachments).ToArray();
-        public BlendDescriptor?[] BlendDescriptors = new BlendDescriptor?[Constants.MaxColorAttachments];
+        public Array8<ColorBlendStateUid> StoredBlend;
         public ColorF BlendColor = new();
 
         public VertexBufferDescriptor[] VertexBuffers = [];
@@ -115,25 +126,52 @@ namespace Ryujinx.Graphics.Metal
         // Only to be used for present
         public bool ClearLoadAction = false;
 
-        public EncoderState() { }
-
-        public readonly EncoderState Clone()
+        public EncoderState()
         {
-            // Certain state (like viewport and scissor) doesn't need to be cloned, as it is always reacreated when assigned to
-            EncoderState clone = this;
-            clone.FragmentTextures = (TextureBase[])FragmentTextures.Clone();
-            clone.FragmentSamplers = (MTLSamplerState[])FragmentSamplers.Clone();
-            clone.VertexTextures = (TextureBase[])VertexTextures.Clone();
-            clone.VertexSamplers = (MTLSamplerState[])VertexSamplers.Clone();
-            clone.ComputeTextures = (TextureBase[])ComputeTextures.Clone();
-            clone.ComputeSamplers = (MTLSamplerState[])ComputeSamplers.Clone();
-            clone.BlendDescriptors = (BlendDescriptor?[])BlendDescriptors.Clone();
-            clone.VertexBuffers = (VertexBufferDescriptor[])VertexBuffers.Clone();
-            clone.VertexAttribs = (VertexAttribDescriptor[])VertexAttribs.Clone();
-            clone.UniformBuffers = (BufferRef[])UniformBuffers.Clone();
-            clone.StorageBuffers = (BufferRef[])StorageBuffers.Clone();
+            Pipeline.Initialize();
+            DepthStencilUid.DepthCompareFunction = MTLCompareFunction.Always;
+        }
 
-            return clone;
+        public RenderTargetCopy InheritForClear(EncoderState other, bool depth, int singleIndex = -1)
+        {
+            // Inherit render target related information without causing a render encoder split.
+
+            var oldState = new RenderTargetCopy
+            {
+                Scissors = other.Scissors,
+                RenderTargets = other.RenderTargets,
+                DepthStencil = other.DepthStencil
+            };
+
+            Scissors = other.Scissors;
+            RenderTargets = other.RenderTargets;
+            DepthStencil = other.DepthStencil;
+
+            Pipeline.ColorBlendAttachmentStateCount = other.Pipeline.ColorBlendAttachmentStateCount;
+            Pipeline.Internal.ColorBlendState = other.Pipeline.Internal.ColorBlendState;
+            Pipeline.DepthStencilFormat = other.Pipeline.DepthStencilFormat;
+
+            ref var blendStates = ref Pipeline.Internal.ColorBlendState;
+
+            // Mask out irrelevant attachments.
+            for (int i = 0; i < blendStates.Length; i++)
+            {
+                if (depth || (singleIndex != -1 && singleIndex != i))
+                {
+                    blendStates[i].WriteMask = MTLColorWriteMask.None;
+                }
+            }
+
+            return oldState;
+        }
+
+        public void Restore(RenderTargetCopy copy)
+        {
+            Scissors = copy.Scissors;
+            RenderTargets = copy.RenderTargets;
+            DepthStencil = copy.DepthStencil;
+
+            Pipeline.Internal.ResetColorState();
         }
     }
 }

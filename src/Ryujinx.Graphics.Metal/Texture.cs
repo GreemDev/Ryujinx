@@ -12,9 +12,11 @@ namespace Ryujinx.Graphics.Metal
     {
         public Texture(MTLDevice device, MetalRenderer renderer, Pipeline pipeline, TextureCreateInfo info) : base(device, renderer, pipeline, info)
         {
+            MTLPixelFormat pixelFormat = FormatTable.GetFormat(Info.Format);
+
             var descriptor = new MTLTextureDescriptor
             {
-                PixelFormat = FormatTable.GetFormat(Info.Format),
+                PixelFormat = pixelFormat,
                 Usage = MTLTextureUsage.Unknown,
                 SampleCount = (ulong)Info.Samples,
                 TextureType = Info.Target.Convert(),
@@ -35,6 +37,7 @@ namespace Ryujinx.Graphics.Metal
             descriptor.Swizzle = GetSwizzle(info, descriptor.PixelFormat);
 
             _mtlTexture = _device.NewTexture(descriptor);
+            MtlFormat = pixelFormat;
         }
 
         public Texture(MTLDevice device, MetalRenderer renderer, Pipeline pipeline, TextureCreateInfo info, MTLTexture sourceTexture, int firstLayer, int firstLevel) : base(device, renderer, pipeline, info)
@@ -51,6 +54,7 @@ namespace Ryujinx.Graphics.Metal
             var swizzle = GetSwizzle(info, pixelFormat);
 
             _mtlTexture = sourceTexture.NewTextureView(pixelFormat, textureType, levels, slices, swizzle);
+            MtlFormat = pixelFormat;
         }
 
         private MTLTextureSwizzleChannels GetSwizzle(TextureCreateInfo info, MTLPixelFormat pixelFormat)

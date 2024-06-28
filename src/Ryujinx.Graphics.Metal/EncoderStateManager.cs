@@ -1,9 +1,10 @@
 using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.GAL;
+using Ryujinx.Graphics.Metal.State;
 using Ryujinx.Graphics.Shader;
 using SharpMetal.Metal;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using BufferAssignment = Ryujinx.Graphics.GAL.BufferAssignment;
@@ -17,12 +18,10 @@ namespace Ryujinx.Graphics.Metal
         private readonly Pipeline _pipeline;
         private readonly BufferManager _bufferManager;
 
-        private readonly RenderPipelineCache _renderPipelineCache;
-        private readonly ComputePipelineCache _computePipelineCache;
         private readonly DepthStencilCache _depthStencilCache;
 
-        private EncoderState _currentState = new();
-        private readonly Stack<EncoderState> _backStates = [];
+        private readonly EncoderState _mainState = new();
+        private EncoderState _currentState;
 
         public readonly Auto<DisposableBuffer> IndexBuffer => _currentState.IndexBuffer;
         public readonly MTLIndexType IndexType => _currentState.IndexType;
@@ -41,9 +40,8 @@ namespace Ryujinx.Graphics.Metal
             _pipeline = pipeline;
             _bufferManager = bufferManager;
 
-            _renderPipelineCache = new(device);
-            _computePipelineCache = new(device);
             _depthStencilCache = new(device);
+            _currentState = _mainState;
 
             // Zero buffer
             byte[] zeros = new byte[ZeroBufferSize];
@@ -56,39 +54,38 @@ namespace Ryujinx.Graphics.Metal
         public void Dispose()
         {
             // State
-            _currentState.FrontFaceStencil.Dispose();
-            _currentState.BackFaceStencil.Dispose();
 
-            _renderPipelineCache.Dispose();
-            _computePipelineCache.Dispose();
             _depthStencilCache.Dispose();
         }
 
-        public void SaveState()
+        public EncoderState SwapState(EncoderState state, DirtyFlags flags = DirtyFlags.All)
         {
-            _backStates.Push(_currentState);
-            _currentState = _currentState.Clone();
+            _currentState = state ?? _mainState;
+
+            _currentState.Dirty |= flags;
+
+            return _mainState;
         }
 
-        public void SaveAndResetState()
+        public PredrawState SavePredrawState()
         {
-            _backStates.Push(_currentState);
-            _currentState = new();
+            return new PredrawState
+            {
+                CullMode = _currentState.CullMode,
+                DepthStencilUid = _currentState.DepthStencilUid,
+                Topology = _currentState.Topology,
+                Viewports = _currentState.Viewports.ToArray(),
+            };
         }
 
-        public void RestoreState()
+        public void RestorePredrawState(PredrawState state)
         {
-            if (_backStates.Count > 0)
-            {
-                _currentState = _backStates.Pop();
+            _currentState.CullMode = state.CullMode;
+            _currentState.DepthStencilUid = state.DepthStencilUid;
+            _currentState.Topology = state.Topology;
+            _currentState.Viewports = state.Viewports;
 
-                // Mark the other state as dirty
-                _currentState.Dirty |= DirtyFlags.All;
-            }
-            else
-            {
-                Logger.Error?.Print(LogClass.Gpu, "No state to restore");
-            }
+            _currentState.Dirty |= DirtyFlags.CullMode | DirtyFlags.DepthStencil | DirtyFlags.Viewports;
         }
 
         public void SetClearLoadAction(bool clear)
@@ -267,106 +264,25 @@ namespace Ryujinx.Graphics.Metal
 
         private void SetRenderPipelineState(MTLRenderCommandEncoder renderCommandEncoder)
         {
-            var renderPipelineDescriptor = new MTLRenderPipelineDescriptor();
+            MTLRenderPipelineState pipelineState = _currentState.Pipeline.CreateRenderPipeline(_device, _currentState.RenderProgram);
 
-            for (int i = 0; i < Constants.MaxColorAttachments; i++)
-            {
-                if (_currentState.RenderTargets[i] != null)
-                {
-                    var pipelineAttachment = renderPipelineDescriptor.ColorAttachments.Object((ulong)i);
-                    pipelineAttachment.PixelFormat = _currentState.RenderTargets[i].GetHandle().PixelFormat;
-                    pipelineAttachment.SourceAlphaBlendFactor = MTLBlendFactor.SourceAlpha;
-                    pipelineAttachment.DestinationAlphaBlendFactor = MTLBlendFactor.OneMinusSourceAlpha;
-                    pipelineAttachment.SourceRGBBlendFactor = MTLBlendFactor.SourceAlpha;
-                    pipelineAttachment.DestinationRGBBlendFactor = MTLBlendFactor.OneMinusSourceAlpha;
-                    pipelineAttachment.WriteMask = _currentState.RenderTargetMasks[i];
+            renderCommandEncoder.SetRenderPipelineState(pipelineState);
 
-                    if (_currentState.BlendDescriptors[i] != null)
-                    {
-                        var blendDescriptor = _currentState.BlendDescriptors[i].Value;
-                        pipelineAttachment.SetBlendingEnabled(blendDescriptor.Enable);
-                        pipelineAttachment.AlphaBlendOperation = blendDescriptor.AlphaOp.Convert();
-                        pipelineAttachment.RgbBlendOperation = blendDescriptor.ColorOp.Convert();
-                        pipelineAttachment.SourceAlphaBlendFactor = blendDescriptor.AlphaSrcFactor.Convert();
-                        pipelineAttachment.DestinationAlphaBlendFactor = blendDescriptor.AlphaDstFactor.Convert();
-                        pipelineAttachment.SourceRGBBlendFactor = blendDescriptor.ColorSrcFactor.Convert();
-                        pipelineAttachment.DestinationRGBBlendFactor = blendDescriptor.ColorDstFactor.Convert();
-                    }
-                }
-            }
-
-            if (_currentState.DepthStencil != null)
-            {
-                switch (_currentState.DepthStencil.GetHandle().PixelFormat)
-                {
-                    // Depth Only Attachment
-                    case MTLPixelFormat.Depth16Unorm:
-                    case MTLPixelFormat.Depth32Float:
-                        renderPipelineDescriptor.DepthAttachmentPixelFormat = _currentState.DepthStencil.GetHandle().PixelFormat;
-                        break;
-
-                    // Stencil Only Attachment
-                    case MTLPixelFormat.Stencil8:
-                        renderPipelineDescriptor.StencilAttachmentPixelFormat = _currentState.DepthStencil.GetHandle().PixelFormat;
-                        break;
-
-                    // Combined Attachment
-                    case MTLPixelFormat.Depth24UnormStencil8:
-                    case MTLPixelFormat.Depth32FloatStencil8:
-                        renderPipelineDescriptor.DepthAttachmentPixelFormat = _currentState.DepthStencil.GetHandle().PixelFormat;
-                        renderPipelineDescriptor.StencilAttachmentPixelFormat = _currentState.DepthStencil.GetHandle().PixelFormat;
-                        break;
-                    default:
-                        Logger.Error?.PrintMsg(LogClass.Gpu, $"Unsupported Depth/Stencil Format: {_currentState.DepthStencil.GetHandle().PixelFormat}!");
-                        break;
-                }
-            }
-
-            var vertexDescriptor = BuildVertexDescriptor(_currentState.VertexBuffers, _currentState.VertexAttribs);
-            renderPipelineDescriptor.VertexDescriptor = vertexDescriptor;
-
-            try
-            {
-                if (_currentState.VertexFunction != null)
-                {
-                    renderPipelineDescriptor.VertexFunction = _currentState.VertexFunction.Value;
-                }
-                else
-                {
-                    return;
-                }
-
-                if (_currentState.FragmentFunction != null)
-                {
-                    renderPipelineDescriptor.FragmentFunction = _currentState.FragmentFunction.Value;
-                }
-
-                var pipelineState = _renderPipelineCache.GetOrCreate(renderPipelineDescriptor);
-
-                renderCommandEncoder.SetRenderPipelineState(pipelineState);
-
-                renderCommandEncoder.SetBlendColor(
-                    _currentState.BlendColor.Red,
-                    _currentState.BlendColor.Green,
-                    _currentState.BlendColor.Blue,
-                    _currentState.BlendColor.Alpha);
-            }
-            finally
-            {
-                // Cleanup
-                renderPipelineDescriptor.Dispose();
-                vertexDescriptor.Dispose();
-            }
+            renderCommandEncoder.SetBlendColor(
+                _currentState.BlendColor.Red,
+                _currentState.BlendColor.Green,
+                _currentState.BlendColor.Blue,
+                _currentState.BlendColor.Alpha);
         }
 
         private void SetComputePipelineState(MTLComputeCommandEncoder computeCommandEncoder)
         {
-            if (_currentState.ComputeFunction == null)
+            if (_currentState.ComputeProgram == null)
             {
                 return;
             }
 
-            var pipelineState = _computePipelineCache.GetOrCreate(_currentState.ComputeFunction.Value);
+            var pipelineState = PipelineState.CreateComputePipeline(_device, _currentState.ComputeProgram);
 
             computeCommandEncoder.SetComputePipelineState(pipelineState);
         }
@@ -414,14 +330,13 @@ namespace Ryujinx.Graphics.Metal
 
             if (prg.VertexFunction != IntPtr.Zero)
             {
-                _currentState.VertexFunction = prg.VertexFunction;
-                _currentState.FragmentFunction = prg.FragmentFunction;
+                _currentState.RenderProgram = prg;
 
                 _currentState.Dirty |= DirtyFlags.RenderPipeline;
             }
-            if (prg.ComputeFunction != IntPtr.Zero)
+            else if (prg.ComputeFunction != IntPtr.Zero)
             {
-                _currentState.ComputeFunction = prg.ComputeFunction;
+                _currentState.ComputeProgram = prg;
 
                 _currentState.Dirty |= DirtyFlags.ComputePipeline;
             }
@@ -435,7 +350,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void UpdateRenderTargetColorMasks(ReadOnlySpan<uint> componentMask)
         {
-            _currentState.RenderTargetMasks = new MTLColorWriteMask[Constants.MaxColorAttachments];
+            ref var blendState = ref _currentState.Pipeline.Internal.ColorBlendState;
 
             for (int i = 0; i < componentMask.Length; i++)
             {
@@ -451,7 +366,25 @@ namespace Ryujinx.Graphics.Metal
                 mask |= blue ? MTLColorWriteMask.Blue : 0;
                 mask |= alpha ? MTLColorWriteMask.Alpha : 0;
 
-                _currentState.RenderTargetMasks[i] = mask;
+                ref ColorBlendStateUid mtlBlend = ref blendState[i];
+
+                // When color write mask is 0, remove all blend state to help the pipeline cache.
+                // Restore it when the mask becomes non-zero.
+                if (mtlBlend.WriteMask != mask)
+                {
+                    if (mask == 0)
+                    {
+                        _currentState.StoredBlend[i] = mtlBlend;
+
+                        mtlBlend = new ColorBlendStateUid();
+                    }
+                    else if (mtlBlend.WriteMask == 0)
+                    {
+                        mtlBlend = _currentState.StoredBlend[i];
+                    }
+                }
+
+                blendState[i].WriteMask = mask;
             }
 
             if (_currentState.FramebufferUsingColorWriteMask)
@@ -478,6 +411,11 @@ namespace Ryujinx.Graphics.Metal
 
             // Look for textures that are masked out.
 
+            ref PipelineState pipeline = ref _currentState.Pipeline;
+            ref var blendState = ref pipeline.Internal.ColorBlendState;
+
+            pipeline.ColorBlendAttachmentStateCount = (uint)colors.Length;
+
             for (int i = 0; i < colors.Length; i++)
             {
                 if (colors[i] == null)
@@ -485,7 +423,7 @@ namespace Ryujinx.Graphics.Metal
                     continue;
                 }
 
-                ref var mtlMask = ref _currentState.RenderTargetMasks[i];
+                var mtlMask = blendState[i].WriteMask;
 
                 for (int j = 0; j < i; j++)
                 {
@@ -495,7 +433,7 @@ namespace Ryujinx.Graphics.Metal
                     {
                         // Prefer the binding with no write mask.
 
-                        ref var mtlMask2 = ref _currentState.RenderTargetMasks[j];
+                        var mtlMask2 = blendState[j].WriteMask;
 
                         if (mtlMask == 0)
                         {
@@ -517,18 +455,23 @@ namespace Ryujinx.Graphics.Metal
             {
                 if (colors[i] is not Texture tex)
                 {
+                    blendState[i].PixelFormat = MTLPixelFormat.Invalid;
+
                     continue;
                 }
 
+                blendState[i].PixelFormat = tex.GetHandle().PixelFormat; // TODO: cache this
                 _currentState.RenderTargets[i] = tex;
             }
 
             if (depthStencil is Texture depthTexture)
             {
+                pipeline.DepthStencilFormat = depthTexture.GetHandle().PixelFormat; // TODO: cache this
                 _currentState.DepthStencil = depthTexture;
             }
             else if (depthStencil == null)
             {
+                pipeline.DepthStencilFormat = MTLPixelFormat.Invalid;
                 _currentState.DepthStencil = null;
             }
 
@@ -555,13 +498,32 @@ namespace Ryujinx.Graphics.Metal
         {
             _currentState.VertexAttribs = vertexAttribs.ToArray();
 
+            // Update the buffers on the pipeline
+            UpdatePipelineVertexState(_currentState.VertexBuffers, _currentState.VertexAttribs);
+
             // Mark dirty
             _currentState.Dirty |= DirtyFlags.RenderPipeline;
         }
 
         public void UpdateBlendDescriptors(int index, BlendDescriptor blend)
         {
-            _currentState.BlendDescriptors[index] = blend;
+            ref var blendState = ref _currentState.Pipeline.Internal.ColorBlendState[index];
+
+            blendState.Enable = blend.Enable;
+            blendState.AlphaBlendOperation = blend.AlphaOp.Convert();
+            blendState.RgbBlendOperation = blend.ColorOp.Convert();
+            blendState.SourceAlphaBlendFactor = blend.AlphaSrcFactor.Convert();
+            blendState.DestinationAlphaBlendFactor = blend.AlphaDstFactor.Convert();
+            blendState.SourceRGBBlendFactor = blend.ColorSrcFactor.Convert();
+            blendState.DestinationRGBBlendFactor = blend.ColorDstFactor.Convert();
+
+            if (blendState.WriteMask == 0)
+            {
+                _currentState.StoredBlend[index] = blendState;
+
+                blendState = new ColorBlendStateUid();
+            }
+
             _currentState.BlendColor = blend.BlendConstant;
 
             // Mark dirty
@@ -571,7 +533,9 @@ namespace Ryujinx.Graphics.Metal
         // Inlineable
         public void UpdateStencilState(StencilTestDescriptor stencilTest)
         {
-            _currentState.FrontFaceStencil = new MTLStencilDescriptor
+            ref DepthStencilUid uid = ref _currentState.DepthStencilUid;
+
+            uid.FrontFace = new StencilUid
             {
                 StencilFailureOperation = stencilTest.FrontSFail.Convert(),
                 DepthFailureOperation = stencilTest.FrontDpFail.Convert(),
@@ -581,7 +545,7 @@ namespace Ryujinx.Graphics.Metal
                 WriteMask = (uint)stencilTest.FrontMask
             };
 
-            _currentState.BackFaceStencil = new MTLStencilDescriptor
+            uid.BackFace = new StencilUid
             {
                 StencilFailureOperation = stencilTest.BackSFail.Convert(),
                 DepthFailureOperation = stencilTest.BackDpFail.Convert(),
@@ -591,55 +555,23 @@ namespace Ryujinx.Graphics.Metal
                 WriteMask = (uint)stencilTest.BackMask
             };
 
-            _currentState.StencilTestEnabled = stencilTest.TestEnable;
-
-            var descriptor = new MTLDepthStencilDescriptor
-            {
-                DepthCompareFunction = _currentState.DepthCompareFunction,
-                DepthWriteEnabled = _currentState.DepthWriteEnabled
-            };
-
-            if (_currentState.StencilTestEnabled)
-            {
-                descriptor.BackFaceStencil = _currentState.BackFaceStencil;
-                descriptor.FrontFaceStencil = _currentState.FrontFaceStencil;
-            }
-
-            _currentState.DepthStencilState = _device.NewDepthStencilState(descriptor);
+            uid.StencilTestEnabled = stencilTest.TestEnable;
 
             UpdateStencilRefValue(stencilTest.FrontFuncRef, stencilTest.BackFuncRef);
 
             // Mark dirty
             _currentState.Dirty |= DirtyFlags.DepthStencil;
-
-            // Cleanup
-            descriptor.Dispose();
         }
 
         public void UpdateDepthState(DepthTestDescriptor depthTest)
         {
-            _currentState.DepthCompareFunction = depthTest.TestEnable ? depthTest.Func.Convert() : MTLCompareFunction.Always;
-            _currentState.DepthWriteEnabled = depthTest.TestEnable && depthTest.WriteEnable;
+            ref DepthStencilUid uid = ref _currentState.DepthStencilUid;
 
-            var descriptor = new MTLDepthStencilDescriptor
-            {
-                DepthCompareFunction = _currentState.DepthCompareFunction,
-                DepthWriteEnabled = _currentState.DepthWriteEnabled
-            };
-
-            if (_currentState.StencilTestEnabled)
-            {
-                descriptor.BackFaceStencil = _currentState.BackFaceStencil;
-                descriptor.FrontFaceStencil = _currentState.FrontFaceStencil;
-            }
-
-            _currentState.DepthStencilState = _device.NewDepthStencilState(descriptor);
+            uid.DepthCompareFunction = depthTest.TestEnable ? depthTest.Func.Convert() : MTLCompareFunction.Always;
+            uid.DepthWriteEnabled = depthTest.TestEnable && depthTest.WriteEnable;
 
             // Mark dirty
             _currentState.Dirty |= DirtyFlags.DepthStencil;
-
-            // Cleanup
-            descriptor.Dispose();
         }
 
         // Inlineable
@@ -750,6 +682,9 @@ namespace Ryujinx.Graphics.Metal
         public void UpdateVertexBuffers(ReadOnlySpan<VertexBufferDescriptor> vertexBuffers)
         {
             _currentState.VertexBuffers = vertexBuffers.ToArray();
+
+            // Update the buffers on the pipeline
+            UpdatePipelineVertexState(_currentState.VertexBuffers, _currentState.VertexAttribs);
 
             // Inline update
             if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
@@ -925,10 +860,9 @@ namespace Ryujinx.Graphics.Metal
 
         private readonly void SetDepthStencilState(MTLRenderCommandEncoder renderCommandEncoder)
         {
-            if (_currentState.DepthStencilState != null)
-            {
-                renderCommandEncoder.SetDepthStencilState(_currentState.DepthStencilState.Value);
-            }
+            MTLDepthStencilState state = _depthStencilCache.GetOrCreate(_currentState.DepthStencilUid);
+
+            renderCommandEncoder.SetDepthStencilState(state);
         }
 
         private readonly void SetDepthClamp(MTLRenderCommandEncoder renderCommandEncoder)
@@ -973,16 +907,17 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        private readonly MTLVertexDescriptor BuildVertexDescriptor(VertexBufferDescriptor[] bufferDescriptors, VertexAttribDescriptor[] attribDescriptors)
+        private void UpdatePipelineVertexState(VertexBufferDescriptor[] bufferDescriptors, VertexAttribDescriptor[] attribDescriptors)
         {
-            var vertexDescriptor = new MTLVertexDescriptor();
+            ref PipelineState pipeline = ref _currentState.Pipeline;
             uint indexMask = 0;
 
             for (int i = 0; i < attribDescriptors.Length; i++)
             {
+                ref var attrib = ref pipeline.Internal.VertexAttributes[i];
+
                 if (attribDescriptors[i].IsZero)
                 {
-                    var attrib = vertexDescriptor.Attributes.Object((ulong)i);
                     attrib.Format = attribDescriptors[i].Format.Convert();
                     indexMask |= 1u << (int)Constants.ZeroBufferIndex;
                     attrib.BufferIndex = Constants.ZeroBufferIndex;
@@ -990,7 +925,6 @@ namespace Ryujinx.Graphics.Metal
                 }
                 else
                 {
-                    var attrib = vertexDescriptor.Attributes.Object((ulong)i);
                     attrib.Format = attribDescriptors[i].Format.Convert();
                     indexMask |= 1u << attribDescriptors[i].BufferIndex;
                     attrib.BufferIndex = (ulong)attribDescriptors[i].BufferIndex;
@@ -1000,11 +934,11 @@ namespace Ryujinx.Graphics.Metal
 
             for (int i = 0; i < bufferDescriptors.Length; i++)
             {
-                var layout = vertexDescriptor.Layouts.Object((ulong)i);
+                ref var layout = ref pipeline.Internal.VertexBindings[i];
 
                 if ((indexMask & (1u << i)) != 0)
                 {
-                    layout.Stride = (ulong)bufferDescriptors[i].Stride;
+                    layout.Stride = (uint)bufferDescriptors[i].Stride;
 
                     if (layout.Stride == 0)
                     {
@@ -1017,7 +951,7 @@ namespace Ryujinx.Graphics.Metal
                         if (bufferDescriptors[i].Divisor > 0)
                         {
                             layout.StepFunction = MTLVertexStepFunction.PerInstance;
-                            layout.StepRate = (ulong)bufferDescriptors[i].Divisor;
+                            layout.StepRate = (uint)bufferDescriptors[i].Divisor;
                         }
                         else
                         {
@@ -1028,20 +962,21 @@ namespace Ryujinx.Graphics.Metal
                 }
                 else
                 {
-                    layout.Stride = 0;
+                    layout = new();
                 }
             }
 
             // Zero buffer
             if ((indexMask & (1u << (int)Constants.ZeroBufferIndex)) != 0)
             {
-                var layout = vertexDescriptor.Layouts.Object(Constants.ZeroBufferIndex);
+                ref var layout = ref pipeline.Internal.VertexBindings[(int)Constants.ZeroBufferIndex];
                 layout.Stride = 1;
                 layout.StepFunction = MTLVertexStepFunction.Constant;
                 layout.StepRate = 0;
             }
 
-            return vertexDescriptor;
+            pipeline.VertexAttributeDescriptionsCount = (uint)attribDescriptors.Length;
+            pipeline.VertexBindingDescriptionsCount = Constants.ZeroBufferIndex + 1; // TODO: move this out?
         }
 
         private void SetVertexBuffers(MTLRenderCommandEncoder renderCommandEncoder, VertexBufferDescriptor[] bufferDescriptors)

@@ -25,6 +25,8 @@ namespace Ryujinx.Graphics.Metal
         private readonly IProgram _programDepthStencilClear;
         private readonly IProgram _programStrideChange;
 
+        private readonly EncoderState _helperShaderState = new();
+
         public HelperShader(MTLDevice device, MetalRenderer renderer, Pipeline pipeline)
         {
             _device = device;
@@ -80,8 +82,7 @@ namespace Ryujinx.Graphics.Metal
             bool linearFilter,
             bool clear = false)
         {
-            // Save current state
-            _pipeline.SaveAndResetState();
+            _pipeline.SwapState(_helperShaderState);
 
             const int RegionBufferSize = 16;
 
@@ -141,8 +142,14 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
             _pipeline.Draw(4, 1, 0, 0);
 
+            // Cleanup
+            if (clear)
+            {
+                _pipeline.SetClearLoadAction(false);
+            }
+
             // Restore previous state
-            _pipeline.RestoreState();
+            _pipeline.SwapState(null);
         }
 
         public unsafe void DrawTexture(
@@ -152,7 +159,11 @@ namespace Ryujinx.Graphics.Metal
             Extents2DF dstRegion)
         {
             // Save current state
-            _pipeline.SaveState();
+            var state = _pipeline.SavePredrawState();
+
+            _pipeline.SetFaceCulling(false, Face.Front);
+            _pipeline.SetStencilTest(new StencilTestDescriptor());
+            _pipeline.SetDepthTest(new DepthTestDescriptor());
 
             const int RegionBufferSize = 16;
 
@@ -204,7 +215,7 @@ namespace Ryujinx.Graphics.Metal
             _renderer.BufferManager.Delete(bufferHandle);
 
             // Restore previous state
-            _pipeline.RestoreState();
+            _pipeline.RestorePredrawState(state);
         }
 
         public void ConvertI8ToI16(CommandBufferScoped cbs, BufferHolder src, BufferHolder dst, int srcOffset, int size)
@@ -229,7 +240,7 @@ namespace Ryujinx.Graphics.Metal
             const int ParamsBufferSize = 16;
 
             // Save current state
-            _pipeline.SaveAndResetState();
+            _pipeline.SwapState(_helperShaderState);
 
             Span<int> shaderParams = stackalloc int[ParamsBufferSize / sizeof(int)];
 
@@ -252,7 +263,7 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.DispatchCompute(1 + elems / ConvertElementsPerWorkgroup, 1, 1, 64, 1, 1);
 
             // Restore previous state
-            _pipeline.RestoreState();
+            _pipeline.SwapState(null);
         }
 
         public unsafe void ClearColor(
@@ -262,8 +273,14 @@ namespace Ryujinx.Graphics.Metal
             int dstWidth,
             int dstHeight)
         {
+            // Keep original scissor
+            DirtyFlags clearFlags = DirtyFlags.All & (~DirtyFlags.Scissors);
+
             // Save current state
-            _pipeline.SaveState();
+            EncoderState originalState = _pipeline.SwapState(_helperShaderState, clearFlags);
+
+            // Inherit some state without fully recreating render pipeline.
+            RenderTargetCopy save = _helperShaderState.InheritForClear(originalState, false, index);
 
             const int ClearColorBufferSize = 16;
 
@@ -286,7 +303,7 @@ namespace Ryujinx.Graphics.Metal
                 1f);
 
             _pipeline.SetProgram(_programsColorClear[index]);
-            _pipeline.SetBlendState(index, new BlendDescriptor(false, new ColorF(0f, 0f, 0f, 1f), BlendOp.Add, BlendFactor.One, BlendFactor.Zero, BlendOp.Add, BlendFactor.One, BlendFactor.Zero));
+            _pipeline.SetBlendState(index, new BlendDescriptor());
             _pipeline.SetFaceCulling(false, Face.Front);
             _pipeline.SetDepthTest(new DepthTestDescriptor(false, false, CompareOp.Always));
             _pipeline.SetRenderTargetColorMasks([componentMask]);
@@ -295,7 +312,9 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.Draw(4, 1, 0, 0);
 
             // Restore previous state
-            _pipeline.RestoreState();
+            _pipeline.SwapState(null, clearFlags);
+
+            _helperShaderState.Restore(save);
         }
 
         public unsafe void ClearDepthStencil(
@@ -306,8 +325,15 @@ namespace Ryujinx.Graphics.Metal
             int dstWidth,
             int dstHeight)
         {
+            // Keep original scissor
+            DirtyFlags clearFlags = DirtyFlags.All & (~DirtyFlags.Scissors);
+            var helperScissors = _helperShaderState.Scissors;
+
             // Save current state
-            _pipeline.SaveState();
+            EncoderState originalState = _pipeline.SwapState(_helperShaderState, clearFlags);
+
+            // Inherit some state without fully recreating render pipeline.
+            RenderTargetCopy save = _helperShaderState.InheritForClear(originalState, true);
 
             const int ClearDepthBufferSize = 16;
 
@@ -334,8 +360,14 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SetStencilTest(CreateStencilTestDescriptor(stencilMask != 0, stencilValue, 0xFF, stencilMask));
             _pipeline.Draw(4, 1, 0, 0);
 
+            // Cleanup
+            _pipeline.SetDepthTest(new DepthTestDescriptor(false, false, CompareOp.Always));
+            _pipeline.SetStencilTest(CreateStencilTestDescriptor(false));
+
             // Restore previous state
-            _pipeline.RestoreState();
+            _pipeline.SwapState(null, clearFlags);
+
+            _helperShaderState.Restore(save);
         }
 
         private static StencilTestDescriptor CreateStencilTestDescriptor(

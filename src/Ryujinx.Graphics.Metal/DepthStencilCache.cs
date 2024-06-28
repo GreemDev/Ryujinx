@@ -1,28 +1,11 @@
+using Ryujinx.Graphics.Metal.State;
 using SharpMetal.Metal;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    struct DepthStencilHash
-    {
-        public struct StencilHash
-        {
-            public MTLStencilOperation StencilFailureOperation;
-            public MTLStencilOperation DepthFailureOperation;
-            public MTLStencilOperation DepthStencilPassOperation;
-            public MTLCompareFunction StencilCompareFunction;
-            public uint ReadMask;
-            public uint WriteMask;
-        }
-        public StencilHash FrontFace;
-        public StencilHash BackFace;
-        public MTLCompareFunction DepthCompareFunction;
-        public bool DepthWriteEnabled;
-    }
-
-    [SupportedOSPlatform("macos")]
-    class DepthStencilCache : StateCache<MTLDepthStencilState, MTLDepthStencilDescriptor, DepthStencilHash>
+    class DepthStencilCache : StateCache<MTLDepthStencilState, DepthStencilUid, DepthStencilUid>
     {
         private readonly MTLDevice _device;
 
@@ -31,41 +14,55 @@ namespace Ryujinx.Graphics.Metal
             _device = device;
         }
 
-        protected override DepthStencilHash GetHash(MTLDepthStencilDescriptor descriptor)
+        protected override DepthStencilUid GetHash(DepthStencilUid descriptor)
         {
-            var hash = new DepthStencilHash
+            return descriptor;
+        }
+
+        protected override MTLDepthStencilState CreateValue(DepthStencilUid descriptor)
+        {
+            // Create descriptors
+
+            ref StencilUid frontUid = ref descriptor.FrontFace;
+
+            using var frontFaceStencil = new MTLStencilDescriptor
             {
-                // Front face
-                FrontFace = new DepthStencilHash.StencilHash
-                {
-                    StencilFailureOperation = descriptor.FrontFaceStencil.StencilFailureOperation,
-                    DepthFailureOperation = descriptor.FrontFaceStencil.DepthFailureOperation,
-                    DepthStencilPassOperation = descriptor.FrontFaceStencil.DepthStencilPassOperation,
-                    StencilCompareFunction = descriptor.FrontFaceStencil.StencilCompareFunction,
-                    ReadMask = descriptor.FrontFaceStencil.ReadMask,
-                    WriteMask = descriptor.FrontFaceStencil.WriteMask
-                },
-                // Back face
-                BackFace = new DepthStencilHash.StencilHash
-                {
-                    StencilFailureOperation = descriptor.BackFaceStencil.StencilFailureOperation,
-                    DepthFailureOperation = descriptor.BackFaceStencil.DepthFailureOperation,
-                    DepthStencilPassOperation = descriptor.BackFaceStencil.DepthStencilPassOperation,
-                    StencilCompareFunction = descriptor.BackFaceStencil.StencilCompareFunction,
-                    ReadMask = descriptor.BackFaceStencil.ReadMask,
-                    WriteMask = descriptor.BackFaceStencil.WriteMask
-                },
-                // Depth
+                StencilFailureOperation = frontUid.StencilFailureOperation,
+                DepthFailureOperation = frontUid.DepthFailureOperation,
+                DepthStencilPassOperation = frontUid.DepthStencilPassOperation,
+                StencilCompareFunction = frontUid.StencilCompareFunction,
+                ReadMask = frontUid.ReadMask,
+                WriteMask = frontUid.WriteMask
+            };
+
+            ref StencilUid backUid = ref descriptor.BackFace;
+
+            using var backFaceStencil = new MTLStencilDescriptor
+            {
+                StencilFailureOperation = backUid.StencilFailureOperation,
+                DepthFailureOperation = backUid.DepthFailureOperation,
+                DepthStencilPassOperation = backUid.DepthStencilPassOperation,
+                StencilCompareFunction = backUid.StencilCompareFunction,
+                ReadMask = backUid.ReadMask,
+                WriteMask = backUid.WriteMask
+            };
+
+            var mtlDescriptor = new MTLDepthStencilDescriptor
+            {
                 DepthCompareFunction = descriptor.DepthCompareFunction,
                 DepthWriteEnabled = descriptor.DepthWriteEnabled
             };
 
-            return hash;
-        }
+            if (descriptor.StencilTestEnabled)
+            {
+                mtlDescriptor.BackFaceStencil = backFaceStencil;
+                mtlDescriptor.FrontFaceStencil = frontFaceStencil;
+            }
 
-        protected override MTLDepthStencilState CreateValue(MTLDepthStencilDescriptor descriptor)
-        {
-            return _device.NewDepthStencilState(descriptor);
+            using (mtlDescriptor)
+            {
+                return _device.NewDepthStencilState(mtlDescriptor);
+            }
         }
     }
 }
