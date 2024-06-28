@@ -299,6 +299,18 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
                     foreach (var ioDefinition in inputs.OrderBy(x => x.Location))
                     {
+                        string iq = string.Empty;
+
+                        if (context.Definitions.Stage == ShaderStage.Fragment)
+                        {
+                            iq = context.Definitions.ImapTypes[ioDefinition.Location].GetFirstUsedType() switch
+                            {
+                                PixelImap.Constant => "[[flat]] ",
+                                PixelImap.ScreenLinear => "[[center_no_perspective]] ",
+                                _ => string.Empty,
+                            };
+                        }
+
                         string type = ioDefinition.IoVariable switch
                         {
                             // IoVariable.Position => "float4",
@@ -329,7 +341,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                             _ => ""
                         };
 
-                        context.AppendLine($"{type} {name} {suffix};");
+                        context.AppendLine($"{type} {name} {iq}{suffix};");
                     }
 
                     context.LeaveScope(";");
