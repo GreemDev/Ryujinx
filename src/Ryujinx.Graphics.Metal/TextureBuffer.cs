@@ -7,27 +7,54 @@ using System.Runtime.Versioning;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    class TextureBuffer : ITexture
+    class TextureBuffer : TextureBase, ITexture
     {
-        private readonly MetalRenderer _renderer;
-
+        private MTLTextureDescriptor _descriptor;
         private BufferHandle _bufferHandle;
         private int _offset;
         private int _size;
 
         private int _bufferCount;
 
-        public int Width { get; }
-        public int Height { get; }
-
-        public MTLPixelFormat MtlFormat { get; }
-
-        public TextureBuffer(MetalRenderer renderer, TextureCreateInfo info)
+        public TextureBuffer(MTLDevice device, MetalRenderer renderer, Pipeline pipeline, TextureCreateInfo info) : base(device, renderer, pipeline, info)
         {
-            _renderer = renderer;
-            Width = info.Width;
-            Height = info.Height;
-            MtlFormat = FormatTable.GetFormat(info.Format);
+            MTLPixelFormat pixelFormat = FormatTable.GetFormat(Info.Format);
+
+            _descriptor = new MTLTextureDescriptor
+            {
+                PixelFormat = pixelFormat,
+                Usage = MTLTextureUsage.Unknown,
+                TextureType = MTLTextureType.TextureBuffer,
+                Width = (ulong)Info.Width,
+                Height = (ulong)Info.Height,
+            };
+
+            MtlFormat = pixelFormat;
+        }
+
+        private void RebuildStorage()
+        {
+            // Find the parent buffer, and try to build a texture from it.
+
+            // TODO: texture uses should register read/write usage on the assigned buffer.
+            Auto<DisposableBuffer> bufferAuto = _renderer.BufferManager.GetBuffer(_bufferHandle, false);
+
+            if (_mtlTexture.NativePtr != 0)
+            {
+                _mtlTexture.Dispose();
+            }
+
+            if (bufferAuto == null)
+            {
+                _mtlTexture = default;
+            }
+            else
+            {
+                DisposableBuffer buffer = bufferAuto.Get(_pipeline.Cbs, _offset, _size);
+
+                _descriptor.Width = (uint)(_size / Info.BytesPerPixel);
+                _mtlTexture = buffer.Value.NewTexture(_descriptor, (ulong)_offset, (ulong)_size);
+            }
         }
 
         public void CopyTo(ITexture destination, int firstLayer, int firstLevel)
@@ -65,11 +92,6 @@ namespace Ryujinx.Graphics.Metal
             throw new NotImplementedException();
         }
 
-        public void Release()
-        {
-
-        }
-
         public void SetData(IMemoryOwner<byte> data)
         {
             _renderer.SetBufferData(_bufferHandle, _offset, data.Memory.Span);
@@ -101,7 +123,14 @@ namespace Ryujinx.Graphics.Metal
             _size = buffer.Size;
             _bufferCount = _renderer.BufferManager.BufferCount;
 
-            Release();
+            RebuildStorage();
+        }
+
+        public override void Release()
+        {
+            _descriptor.Dispose();
+
+            base.Release();
         }
     }
 }

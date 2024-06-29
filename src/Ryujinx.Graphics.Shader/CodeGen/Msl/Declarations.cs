@@ -241,7 +241,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 var textureTypeName = texture.Type.ToMslTextureType();
                 argBufferPointers[texture.Binding] = $"{textureTypeName} tex_{texture.Name};";
 
-                if (!texture.Separate)
+                if (!texture.Separate && texture.Type != SamplerType.TextureBuffer)
                 {
                     argBufferPointers[Defaults.MaxTexturesPerStage + texture.Binding] = $"sampler samp_{texture.Name};";
                 }

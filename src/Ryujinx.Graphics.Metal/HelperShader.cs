@@ -65,7 +65,7 @@ namespace Ryujinx.Graphics.Metal
             _programStrideChange = new Program(
             [
                 new ShaderSource(strideChangeSource, ShaderStage.Compute, TargetLanguage.Msl)
-            ], device);
+            ], device, new ComputeSize(64, 1, 1));
         }
 
         private static string ReadMsl(string fileName)
@@ -260,7 +260,7 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SetStorageBuffers(1, sbRanges);
 
             _pipeline.SetProgram(_programStrideChange);
-            _pipeline.DispatchCompute(1 + elems / ConvertElementsPerWorkgroup, 1, 1, 64, 1, 1);
+            _pipeline.DispatchCompute(1 + elems / ConvertElementsPerWorkgroup, 1, 1);
 
             // Restore previous state
             _pipeline.SwapState(null);

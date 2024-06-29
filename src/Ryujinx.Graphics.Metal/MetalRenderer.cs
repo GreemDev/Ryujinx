@@ -92,7 +92,7 @@ namespace Ryujinx.Graphics.Metal
 
         public IProgram CreateProgram(ShaderSource[] shaders, ShaderInfo info)
         {
-            return new Program(shaders, _device);
+            return new Program(shaders, _device, info.ComputeLocalSize);
         }
 
         public ISampler CreateSampler(SamplerCreateInfo info)
@@ -104,7 +104,7 @@ namespace Ryujinx.Graphics.Metal
         {
             if (info.Target == Target.TextureBuffer)
             {
-                return new TextureBuffer(this, info);
+                return new TextureBuffer(_device, this, _pipeline, info);
             }
 
             return new Texture(_device, this, _pipeline, info);

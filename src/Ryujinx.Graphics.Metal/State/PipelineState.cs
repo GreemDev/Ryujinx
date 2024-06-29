@@ -1,4 +1,5 @@
 using Ryujinx.Common.Logging;
+using Ryujinx.Graphics.GAL;
 using SharpMetal.Foundation;
 using SharpMetal.Metal;
 using System;
@@ -249,6 +250,27 @@ namespace Ryujinx.Graphics.Metal
             return pipelineState;
         }
 
+        public static MTLComputePipelineDescriptor CreateComputeDescriptor(Program program)
+        {
+            ComputeSize localSize = program.ComputeLocalSize;
+
+            uint maxThreads = (uint)(localSize.X * localSize.Y * localSize.Z);
+
+            if (maxThreads == 0)
+            {
+                throw new InvalidOperationException($"Local thread size for compute cannot be 0 in any dimension.");
+            }
+
+            var descriptor = new MTLComputePipelineDescriptor
+            {
+                ComputeFunction = program.ComputeFunction,
+                MaxTotalThreadsPerThreadgroup = maxThreads,
+                ThreadGroupSizeIsMultipleOfThreadExecutionWidth = true,
+            };
+
+            return descriptor;
+        }
+
         public static MTLComputePipelineState CreateComputePipeline(MTLDevice device, Program program)
         {
             if (program.TryGetComputePipeline(out var pipelineState))
@@ -256,8 +278,10 @@ namespace Ryujinx.Graphics.Metal
                 return pipelineState;
             }
 
+            using MTLComputePipelineDescriptor descriptor = CreateComputeDescriptor(program);
+
             var error = new NSError(IntPtr.Zero);
-            pipelineState = device.NewComputePipelineState(program.ComputeFunction, ref error);
+            pipelineState = device.NewComputePipelineState(descriptor, MTLPipelineOption.None, 0, ref error);
             if (error != IntPtr.Zero)
             {
                 Logger.Error?.PrintMsg(LogClass.Gpu, $"Failed to create Compute Pipeline State: {StringHelper.String(error.LocalizedDescription)}");

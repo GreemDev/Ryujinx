@@ -224,7 +224,10 @@ namespace Ryujinx.Graphics.Gpu.Shader
             TranslatedShader translatedShader = TranslateShader(_dumper, channel, translatorContext, cachedGuestCode, asCompute: false);
 
             ShaderSource[] shaderSourcesArray = new ShaderSource[] { CreateShaderSource(translatedShader.Program) };
-            ShaderInfo info = ShaderInfoBuilder.BuildForCompute(_context, translatedShader.Program.Info);
+            ShaderInfo info = ShaderInfoBuilder.BuildForCompute(
+                _context,
+                translatedShader.Program.Info,
+                computeState.GetLocalSize());
             IProgram hostProgram = _context.Renderer.CreateProgram(shaderSourcesArray, info);
 
             cpShader = new CachedShaderProgram(hostProgram, specState, translatedShader.Shader);

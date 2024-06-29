@@ -41,7 +41,7 @@ namespace Ryujinx.Graphics.Metal
             return _mtlTexture;
         }
 
-        public void Release()
+        public virtual void Release()
         {
             Dispose();
         }

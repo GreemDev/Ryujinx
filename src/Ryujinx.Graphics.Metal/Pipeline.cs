@@ -347,13 +347,15 @@ namespace Ryujinx.Graphics.Metal
             BufferHolder.Copy(this, Cbs, srcBuffer, dstBuffer, srcOffset, dstOffset, size);
         }
 
-        public void DispatchCompute(int groupsX, int groupsY, int groupsZ, int groupSizeX, int groupSizeY, int groupSizeZ)
+        public void DispatchCompute(int groupsX, int groupsY, int groupsZ)
         {
             var computeCommandEncoder = GetOrCreateComputeEncoder(true);
 
+            ComputeSize localSize = _encoderStateManager.ComputeLocalSize;
+
             computeCommandEncoder.DispatchThreadgroups(
                 new MTLSize { width = (ulong)groupsX, height = (ulong)groupsY, depth = (ulong)groupsZ },
-                new MTLSize { width = (ulong)groupSizeX, height = (ulong)groupSizeY, depth = (ulong)groupSizeZ });
+                new MTLSize { width = (ulong)localSize.X, height = (ulong)localSize.Y, depth = (ulong)localSize.Z });
         }
 
         public void Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance)
@@ -658,12 +660,11 @@ namespace Ryujinx.Graphics.Metal
         {
             if (texture is TextureBase tex)
             {
-                if (sampler is Sampler samp)
+                if (sampler == null || sampler is Sampler)
                 {
-                    var mtlSampler = samp.GetSampler();
                     var index = (ulong)binding;
 
-                    _encoderStateManager.UpdateTextureAndSampler(stage, index, tex, mtlSampler);
+                    _encoderStateManager.UpdateTextureAndSampler(stage, index, tex, (Sampler)sampler);
                 }
             }
         }

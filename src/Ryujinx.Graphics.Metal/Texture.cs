@@ -37,7 +37,9 @@ namespace Ryujinx.Graphics.Metal
             descriptor.Swizzle = GetSwizzle(info, descriptor.PixelFormat);
 
             _mtlTexture = _device.NewTexture(descriptor);
+            
             MtlFormat = pixelFormat;
+            descriptor.Dispose();
         }
 
         public Texture(MTLDevice device, MetalRenderer renderer, Pipeline pipeline, TextureCreateInfo info, MTLTexture sourceTexture, int firstLayer, int firstLevel) : base(device, renderer, pipeline, info)

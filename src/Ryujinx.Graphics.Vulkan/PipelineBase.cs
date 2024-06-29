@@ -1,4 +1,4 @@
-using Ryujinx.Graphics.GAL;
+﻿using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Shader;
 using Silk.NET.Vulkan;
 using System;
@@ -295,7 +295,7 @@ namespace Ryujinx.Graphics.Vulkan
             }
         }
 
-        public void DispatchCompute(int groupsX, int groupsY, int groupsZ, int groupSizeX, int groupSizeY, int groupSizeZ)
+        public void DispatchCompute(int groupsX, int groupsY, int groupsZ)
         {
             if (!_program.IsLinked)
             {

@@ -29,6 +29,7 @@ namespace Ryujinx.Graphics.Metal
         public readonly PrimitiveTopology Topology => _currentState.Topology;
         public readonly Texture[] RenderTargets => _currentState.RenderTargets;
         public readonly Texture DepthStencil => _currentState.DepthStencil;
+        public readonly ComputeSize ComputeLocalSize => _currentState.ComputeProgram.ComputeLocalSize;
 
         // RGBA32F is the biggest format
         private const int ZeroBufferSize = 4 * 4;
@@ -811,6 +812,7 @@ namespace Ryujinx.Graphics.Metal
                 Logger.Warning?.Print(LogClass.Gpu, $"Texture binding ({binding}) must be <= {Constants.MaxTexturesPerStage}");
                 return;
             }
+
             switch (stage)
             {
                 case ShaderStage.Fragment:
@@ -852,10 +854,14 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        public void UpdateTextureAndSampler(ShaderStage stage, ulong binding, TextureBase texture, MTLSamplerState sampler)
+        public void UpdateTextureAndSampler(ShaderStage stage, ulong binding, TextureBase texture, Sampler sampler)
         {
             UpdateTexture(stage, binding, texture);
-            UpdateSampler(stage, binding, sampler);
+
+            if (sampler != null)
+            {
+                UpdateSampler(stage, binding, sampler.GetSampler());
+            }
         }
 
         private readonly void SetDepthStencilState(MTLRenderCommandEncoder renderCommandEncoder)

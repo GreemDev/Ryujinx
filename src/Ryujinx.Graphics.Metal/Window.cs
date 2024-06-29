@@ -18,6 +18,10 @@ namespace Ryujinx.Graphics.Metal
 
         private int _width;
         private int _height;
+
+        private int _requestedWidth;
+        private int _requestedHeight;
+
         // private bool _vsyncEnabled;
         private AntiAliasing _currentAntiAliasing;
         private bool _updateEffect;
@@ -35,10 +39,26 @@ namespace Ryujinx.Graphics.Metal
             _metalLayer = metalLayer;
         }
 
-        public void Present(ITexture texture, ImageCrop crop, Action swapBuffersCallback)
+        private unsafe void ResizeIfNeeded()
+        {
+            if (_requestedWidth != 0 && _requestedHeight != 0)
+            {
+                // TODO: This is actually a CGSize, but there is no overload for that, so fill the first two fields of rect with the size.
+                var rect = new NSRect(_requestedWidth, _requestedHeight, 0, 0);
+
+                ObjectiveC.objc_msgSend(_metalLayer, "setDrawableSize:", rect);
+
+                _requestedWidth = 0;
+                _requestedHeight = 0;
+            }
+        }
+
+        public unsafe void Present(ITexture texture, ImageCrop crop, Action swapBuffersCallback)
         {
             if (_renderer.Pipeline is Pipeline pipeline && texture is Texture tex)
             {
+                ResizeIfNeeded();
+
                 var drawable = new CAMetalDrawable(ObjectiveC.IntPtr_objc_msgSend(_metalLayer, "nextDrawable"));
 
                 _width = (int)drawable.Texture.Width;
@@ -114,7 +134,8 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetSize(int width, int height)
         {
-            // Ignore
+            _requestedWidth = width;
+            _requestedHeight = height;
         }
 
         public void ChangeVSyncMode(bool vsyncEnabled)
