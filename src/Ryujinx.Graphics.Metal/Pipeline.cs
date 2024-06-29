@@ -254,14 +254,23 @@ namespace Ryujinx.Graphics.Metal
             _renderer.RegisterFlush();
         }
 
-        public void BlitColor(
+        public void Blit(
             ITexture src,
             ITexture dst,
             Extents2D srcRegion,
             Extents2D dstRegion,
+            bool isDepthOrStencil,
             bool linearFilter)
         {
-            _renderer.HelperShader.BlitColor(Cbs, src, dst, srcRegion, dstRegion, linearFilter);
+            if (isDepthOrStencil)
+            {
+                // TODO: Depth & stencil blit!
+                Logger.Warning?.PrintMsg(LogClass.Gpu, "Requested a depth or stencil blit!");
+            }
+            else
+            {
+                _renderer.HelperShader.BlitColor(Cbs, src, dst, srcRegion, dstRegion, linearFilter);
+            }
         }
 
         public void Barrier()

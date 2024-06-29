@@ -162,7 +162,10 @@ namespace Ryujinx.Graphics.Metal
 
         public void CopyTo(ITexture destination, Extents2D srcRegion, Extents2D dstRegion, bool linearFilter)
         {
-            _pipeline.BlitColor(this, destination, srcRegion, dstRegion, linearFilter);
+            var dst = (Texture)destination;
+            bool isDepthOrStencil = dst.Info.Format.IsDepthOrStencil();
+
+            _pipeline.Blit(this, destination, srcRegion, dstRegion, isDepthOrStencil, linearFilter);
         }
 
         public void CopyTo(BufferRange range, int layer, int level, int stride)
