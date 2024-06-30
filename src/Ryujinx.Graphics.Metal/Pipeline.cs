@@ -18,7 +18,7 @@ namespace Ryujinx.Graphics.Metal
     }
 
     [SupportedOSPlatform("macos")]
-    class Pipeline : IPipeline, IDisposable
+    class Pipeline : IPipeline, IEncoderFactory, IDisposable
     {
         private const ulong MinByteWeightForFlush = 256 * 1024 * 1024; // MiB
 
@@ -27,7 +27,6 @@ namespace Ryujinx.Graphics.Metal
         private EncoderStateManager _encoderStateManager;
         private ulong _byteWeight;
 
-        public readonly Action EndRenderPassDelegate;
         public MTLCommandBuffer CommandBuffer;
 
         public IndexBufferPattern QuadsToTrisPattern;
@@ -35,8 +34,8 @@ namespace Ryujinx.Graphics.Metal
 
         internal CommandBufferScoped? PreloadCbs { get; private set; }
         internal CommandBufferScoped Cbs { get; private set; }
-        internal MTLCommandEncoder? CurrentEncoder { get; private set; }
-        internal EncoderType CurrentEncoderType { get; private set; } = EncoderType.None;
+        internal CommandBufferEncoder Encoders => Cbs.Encoders;
+        internal EncoderType CurrentEncoderType => Encoders.CurrentEncoderType;
         internal bool RenderPassActive { get; private set; }
 
         public Pipeline(MTLDevice device, MetalRenderer renderer)
@@ -44,7 +43,7 @@ namespace Ryujinx.Graphics.Metal
             _device = device;
             _renderer = renderer;
 
-            EndRenderPassDelegate = EndCurrentPass;
+            renderer.CommandBufferPool.Initialize(this);
 
             CommandBuffer = (Cbs = _renderer.CommandBufferPool.Rent()).CommandBuffer;
         }
@@ -57,8 +56,13 @@ namespace Ryujinx.Graphics.Metal
             TriFanToTrisPattern = new IndexBufferPattern(_renderer, 3, 3, 2, [int.MinValue, -1, 0], 1, true);
         }
 
-        public EncoderState SwapState(EncoderState state, DirtyFlags flags = DirtyFlags.All)
+        public EncoderState SwapState(EncoderState state, DirtyFlags flags = DirtyFlags.All, bool endRenderPass = true)
         {
+            if (endRenderPass && CurrentEncoderType == EncoderType.Render)
+            {
+                EndCurrentPass();
+            }
+
             return _encoderStateManager.SwapState(state, flags);
         }
 
@@ -79,15 +83,7 @@ namespace Ryujinx.Graphics.Metal
 
         public MTLRenderCommandEncoder GetOrCreateRenderEncoder(bool forDraw = false)
         {
-            MTLRenderCommandEncoder renderCommandEncoder;
-            if (CurrentEncoder == null || CurrentEncoderType != EncoderType.Render)
-            {
-                renderCommandEncoder = BeginRenderPass();
-            }
-            else
-            {
-                renderCommandEncoder = new MTLRenderCommandEncoder(CurrentEncoder.Value);
-            }
+            MTLRenderCommandEncoder renderCommandEncoder = Cbs.Encoders.EnsureRenderEncoder();
 
             if (forDraw)
             {
@@ -99,28 +95,12 @@ namespace Ryujinx.Graphics.Metal
 
         public MTLBlitCommandEncoder GetOrCreateBlitEncoder()
         {
-            if (CurrentEncoder != null)
-            {
-                if (CurrentEncoderType == EncoderType.Blit)
-                {
-                    return new MTLBlitCommandEncoder(CurrentEncoder.Value);
-                }
-            }
-
-            return BeginBlitPass();
+            return Cbs.Encoders.EnsureBlitEncoder();
         }
 
         public MTLComputeCommandEncoder GetOrCreateComputeEncoder(bool forDispatch = false)
         {
-            MTLComputeCommandEncoder computeCommandEncoder;
-            if (CurrentEncoder == null || CurrentEncoderType != EncoderType.Compute)
-            {
-                computeCommandEncoder = BeginComputePass();
-            }
-            else
-            {
-                computeCommandEncoder = new MTLComputeCommandEncoder(CurrentEncoder.Value);
-            }
+            MTLComputeCommandEncoder computeCommandEncoder = Cbs.Encoders.EnsureComputeEncoder();
 
             if (forDispatch)
             {
@@ -132,65 +112,17 @@ namespace Ryujinx.Graphics.Metal
 
         public void EndCurrentPass()
         {
-            if (CurrentEncoder != null)
-            {
-                switch (CurrentEncoderType)
-                {
-                    case EncoderType.Blit:
-                        new MTLBlitCommandEncoder(CurrentEncoder.Value).EndEncoding();
-                        CurrentEncoder = null;
-                        break;
-                    case EncoderType.Compute:
-                        new MTLComputeCommandEncoder(CurrentEncoder.Value).EndEncoding();
-                        CurrentEncoder = null;
-                        break;
-                    case EncoderType.Render:
-                        new MTLRenderCommandEncoder(CurrentEncoder.Value).EndEncoding();
-                        CurrentEncoder = null;
-                        RenderPassActive = false;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                CurrentEncoderType = EncoderType.None;
-            }
+            Cbs.Encoders.EndCurrentPass();
         }
 
-        private MTLRenderCommandEncoder BeginRenderPass()
+        public MTLRenderCommandEncoder CreateRenderCommandEncoder()
         {
-            EndCurrentPass();
-
-            var renderCommandEncoder = _encoderStateManager.CreateRenderCommandEncoder();
-
-            CurrentEncoder = renderCommandEncoder;
-            CurrentEncoderType = EncoderType.Render;
-            RenderPassActive = true;
-
-            return renderCommandEncoder;
+            return _encoderStateManager.CreateRenderCommandEncoder();
         }
 
-        private MTLBlitCommandEncoder BeginBlitPass()
+        public MTLComputeCommandEncoder CreateComputeCommandEncoder()
         {
-            EndCurrentPass();
-
-            var descriptor = new MTLBlitPassDescriptor();
-            var blitCommandEncoder = Cbs.CommandBuffer.BlitCommandEncoder(descriptor);
-
-            CurrentEncoder = blitCommandEncoder;
-            CurrentEncoderType = EncoderType.Blit;
-            return blitCommandEncoder;
-        }
-
-        private MTLComputeCommandEncoder BeginComputePass()
-        {
-            EndCurrentPass();
-
-            var computeCommandEncoder = _encoderStateManager.CreateComputeCommandEncoder();
-
-            CurrentEncoder = computeCommandEncoder;
-            CurrentEncoderType = EncoderType.Compute;
-            return computeCommandEncoder;
+            return _encoderStateManager.CreateComputeCommandEncoder();
         }
 
         public void Present(CAMetalDrawable drawable, Texture src, Extents2D srcRegion, Extents2D dstRegion, bool isLinear)
@@ -279,19 +211,15 @@ namespace Ryujinx.Graphics.Metal
             {
                 case EncoderType.Render:
                     {
-                        var renderCommandEncoder = GetOrCreateRenderEncoder();
-
                         var scope = MTLBarrierScope.Buffers | MTLBarrierScope.Textures | MTLBarrierScope.RenderTargets;
                         MTLRenderStages stages = MTLRenderStages.RenderStageVertex | MTLRenderStages.RenderStageFragment;
-                        renderCommandEncoder.MemoryBarrier(scope, stages, stages);
+                        Encoders.RenderEncoder.MemoryBarrier(scope, stages, stages);
                         break;
                     }
                 case EncoderType.Compute:
                     {
-                        var computeCommandEncoder = GetOrCreateComputeEncoder();
-
                         var scope = MTLBarrierScope.Buffers | MTLBarrierScope.Textures | MTLBarrierScope.RenderTargets;;
-                        computeCommandEncoder.MemoryBarrier(scope);
+                        Encoders.ComputeEncoder.MemoryBarrier(scope);
                         break;
                     }
             }
@@ -353,7 +281,7 @@ namespace Ryujinx.Graphics.Metal
             var srcBuffer = _renderer.BufferManager.GetBuffer(src, srcOffset, size, false);
             var dstBuffer = _renderer.BufferManager.GetBuffer(dst, dstOffset, size, true);
 
-            BufferHolder.Copy(this, Cbs, srcBuffer, dstBuffer, srcOffset, dstOffset, size);
+            BufferHolder.Copy(Cbs, srcBuffer, dstBuffer, srcOffset, dstOffset, size);
         }
 
         public void DispatchCompute(int groupsX, int groupsY, int groupsZ)
@@ -709,9 +637,7 @@ namespace Ryujinx.Graphics.Metal
         {
             if (CurrentEncoderType == EncoderType.Render)
             {
-                var renderCommandEncoder = GetOrCreateRenderEncoder();
-
-                renderCommandEncoder.MemoryBarrier(MTLBarrierScope.Textures, MTLRenderStages.RenderStageFragment, MTLRenderStages.RenderStageFragment);
+                Encoders.RenderEncoder.MemoryBarrier(MTLBarrierScope.Textures, MTLRenderStages.RenderStageFragment, MTLRenderStages.RenderStageFragment);
             }
         }
 

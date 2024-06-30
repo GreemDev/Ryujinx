@@ -176,14 +176,14 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetData<T>(BufferHandle handle, int offset, ReadOnlySpan<T> data) where T : unmanaged
         {
-            SetData(handle, offset, MemoryMarshal.Cast<T, byte>(data), null, null);
+            SetData(handle, offset, MemoryMarshal.Cast<T, byte>(data), null);
         }
 
-        public void SetData(BufferHandle handle, int offset, ReadOnlySpan<byte> data, CommandBufferScoped? cbs, Action endRenderPass)
+        public void SetData(BufferHandle handle, int offset, ReadOnlySpan<byte> data, CommandBufferScoped? cbs)
         {
             if (TryGetBuffer(handle, out var holder))
             {
-                holder.SetData(offset, data, cbs, endRenderPass);
+                holder.SetData(offset, data, cbs);
             }
         }
 

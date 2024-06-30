@@ -277,7 +277,7 @@ namespace Ryujinx.Graphics.Metal
             DirtyFlags clearFlags = DirtyFlags.All & (~DirtyFlags.Scissors);
 
             // Save current state
-            EncoderState originalState = _pipeline.SwapState(_helperShaderState, clearFlags);
+            EncoderState originalState = _pipeline.SwapState(_helperShaderState, clearFlags, false);
 
             // Inherit some state without fully recreating render pipeline.
             RenderTargetCopy save = _helperShaderState.InheritForClear(originalState, false, index);
@@ -312,7 +312,7 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.Draw(4, 1, 0, 0);
 
             // Restore previous state
-            _pipeline.SwapState(null, clearFlags);
+            _pipeline.SwapState(null, clearFlags, false);
 
             _helperShaderState.Restore(save);
         }
@@ -330,7 +330,7 @@ namespace Ryujinx.Graphics.Metal
             var helperScissors = _helperShaderState.Scissors;
 
             // Save current state
-            EncoderState originalState = _pipeline.SwapState(_helperShaderState, clearFlags);
+            EncoderState originalState = _pipeline.SwapState(_helperShaderState, clearFlags, false);
 
             // Inherit some state without fully recreating render pipeline.
             RenderTargetCopy save = _helperShaderState.InheritForClear(originalState, true);
@@ -365,7 +365,7 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SetStencilTest(CreateStencilTestDescriptor(false));
 
             // Restore previous state
-            _pipeline.SwapState(null, clearFlags);
+            _pipeline.SwapState(null, clearFlags, false);
 
             _helperShaderState.Restore(save);
         }

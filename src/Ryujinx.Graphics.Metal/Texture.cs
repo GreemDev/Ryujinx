@@ -1,3 +1,4 @@
+using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.GAL;
 using SharpMetal.Foundation;
 using SharpMetal.Metal;
@@ -94,6 +95,13 @@ namespace Ryujinx.Graphics.Metal
 
         public void CopyTo(ITexture destination, int firstLayer, int firstLevel)
         {
+            if (!_renderer.CommandBufferPool.OwnedByCurrentThread)
+            {
+                Logger.Warning?.PrintMsg(LogClass.Gpu, "Metal doesn't currently support scaled blit on background thread.");
+
+                return;
+            }
+
             var blitCommandEncoder = _pipeline.GetOrCreateBlitEncoder();
 
             if (destination is Texture destinationTexture)
@@ -202,98 +210,157 @@ namespace Ryujinx.Graphics.Metal
             return new Texture(_device, _renderer, _pipeline, info, _mtlTexture, firstLayer, firstLevel);
         }
 
-        public PinnedSpan<byte> GetData()
+        private int GetBufferDataLength(int size)
         {
-            var blitCommandEncoder = _pipeline.GetOrCreateBlitEncoder();
+            // TODO: D32S8 conversion
 
-            ulong length = 0;
+            return size;
+        }
 
-            for (int level = 0; level < Info.Levels; level++)
+        private ReadOnlySpan<byte> GetDataFromBuffer(ReadOnlySpan<byte> storage, int size, Span<byte> output)
+        {
+            // TODO: D32S8 conversion
+
+            return storage;
+        }
+
+        public void CopyFromOrToBuffer(
+            CommandBufferScoped cbs,
+            MTLBuffer buffer,
+            MTLTexture image,
+            int size,
+            bool to,
+            int dstLayer,
+            int dstLevel,
+            int dstLayers,
+            int dstLevels,
+            bool singleSlice,
+            int offset = 0,
+            int stride = 0)
+        {
+            MTLBlitCommandEncoder blitCommandEncoder = cbs.Encoders.EnsureBlitEncoder();
+
+            bool is3D = Info.Target == Target.Texture3D;
+            int width = Math.Max(1, Info.Width >> dstLevel);
+            int height = Math.Max(1, Info.Height >> dstLevel);
+            int depth = is3D && !singleSlice ? Math.Max(1, Info.Depth >> dstLevel) : 1;
+            int layers = dstLayers;
+            int levels = dstLevels;
+
+            for (int oLevel = 0; oLevel < levels; oLevel++)
             {
-                length += (ulong)Info.GetMipSize(level);
-            }
+                int level = oLevel + dstLevel;
+                int mipSize = Info.GetMipSize2D(level);
 
-            unsafe
-            {
-                var mtlBuffer = _device.NewBuffer(length, MTLResourceOptions.ResourceStorageModeShared);
+                int mipSizeLevel = GetBufferDataLength(is3D && !singleSlice
+                    ? Info.GetMipSize(level)
+                    : mipSize * dstLayers);
 
-                int width = Info.Width;
-                int height = Info.Height;
-                int depth = Info.Depth;
-                int levels = Info.GetLevelsClamped();
-                int layers = Info.GetLayers();
-                bool is3D = Info.Target == Target.Texture3D;
+                int endOffset = offset + mipSizeLevel;
 
-                int offset = 0;
-
-                for (int level = 0; level < levels; level++)
+                if ((uint)endOffset > (uint)size)
                 {
-                    int mipSize = Info.GetMipSize2D(level);
-                    int endOffset = offset + mipSize;
+                    break;
+                }
 
-                    for (int layer = 0; layer < layers; layer++)
+                for (int oLayer = 0; oLayer < layers; oLayer++)
+                {
+                    int layer = !is3D ? dstLayer + oLayer : 0;
+                    int z = is3D ? dstLayer + oLayer : 0;
+
+                    if (to)
                     {
                         blitCommandEncoder.CopyFromTexture(
-                            _mtlTexture,
+                            image,
                             (ulong)layer,
                             (ulong)level,
-                            new MTLOrigin(),
-                            new MTLSize { width = (ulong)width, height = (ulong)height, depth = is3D ? (ulong)depth : 1 },
-                            mtlBuffer,
+                            new MTLOrigin { z = (ulong)z },
+                            new MTLSize { width = (ulong)width, height = (ulong)height, depth = 1 },
+                            buffer,
                             (ulong)offset,
                             (ulong)Info.GetMipStride(level),
                             (ulong)mipSize
                         );
-
-                        offset += mipSize;
                     }
-
-                    width = Math.Max(1, width >> 1);
-                    height = Math.Max(1, height >> 1);
-
-                    if (is3D)
+                    else
                     {
-                        depth = Math.Max(1, depth >> 1);
+                        blitCommandEncoder.CopyFromBuffer(
+                            buffer,
+                            (ulong)offset,
+                            (ulong)Info.GetMipStride(level),
+                            (ulong)mipSize,
+                            new MTLSize { width = (ulong)width, height = (ulong)height, depth = 1 },
+                            image,
+                            (ulong)(layer + oLayer),
+                            (ulong)level,
+                            new MTLOrigin { z = (ulong)z }
+                        );
                     }
+
+                    offset += mipSize;
                 }
 
-                // TODO: wait
+                width = Math.Max(1, width >> 1);
+                height = Math.Max(1, height >> 1);
 
-                return new PinnedSpan<byte>(mtlBuffer.Contents.ToPointer(), (int)length, () => mtlBuffer.Dispose());
+                if (Info.Target == Target.Texture3D)
+                {
+                    depth = Math.Max(1, depth >> 1);
+                }
             }
+        }
+
+        private ReadOnlySpan<byte> GetData(CommandBufferPool cbp, PersistentFlushBuffer flushBuffer)
+        {
+            int size = 0;
+
+            for (int level = 0; level < Info.Levels; level++)
+            {
+                size += Info.GetMipSize(level);
+            }
+
+            size = GetBufferDataLength(size);
+
+            Span<byte> result = flushBuffer.GetTextureData(cbp, this, size);
+
+            return GetDataFromBuffer(result, size, result);
+        }
+
+        private ReadOnlySpan<byte> GetData(CommandBufferPool cbp, PersistentFlushBuffer flushBuffer, int layer, int level)
+        {
+            int size = GetBufferDataLength(Info.GetMipSize(level));
+
+            Span<byte> result = flushBuffer.GetTextureData(cbp, this, size, layer, level);
+
+            return GetDataFromBuffer(result, size, result);
+        }
+
+        public PinnedSpan<byte> GetData()
+        {
+            BackgroundResource resources = _renderer.BackgroundResources.Get();
+
+            if (_renderer.CommandBufferPool.OwnedByCurrentThread)
+            {
+                _renderer.FlushAllCommands();
+
+                return PinnedSpan<byte>.UnsafeFromSpan(GetData(_renderer.CommandBufferPool, resources.GetFlushBuffer()));
+            }
+
+            return PinnedSpan<byte>.UnsafeFromSpan(GetData(resources.GetPool(), resources.GetFlushBuffer()));
         }
 
         public PinnedSpan<byte> GetData(int layer, int level)
         {
-            var blitCommandEncoder = _pipeline.GetOrCreateBlitEncoder();
+            BackgroundResource resources = _renderer.BackgroundResources.Get();
 
-            ulong bytesPerRow = (ulong)Info.GetMipStride(level);
-            ulong length = bytesPerRow * (ulong)Info.Height;
-            ulong bytesPerImage = 0;
-            if (_mtlTexture.TextureType == MTLTextureType.Type3D)
+            if (_renderer.CommandBufferPool.OwnedByCurrentThread)
             {
-                bytesPerImage = length;
+                _renderer.FlushAllCommands();
+
+                return PinnedSpan<byte>.UnsafeFromSpan(GetData(_renderer.CommandBufferPool, resources.GetFlushBuffer(), layer, level));
             }
 
-            unsafe
-            {
-
-                var mtlBuffer = _device.NewBuffer(length, MTLResourceOptions.ResourceStorageModeShared);
-
-                blitCommandEncoder.CopyFromTexture(
-                    _mtlTexture,
-                    (ulong)layer,
-                    (ulong)level,
-                    new MTLOrigin(),
-                    new MTLSize { width = _mtlTexture.Width, height = _mtlTexture.Height, depth = _mtlTexture.Depth },
-                    mtlBuffer,
-                    0,
-                    bytesPerRow,
-                    bytesPerImage
-                );
-
-                return new PinnedSpan<byte>(mtlBuffer.Contents.ToPointer(), (int)length, () => mtlBuffer.Dispose());
-            }
+            return PinnedSpan<byte>.UnsafeFromSpan(GetData(resources.GetPool(), resources.GetFlushBuffer(), layer, level));
         }
 
         public void SetData(IMemoryOwner<byte> data)

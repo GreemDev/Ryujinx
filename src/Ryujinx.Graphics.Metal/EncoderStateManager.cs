@@ -581,9 +581,8 @@ namespace Ryujinx.Graphics.Metal
             _currentState.DepthClipMode = clamp ? MTLDepthClipMode.Clamp : MTLDepthClipMode.Clip;
 
             // Inline update
-            if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
+            if (_pipeline.Encoders.TryGetRenderEncoder(out MTLRenderCommandEncoder renderCommandEncoder))
             {
-                var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
                 SetDepthClamp(renderCommandEncoder);
                 return;
             }
@@ -600,9 +599,8 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Clamp = clamp;
 
             // Inline update
-            if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
+            if (_pipeline.Encoders.TryGetRenderEncoder(out MTLRenderCommandEncoder renderCommandEncoder))
             {
-                var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
                 SetDepthBias(renderCommandEncoder);
                 return;
             }
@@ -632,9 +630,8 @@ namespace Ryujinx.Graphics.Metal
             }
 
             // Inline update
-            if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
+            if (_pipeline.Encoders.TryGetRenderEncoder(out MTLRenderCommandEncoder renderCommandEncoder))
             {
-                var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
                 SetScissors(renderCommandEncoder);
                 return;
             }
@@ -669,9 +666,8 @@ namespace Ryujinx.Graphics.Metal
             }
 
             // Inline update
-            if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
+            if (_pipeline.Encoders.TryGetRenderEncoder(out MTLRenderCommandEncoder renderCommandEncoder))
             {
-                var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
                 SetViewports(renderCommandEncoder);
                 return;
             }
@@ -688,9 +684,8 @@ namespace Ryujinx.Graphics.Metal
             UpdatePipelineVertexState(_currentState.VertexBuffers, _currentState.VertexAttribs);
 
             // Inline update
-            if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
+            if (_pipeline.Encoders.TryGetRenderEncoder(out MTLRenderCommandEncoder renderCommandEncoder))
             {
-                var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
                 SetVertexBuffers(renderCommandEncoder, _currentState.VertexBuffers);
                 return;
             }
@@ -755,9 +750,8 @@ namespace Ryujinx.Graphics.Metal
             _currentState.CullBoth = face == Face.FrontAndBack;
 
             // Inline update
-            if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
+            if (_pipeline.Encoders.TryGetRenderEncoder(out MTLRenderCommandEncoder renderCommandEncoder))
             {
-                var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
                 SetCullMode(renderCommandEncoder);
                 SetScissors(renderCommandEncoder);
                 return;
@@ -778,9 +772,8 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Winding = frontFace.Convert();
 
             // Inline update
-            if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
+            if (_pipeline.Encoders.TryGetRenderEncoder(out MTLRenderCommandEncoder renderCommandEncoder))
             {
-                var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
                 SetFrontFace(renderCommandEncoder);
                 return;
             }
@@ -795,9 +788,8 @@ namespace Ryujinx.Graphics.Metal
             _currentState.BackRefValue = backRef;
 
             // Inline update
-            if (_pipeline.CurrentEncoderType == EncoderType.Render && _pipeline.CurrentEncoder != null)
+            if (_pipeline.Encoders.TryGetRenderEncoder(out MTLRenderCommandEncoder renderCommandEncoder))
             {
-                var renderCommandEncoder = new MTLRenderCommandEncoder(_pipeline.CurrentEncoder.Value);
                 SetStencilRefValue(renderCommandEncoder);
             }
 

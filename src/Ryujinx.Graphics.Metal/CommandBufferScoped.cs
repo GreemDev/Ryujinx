@@ -9,12 +9,14 @@ namespace Ryujinx.Graphics.Metal
     {
         private readonly CommandBufferPool _pool;
         public MTLCommandBuffer CommandBuffer { get; }
+        public CommandBufferEncoder Encoders { get; }
         public int CommandBufferIndex { get; }
 
-        public CommandBufferScoped(CommandBufferPool pool, MTLCommandBuffer commandBuffer, int commandBufferIndex)
+        public CommandBufferScoped(CommandBufferPool pool, MTLCommandBuffer commandBuffer, CommandBufferEncoder encoders, int commandBufferIndex)
         {
             _pool = pool;
             CommandBuffer = commandBuffer;
+            Encoders = encoders;
             CommandBufferIndex = commandBufferIndex;
         }
 

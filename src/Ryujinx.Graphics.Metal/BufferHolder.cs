@@ -162,7 +162,7 @@ namespace Ryujinx.Graphics.Metal
             throw new InvalidOperationException("The buffer is not mapped.");
         }
 
-        public unsafe void SetData(int offset, ReadOnlySpan<byte> data, CommandBufferScoped? cbs = null, Action endRenderPass = null, bool allowCbsWait = true)
+        public unsafe void SetData(int offset, ReadOnlySpan<byte> data, CommandBufferScoped? cbs = null, bool allowCbsWait = true)
         {
             int dataSize = Math.Min(data.Length, Size - offset);
             if (dataSize == 0)
@@ -199,12 +199,11 @@ namespace Ryujinx.Graphics.Metal
                 // This avoids ending and beginning render passes on each buffer data upload.
 
                 cbs = _pipeline.PreloadCbs;
-                endRenderPass = null;
             }
 
             if (allowCbsWait)
             {
-                _renderer.BufferManager.StagingBuffer.PushData(_renderer.CommandBufferPool, cbs, endRenderPass, this, offset, data);
+                _renderer.BufferManager.StagingBuffer.PushData(_renderer.CommandBufferPool, cbs, this, offset, data);
             }
             else
             {
@@ -214,7 +213,7 @@ namespace Ryujinx.Graphics.Metal
                     cbs = _renderer.CommandBufferPool.Rent();
                 }
 
-                if (!_renderer.BufferManager.StagingBuffer.TryPushData(cbs.Value, endRenderPass, this, offset, data))
+                if (!_renderer.BufferManager.StagingBuffer.TryPushData(cbs.Value, this, offset, data))
                 {
                     // Need to do a slow upload.
                     BufferHolder srcHolder = _renderer.BufferManager.Create(dataSize);
@@ -223,7 +222,7 @@ namespace Ryujinx.Graphics.Metal
                     var srcBuffer = srcHolder.GetBuffer();
                     var dstBuffer = this.GetBuffer(true);
 
-                    Copy(_pipeline, cbs.Value, srcBuffer, dstBuffer, 0, offset, dataSize);
+                    Copy(cbs.Value, srcBuffer, dstBuffer, 0, offset, dataSize);
 
                     srcHolder.Dispose();
                 }
@@ -255,7 +254,6 @@ namespace Ryujinx.Graphics.Metal
         }
 
         public static void Copy(
-            Pipeline pipeline,
             CommandBufferScoped cbs,
             Auto<DisposableBuffer> src,
             Auto<DisposableBuffer> dst,
@@ -267,7 +265,7 @@ namespace Ryujinx.Graphics.Metal
             var srcBuffer = registerSrcUsage ? src.Get(cbs, srcOffset, size).Value : src.GetUnsafe().Value;
             var dstbuffer = dst.Get(cbs, dstOffset, size, true).Value;
 
-            pipeline.GetOrCreateBlitEncoder().CopyFromBuffer(
+            cbs.Encoders.EnsureBlitEncoder().CopyFromBuffer(
                 srcBuffer,
                 (ulong)srcOffset,
                 dstbuffer,

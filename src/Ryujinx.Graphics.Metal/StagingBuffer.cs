@@ -63,14 +63,12 @@ namespace Ryujinx.Graphics.Metal
             _resourceAlignment = Constants.MinResourceAlignment;
         }
 
-        public void PushData(CommandBufferPool cbp, CommandBufferScoped? cbs, Action endRenderPass, BufferHolder dst, int dstOffset, ReadOnlySpan<byte> data)
+        public void PushData(CommandBufferPool cbp, CommandBufferScoped? cbs, BufferHolder dst, int dstOffset, ReadOnlySpan<byte> data)
         {
             bool isRender = cbs != null;
             CommandBufferScoped scoped = cbs ?? cbp.Rent();
 
             // Must push all data to the buffer. If it can't fit, split it up.
-
-            endRenderPass?.Invoke();
 
             while (data.Length > 0)
             {
@@ -122,14 +120,14 @@ namespace Ryujinx.Graphics.Metal
                 _buffer.SetDataUnchecked(offset, data[..capacity]);
                 _buffer.SetDataUnchecked(0, data[capacity..]);
 
-                BufferHolder.Copy(_pipeline, cbs, srcBuffer, dstBuffer, offset, dstOffset, capacity);
-                BufferHolder.Copy(_pipeline, cbs, srcBuffer, dstBuffer, 0, dstOffset + capacity, data.Length - capacity);
+                BufferHolder.Copy(cbs, srcBuffer, dstBuffer, offset, dstOffset, capacity);
+                BufferHolder.Copy(cbs, srcBuffer, dstBuffer, 0, dstOffset + capacity, data.Length - capacity);
             }
             else
             {
                 _buffer.SetDataUnchecked(offset, data);
 
-                BufferHolder.Copy(_pipeline, cbs, srcBuffer, dstBuffer, offset, dstOffset, data.Length);
+                BufferHolder.Copy(cbs, srcBuffer, dstBuffer, offset, dstOffset, data.Length);
             }
 
             _freeOffset = (offset + data.Length) & (BufferSize - 1);
@@ -139,7 +137,7 @@ namespace Ryujinx.Graphics.Metal
             _pendingCopies.Enqueue(new PendingCopy(cbs.GetFence(), data.Length));
         }
 
-        public bool TryPushData(CommandBufferScoped cbs, Action endRenderPass, BufferHolder dst, int dstOffset, ReadOnlySpan<byte> data)
+        public bool TryPushData(CommandBufferScoped cbs, BufferHolder dst, int dstOffset, ReadOnlySpan<byte> data)
         {
             if (data.Length > BufferSize)
             {
@@ -155,8 +153,6 @@ namespace Ryujinx.Graphics.Metal
                     return false;
                 }
             }
-
-            endRenderPass?.Invoke();
 
             PushDataImpl(cbs, dst, dstOffset, data);
 

@@ -27,6 +27,7 @@ namespace Ryujinx.Graphics.Metal
             {
                 MTLCommandQueue queue = _renderer.BackgroundQueue;
                 _pool = new CommandBufferPool(queue);
+                _pool.Initialize(null); // TODO: Proper encoder factory for background render/compute
             }
 
             return _pool;
