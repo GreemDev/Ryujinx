@@ -33,22 +33,21 @@ namespace Ryujinx.Graphics.Metal
             public List<IAuto> Dependants;
             public List<MultiFenceHolder> Waitables;
 
-            public void Reinitialize(MTLCommandQueue queue, IEncoderFactory stateManager)
+            public void Use(MTLCommandQueue queue, IEncoderFactory stateManager)
             {
                 CommandBuffer = queue.CommandBuffer();
+                Fence = new FenceHolder(CommandBuffer);
 
                 Encoders.Initialize(CommandBuffer, stateManager);
+
+                InUse = true;
             }
 
-            public void Initialize(MTLCommandQueue queue, IEncoderFactory stateManager)
+            public void Initialize()
             {
-                CommandBuffer = queue.CommandBuffer();
-
                 Dependants = new List<IAuto>();
                 Waitables = new List<MultiFenceHolder>();
                 Encoders = new CommandBufferEncoder();
-
-                Encoders.Initialize(CommandBuffer, stateManager);
             }
         }
 
@@ -59,12 +58,12 @@ namespace Ryujinx.Graphics.Metal
         private int _queuedCount;
         private int _inUseCount;
 
-        public CommandBufferPool(MTLCommandQueue queue)
+        public CommandBufferPool(MTLCommandQueue queue, bool isLight = false)
         {
             _queue = queue;
             _owner = Thread.CurrentThread;
 
-            _totalCommandBuffers = MaxCommandBuffers;
+            _totalCommandBuffers = isLight ? 2 : MaxCommandBuffers;
             _totalCommandBuffersMask = _totalCommandBuffers - 1;
 
             _commandBuffers = new ReservedCommandBuffer[_totalCommandBuffers];
@@ -80,7 +79,7 @@ namespace Ryujinx.Graphics.Metal
 
             for (int i = 0; i < _totalCommandBuffers; i++)
             {
-                _commandBuffers[i].Initialize(_queue, _defaultEncoderFactory);
+                _commandBuffers[i].Initialize();
                 WaitAndDecrementRef(i);
             }
         }
@@ -207,7 +206,7 @@ namespace Ryujinx.Graphics.Metal
 
                     if (!entry.InUse && !entry.InConsumption)
                     {
-                        entry.InUse = true;
+                        entry.Use(_queue, _defaultEncoderFactory);
 
                         _inUseCount++;
 
@@ -242,16 +241,13 @@ namespace Ryujinx.Graphics.Metal
                 var commandBuffer = entry.CommandBuffer;
                 commandBuffer.Commit();
 
-                // Replace entry with new MTLCommandBuffer
-                entry.Reinitialize(_queue, _defaultEncoderFactory);
-
                 int ptr = (_queuedIndexesPtr + _queuedCount) % _totalCommandBuffers;
                 _queuedIndexes[ptr] = cbIndex;
                 _queuedCount++;
             }
         }
 
-        private void WaitAndDecrementRef(int cbIndex, bool refreshFence = true)
+        private void WaitAndDecrementRef(int cbIndex)
         {
             ref var entry = ref _commandBuffers[cbIndex];
 
@@ -275,22 +271,13 @@ namespace Ryujinx.Graphics.Metal
             entry.Dependants.Clear();
             entry.Waitables.Clear();
             entry.Fence?.Dispose();
-
-            if (refreshFence)
-            {
-                entry.Fence = new FenceHolder(entry.CommandBuffer);
-            }
-            else
-            {
-                entry.Fence = null;
-            }
         }
 
         public void Dispose()
         {
             for (int i = 0; i < _totalCommandBuffers; i++)
             {
-                WaitAndDecrementRef(i, refreshFence: false);
+                WaitAndDecrementRef(i);
             }
         }
     }

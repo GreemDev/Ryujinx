@@ -41,7 +41,7 @@ namespace Ryujinx.Graphics.Metal
                 throw new NotSupportedException("Metal backend requires Tier 2 Argument Buffer support.");
             }
 
-            _queue = _device.NewCommandQueue(CommandBufferPool.MaxCommandBuffers);
+            _queue = _device.NewCommandQueue(CommandBufferPool.MaxCommandBuffers + 1);
             BackgroundQueue = _device.NewCommandQueue(CommandBufferPool.MaxCommandBuffers);
 
             _getMetalLayer = metalLayer;
