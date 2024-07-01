@@ -177,63 +177,63 @@ namespace Ryujinx.Graphics.Metal
 
         public void RebindRenderState(MTLRenderCommandEncoder renderCommandEncoder)
         {
-            if (_currentState.Dirty.HasFlag(DirtyFlags.RenderPipeline))
+            if ((_currentState.Dirty & DirtyFlags.RenderPipeline) != 0)
             {
                 SetRenderPipelineState(renderCommandEncoder);
                 SetVertexBuffers(renderCommandEncoder, _currentState.VertexBuffers);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.DepthStencil))
+            if ((_currentState.Dirty & DirtyFlags.DepthStencil) != 0)
             {
                 SetDepthStencilState(renderCommandEncoder);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.DepthClamp))
+            if ((_currentState.Dirty & DirtyFlags.DepthClamp) != 0)
             {
                 SetDepthClamp(renderCommandEncoder);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.DepthBias))
+            if ((_currentState.Dirty & DirtyFlags.DepthBias) != 0)
             {
                 SetDepthBias(renderCommandEncoder);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.CullMode))
+            if ((_currentState.Dirty & DirtyFlags.CullMode) != 0)
             {
                 SetCullMode(renderCommandEncoder);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.FrontFace))
+            if ((_currentState.Dirty & DirtyFlags.FrontFace) != 0)
             {
                 SetFrontFace(renderCommandEncoder);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.StencilRef))
+            if ((_currentState.Dirty & DirtyFlags.StencilRef) != 0)
             {
                 SetStencilRefValue(renderCommandEncoder);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.Viewports))
+            if ((_currentState.Dirty & DirtyFlags.Viewports) != 0)
             {
                 SetViewports(renderCommandEncoder);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.Scissors))
+            if ((_currentState.Dirty & DirtyFlags.Scissors) != 0)
             {
                 SetScissors(renderCommandEncoder);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.Uniforms))
+            if ((_currentState.Dirty & DirtyFlags.Uniforms) != 0)
             {
                 UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, MetalRenderer.UniformSetIndex);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.Storages))
+            if ((_currentState.Dirty & DirtyFlags.Storages) != 0)
             {
                 UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, MetalRenderer.StorageSetIndex);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.Textures))
+            if ((_currentState.Dirty & DirtyFlags.Textures) != 0)
             {
                 UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, MetalRenderer.TextureSetIndex);
             }
@@ -1031,7 +1031,7 @@ namespace Ryujinx.Graphics.Metal
 
                             MTLRenderStages renderStages = 0;
 
-                            if (segment.Stages.HasFlag(ResourceStages.Vertex))
+                            if ((segment.Stages & ResourceStages.Vertex) != 0)
                             {
                                 vertResourceIds[vertResourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
                                 vertResourceIdIndex++;
@@ -1039,7 +1039,7 @@ namespace Ryujinx.Graphics.Metal
                                 renderStages |= MTLRenderStages.RenderStageVertex;
                             }
 
-                            if (segment.Stages.HasFlag(ResourceStages.Fragment))
+                            if ((segment.Stages & ResourceStages.Fragment) != 0)
                             {
                                 fragResourceIds[fragResourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
                                 fragResourceIdIndex++;

@@ -4,7 +4,6 @@ using Ryujinx.Graphics.Metal.State;
 using Ryujinx.Graphics.Shader;
 using SharpMetal.Metal;
 using System;
-using System.Linq;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
