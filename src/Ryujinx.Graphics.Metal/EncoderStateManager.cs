@@ -179,8 +179,8 @@ namespace Ryujinx.Graphics.Metal
         {
             if (_currentState.Dirty.HasFlag(DirtyFlags.RenderPipeline))
             {
-                SetVertexBuffers(renderCommandEncoder, _currentState.VertexBuffers);
                 SetRenderPipelineState(renderCommandEncoder);
+                SetVertexBuffers(renderCommandEncoder, _currentState.VertexBuffers);
             }
 
             if (_currentState.Dirty.HasFlag(DirtyFlags.DepthStencil))
@@ -223,20 +223,25 @@ namespace Ryujinx.Graphics.Metal
                 SetScissors(renderCommandEncoder);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.Buffers))
+            if (_currentState.Dirty.HasFlag(DirtyFlags.Uniforms))
             {
-                SetRenderBuffers(renderCommandEncoder, _currentState.UniformBuffers, _currentState.StorageBuffers);
+                UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, MetalRenderer.UniformSetIndex);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.VertexTextures))
+            if (_currentState.Dirty.HasFlag(DirtyFlags.Storages))
             {
-                SetRenderTextures(renderCommandEncoder, ShaderStage.Vertex, _currentState.VertexTextures, _currentState.VertexSamplers);
+                UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, MetalRenderer.StorageSetIndex);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.FragmentTextures))
+            if (_currentState.Dirty.HasFlag(DirtyFlags.Textures))
             {
-                SetRenderTextures(renderCommandEncoder, ShaderStage.Fragment, _currentState.FragmentTextures, _currentState.FragmentSamplers);
+                UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, MetalRenderer.TextureSetIndex);
             }
+
+            // if (_currentState.Dirty.HasFlag(DirtyFlags.Images))
+            // {
+            //     UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, MetalRenderer.ImageSetIndex);
+            // }
 
             _currentState.Dirty &= ~DirtyFlags.RenderAll;
         }
@@ -248,15 +253,27 @@ namespace Ryujinx.Graphics.Metal
                 SetComputePipelineState(computeCommandEncoder);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.Buffers))
+            if (_currentState.Dirty.HasFlag(DirtyFlags.Uniforms))
             {
-                SetComputeBuffers(computeCommandEncoder, _currentState.UniformBuffers, _currentState.StorageBuffers);
+                UpdateAndBind(computeCommandEncoder, _currentState.ComputeProgram, MetalRenderer.UniformSetIndex);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.ComputeTextures))
+            if (_currentState.Dirty.HasFlag(DirtyFlags.Storages))
             {
-                SetComputeTextures(computeCommandEncoder, _currentState.ComputeTextures, _currentState.ComputeSamplers);
+                UpdateAndBind(computeCommandEncoder, _currentState.ComputeProgram, MetalRenderer.StorageSetIndex);
             }
+
+            if (_currentState.Dirty.HasFlag(DirtyFlags.Textures))
+            {
+                UpdateAndBind(computeCommandEncoder, _currentState.ComputeProgram, MetalRenderer.TextureSetIndex);
+            }
+
+            // if (_currentState.Dirty.HasFlag(DirtyFlags.Images))
+            // {
+            //     UpdateAndBind(computeCommandEncoder, _currentState.ComputeProgram, MetalRenderer.ImageSetIndex);
+            // }
+
+            _currentState.Dirty &= ~DirtyFlags.ComputeAll;
         }
 
         private void SetRenderPipelineState(MTLRenderCommandEncoder renderCommandEncoder)
@@ -694,10 +711,10 @@ namespace Ryujinx.Graphics.Metal
                     ? null
                     : _bufferManager.GetBuffer(buffer.Handle, buffer.Write);
 
-                _currentState.UniformBuffers[index] = new BufferRef(mtlBuffer, ref buffer);
+                _currentState.UniformBufferRefs[index] = new BufferRef(mtlBuffer, ref buffer);
             }
 
-            _currentState.Dirty |= DirtyFlags.Buffers;
+            _currentState.Dirty |= DirtyFlags.Uniforms;
         }
 
         public void UpdateStorageBuffers(ReadOnlySpan<BufferAssignment> buffers)
@@ -711,10 +728,10 @@ namespace Ryujinx.Graphics.Metal
                     ? null
                     : _bufferManager.GetBuffer(buffer.Handle, buffer.Write);
 
-                _currentState.StorageBuffers[index] = new BufferRef(mtlBuffer, ref buffer);
+                _currentState.StorageBufferRefs[index] = new BufferRef(mtlBuffer, ref buffer);
             }
 
-            _currentState.Dirty |= DirtyFlags.Buffers;
+            _currentState.Dirty |= DirtyFlags.Storages;
         }
 
         public void UpdateStorageBuffers(int first, ReadOnlySpan<Auto<DisposableBuffer>> buffers)
@@ -724,10 +741,10 @@ namespace Ryujinx.Graphics.Metal
                 var mtlBuffer = buffers[i];
                 int index = first + i;
 
-                _currentState.StorageBuffers[index] = new BufferRef(mtlBuffer);
+                _currentState.StorageBufferRefs[index] = new BufferRef(mtlBuffer);
             }
 
-            _currentState.Dirty |= DirtyFlags.Buffers;
+            _currentState.Dirty |= DirtyFlags.Storages;
         }
 
         // Inlineable
@@ -786,63 +803,22 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Dirty |= DirtyFlags.StencilRef;
         }
 
-        public void UpdateTexture(ShaderStage stage, ulong binding, TextureBase texture)
-        {
-            if (binding > Constants.MaxTexturesPerStage)
-            {
-                Logger.Warning?.Print(LogClass.Gpu, $"Texture binding ({binding}) must be <= {Constants.MaxTexturesPerStage}");
-                return;
-            }
-
-            switch (stage)
-            {
-                case ShaderStage.Fragment:
-                    _currentState.FragmentTextures[binding] = texture;
-                    _currentState.Dirty |= DirtyFlags.FragmentTextures;
-                    break;
-                case ShaderStage.Vertex:
-                    _currentState.VertexTextures[binding] = texture;
-                    _currentState.Dirty |= DirtyFlags.VertexTextures;
-                    break;
-                case ShaderStage.Compute:
-                    _currentState.ComputeTextures[binding] = texture;
-                    _currentState.Dirty |= DirtyFlags.ComputeTextures;
-                    break;
-            }
-        }
-
-        public void UpdateSampler(ShaderStage stage, ulong binding, MTLSamplerState sampler)
-        {
-            if (binding > Constants.MaxTexturesPerStage)
-            {
-                Logger.Warning?.Print(LogClass.Gpu, $"Sampler binding ({binding}) must be <= {Constants.MaxTexturesPerStage}");
-                return;
-            }
-            switch (stage)
-            {
-                case ShaderStage.Fragment:
-                    _currentState.FragmentSamplers[binding] = sampler;
-                    _currentState.Dirty |= DirtyFlags.FragmentTextures;
-                    break;
-                case ShaderStage.Vertex:
-                    _currentState.VertexSamplers[binding] = sampler;
-                    _currentState.Dirty |= DirtyFlags.VertexTextures;
-                    break;
-                case ShaderStage.Compute:
-                    _currentState.ComputeSamplers[binding] = sampler;
-                    _currentState.Dirty |= DirtyFlags.ComputeTextures;
-                    break;
-            }
-        }
-
         public void UpdateTextureAndSampler(ShaderStage stage, ulong binding, TextureBase texture, Sampler sampler)
         {
-            UpdateTexture(stage, binding, texture);
-
-            if (sampler != null)
+            if (texture is TextureBuffer textureBuffer)
             {
-                UpdateSampler(stage, binding, sampler.GetSampler());
+                // TODO: Texture buffers
             }
+            else if (texture is Texture view)
+            {
+                _currentState.TextureRefs[binding] = new(stage, view, sampler);
+            }
+            else
+            {
+                _currentState.TextureRefs[binding] = default;
+            }
+
+            _currentState.Dirty |= DirtyFlags.Textures;
         }
 
         private readonly void SetDepthStencilState(MTLRenderCommandEncoder renderCommandEncoder)
@@ -999,118 +975,372 @@ namespace Ryujinx.Graphics.Metal
             renderCommandEncoder.SetVertexBuffer(zeroMtlBuffer, 0, Constants.ZeroBufferIndex);
         }
 
-        private readonly void SetRenderBuffers(MTLRenderCommandEncoder renderCommandEncoder, BufferRef[] uniformBuffers, BufferRef[] storageBuffers)
+        private void UpdateAndBind(MTLRenderCommandEncoder renderCommandEncoder, Program program, int setIndex)
         {
-            var uniformArgBufferRange = CreateArgumentBufferForRenderEncoder(renderCommandEncoder, uniformBuffers, true);
-            var uniformArgBuffer = _bufferManager.GetBuffer(uniformArgBufferRange.Handle, false).Get(_pipeline.Cbs).Value;
+            var bindingSegments = program.BindingSegments[setIndex];
 
-            renderCommandEncoder.SetVertexBuffer(uniformArgBuffer, (ulong)uniformArgBufferRange.Offset, Constants.ConstantBuffersIndex);
-            renderCommandEncoder.SetFragmentBuffer(uniformArgBuffer, (ulong)uniformArgBufferRange.Offset, Constants.ConstantBuffersIndex);
-
-            var storageArgBufferRange = CreateArgumentBufferForRenderEncoder(renderCommandEncoder, storageBuffers, false);
-            var storageArgBuffer = _bufferManager.GetBuffer(storageArgBufferRange.Handle, true).Get(_pipeline.Cbs).Value;
-
-            renderCommandEncoder.SetVertexBuffer(storageArgBuffer, (ulong)storageArgBufferRange.Offset, Constants.StorageBuffersIndex);
-            renderCommandEncoder.SetFragmentBuffer(storageArgBuffer, (ulong)storageArgBufferRange.Offset, Constants.StorageBuffersIndex);
-        }
-
-        private readonly void SetComputeBuffers(MTLComputeCommandEncoder computeCommandEncoder, BufferRef[] uniformBuffers, BufferRef[] storageBuffers)
-        {
-            var uniformArgBufferRange = CreateArgumentBufferForComputeEncoder(computeCommandEncoder, uniformBuffers, true);
-            var uniformArgBuffer = _bufferManager.GetBuffer(uniformArgBufferRange.Handle, false).Get(_pipeline.Cbs).Value;
-
-            computeCommandEncoder.SetBuffer(uniformArgBuffer, (ulong)uniformArgBufferRange.Offset, Constants.ConstantBuffersIndex);
-
-
-            var storageArgBufferRange = CreateArgumentBufferForComputeEncoder(computeCommandEncoder, storageBuffers, false);
-            var storageArgBuffer = _bufferManager.GetBuffer(storageArgBufferRange.Handle, true).Get(_pipeline.Cbs).Value;
-
-            computeCommandEncoder.SetBuffer(storageArgBuffer, (ulong)storageArgBufferRange.Offset, Constants.StorageBuffersIndex);
-        }
-
-        private readonly BufferRange CreateArgumentBufferForRenderEncoder(MTLRenderCommandEncoder renderCommandEncoder, BufferRef[] buffers, bool constant)
-        {
-            var usage = constant ? MTLResourceUsage.Read : MTLResourceUsage.Write;
-
-            Span<ulong> resourceIds = stackalloc ulong[buffers.Length];
-
-            for (int i = 0; i < buffers.Length; i++)
+            if (bindingSegments.Length == 0)
             {
-                var range = buffers[i].Range;
-                var autoBuffer = buffers[i].Buffer;
-                var offset = 0;
-
-                if (autoBuffer == null)
-                {
-                    continue;
-                }
-
-                MTLBuffer mtlBuffer;
-
-                if (range.HasValue)
-                {
-                    offset = range.Value.Offset;
-                    mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Value.Size, range.Value.Write).Value;
-
-                }
-                else
-                {
-                    mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
-                }
-
-                renderCommandEncoder.UseResource(new MTLResource(mtlBuffer.NativePtr), usage, MTLRenderStages.RenderStageFragment | MTLRenderStages.RenderStageVertex);
-                resourceIds[i] = mtlBuffer.GpuAddress + (ulong)offset;
+                return;
             }
 
-            var sizeOfArgumentBuffer = sizeof(ulong) * buffers.Length;
+            var vertArgBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, program.ArgumentBufferSizes[setIndex] * sizeof(ulong));
+            var fragArgBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, program.FragArgumentBufferSizes[setIndex] * sizeof(ulong));
 
-            var argBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, sizeOfArgumentBuffer);
-            argBuffer.Holder.SetDataUnchecked(argBuffer.Offset, MemoryMarshal.AsBytes(resourceIds));
+            Span<ulong> vertResourceIds = stackalloc ulong[program.ArgumentBufferSizes[setIndex]];
+            Span<ulong> fragResourceIds = stackalloc ulong[program.FragArgumentBufferSizes[setIndex]];
 
-            return argBuffer.Range;
-        }
+            var vertResourceIdIndex = 0;
+            var fragResourceIdIndex = 0;
 
-        private readonly BufferRange CreateArgumentBufferForComputeEncoder(MTLComputeCommandEncoder computeCommandEncoder, BufferRef[] buffers, bool constant)
-        {
-            var usage = constant ? MTLResourceUsage.Read : MTLResourceUsage.Write;
-
-            Span<ulong> resourceIds = stackalloc ulong[buffers.Length];
-
-            for (int i = 0; i < buffers.Length; i++)
+            foreach (ResourceBindingSegment segment in bindingSegments)
             {
-                var range = buffers[i].Range;
-                var autoBuffer = buffers[i].Buffer;
-                var offset = 0;
+                int binding = segment.Binding;
+                int count = segment.Count;
 
-                if (autoBuffer == null)
+                switch (setIndex)
                 {
-                    continue;
+                    case MetalRenderer.UniformSetIndex:
+                        for (int i = 0; i < count; i++)
+                        {
+                            int index = binding + i;
+
+                            ref BufferRef buffer = ref _currentState.UniformBufferRefs[index];
+
+                            var range = buffer.Range;
+                            var autoBuffer = buffer.Buffer;
+                            var offset = 0;
+
+                            if (autoBuffer == null)
+                            {
+                                continue;
+                            }
+
+                            MTLBuffer mtlBuffer;
+
+                            if (range.HasValue)
+                            {
+                                offset = range.Value.Offset;
+                                mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Value.Size, range.Value.Write).Value;
+
+                            }
+                            else
+                            {
+                                mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
+                            }
+
+                            MTLRenderStages renderStages = 0;
+
+                            if (segment.Stages.HasFlag(ResourceStages.Vertex))
+                            {
+                                vertResourceIds[vertResourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
+                                vertResourceIdIndex++;
+
+                                renderStages |= MTLRenderStages.RenderStageVertex;
+                            }
+
+                            if (segment.Stages.HasFlag(ResourceStages.Fragment))
+                            {
+                                fragResourceIds[fragResourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
+                                fragResourceIdIndex++;
+
+                                renderStages |= MTLRenderStages.RenderStageFragment;
+                            }
+
+                            renderCommandEncoder.UseResource(new MTLResource(mtlBuffer.NativePtr), MTLResourceUsage.Read, renderStages);
+                        }
+                        break;
+                    case MetalRenderer.StorageSetIndex:
+                        for (int i = 0; i < count; i++)
+                        {
+                            int index = binding + i;
+
+                            ref BufferRef buffer = ref _currentState.StorageBufferRefs[index];
+
+                            var range = buffer.Range;
+                            var autoBuffer = buffer.Buffer;
+                            var offset = 0;
+
+                            if (autoBuffer == null)
+                            {
+                                continue;
+                            }
+
+                            MTLBuffer mtlBuffer;
+
+                            if (range.HasValue)
+                            {
+                                offset = range.Value.Offset;
+                                mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Value.Size, range.Value.Write).Value;
+
+                            }
+                            else
+                            {
+                                mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
+                            }
+
+                            MTLRenderStages renderStages = 0;
+
+                            if (segment.Stages.HasFlag(ResourceStages.Vertex))
+                            {
+                                vertResourceIds[vertResourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
+                                vertResourceIdIndex++;
+
+                                renderStages |= MTLRenderStages.RenderStageVertex;
+                            }
+
+                            if (segment.Stages.HasFlag(ResourceStages.Fragment))
+                            {
+                                fragResourceIds[fragResourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
+                                fragResourceIdIndex++;
+
+                                renderStages |= MTLRenderStages.RenderStageFragment;
+                            }
+
+                            renderCommandEncoder.UseResource(new MTLResource(mtlBuffer.NativePtr), MTLResourceUsage.Read, renderStages);
+                        }
+                        break;
+                    case MetalRenderer.TextureSetIndex:
+                        if (!segment.IsArray)
+                        {
+                            if (segment.Type != ResourceType.BufferTexture)
+                            {
+                                for (int i = 0; i < count; i++)
+                                {
+                                    int index = binding + i;
+
+                                    ref var texture = ref _currentState.TextureRefs[index];
+
+                                    var storage = texture.Storage;
+
+                                    if (storage == null)
+                                    {
+                                        continue;
+                                    }
+
+                                    var mtlTexture = storage.GetHandle();
+
+                                    MTLRenderStages renderStages = 0;
+
+                                    if (segment.Stages.HasFlag(ResourceStages.Vertex))
+                                    {
+                                        vertResourceIds[vertResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        vertResourceIdIndex++;
+
+                                        if (texture.Sampler != null)
+                                        {
+                                            vertResourceIds[vertResourceIdIndex] = texture.Sampler.GetSampler().GpuResourceID._impl;
+                                            vertResourceIdIndex++;
+                                        }
+
+                                        renderStages |= MTLRenderStages.RenderStageVertex;
+                                    }
+
+                                    if (segment.Stages.HasFlag(ResourceStages.Fragment))
+                                    {
+                                        fragResourceIds[fragResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        fragResourceIdIndex++;
+
+                                        if (texture.Sampler != null)
+                                        {
+                                            fragResourceIds[fragResourceIdIndex] = texture.Sampler.GetSampler().GpuResourceID._impl;
+                                            fragResourceIdIndex++;
+                                        }
+
+                                        renderStages |= MTLRenderStages.RenderStageFragment;
+                                    }
+
+                                    renderCommandEncoder.UseResource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read, renderStages);
+                                }
+                            }
+                            else
+                            {
+                                // TODO: Buffer textures
+                            }
+                        }
+                        else
+                        {
+                            // TODO: Texture arrays
+                        }
+                        break;
+                    case MetalRenderer.ImageSetIndex:
+                        // TODO: Images
+                        break;
                 }
-
-                MTLBuffer mtlBuffer;
-
-                if (range.HasValue)
-                {
-                    offset = range.Value.Offset;
-                    mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Value.Size, range.Value.Write).Value;
-
-                }
-                else
-                {
-                    mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
-                }
-
-                computeCommandEncoder.UseResource(new MTLResource(mtlBuffer.NativePtr), usage);
-                resourceIds[i] = mtlBuffer.GpuAddress + (ulong)offset;
             }
 
-            var sizeOfArgumentBuffer = sizeof(ulong) * buffers.Length;
+            vertArgBuffer.Holder.SetDataUnchecked(vertArgBuffer.Offset, MemoryMarshal.AsBytes(vertResourceIds));
+            fragArgBuffer.Holder.SetDataUnchecked(fragArgBuffer.Offset, MemoryMarshal.AsBytes(fragResourceIds));
 
-            var argBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, sizeOfArgumentBuffer);
+            var mtlVertArgBuffer = _bufferManager.GetBuffer(vertArgBuffer.Handle, false).Get(_pipeline.Cbs).Value;
+            var mtlFragArgBuffer = _bufferManager.GetBuffer(fragArgBuffer.Handle, false).Get(_pipeline.Cbs).Value;
+
+            renderCommandEncoder.SetVertexBuffer(mtlVertArgBuffer, (uint)vertArgBuffer.Range.Offset, SetIndexToBindingIndex(setIndex));
+            renderCommandEncoder.SetFragmentBuffer(mtlFragArgBuffer, (uint)fragArgBuffer.Range.Offset, SetIndexToBindingIndex(setIndex));
+        }
+
+        private void UpdateAndBind(MTLComputeCommandEncoder computeCommandEncoder, Program program, int setIndex)
+        {
+            var bindingSegments = program.BindingSegments[setIndex];
+
+            if (bindingSegments.Length == 0)
+            {
+                return;
+            }
+
+            var argBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, program.ArgumentBufferSizes[setIndex] * sizeof(ulong));
+            Span<ulong> resourceIds = stackalloc ulong[program.ArgumentBufferSizes[setIndex]];
+            var resourceIdIndex = 0;
+
+            foreach (ResourceBindingSegment segment in bindingSegments)
+            {
+                int binding = segment.Binding;
+                int count = segment.Count;
+
+                switch (setIndex)
+                {
+                    case MetalRenderer.UniformSetIndex:
+                        for (int i = 0; i < count; i++)
+                        {
+                            int index = binding + i;
+
+                            ref BufferRef buffer = ref _currentState.UniformBufferRefs[index];
+
+                            var range = buffer.Range;
+                            var autoBuffer = buffer.Buffer;
+                            var offset = 0;
+
+                            if (autoBuffer == null)
+                            {
+                                continue;
+                            }
+
+                            MTLBuffer mtlBuffer;
+
+                            if (range.HasValue)
+                            {
+                                offset = range.Value.Offset;
+                                mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Value.Size, range.Value.Write).Value;
+
+                            }
+                            else
+                            {
+                                mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
+                            }
+
+                            if (segment.Stages.HasFlag(ResourceStages.Compute))
+                            {
+                                computeCommandEncoder.UseResource(new MTLResource(mtlBuffer.NativePtr), MTLResourceUsage.Read);
+                                resourceIds[resourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
+                                resourceIdIndex++;
+                            }
+                        }
+                        break;
+                    case MetalRenderer.StorageSetIndex:
+                        for (int i = 0; i < count; i++)
+                        {
+                            int index = binding + i;
+
+                            ref BufferRef buffer = ref _currentState.StorageBufferRefs[index];
+
+                            var range = buffer.Range;
+                            var autoBuffer = buffer.Buffer;
+                            var offset = 0;
+
+                            if (autoBuffer == null)
+                            {
+                                continue;
+                            }
+
+                            MTLBuffer mtlBuffer;
+
+                            if (range.HasValue)
+                            {
+                                offset = range.Value.Offset;
+                                mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Value.Size, range.Value.Write).Value;
+
+                            }
+                            else
+                            {
+                                mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
+                            }
+
+                            if (segment.Stages.HasFlag(ResourceStages.Compute))
+                            {
+                                computeCommandEncoder.UseResource(new MTLResource(mtlBuffer.NativePtr), MTLResourceUsage.Read | MTLResourceUsage.Write);
+                                resourceIds[resourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
+                                resourceIdIndex++;
+                            }
+                        }
+                        break;
+                    case MetalRenderer.TextureSetIndex:
+                        if (!segment.IsArray)
+                        {
+                            if (segment.Type != ResourceType.BufferTexture)
+                            {
+                                for (int i = 0; i < count; i++)
+                                {
+                                    int index = binding + i;
+
+                                    ref var texture = ref _currentState.TextureRefs[index];
+
+                                    var storage = texture.Storage;
+
+                                    if (storage == null)
+                                    {
+                                        continue;
+                                    }
+
+                                    var mtlTexture = storage.GetHandle();
+
+                                    if (segment.Stages.HasFlag(ResourceStages.Compute))
+                                    {
+                                        computeCommandEncoder.UseResource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read);
+                                        resourceIds[resourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        resourceIdIndex++;
+
+                                        if (texture.Sampler != null)
+                                        {
+                                            resourceIds[resourceIdIndex] = texture.Sampler.GetSampler().GpuResourceID._impl;
+                                            resourceIdIndex++;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // TODO: Buffer textures
+                            }
+                        }
+                        else
+                        {
+                            // TODO: Texture arrays
+                        }
+                        break;
+                    case MetalRenderer.ImageSetIndex:
+                        // TODO: Images
+                        break;
+                }
+            }
+
             argBuffer.Holder.SetDataUnchecked(argBuffer.Offset, MemoryMarshal.AsBytes(resourceIds));
 
-            return argBuffer.Range;
+            var mtlArgBuffer = _bufferManager.GetBuffer(argBuffer.Handle, false).Get(_pipeline.Cbs).Value;
+
+            computeCommandEncoder.SetBuffer(mtlArgBuffer, (uint)argBuffer.Range.Offset, SetIndexToBindingIndex(setIndex));
         }
+
+        private uint SetIndexToBindingIndex(int setIndex)
+        {
+            return setIndex switch
+            {
+                MetalRenderer.UniformSetIndex => Constants.ConstantBuffersIndex,
+                MetalRenderer.StorageSetIndex => Constants.StorageBuffersIndex,
+                MetalRenderer.TextureSetIndex => Constants.TexturesIndex,
+                MetalRenderer.ImageSetIndex => Constants.ImagessIndex,
+            };
+        }
+
 
         private readonly void SetCullMode(MTLRenderCommandEncoder renderCommandEncoder)
         {
@@ -1125,106 +1355,6 @@ namespace Ryujinx.Graphics.Metal
         private readonly void SetStencilRefValue(MTLRenderCommandEncoder renderCommandEncoder)
         {
             renderCommandEncoder.SetStencilReferenceValues((uint)_currentState.FrontRefValue, (uint)_currentState.BackRefValue);
-        }
-
-        private readonly void SetRenderTextures(MTLRenderCommandEncoder renderCommandEncoder, ShaderStage stage, TextureBase[] textures, MTLSamplerState[] samplers)
-        {
-            var argBufferRange = CreateArgumentBufferForRenderEncoder(renderCommandEncoder, stage, textures, samplers);
-            var argBuffer = _bufferManager.GetBuffer(argBufferRange.Handle, false).Get(_pipeline.Cbs).Value;
-
-            switch (stage)
-            {
-                case ShaderStage.Vertex:
-                    renderCommandEncoder.SetVertexBuffer(argBuffer, (ulong)argBufferRange.Offset, Constants.TexturesIndex);
-                    break;
-                case ShaderStage.Fragment:
-                    renderCommandEncoder.SetFragmentBuffer(argBuffer, (ulong)argBufferRange.Offset, Constants.TexturesIndex);
-                    break;
-            }
-        }
-
-        private readonly void SetComputeTextures(MTLComputeCommandEncoder computeCommandEncoder, TextureBase[] textures, MTLSamplerState[] samplers)
-        {
-            var argBufferRange = CreateArgumentBufferForComputeEncoder(computeCommandEncoder, textures, samplers);
-            var argBuffer = _bufferManager.GetBuffer(argBufferRange.Handle, false).Get(_pipeline.Cbs).Value;
-
-            computeCommandEncoder.SetBuffer(argBuffer, (ulong)argBufferRange.Offset, Constants.TexturesIndex);
-        }
-
-        private readonly BufferRange CreateArgumentBufferForRenderEncoder(MTLRenderCommandEncoder renderCommandEncoder, ShaderStage stage, TextureBase[] textures, MTLSamplerState[] samplers)
-        {
-            var renderStage = stage == ShaderStage.Vertex ? MTLRenderStages.RenderStageVertex : MTLRenderStages.RenderStageFragment;
-
-            Span<ulong> resourceIds = stackalloc ulong[textures.Length + samplers.Length];
-
-            for (int i = 0; i < textures.Length; i++)
-            {
-                if (textures[i] == null)
-                {
-                    continue;
-                }
-
-                var mtlTexture = textures[i].GetHandle();
-
-                renderCommandEncoder.UseResource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read, renderStage);
-                resourceIds[i] = mtlTexture.GpuResourceID._impl;
-            }
-
-            for (int i = 0; i < samplers.Length; i++)
-            {
-                if (samplers[i].NativePtr == IntPtr.Zero)
-                {
-                    continue;
-                }
-
-                var sampler = samplers[i];
-
-                resourceIds[i + textures.Length] = sampler.GpuResourceID._impl;
-            }
-
-            var sizeOfArgumentBuffer = sizeof(ulong) * (textures.Length + samplers.Length);
-
-            var argBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, sizeOfArgumentBuffer);
-            argBuffer.Holder.SetDataUnchecked(argBuffer.Offset, MemoryMarshal.AsBytes(resourceIds));
-
-            return argBuffer.Range;
-        }
-
-        private readonly BufferRange CreateArgumentBufferForComputeEncoder(MTLComputeCommandEncoder computeCommandEncoder, TextureBase[] textures, MTLSamplerState[] samplers)
-        {
-            Span<ulong> resourceIds = stackalloc ulong[textures.Length + samplers.Length];
-
-            for (int i = 0; i < textures.Length; i++)
-            {
-                if (textures[i] == null)
-                {
-                    continue;
-                }
-
-                var mtlTexture = textures[i].GetHandle();
-
-                computeCommandEncoder.UseResource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read);
-                resourceIds[i] = mtlTexture.GpuResourceID._impl;
-            }
-
-            for (int i = 0; i < samplers.Length; i++)
-            {
-                if (samplers[i].NativePtr == IntPtr.Zero)
-                {
-                    continue;
-                }
-
-                var sampler = samplers[i];
-
-                resourceIds[i + textures.Length] = sampler.GpuResourceID._impl;
-            }
-
-            var sizeOfArgumentBuffer = sizeof(ulong) * (textures.Length + samplers.Length);
-
-            var argBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, sizeOfArgumentBuffer);
-            argBuffer.Holder.SetDataUnchecked(argBuffer.Offset, MemoryMarshal.AsBytes(resourceIds));
-
-            return argBuffer.Range;
         }
     }
 }

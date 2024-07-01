@@ -36,12 +36,19 @@ namespace Ryujinx.Graphics.Metal
             _samplerNearest = new Sampler(_device, SamplerCreateInfo.Create(MinFilter.Nearest, MagFilter.Nearest));
             _samplerLinear = new Sampler(_device, SamplerCreateInfo.Create(MinFilter.Linear, MagFilter.Linear));
 
+            var blitResourceLayout = new ResourceLayoutBuilder()
+                .Add(ResourceStages.Vertex, ResourceType.UniformBuffer, 0)
+                .Add(ResourceStages.Fragment, ResourceType.TextureAndSampler, 0).Build();
+
             var blitSource = ReadMsl("Blit.metal");
             _programColorBlit = new Program(
             [
                 new ShaderSource(blitSource, ShaderStage.Fragment, TargetLanguage.Msl),
                 new ShaderSource(blitSource, ShaderStage.Vertex, TargetLanguage.Msl)
-            ], device);
+            ], blitResourceLayout, device);
+
+            var colorClearResourceLayout = new ResourceLayoutBuilder()
+                .Add(ResourceStages.Fragment, ResourceType.UniformBuffer, 0).Build();
 
             var colorClearSource = ReadMsl("ColorClear.metal");
             for (int i = 0; i < Constants.MaxColorAttachments; i++)
@@ -51,7 +58,7 @@ namespace Ryujinx.Graphics.Metal
                 [
                     new ShaderSource(crntSource, ShaderStage.Fragment, TargetLanguage.Msl),
                     new ShaderSource(crntSource, ShaderStage.Vertex, TargetLanguage.Msl)
-                ], device));
+                ], colorClearResourceLayout, device));
             }
 
             var depthStencilClearSource = ReadMsl("DepthStencilClear.metal");
@@ -59,13 +66,18 @@ namespace Ryujinx.Graphics.Metal
             [
                 new ShaderSource(depthStencilClearSource, ShaderStage.Fragment, TargetLanguage.Msl),
                 new ShaderSource(depthStencilClearSource, ShaderStage.Vertex, TargetLanguage.Msl)
-            ], device);
+            ], colorClearResourceLayout, device);
+
+            var strideChangeResourceLayout = new ResourceLayoutBuilder()
+                .Add(ResourceStages.Compute, ResourceType.UniformBuffer, 0)
+                .Add(ResourceStages.Compute, ResourceType.StorageBuffer, 1)
+                .Add(ResourceStages.Compute, ResourceType.StorageBuffer, 2).Build();
 
             var strideChangeSource = ReadMsl("ChangeBufferStride.metal");
             _programStrideChange = new Program(
             [
                 new ShaderSource(strideChangeSource, ShaderStage.Compute, TargetLanguage.Msl)
-            ], device, new ComputeSize(64, 1, 1));
+            ], strideChangeResourceLayout, device, new ComputeSize(64, 1, 1));
         }
 
         private static string ReadMsl(string fileName)

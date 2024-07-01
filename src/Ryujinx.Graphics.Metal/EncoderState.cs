@@ -1,6 +1,7 @@
 using Ryujinx.Common.Memory;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Metal.State;
+using Ryujinx.Graphics.Shader;
 using SharpMetal.Metal;
 using System;
 using System.Linq;
@@ -22,13 +23,13 @@ namespace Ryujinx.Graphics.Metal
         StencilRef = 1 << 7,
         Viewports = 1 << 8,
         Scissors = 1 << 9,
-        Buffers = 1 << 10,
-        VertexTextures = 1 << 11,
-        FragmentTextures = 1 << 12,
-        ComputeTextures = 1 << 13,
+        Uniforms = 1 << 10,
+        Storages = 1 << 11,
+        Textures = 1 << 12,
+        Images = 1 << 13,
 
-        RenderAll = RenderPipeline | DepthStencil | DepthClamp | DepthBias | CullMode | FrontFace | StencilRef | Viewports | Scissors | Buffers | VertexTextures | FragmentTextures,
-        ComputeAll = ComputePipeline | Buffers | ComputeTextures,
+        RenderAll = RenderPipeline | DepthStencil | DepthClamp | DepthBias | CullMode | FrontFace | StencilRef | Viewports | Scissors | Uniforms | Storages | Textures | Images,
+        ComputeAll = ComputePipeline | Uniforms | Storages | Textures | Images,
         All = RenderAll | ComputeAll,
     }
 
@@ -46,6 +47,20 @@ namespace Ryujinx.Graphics.Metal
         {
             Buffer = buffer;
             Range = range;
+        }
+    }
+
+    record struct TextureRef
+    {
+        public ShaderStage Stage;
+        public Texture Storage;
+        public Sampler Sampler;
+
+        public TextureRef(ShaderStage stage, Texture storage, Sampler sampler)
+        {
+            Stage = stage;
+            Storage = storage;
+            Sampler = sampler;
         }
     }
 
@@ -73,17 +88,9 @@ namespace Ryujinx.Graphics.Metal
         public PipelineState Pipeline;
         public DepthStencilUid DepthStencilUid;
 
-        public TextureBase[] FragmentTextures = new TextureBase[Constants.MaxTexturesPerStage];
-        public MTLSamplerState[] FragmentSamplers = new MTLSamplerState[Constants.MaxTexturesPerStage];
-
-        public TextureBase[] VertexTextures = new TextureBase[Constants.MaxTexturesPerStage];
-        public MTLSamplerState[] VertexSamplers = new MTLSamplerState[Constants.MaxTexturesPerStage];
-
-        public TextureBase[] ComputeTextures = new TextureBase[Constants.MaxTexturesPerStage];
-        public MTLSamplerState[] ComputeSamplers = new MTLSamplerState[Constants.MaxTexturesPerStage];
-
-        public BufferRef[] UniformBuffers = new BufferRef[Constants.MaxUniformBuffersPerStage];
-        public BufferRef[] StorageBuffers = new BufferRef[Constants.MaxStorageBuffersPerStage];
+        public readonly BufferRef[] UniformBufferRefs = new BufferRef[Constants.MaxUniformBufferBindings];
+        public readonly BufferRef[] StorageBufferRefs = new BufferRef[Constants.MaxStorageBufferBindings];
+        public readonly TextureRef[] TextureRefs = new TextureRef[Constants.MaxTextureBindings];
 
         public Auto<DisposableBuffer> IndexBuffer = default;
         public MTLIndexType IndexType = MTLIndexType.UInt16;

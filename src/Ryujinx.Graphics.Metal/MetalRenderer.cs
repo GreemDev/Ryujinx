@@ -12,6 +12,13 @@ namespace Ryujinx.Graphics.Metal
     [SupportedOSPlatform("macos")]
     public sealed class MetalRenderer : IRenderer
     {
+        public const int TotalSets = 4;
+
+        public const int UniformSetIndex = 0;
+        public const int StorageSetIndex = 1;
+        public const int TextureSetIndex = 2;
+        public const int ImageSetIndex = 3;
+
         private readonly MTLDevice _device;
         private readonly MTLCommandQueue _queue;
         private readonly Func<CAMetalLayer> _getMetalLayer;
@@ -95,7 +102,7 @@ namespace Ryujinx.Graphics.Metal
 
         public IProgram CreateProgram(ShaderSource[] shaders, ShaderInfo info)
         {
-            return new Program(shaders, _device, info.ComputeLocalSize);
+            return new Program(shaders, info.ResourceLayout, _device, info.ComputeLocalSize);
         }
 
         public ISampler CreateSampler(SamplerCreateInfo info)
@@ -188,10 +195,10 @@ namespace Ryujinx.Graphics.Metal
                 supportsViewportSwizzle: false,
                 supportsIndirectParameters: true,
                 supportsDepthClipControl: false,
-                uniformBufferSetIndex: 0,
-                storageBufferSetIndex: 1,
-                textureSetIndex: 2,
-                imageSetIndex: 3,
+                uniformBufferSetIndex: UniformSetIndex,
+                storageBufferSetIndex: StorageSetIndex,
+                textureSetIndex: TextureSetIndex,
+                imageSetIndex: ImageSetIndex,
                 extraSetBaseIndex: 0,
                 maximumExtraSets: 0,
                 maximumUniformBuffersPerStage: Constants.MaxUniformBuffersPerStage,

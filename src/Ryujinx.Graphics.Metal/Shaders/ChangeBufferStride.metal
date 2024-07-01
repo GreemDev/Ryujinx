@@ -19,7 +19,6 @@ struct ConstantBuffers {
 };
 
 struct StorageBuffers {
-    ulong padding;
     device InData* in_data;
     device OutData* out_data;
 };

@@ -4,6 +4,8 @@ using Ryujinx.Graphics.Shader;
 using SharpMetal.Foundation;
 using SharpMetal.Metal;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
@@ -21,7 +23,14 @@ namespace Ryujinx.Graphics.Metal
         private MTLComputePipelineState? _computePipelineCache;
         private bool _firstBackgroundUse;
 
-        public Program(ShaderSource[] shaders, MTLDevice device, ComputeSize computeLocalSize = default)
+        public ResourceBindingSegment[][] ClearSegments { get; }
+        public ResourceBindingSegment[][] BindingSegments { get; }
+        // Argument buffer sizes for Vertex or Compute stages
+        public int[] ArgumentBufferSizes { get; }
+        // Argument buffer sizes for Fragment stage
+        public int[] FragArgumentBufferSizes { get; }
+
+        public Program(ShaderSource[] shaders, ResourceLayout resourceLayout, MTLDevice device, ComputeSize computeLocalSize = default)
         {
             ComputeLocalSize = computeLocalSize;
 
@@ -56,7 +65,153 @@ namespace Ryujinx.Graphics.Metal
                 }
             }
 
+            ClearSegments = BuildClearSegments(resourceLayout.Sets);
+            (BindingSegments, ArgumentBufferSizes, FragArgumentBufferSizes) = BuildBindingSegments(resourceLayout.SetUsages);
+
             _status = ProgramLinkStatus.Success;
+        }
+
+        private static ResourceBindingSegment[][] BuildClearSegments(ReadOnlyCollection<ResourceDescriptorCollection> sets)
+        {
+            ResourceBindingSegment[][] segments = new ResourceBindingSegment[sets.Count][];
+
+            for (int setIndex = 0; setIndex < sets.Count; setIndex++)
+            {
+                List<ResourceBindingSegment> currentSegments = new();
+
+                ResourceDescriptor currentDescriptor = default;
+                int currentCount = 0;
+
+                for (int index = 0; index < sets[setIndex].Descriptors.Count; index++)
+                {
+                    ResourceDescriptor descriptor = sets[setIndex].Descriptors[index];
+
+                    if (currentDescriptor.Binding + currentCount != descriptor.Binding ||
+                        currentDescriptor.Type != descriptor.Type ||
+                        currentDescriptor.Stages != descriptor.Stages ||
+                        currentDescriptor.Count > 1 ||
+                        descriptor.Count > 1)
+                    {
+                        if (currentCount != 0)
+                        {
+                            currentSegments.Add(new ResourceBindingSegment(
+                                currentDescriptor.Binding,
+                                currentCount,
+                                currentDescriptor.Type,
+                                currentDescriptor.Stages,
+                                currentDescriptor.Count > 1));
+                        }
+
+                        currentDescriptor = descriptor;
+                        currentCount = descriptor.Count;
+                    }
+                    else
+                    {
+                        currentCount += descriptor.Count;
+                    }
+                }
+
+                if (currentCount != 0)
+                {
+                    currentSegments.Add(new ResourceBindingSegment(
+                        currentDescriptor.Binding,
+                        currentCount,
+                        currentDescriptor.Type,
+                        currentDescriptor.Stages,
+                        currentDescriptor.Count > 1));
+                }
+
+                segments[setIndex] = currentSegments.ToArray();
+            }
+
+            return segments;
+        }
+
+        private static (ResourceBindingSegment[][], int[], int[]) BuildBindingSegments(ReadOnlyCollection<ResourceUsageCollection> setUsages)
+        {
+            ResourceBindingSegment[][] segments = new ResourceBindingSegment[setUsages.Count][];
+            int[] argBufferSizes = new int[setUsages.Count];
+            int[] fragArgBufferSizes = new int[setUsages.Count];
+
+            for (int setIndex = 0; setIndex < setUsages.Count; setIndex++)
+            {
+                List<ResourceBindingSegment> currentSegments = new();
+
+                ResourceUsage currentUsage = default;
+                int currentCount = 0;
+
+                for (int index = 0; index < setUsages[setIndex].Usages.Count; index++)
+                {
+                    ResourceUsage usage = setUsages[setIndex].Usages[index];
+
+                    if (currentUsage.Binding + currentCount != usage.Binding ||
+                        currentUsage.Type != usage.Type ||
+                        currentUsage.Stages != usage.Stages ||
+                        currentUsage.ArrayLength > 1 ||
+                        usage.ArrayLength > 1)
+                    {
+                        if (currentCount != 0)
+                        {
+                            currentSegments.Add(new ResourceBindingSegment(
+                                currentUsage.Binding,
+                                currentCount,
+                                currentUsage.Type,
+                                currentUsage.Stages,
+                                currentUsage.ArrayLength > 1));
+
+                            var size = currentCount * ResourcePointerSize(currentUsage.Type);
+                            if (currentUsage.Stages.HasFlag(ResourceStages.Fragment))
+                            {
+                                fragArgBufferSizes[setIndex] += size;
+                            }
+
+                            if (currentUsage.Stages.HasFlag(ResourceStages.Vertex) ||
+                                currentUsage.Stages.HasFlag(ResourceStages.Compute))
+                            {
+                                argBufferSizes[setIndex] += size;
+                            }
+                        }
+
+                        currentUsage = usage;
+                        currentCount = usage.ArrayLength;
+                    }
+                    else
+                    {
+                        currentCount++;
+                    }
+                }
+
+                if (currentCount != 0)
+                {
+                    currentSegments.Add(new ResourceBindingSegment(
+                        currentUsage.Binding,
+                        currentCount,
+                        currentUsage.Type,
+                        currentUsage.Stages,
+                        currentUsage.ArrayLength > 1));
+
+                    var size = currentCount * ResourcePointerSize(currentUsage.Type);
+                    if (currentUsage.Stages.HasFlag(ResourceStages.Fragment))
+                    {
+                        fragArgBufferSizes[setIndex] += size;
+                    }
+
+                    if (currentUsage.Stages.HasFlag(ResourceStages.Vertex) ||
+                        currentUsage.Stages.HasFlag(ResourceStages.Compute))
+                    {
+                        argBufferSizes[setIndex] += size;
+                    }
+                }
+
+                segments[setIndex] = currentSegments.ToArray();
+            }
+
+            return (segments, argBufferSizes, fragArgBufferSizes);
+        }
+
+        private static int ResourcePointerSize(ResourceType type)
+        {
+            return (type == ResourceType.TextureAndSampler ? 2 : 1);
         }
 
         public ProgramLinkStatus CheckProgramLink(bool blocking)
