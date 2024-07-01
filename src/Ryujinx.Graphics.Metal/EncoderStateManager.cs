@@ -179,6 +179,7 @@ namespace Ryujinx.Graphics.Metal
         {
             if (_currentState.Dirty.HasFlag(DirtyFlags.RenderPipeline))
             {
+                SetVertexBuffers(renderCommandEncoder, _currentState.VertexBuffers);
                 SetRenderPipelineState(renderCommandEncoder);
             }
 
@@ -220,11 +221,6 @@ namespace Ryujinx.Graphics.Metal
             if (_currentState.Dirty.HasFlag(DirtyFlags.Scissors))
             {
                 SetScissors(renderCommandEncoder);
-            }
-
-            if (_currentState.Dirty.HasFlag(DirtyFlags.VertexBuffers))
-            {
-                SetVertexBuffers(renderCommandEncoder, _currentState.VertexBuffers);
             }
 
             if (_currentState.Dirty.HasFlag(DirtyFlags.Buffers))
@@ -683,15 +679,8 @@ namespace Ryujinx.Graphics.Metal
             // Update the buffers on the pipeline
             UpdatePipelineVertexState(_currentState.VertexBuffers, _currentState.VertexAttribs);
 
-            // Inline update
-            if (_pipeline.Encoders.TryGetRenderEncoder(out MTLRenderCommandEncoder renderCommandEncoder))
-            {
-                SetVertexBuffers(renderCommandEncoder, _currentState.VertexBuffers);
-                return;
-            }
-
             // Mark dirty
-            _currentState.Dirty |= DirtyFlags.RenderPipeline | DirtyFlags.VertexBuffers;
+            _currentState.Dirty |= DirtyFlags.RenderPipeline;
         }
 
         public void UpdateUniformBuffers(ReadOnlySpan<BufferAssignment> buffers)
