@@ -510,7 +510,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void UpdateVertexAttribs(ReadOnlySpan<VertexAttribDescriptor> vertexAttribs)
         {
-            _currentState.VertexAttribs = vertexAttribs.ToArray();
+            vertexAttribs.CopyTo(_currentState.VertexAttribs);
 
             // Update the buffers on the pipeline
             UpdatePipelineVertexState(_currentState.VertexBuffers, _currentState.VertexAttribs);
@@ -625,11 +625,7 @@ namespace Ryujinx.Graphics.Metal
         // Inlineable
         public void UpdateScissors(ReadOnlySpan<Rectangle<int>> regions)
         {
-            int maxScissors = Math.Min(regions.Length, _currentState.Viewports.Length);
-
-            _currentState.Scissors = new MTLScissorRect[maxScissors];
-
-            for (int i = 0; i < maxScissors; i++)
+            for (int i = 0; i < regions.Length; i++)
             {
                 var region = regions[i];
 
@@ -661,8 +657,6 @@ namespace Ryujinx.Graphics.Metal
                 return Math.Clamp(value, 0f, 1f);
             }
 
-            _currentState.Viewports = new MTLViewport[viewports.Length];
-
             for (int i = 0; i < viewports.Length; i++)
             {
                 var viewport = viewports[i];
@@ -691,7 +685,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void UpdateVertexBuffers(ReadOnlySpan<VertexBufferDescriptor> vertexBuffers)
         {
-            _currentState.VertexBuffers = vertexBuffers.ToArray();
+            vertexBuffers.CopyTo(_currentState.VertexBuffers);
 
             // Update the buffers on the pipeline
             UpdatePipelineVertexState(_currentState.VertexBuffers, _currentState.VertexAttribs);
@@ -1122,7 +1116,7 @@ namespace Ryujinx.Graphics.Metal
 
                                     MTLRenderStages renderStages = 0;
 
-                                    if (segment.Stages.HasFlag(ResourceStages.Vertex))
+                                    if ((segment.Stages & ResourceStages.Vertex) != 0)
                                     {
                                         vertResourceIds[vertResourceIdIndex] = mtlTexture.GpuResourceID._impl;
                                         vertResourceIdIndex++;
@@ -1136,7 +1130,7 @@ namespace Ryujinx.Graphics.Metal
                                         renderStages |= MTLRenderStages.RenderStageVertex;
                                     }
 
-                                    if (segment.Stages.HasFlag(ResourceStages.Fragment))
+                                    if ((segment.Stages & ResourceStages.Fragment) != 0)
                                     {
                                         fragResourceIds[fragResourceIdIndex] = mtlTexture.GpuResourceID._impl;
                                         fragResourceIdIndex++;

@@ -109,8 +109,8 @@ namespace Ryujinx.Graphics.Metal
         public MTLWinding Winding = MTLWinding.CounterClockwise;
         public bool CullBoth = false;
 
-        public MTLViewport[] Viewports = [];
-        public MTLScissorRect[] Scissors = [];
+        public MTLViewport[] Viewports = new MTLViewport[Constants.MaxViewports];
+        public MTLScissorRect[] Scissors = new MTLScissorRect[Constants.MaxViewports];
 
         // Changes to attachments take recreation!
         public Texture DepthStencil = default;
@@ -122,9 +122,8 @@ namespace Ryujinx.Graphics.Metal
         public Array8<ColorBlendStateUid> StoredBlend;
         public ColorF BlendColor = new();
 
-        public VertexBufferDescriptor[] VertexBuffers = [];
-        public VertexAttribDescriptor[] VertexAttribs = [];
-
+        public readonly VertexBufferDescriptor[] VertexBuffers = new VertexBufferDescriptor[Constants.MaxVertexBuffers];
+        public readonly VertexAttribDescriptor[] VertexAttribs = new VertexAttribDescriptor[Constants.MaxVertexAttributes];
         // Dirty flags
         public DirtyFlags Dirty = DirtyFlags.None;
 

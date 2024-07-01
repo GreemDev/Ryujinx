@@ -12,6 +12,7 @@ namespace Ryujinx.Graphics.Metal
         public const int MaxStorageBufferBindings = MaxStorageBuffersPerStage * MaxShaderStages;
         public const int MaxTextureBindings = MaxTexturesPerStage * MaxShaderStages;
         public const int MaxColorAttachments = 8;
+        public const int MaxViewports = 16;
         // TODO: Check this value
         public const int MaxVertexAttributes = 31;
         // TODO: Check this value

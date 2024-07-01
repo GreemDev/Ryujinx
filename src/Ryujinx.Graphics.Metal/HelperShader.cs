@@ -129,7 +129,7 @@ namespace Ryujinx.Graphics.Metal
                 MathF.Abs(dstRegion.X2 - dstRegion.X1),
                 MathF.Abs(dstRegion.Y2 - dstRegion.Y1));
 
-            Span<Viewport> viewports = stackalloc Viewport[1];
+            Span<Viewport> viewports = stackalloc Viewport[16];
 
             viewports[0] = new Viewport(
                 rect,
@@ -145,8 +145,12 @@ namespace Ryujinx.Graphics.Metal
             int dstWidth = dst.Width;
             int dstHeight = dst.Height;
 
+            Span<Rectangle<int>> scissors = stackalloc Rectangle<int>[16];
+
+            scissors[0] = new Rectangle<int>(0, 0, dstWidth, dstHeight);
+
             _pipeline.SetRenderTargets([dst], null);
-            _pipeline.SetScissors(stackalloc Rectangle<int>[] { new Rectangle<int>(0, 0, dstWidth, dstHeight) });
+            _pipeline.SetScissors(scissors);
 
             _pipeline.SetClearLoadAction(clear);
 
@@ -202,7 +206,7 @@ namespace Ryujinx.Graphics.Metal
             _renderer.BufferManager.SetData<float>(bufferHandle, 0, region);
             _pipeline.SetUniformBuffers([new BufferAssignment(0, new BufferRange(bufferHandle, 0, RegionBufferSize))]);
 
-            Span<Viewport> viewports = stackalloc Viewport[1];
+            Span<Viewport> viewports = stackalloc Viewport[16];
 
             var rect = new Rectangle<float>(
                 MathF.Min(dstRegion.X1, dstRegion.X2),
@@ -302,7 +306,7 @@ namespace Ryujinx.Graphics.Metal
             buffer.Holder.SetDataUnchecked(buffer.Offset, clearColor);
             _pipeline.SetUniformBuffers([new BufferAssignment(0, buffer.Range)]);
 
-            Span<Viewport> viewports = stackalloc Viewport[1];
+            Span<Viewport> viewports = stackalloc Viewport[16];
 
             // TODO: Set exact viewport!
             viewports[0] = new Viewport(
