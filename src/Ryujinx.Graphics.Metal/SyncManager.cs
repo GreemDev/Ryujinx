@@ -153,7 +153,7 @@ namespace Ryujinx.Graphics.Metal
 
                     if (!signaled)
                     {
-                        Logger.Error?.PrintMsg(LogClass.Gpu, $"VK Sync Object {result.ID} failed to signal within 1000ms. Continuing...");
+                        Logger.Error?.PrintMsg(LogClass.Gpu, $"Metal Sync Object {result.ID} failed to signal within 1000ms. Continuing...");
                     }
                     else
                     {
