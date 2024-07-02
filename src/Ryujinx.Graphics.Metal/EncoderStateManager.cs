@@ -984,8 +984,18 @@ namespace Ryujinx.Graphics.Metal
                 return;
             }
 
-            var vertArgBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, program.ArgumentBufferSizes[setIndex] * sizeof(ulong));
-            var fragArgBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, program.FragArgumentBufferSizes[setIndex] * sizeof(ulong));
+            ScopedTemporaryBuffer vertArgBuffer = default;
+            ScopedTemporaryBuffer fragArgBuffer = default;
+
+            if (program.ArgumentBufferSizes[setIndex] > 0)
+            {
+                vertArgBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, program.ArgumentBufferSizes[setIndex] * sizeof(ulong));
+            }
+
+            if (program.FragArgumentBufferSizes[setIndex] > 0)
+            {
+                fragArgBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, program.FragArgumentBufferSizes[setIndex] * sizeof(ulong));
+            }
 
             Span<ulong> vertResourceIds = stackalloc ulong[program.ArgumentBufferSizes[setIndex]];
             Span<ulong> fragResourceIds = stackalloc ulong[program.FragArgumentBufferSizes[setIndex]];
@@ -1169,14 +1179,19 @@ namespace Ryujinx.Graphics.Metal
                 }
             }
 
-            vertArgBuffer.Holder.SetDataUnchecked(vertArgBuffer.Offset, MemoryMarshal.AsBytes(vertResourceIds));
-            fragArgBuffer.Holder.SetDataUnchecked(fragArgBuffer.Offset, MemoryMarshal.AsBytes(fragResourceIds));
+            if (program.ArgumentBufferSizes[setIndex] > 0)
+            {
+                vertArgBuffer.Holder.SetDataUnchecked(vertArgBuffer.Offset, MemoryMarshal.AsBytes(vertResourceIds));
+                var mtlVertArgBuffer = _bufferManager.GetBuffer(vertArgBuffer.Handle, false).Get(_pipeline.Cbs).Value;
+                renderCommandEncoder.SetVertexBuffer(mtlVertArgBuffer, (uint)vertArgBuffer.Range.Offset, SetIndexToBindingIndex(setIndex));
+            }
 
-            var mtlVertArgBuffer = _bufferManager.GetBuffer(vertArgBuffer.Handle, false).Get(_pipeline.Cbs).Value;
-            var mtlFragArgBuffer = _bufferManager.GetBuffer(fragArgBuffer.Handle, false).Get(_pipeline.Cbs).Value;
-
-            renderCommandEncoder.SetVertexBuffer(mtlVertArgBuffer, (uint)vertArgBuffer.Range.Offset, SetIndexToBindingIndex(setIndex));
-            renderCommandEncoder.SetFragmentBuffer(mtlFragArgBuffer, (uint)fragArgBuffer.Range.Offset, SetIndexToBindingIndex(setIndex));
+            if (program.FragArgumentBufferSizes[setIndex] > 0)
+            {
+                fragArgBuffer.Holder.SetDataUnchecked(fragArgBuffer.Offset, MemoryMarshal.AsBytes(fragResourceIds));
+                var mtlFragArgBuffer = _bufferManager.GetBuffer(fragArgBuffer.Handle, false).Get(_pipeline.Cbs).Value;
+                renderCommandEncoder.SetFragmentBuffer(mtlFragArgBuffer, (uint)fragArgBuffer.Range.Offset, SetIndexToBindingIndex(setIndex));
+            }
         }
 
         private void UpdateAndBind(MTLComputeCommandEncoder computeCommandEncoder, Program program, int setIndex)
@@ -1188,7 +1203,13 @@ namespace Ryujinx.Graphics.Metal
                 return;
             }
 
-            var argBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, program.ArgumentBufferSizes[setIndex] * sizeof(ulong));
+            ScopedTemporaryBuffer argBuffer = default;
+
+            if (program.ArgumentBufferSizes[setIndex] > 0)
+            {
+                argBuffer = _bufferManager.ReserveOrCreate(_pipeline.Cbs, program.ArgumentBufferSizes[setIndex] * sizeof(ulong));
+            }
+
             Span<ulong> resourceIds = stackalloc ulong[program.ArgumentBufferSizes[setIndex]];
             var resourceIdIndex = 0;
 
@@ -1228,7 +1249,7 @@ namespace Ryujinx.Graphics.Metal
                                 mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
                             }
 
-                            if (segment.Stages.HasFlag(ResourceStages.Compute))
+                            if ((segment.Stages & ResourceStages.Compute) != 0)
                             {
                                 computeCommandEncoder.UseResource(new MTLResource(mtlBuffer.NativePtr), MTLResourceUsage.Read);
                                 resourceIds[resourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
@@ -1265,7 +1286,7 @@ namespace Ryujinx.Graphics.Metal
                                 mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
                             }
 
-                            if (segment.Stages.HasFlag(ResourceStages.Compute))
+                            if ((segment.Stages & ResourceStages.Compute) != 0)
                             {
                                 computeCommandEncoder.UseResource(new MTLResource(mtlBuffer.NativePtr), MTLResourceUsage.Read | MTLResourceUsage.Write);
                                 resourceIds[resourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
@@ -1323,11 +1344,12 @@ namespace Ryujinx.Graphics.Metal
                 }
             }
 
-            argBuffer.Holder.SetDataUnchecked(argBuffer.Offset, MemoryMarshal.AsBytes(resourceIds));
-
-            var mtlArgBuffer = _bufferManager.GetBuffer(argBuffer.Handle, false).Get(_pipeline.Cbs).Value;
-
-            computeCommandEncoder.SetBuffer(mtlArgBuffer, (uint)argBuffer.Range.Offset, SetIndexToBindingIndex(setIndex));
+            if (program.ArgumentBufferSizes[setIndex] > 0)
+            {
+                argBuffer.Holder.SetDataUnchecked(argBuffer.Offset, MemoryMarshal.AsBytes(resourceIds));
+                var mtlArgBuffer = _bufferManager.GetBuffer(argBuffer.Handle, false).Get(_pipeline.Cbs).Value;
+                computeCommandEncoder.SetBuffer(mtlArgBuffer, (uint)argBuffer.Range.Offset, SetIndexToBindingIndex(setIndex));
+            }
         }
 
         private uint SetIndexToBindingIndex(int setIndex)
