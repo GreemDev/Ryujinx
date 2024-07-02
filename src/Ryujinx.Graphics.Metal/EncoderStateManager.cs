@@ -868,6 +868,7 @@ namespace Ryujinx.Graphics.Metal
         {
             ref PipelineState pipeline = ref _currentState.Pipeline;
             uint indexMask = 0;
+            int descriptorCount = 0;
 
             for (int i = 0; i < attribDescriptors.Length; i++)
             {
@@ -923,13 +924,18 @@ namespace Ryujinx.Graphics.Metal
                 }
             }
 
+            ref var zeroBufLayout = ref pipeline.Internal.VertexBindings[(int)Constants.ZeroBufferIndex];
+
             // Zero buffer
             if ((indexMask & (1u << (int)Constants.ZeroBufferIndex)) != 0)
             {
-                ref var layout = ref pipeline.Internal.VertexBindings[(int)Constants.ZeroBufferIndex];
-                layout.Stride = 1;
-                layout.StepFunction = MTLVertexStepFunction.Constant;
-                layout.StepRate = 0;
+                zeroBufLayout.Stride = 1;
+                zeroBufLayout.StepFunction = MTLVertexStepFunction.Constant;
+                zeroBufLayout.StepRate = 0;
+            }
+            else
+            {
+                zeroBufLayout = new();
             }
 
             pipeline.VertexAttributeDescriptionsCount = (uint)attribDescriptors.Length;
