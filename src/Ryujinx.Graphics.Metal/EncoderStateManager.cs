@@ -346,13 +346,13 @@ namespace Ryujinx.Graphics.Metal
             {
                 _currentState.RenderProgram = prg;
 
-                _currentState.Dirty |= DirtyFlags.RenderPipeline;
+                _currentState.Dirty |= DirtyFlags.RenderPipeline | DirtyFlags.ArgBuffers;
             }
             else if (prg.ComputeFunction != IntPtr.Zero)
             {
                 _currentState.ComputeProgram = prg;
 
-                _currentState.Dirty |= DirtyFlags.ComputePipeline;
+                _currentState.Dirty |= DirtyFlags.ComputePipeline | DirtyFlags.ArgBuffers;
             }
         }
 
