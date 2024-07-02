@@ -868,7 +868,6 @@ namespace Ryujinx.Graphics.Metal
         {
             ref PipelineState pipeline = ref _currentState.Pipeline;
             uint indexMask = 0;
-            int descriptorCount = 0;
 
             for (int i = 0; i < attribDescriptors.Length; i++)
             {
@@ -1352,7 +1351,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        private uint SetIndexToBindingIndex(int setIndex)
+        private static uint SetIndexToBindingIndex(int setIndex)
         {
             return setIndex switch
             {
@@ -1362,7 +1361,6 @@ namespace Ryujinx.Graphics.Metal
                 MetalRenderer.ImageSetIndex => Constants.ImagessIndex,
             };
         }
-
 
         private readonly void SetCullMode(MTLRenderCommandEncoder renderCommandEncoder)
         {

@@ -38,7 +38,7 @@ namespace Ryujinx.Graphics.Metal
             descriptor.Swizzle = GetSwizzle(info, descriptor.PixelFormat);
 
             _mtlTexture = _device.NewTexture(descriptor);
-            
+
             MtlFormat = pixelFormat;
             descriptor.Dispose();
         }
@@ -113,7 +113,7 @@ namespace Ryujinx.Graphics.Metal
                         0,
                         (ulong)firstLevel,
                         new MTLOrigin { x = 0, y = 0, z = (ulong)firstLayer },
-                        new MTLSize { width = (ulong)Math.Min(Info.Width, destinationTexture.Info.Width), height = (ulong)Math.Min(Info.Height, destinationTexture.Info.Height), depth = 1},
+                        new MTLSize { width = (ulong)Math.Min(Info.Width, destinationTexture.Info.Width), height = (ulong)Math.Min(Info.Height, destinationTexture.Info.Height), depth = 1 },
                         destinationTexture._mtlTexture,
                         0,
                         (ulong)firstLevel,
@@ -147,7 +147,7 @@ namespace Ryujinx.Graphics.Metal
                         0,
                         (ulong)srcLevel,
                         new MTLOrigin { x = 0, y = 0, z = (ulong)srcLayer },
-                        new MTLSize { width = (ulong)Math.Min(Info.Width, destinationTexture.Info.Width), height = (ulong)Math.Min(Info.Height, destinationTexture.Info.Height), depth = 1},
+                        new MTLSize { width = (ulong)Math.Min(Info.Width, destinationTexture.Info.Width), height = (ulong)Math.Min(Info.Height, destinationTexture.Info.Height), depth = 1 },
                         destinationTexture._mtlTexture,
                         0,
                         (ulong)dstLevel,

@@ -218,7 +218,7 @@ namespace Ryujinx.Graphics.Metal
                     }
                 case EncoderType.Compute:
                     {
-                        var scope = MTLBarrierScope.Buffers | MTLBarrierScope.Textures | MTLBarrierScope.RenderTargets;;
+                        var scope = MTLBarrierScope.Buffers | MTLBarrierScope.Textures | MTLBarrierScope.RenderTargets;
                         Encoders.ComputeEncoder.MemoryBarrier(scope);
                         break;
                     }
