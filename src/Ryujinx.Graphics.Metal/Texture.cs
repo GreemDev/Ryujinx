@@ -11,6 +11,9 @@ namespace Ryujinx.Graphics.Metal
     [SupportedOSPlatform("macos")]
     class Texture : TextureBase, ITexture
     {
+        private MTLTexture _identitySwizzleHandle;
+        private bool _identityIsDifferent;
+
         public Texture(MTLDevice device, MetalRenderer renderer, Pipeline pipeline, TextureCreateInfo info) : base(device, renderer, pipeline, info)
         {
             MTLPixelFormat pixelFormat = FormatTable.GetFormat(Info.Format);
@@ -34,10 +37,20 @@ namespace Ryujinx.Graphics.Metal
             {
                 descriptor.ArrayLength = (ulong)Info.Depth;
             }
+            
+            MTLTextureSwizzleChannels swizzle = GetSwizzle(info, descriptor.PixelFormat);
 
-            descriptor.Swizzle = GetSwizzle(info, descriptor.PixelFormat);
+            _identitySwizzleHandle = _device.NewTexture(descriptor);
 
-            _mtlTexture = _device.NewTexture(descriptor);
+            if (SwizzleIsIdentity(swizzle))
+            {
+                _mtlTexture = _identitySwizzleHandle;
+            }
+            else
+            {
+                _mtlTexture = CreateDefaultView(_identitySwizzleHandle, swizzle, descriptor);
+                _identityIsDifferent = true;
+            }
 
             MtlFormat = pixelFormat;
             descriptor.Dispose();
@@ -56,11 +69,46 @@ namespace Ryujinx.Graphics.Metal
 
             var swizzle = GetSwizzle(info, pixelFormat);
 
-            _mtlTexture = sourceTexture.NewTextureView(pixelFormat, textureType, levels, slices, swizzle);
+            _identitySwizzleHandle = sourceTexture.NewTextureView(pixelFormat, textureType, levels, slices);
+
+            if (SwizzleIsIdentity(swizzle))
+            {
+                _mtlTexture = _identitySwizzleHandle;
+            }
+            else
+            {
+                _mtlTexture = sourceTexture.NewTextureView(pixelFormat, textureType, levels, slices, swizzle);
+                _identityIsDifferent = true;
+            }
 
             MtlFormat = pixelFormat;
             FirstLayer = firstLayer;
             FirstLevel = firstLevel;
+        }
+
+        public void PopulateRenderPassAttachment(MTLRenderPassColorAttachmentDescriptor descriptor)
+        {
+            descriptor.Texture = _identitySwizzleHandle;
+        }
+
+        private MTLTexture CreateDefaultView(MTLTexture texture, MTLTextureSwizzleChannels swizzle, MTLTextureDescriptor descriptor)
+        {
+            NSRange levels;
+            levels.location = 0;
+            levels.length = (ulong)Info.Levels;
+            NSRange slices;
+            slices.location = 0;
+            slices.length = Info.Target == Target.Texture3D ? 1 : (ulong)Info.GetDepthOrLayers();
+
+            return texture.NewTextureView(descriptor.PixelFormat, descriptor.TextureType, levels, slices, swizzle);
+        }
+
+        private bool SwizzleIsIdentity(MTLTextureSwizzleChannels swizzle)
+        {
+            return swizzle.red == MTLTextureSwizzle.Red &&
+                   swizzle.green == MTLTextureSwizzle.Green &&
+                   swizzle.blue == MTLTextureSwizzle.Blue &&
+                   swizzle.alpha == MTLTextureSwizzle.Alpha;
         }
 
         private MTLTextureSwizzleChannels GetSwizzle(TextureCreateInfo info, MTLPixelFormat pixelFormat)
@@ -237,7 +285,7 @@ namespace Ryujinx.Graphics.Metal
 
         public ITexture CreateView(TextureCreateInfo info, int firstLayer, int firstLevel)
         {
-            return new Texture(_device, _renderer, _pipeline, info, _mtlTexture, firstLayer, firstLevel);
+            return new Texture(_device, _renderer, _pipeline, info, _identitySwizzleHandle, firstLayer, firstLevel);
         }
 
         private int GetBufferDataLength(int size)
@@ -520,6 +568,16 @@ namespace Ryujinx.Graphics.Metal
         public void SetStorage(BufferRange buffer)
         {
             throw new NotImplementedException();
+        }
+
+        public override void Release()
+        {
+            if (_identityIsDifferent)
+            {
+                _identitySwizzleHandle.Dispose();
+            }
+
+            base.Release();
         }
     }
 }

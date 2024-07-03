@@ -101,10 +101,10 @@ namespace Ryujinx.Graphics.Metal
 
             for (int i = 0; i < Constants.MaxColorAttachments; i++)
             {
-                if (_currentState.RenderTargets[i] != null)
+                if (_currentState.RenderTargets[i] is Texture tex)
                 {
                     var passAttachment = renderPassDescriptor.ColorAttachments.Object((ulong)i);
-                    passAttachment.Texture = _currentState.RenderTargets[i].GetHandle();
+                    tex.PopulateRenderPassAttachment(passAttachment);
                     passAttachment.LoadAction = _currentState.ClearLoadAction ? MTLLoadAction.Clear : MTLLoadAction.Load;
                     passAttachment.StoreAction = MTLStoreAction.Store;
                 }
