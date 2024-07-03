@@ -21,7 +21,10 @@ namespace Ryujinx.Graphics.Metal
         public int Width => Info.Width;
         public int Height => Info.Height;
         public int Depth => Info.Depth;
+
         public MTLPixelFormat MtlFormat { get; protected set; }
+        public int FirstLayer { get; protected set; }
+        public int FirstLevel { get; protected set; }
 
         public TextureBase(MTLDevice device, MetalRenderer renderer, Pipeline pipeline, TextureCreateInfo info)
         {

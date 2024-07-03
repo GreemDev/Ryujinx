@@ -149,7 +149,7 @@ namespace Ryujinx.Graphics.Metal
                         return;
                     }
 
-                    bool signaled = result.Signalled || result.Waitable.WaitForFences(false);
+                    bool signaled = result.Signalled || result.Waitable.WaitForFences(true);
 
                     if (!signaled)
                     {

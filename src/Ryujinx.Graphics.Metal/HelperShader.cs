@@ -318,11 +318,14 @@ namespace Ryujinx.Graphics.Metal
                 0f,
                 1f);
 
+            Span<uint> componentMasks = stackalloc uint[index + 1];
+            componentMasks[index] = componentMask;
+
             _pipeline.SetProgram(_programsColorClear[index]);
             _pipeline.SetBlendState(index, new BlendDescriptor());
             _pipeline.SetFaceCulling(false, Face.Front);
             _pipeline.SetDepthTest(new DepthTestDescriptor(false, false, CompareOp.Always));
-            _pipeline.SetRenderTargetColorMasks([componentMask]);
+            _pipeline.SetRenderTargetColorMasks(componentMasks);
             _pipeline.SetViewports(viewports);
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
             _pipeline.Draw(4, 1, 0, 0);
