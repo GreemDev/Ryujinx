@@ -111,6 +111,14 @@ namespace Ryujinx.Graphics.Metal
             readonly get => ((Id0 >> 63) & 0x1) != 0UL;
             set => Id0 = (Id0 & 0x7FFFFFFFFFFFFFFF) | ((value ? 1UL : 0UL) << 63);
         }
+
+        public void Swap(ColorBlendStateUid uid)
+        {
+            var format = PixelFormat;
+
+            this = uid;
+            PixelFormat = format;
+        }
     }
 
     [SupportedOSPlatform("macos")]

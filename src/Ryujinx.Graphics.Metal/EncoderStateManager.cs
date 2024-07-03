@@ -390,11 +390,11 @@ namespace Ryujinx.Graphics.Metal
                     {
                         _currentState.StoredBlend[i] = mtlBlend;
 
-                        mtlBlend = new ColorBlendStateUid();
+                        mtlBlend.Swap(new ColorBlendStateUid());
                     }
                     else if (mtlBlend.WriteMask == 0)
                     {
-                        mtlBlend = _currentState.StoredBlend[i];
+                        mtlBlend.Swap(_currentState.StoredBlend[i]);
                     }
                 }
 
@@ -535,7 +535,7 @@ namespace Ryujinx.Graphics.Metal
             {
                 _currentState.StoredBlend[index] = blendState;
 
-                blendState = new ColorBlendStateUid();
+                blendState.Swap(new ColorBlendStateUid());
             }
 
             _currentState.BlendColor = blend.BlendConstant;
