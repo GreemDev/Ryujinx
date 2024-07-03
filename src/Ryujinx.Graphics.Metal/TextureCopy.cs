@@ -3,10 +3,11 @@ using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.GAL;
 using SharpMetal.Metal;
 using System;
-using System.Numerics;
+using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
 {
+    [SupportedOSPlatform("macos")]
     static class TextureCopy
     {
         public static void Copy(

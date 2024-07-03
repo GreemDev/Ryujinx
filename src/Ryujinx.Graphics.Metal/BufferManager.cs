@@ -8,6 +8,7 @@ using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
 {
+    [SupportedOSPlatform("macos")]
     readonly struct ScopedTemporaryBuffer : IDisposable
     {
         private readonly BufferManager _bufferManager;
