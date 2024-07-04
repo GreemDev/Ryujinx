@@ -21,7 +21,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 IoVariable.BaseVertex => ("base_vertex", AggregateType.U32),
                 IoVariable.CtaId => ("threadgroup_position_in_grid", AggregateType.Vector3 | AggregateType.U32),
                 IoVariable.ClipDistance => ("clip_distance", AggregateType.Array | AggregateType.FP32),
-                IoVariable.FragmentOutputColor => ($"out.color{location}", AggregateType.Vector4 | AggregateType.FP32),
+                IoVariable.FragmentOutputColor => ($"out.color{location}", definitions.GetFragmentOutputColorType(location)),
                 IoVariable.FragmentOutputDepth => ("out.depth", AggregateType.FP32),
                 IoVariable.FrontFacing => ("in.front_facing", AggregateType.Bool),
                 IoVariable.GlobalId => ("thread_position_in_grid", AggregateType.Vector3 | AggregateType.U32),

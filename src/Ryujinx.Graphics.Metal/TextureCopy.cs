@@ -10,16 +10,61 @@ namespace Ryujinx.Graphics.Metal
     [SupportedOSPlatform("macos")]
     static class TextureCopy
     {
+        public static ulong CopyFromOrToBuffer(
+            CommandBufferScoped cbs,
+            MTLBuffer buffer,
+            MTLTexture image,
+            TextureCreateInfo info,
+            bool to,
+            int dstLayer,
+            int dstLevel,
+            int x,
+            int y,
+            int width,
+            int height,
+            ulong offset = 0)
+        {
+            MTLBlitCommandEncoder blitCommandEncoder = cbs.Encoders.EnsureBlitEncoder();
+
+            bool is3D = info.Target == Target.Texture3D;
+
+            int blockWidth = BitUtils.DivRoundUp(width, info.BlockWidth);
+            int blockHeight = BitUtils.DivRoundUp(height, info.BlockHeight);
+            ulong bytesPerRow = (ulong)BitUtils.AlignUp(blockWidth * info.BytesPerPixel, 4);
+            ulong bytesPerImage = bytesPerRow * (ulong)blockHeight;
+
+            MTLOrigin origin = new MTLOrigin { x = (ulong)x, y = (ulong)y, z = is3D ? (ulong)dstLayer : 0 };
+            MTLSize region = new MTLSize { width = (ulong)width, height = (ulong)height, depth = 1 };
+
+            uint layer = is3D ? 0 : (uint)dstLayer;
+
+            if (to)
+            {
+                blitCommandEncoder.CopyFromTexture(
+                    image,
+                    layer,
+                    (ulong)dstLevel,
+                    origin,
+                    region,
+                    buffer,
+                    offset,
+                    bytesPerRow,
+                    bytesPerImage);
+            }
+            else
+            {
+                blitCommandEncoder.CopyFromBuffer(buffer, offset, bytesPerRow, bytesPerImage, region, image, layer, (ulong)dstLevel, origin);
+            }
+
+            return offset + bytesPerImage;
+        }
+
         public static void Copy(
             CommandBufferScoped cbs,
             MTLTexture srcImage,
             MTLTexture dstImage,
             TextureCreateInfo srcInfo,
             TextureCreateInfo dstInfo,
-            int srcViewLayer,
-            int dstViewLayer,
-            int srcViewLevel,
-            int dstViewLevel,
             int srcLayer,
             int dstLayer,
             int srcLevel,
@@ -45,10 +90,6 @@ namespace Ryujinx.Graphics.Metal
                 dstImage,
                 srcInfo,
                 dstInfo,
-                srcViewLayer,
-                dstViewLayer,
-                srcViewLevel,
-                dstViewLevel,
                 srcLayer,
                 dstLayer,
                 srcLevel,
@@ -63,10 +104,6 @@ namespace Ryujinx.Graphics.Metal
             MTLTexture dstImage,
             TextureCreateInfo srcInfo,
             TextureCreateInfo dstInfo,
-            int srcViewLayer,
-            int dstViewLayer,
-            int srcViewLevel,
-            int dstViewLevel,
             int srcDepthOrLayer,
             int dstDepthOrLayer,
             int srcLevel,
@@ -129,6 +166,17 @@ namespace Ryujinx.Graphics.Metal
             int blockHeight = 1;
             bool sizeInBlocks = false;
 
+            MTLBuffer tempBuffer = default;
+
+            if (srcInfo.Format != dstInfo.Format && (srcInfo.IsCompressed || dstInfo.IsCompressed))
+            {
+                // Compressed alias copies need to happen through a temporary buffer.
+                // The data is copied from the source to the buffer, then the buffer to the destination.
+                // The length of the buffer should be the maximum slice size for the destination.
+
+                tempBuffer = blitCommandEncoder.Device.NewBuffer((ulong)dstInfo.GetMipSize2D(0), MTLResourceOptions.ResourceStorageModePrivate);
+            }
+
             // When copying from a compressed to a non-compressed format,
             // the non-compressed texture will have the size of the texture
             // in blocks (not in texels), so we must adjust that size to
@@ -168,7 +216,17 @@ namespace Ryujinx.Graphics.Metal
 
                 for (int layer = 0; layer < layers; layer++)
                 {
-                    if (srcInfo.Samples > 1 && srcInfo.Samples != dstInfo.Samples)
+                    if (tempBuffer.NativePtr != 0)
+                    {
+                        // Copy through the temp buffer
+                        CopyFromOrToBuffer(cbs, tempBuffer, srcImage, srcInfo, true, srcLayer + layer, srcLevel + level, 0, 0, copyWidth, copyHeight);
+
+                        int dstBufferWidth = sizeInBlocks ? copyWidth * blockWidth : BitUtils.DivRoundUp(copyWidth, blockWidth);
+                        int dstBufferHeight = sizeInBlocks ? copyHeight * blockHeight : BitUtils.DivRoundUp(copyHeight, blockHeight);
+
+                        CopyFromOrToBuffer(cbs, tempBuffer, dstImage, dstInfo, false, dstLayer + layer, dstLevel + level, 0, 0, dstBufferWidth, dstBufferHeight);
+                    }
+                    else if (srcInfo.Samples > 1 && srcInfo.Samples != dstInfo.Samples)
                     {
                         // TODO
                         
@@ -178,13 +236,13 @@ namespace Ryujinx.Graphics.Metal
                     {
                         blitCommandEncoder.CopyFromTexture(
                             srcImage,
-                            (ulong)(srcViewLevel + srcLevel + level),
-                            (ulong)(srcViewLayer + srcLayer + layer),
+                            (ulong)(srcLayer + layer),
+                            (ulong)(srcLevel + level),
                             new MTLOrigin { z = (ulong)srcZ },
                             new MTLSize { width = (ulong)copyWidth, height = (ulong)copyHeight, depth = (ulong)srcDepth },
                             dstImage,
-                            (ulong)(dstViewLevel + dstLevel + level),
-                            (ulong)(dstViewLayer + dstLayer + layer),
+                            (ulong)(dstLayer + layer),
+                            (ulong)(dstLevel + level),
                             new MTLOrigin { z = (ulong)dstZ });
                     }
                 }
@@ -196,6 +254,11 @@ namespace Ryujinx.Graphics.Metal
                 {
                     srcDepth = Math.Max(1, srcDepth >> 1);
                 }
+            }
+
+            if (tempBuffer.NativePtr != 0)
+            {
+                tempBuffer.Dispose();
             }
         }
     }
