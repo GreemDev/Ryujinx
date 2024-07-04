@@ -38,8 +38,10 @@ namespace Ryujinx.Graphics.Metal
             {
                 ShaderSource shader = shaders[index];
 
+                var compileOptions = new MTLCompileOptions { PreserveInvariance = true };
+
                 var libraryError = new NSError(IntPtr.Zero);
-                var shaderLibrary = device.NewLibrary(StringHelper.NSString(shader.Code), new MTLCompileOptions(IntPtr.Zero), ref libraryError);
+                var shaderLibrary = device.NewLibrary(StringHelper.NSString(shader.Code), compileOptions, ref libraryError);
                 if (libraryError != IntPtr.Zero)
                 {
                     Logger.Warning?.PrintMsg(LogClass.Gpu, shader.Code);
