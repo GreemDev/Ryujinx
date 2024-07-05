@@ -191,14 +191,14 @@ namespace Ryujinx.Graphics.Metal
             }
 
             if (cbs != null &&
-                _pipeline.RenderPassActive &&
+                cbs.Value.Encoders.CurrentEncoderType == EncoderType.Render &&
                 !(_buffer.HasCommandBufferDependency(cbs.Value) &&
                   _waitable.IsBufferRangeInUse(cbs.Value.CommandBufferIndex, offset, dataSize)))
             {
                 // If the buffer hasn't been used on the command buffer yet, try to preload the data.
                 // This avoids ending and beginning render passes on each buffer data upload.
 
-                cbs = _pipeline.PreloadCbs;
+                cbs = _pipeline.GetPreloadCommandBuffer();
             }
 
             if (allowCbsWait)

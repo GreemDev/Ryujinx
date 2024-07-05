@@ -36,7 +36,6 @@ namespace Ryujinx.Graphics.Metal
         internal CommandBufferScoped Cbs { get; private set; }
         internal CommandBufferEncoder Encoders => Cbs.Encoders;
         internal EncoderType CurrentEncoderType => Encoders.CurrentEncoderType;
-        internal bool RenderPassActive { get; private set; }
 
         public Pipeline(MTLDevice device, MetalRenderer renderer)
         {
@@ -137,13 +136,20 @@ namespace Ryujinx.Graphics.Metal
 
             Cbs.CommandBuffer.PresentDrawable(drawable);
 
-            CommandBuffer = (Cbs = _renderer.CommandBufferPool.ReturnAndRent(Cbs)).CommandBuffer;
+            FlushCommandsImpl();
 
             // TODO: Auto flush counting
             _renderer.SyncManager.GetAndResetWaitTicks();
 
             // Cleanup
             dst.Dispose();
+        }
+
+        public CommandBufferScoped GetPreloadCommandBuffer()
+        {
+            PreloadCbs ??= _renderer.CommandBufferPool.Rent();
+
+            return PreloadCbs.Value;
         }
 
         public void FlushCommandsIfWeightExceeding(IAuto disposedResource, ulong byteWeight)
@@ -383,12 +389,16 @@ namespace Ryujinx.Graphics.Metal
 
             var indexBuffer = _encoderStateManager.IndexBuffer;
 
+            ulong offset = _encoderStateManager.IndexBufferOffset;
+            MTLIndexType type = _encoderStateManager.IndexType;
+            int indexSize = type == MTLIndexType.UInt32 ? sizeof(int) : sizeof(short);
+
             renderCommandEncoder.DrawIndexedPrimitives(
                 primitiveType,
                 (ulong)indexCount,
-                _encoderStateManager.IndexType,
-                indexBuffer.Get(Cbs, 0, indexCount * sizeof(int)).Value,
-                _encoderStateManager.IndexBufferOffset,
+                type,
+                indexBuffer.Get(Cbs, (int)offset, indexCount * indexSize).Value,
+                offset,
                 (ulong)instanceCount,
                 firstVertex,
                 (ulong)firstInstance);
@@ -533,11 +543,13 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetPrimitiveRestart(bool enable, int index)
         {
-            // TODO: Supported for LineStrip and TriangleStrip
+            // Always active for LineStrip and TriangleStrip
             // https://github.com/gpuweb/gpuweb/issues/1220#issuecomment-732483263
             // https://developer.apple.com/documentation/metal/mtlrendercommandencoder/1515520-drawindexedprimitives
             // https://stackoverflow.com/questions/70813665/how-to-render-multiple-trianglestrips-using-metal
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+
+            // Emulating disabling this is very difficult. It's unlikely for an index buffer to use the largest possible index,
+            // so it's fine nearly all of the time.
         }
 
         public void SetPrimitiveTopology(PrimitiveTopology topology)
