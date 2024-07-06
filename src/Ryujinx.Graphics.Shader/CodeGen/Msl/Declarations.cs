@@ -11,7 +11,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
     static class Declarations
     {
         /*
-         * Description of MSL Binding Strategy
+         * Description of MSL Binding Model
          *
          * There are a few fundamental differences between how GLSL and MSL handle I/O.
          * This comment will set out to describe the reasons why things are done certain ways
@@ -19,24 +19,42 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
          *
          * Main I/O Structs
          *
-         * Each stage will have a main input and output struct labeled as [Stage][In/Out], i.e VertexIn.
-         * Every attribute within these structs will be labeled with an [[attribute(n)]] property,
-         * and the overall struct will be labeled with [[stage_in]] for input structs, and defined as the
+         * Each stage has a main input and output struct (if applicable) labeled as [Stage][In/Out], i.e VertexIn.
+         * Every field within these structs is labeled with an [[attribute(n)]] property,
+         * and the overall struct is labeled with [[stage_in]] for input structs, and defined as the
          * output type of the main shader function for the output struct. This struct also contains special
-         * attribute-based properties like [[position]], therefore these are not confined to 'user-defined' variables.
+         * attribute-based properties like [[position]] that would be "built-ins" in a GLSL context.
+         *
+         * These structs are passed as inputs to all inline functions due to containing "built-ins"
+         * that inline functions assume access to.
+         *
+         * Vertex & Zero Buffers
+         *
+         * Binding indices 0-16 are reserved for vertex buffers, and binding 18 is reserved for the zero buffer.
+         *
+         * Uniforms & Storage Buffers
+         *
+         * Uniforms and storage buffers are tightly packed into their respective argument buffers
+         * (effectively ignoring binding indices at shader level), with each pointer to the corresponding
+         * struct that defines the layout and fields of these buffers (usually just a single data array), laid
+         * out one after the other in ascending order of their binding index.
+         *
+         * The uniforms argument buffer is always bound at a fixed index of 20.
+         * The storage buffers argument buffer is always bound at a fixed index of 21.
+         *
+         * These structs are passed as inputs to all inline functions as in GLSL or SPIRV,
+         * uniforms and storage buffers would be globals, and inline functions assume access to these buffers.
          *
          * Samplers & Textures
          *
          * Metal does not have a combined image sampler like sampler2D in GLSL, as a result we need to bind
          * an individual texture and a sampler object for each instance of a combined image sampler.
-         * Therefore, the binding indices of straight up textures (i.e. without a sampler) must start
-         * after the last sampler/texture pair (n + Number of Pairs).
+         * Samplers and textures are bound in a shared argument buffer. This argument buffer is tightly packed
+         * (effectively ignoring binding indices at shader level), with texture and their samplers (if present)
+         * laid out one after the other in ascending order of their binding index.
          *
-         * Uniforms
+         * The samplers and textures argument buffer is always bound at a fixed index of 22.
          *
-         * MSL does not have a concept of uniforms comparable to that of GLSL. As a result, instead of
-         * being declared outside of any function body, uniforms are part of the function signature in MSL.
-         * This applies to anything bound to the shader not included in the main I/O structs.
          */
 
         public static void Declare(CodeGenContext context, StructuredProgramInfo info)
