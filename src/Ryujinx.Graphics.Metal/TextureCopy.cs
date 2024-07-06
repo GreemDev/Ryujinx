@@ -229,7 +229,7 @@ namespace Ryujinx.Graphics.Metal
                     else if (srcInfo.Samples > 1 && srcInfo.Samples != dstInfo.Samples)
                     {
                         // TODO
-                        
+
                         Logger.Warning?.PrintMsg(LogClass.Gpu, "Unsupported mismatching sample count copy");
                     }
                     else

@@ -839,7 +839,7 @@ namespace Ryujinx.Graphics.Metal
 
             if (_currentState.CullBoth && isTriangles)
             {
-                renderCommandEncoder.SetScissorRect(new MTLScissorRect { x = 0, y = 0, width = 0, height = 0});
+                renderCommandEncoder.SetScissorRect(new MTLScissorRect { x = 0, y = 0, width = 0, height = 0 });
             }
             else
             {

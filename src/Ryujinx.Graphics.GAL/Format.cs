@@ -344,7 +344,7 @@ namespace Ryujinx.Graphics.GAL
         /// </summary>
         /// <param name="format">Texture format</param>
         /// <returns>Byte size for an element of this format (pixel, vertex attribute, etc)</returns>
-        public static int GetBytesPerElement(this Format format) 
+        public static int GetBytesPerElement(this Format format)
         {
             int scalarSize = format.GetScalarSize();
 

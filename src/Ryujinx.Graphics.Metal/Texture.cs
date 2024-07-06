@@ -37,7 +37,7 @@ namespace Ryujinx.Graphics.Metal
             {
                 descriptor.ArrayLength = (ulong)Info.Depth;
             }
-            
+
             MTLTextureSwizzleChannels swizzle = GetSwizzle(info, descriptor.PixelFormat);
 
             _identitySwizzleHandle = _device.NewTexture(descriptor);
@@ -251,7 +251,8 @@ namespace Ryujinx.Graphics.Metal
             var dst = (Texture)destination;
             bool isDepthOrStencil = dst.Info.Format.IsDepthOrStencil();
 
-            if (dst.Info.IsCompressed) {
+            if (dst.Info.IsCompressed)
+            {
                 Console.WriteLine("shit");
             }
 
