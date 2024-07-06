@@ -59,7 +59,7 @@ namespace Ryujinx.Graphics.Metal
             _pipeline = pipeline;
             _buffers = new IdList<BufferHolder>();
 
-            StagingBuffer = new StagingBuffer(_renderer, _pipeline, this);
+            StagingBuffer = new StagingBuffer(_renderer, this);
         }
 
         public BufferHandle Create(nint pointer, int size)

@@ -8,14 +8,12 @@ namespace Ryujinx.Graphics.Metal
     internal class PersistentFlushBuffer : IDisposable
     {
         private readonly MetalRenderer _renderer;
-        private readonly Pipeline _pipeline;
 
         private BufferHolder _flushStorage;
 
-        public PersistentFlushBuffer(MetalRenderer renderer, Pipeline pipeline)
+        public PersistentFlushBuffer(MetalRenderer renderer)
         {
             _renderer = renderer;
-            _pipeline = pipeline;
         }
 
         private BufferHolder ResizeIfNeeded(int size)

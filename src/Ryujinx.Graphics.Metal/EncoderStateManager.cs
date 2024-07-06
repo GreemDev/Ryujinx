@@ -52,7 +52,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        public void Dispose()
+        public readonly void Dispose()
         {
             // State
 
@@ -79,7 +79,7 @@ namespace Ryujinx.Graphics.Metal
             };
         }
 
-        public void RestorePredrawState(PredrawState state)
+        public readonly void RestorePredrawState(PredrawState state)
         {
             _currentState.CullMode = state.CullMode;
             _currentState.DepthStencilUid = state.DepthStencilUid;
@@ -89,12 +89,12 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Dirty |= DirtyFlags.CullMode | DirtyFlags.DepthStencil | DirtyFlags.Viewports;
         }
 
-        public void SetClearLoadAction(bool clear)
+        public readonly void SetClearLoadAction(bool clear)
         {
             _currentState.ClearLoadAction = clear;
         }
 
-        public MTLRenderCommandEncoder CreateRenderCommandEncoder()
+        public readonly MTLRenderCommandEncoder CreateRenderCommandEncoder()
         {
             // Initialise Pass & State
             var renderPassDescriptor = new MTLRenderPassDescriptor();
@@ -161,7 +161,7 @@ namespace Ryujinx.Graphics.Metal
             return renderCommandEncoder;
         }
 
-        public MTLComputeCommandEncoder CreateComputeCommandEncoder()
+        public readonly MTLComputeCommandEncoder CreateComputeCommandEncoder()
         {
             var descriptor = new MTLComputePassDescriptor();
             var computeCommandEncoder = _pipeline.CommandBuffer.ComputeCommandEncoder(descriptor);
@@ -246,7 +246,7 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Dirty &= ~DirtyFlags.RenderAll;
         }
 
-        public void RebindComputeState(MTLComputeCommandEncoder computeCommandEncoder)
+        public readonly void RebindComputeState(MTLComputeCommandEncoder computeCommandEncoder)
         {
             if (_currentState.Dirty.HasFlag(DirtyFlags.ComputePipeline))
             {
@@ -276,7 +276,7 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Dirty &= ~DirtyFlags.ComputeAll;
         }
 
-        private void SetRenderPipelineState(MTLRenderCommandEncoder renderCommandEncoder)
+        private readonly void SetRenderPipelineState(MTLRenderCommandEncoder renderCommandEncoder)
         {
             MTLRenderPipelineState pipelineState = _currentState.Pipeline.CreateRenderPipeline(_device, _currentState.RenderProgram);
 
@@ -289,7 +289,7 @@ namespace Ryujinx.Graphics.Metal
                 _currentState.BlendColor.Alpha);
         }
 
-        private void SetComputePipelineState(MTLComputeCommandEncoder computeCommandEncoder)
+        private readonly void SetComputePipelineState(MTLComputeCommandEncoder computeCommandEncoder)
         {
             if (_currentState.ComputeProgram == null)
             {
@@ -301,7 +301,7 @@ namespace Ryujinx.Graphics.Metal
             computeCommandEncoder.SetComputePipelineState(pipelineState);
         }
 
-        public void UpdateIndexBuffer(BufferRange buffer, IndexType type)
+        public readonly void UpdateIndexBuffer(BufferRange buffer, IndexType type)
         {
             if (buffer.Handle != BufferHandle.Null)
             {
@@ -320,12 +320,12 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        public void UpdatePrimitiveTopology(PrimitiveTopology topology)
+        public readonly void UpdatePrimitiveTopology(PrimitiveTopology topology)
         {
             _currentState.Topology = topology;
         }
 
-        public void UpdateProgram(IProgram program)
+        public readonly void UpdateProgram(IProgram program)
         {
             Program prg = (Program)program;
 
@@ -356,13 +356,13 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        public void UpdateRenderTargets(ITexture[] colors, ITexture depthStencil)
+        public readonly void UpdateRenderTargets(ITexture[] colors, ITexture depthStencil)
         {
             _currentState.FramebufferUsingColorWriteMask = false;
             UpdateRenderTargetsInternal(colors, depthStencil);
         }
 
-        public void UpdateRenderTargetColorMasks(ReadOnlySpan<uint> componentMask)
+        public readonly void UpdateRenderTargetColorMasks(ReadOnlySpan<uint> componentMask)
         {
             ref var blendState = ref _currentState.Pipeline.Internal.ColorBlendState;
 
@@ -415,7 +415,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        private void UpdateRenderTargetsInternal(ITexture[] colors, ITexture depthStencil)
+        private readonly void UpdateRenderTargetsInternal(ITexture[] colors, ITexture depthStencil)
         {
             // TBDR GPUs don't work properly if the same attachment is bound to multiple targets,
             // due to each attachment being a copy of the real attachment, rather than a direct write.
@@ -496,7 +496,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        private void MaskOut(ITexture[] colors, ITexture depthStencil)
+        private readonly void MaskOut(ITexture[] colors, ITexture depthStencil)
         {
             if (!_currentState.FramebufferUsingColorWriteMask)
             {
@@ -508,7 +508,7 @@ namespace Ryujinx.Graphics.Metal
             _currentState.FramebufferUsingColorWriteMask = true;
         }
 
-        public void UpdateVertexAttribs(ReadOnlySpan<VertexAttribDescriptor> vertexAttribs)
+        public readonly void UpdateVertexAttribs(ReadOnlySpan<VertexAttribDescriptor> vertexAttribs)
         {
             vertexAttribs.CopyTo(_currentState.VertexAttribs);
 
@@ -519,7 +519,7 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Dirty |= DirtyFlags.RenderPipeline;
         }
 
-        public void UpdateBlendDescriptors(int index, BlendDescriptor blend)
+        public readonly void UpdateBlendDescriptors(int index, BlendDescriptor blend)
         {
             ref var blendState = ref _currentState.Pipeline.Internal.ColorBlendState[index];
 
@@ -577,7 +577,7 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Dirty |= DirtyFlags.DepthStencil;
         }
 
-        public void UpdateDepthState(DepthTestDescriptor depthTest)
+        public readonly void UpdateDepthState(DepthTestDescriptor depthTest)
         {
             ref DepthStencilUid uid = ref _currentState.DepthStencilUid;
 
@@ -589,7 +589,7 @@ namespace Ryujinx.Graphics.Metal
         }
 
         // Inlineable
-        public void UpdateDepthClamp(bool clamp)
+        public readonly void UpdateDepthClamp(bool clamp)
         {
             _currentState.DepthClipMode = clamp ? MTLDepthClipMode.Clamp : MTLDepthClipMode.Clip;
 
@@ -605,7 +605,7 @@ namespace Ryujinx.Graphics.Metal
         }
 
         // Inlineable
-        public void UpdateDepthBias(float depthBias, float slopeScale, float clamp)
+        public readonly void UpdateDepthBias(float depthBias, float slopeScale, float clamp)
         {
             _currentState.DepthBias = depthBias;
             _currentState.SlopeScale = slopeScale;
@@ -683,7 +683,7 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Dirty |= DirtyFlags.Viewports;
         }
 
-        public void UpdateVertexBuffers(ReadOnlySpan<VertexBufferDescriptor> vertexBuffers)
+        public readonly void UpdateVertexBuffers(ReadOnlySpan<VertexBufferDescriptor> vertexBuffers)
         {
             vertexBuffers.CopyTo(_currentState.VertexBuffers);
 
@@ -694,7 +694,7 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Dirty |= DirtyFlags.RenderPipeline;
         }
 
-        public void UpdateUniformBuffers(ReadOnlySpan<BufferAssignment> buffers)
+        public readonly void UpdateUniformBuffers(ReadOnlySpan<BufferAssignment> buffers)
         {
             foreach (BufferAssignment assignment in buffers)
             {
@@ -711,7 +711,7 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Dirty |= DirtyFlags.Uniforms;
         }
 
-        public void UpdateStorageBuffers(ReadOnlySpan<BufferAssignment> buffers)
+        public readonly void UpdateStorageBuffers(ReadOnlySpan<BufferAssignment> buffers)
         {
             foreach (BufferAssignment assignment in buffers)
             {
@@ -728,7 +728,7 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Dirty |= DirtyFlags.Storages;
         }
 
-        public void UpdateStorageBuffers(int first, ReadOnlySpan<Auto<DisposableBuffer>> buffers)
+        public readonly void UpdateStorageBuffers(int first, ReadOnlySpan<Auto<DisposableBuffer>> buffers)
         {
             for (int i = 0; i < buffers.Length; i++)
             {
@@ -767,7 +767,7 @@ namespace Ryujinx.Graphics.Metal
         }
 
         // Inlineable
-        public void UpdateFrontFace(FrontFace frontFace)
+        public readonly void UpdateFrontFace(FrontFace frontFace)
         {
             _currentState.Winding = frontFace.Convert();
 
@@ -782,7 +782,7 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Dirty |= DirtyFlags.FrontFace;
         }
 
-        private void UpdateStencilRefValue(int frontRef, int backRef)
+        private readonly void UpdateStencilRefValue(int frontRef, int backRef)
         {
             _currentState.FrontRefValue = frontRef;
             _currentState.BackRefValue = backRef;
@@ -797,9 +797,9 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Dirty |= DirtyFlags.StencilRef;
         }
 
-        public void UpdateTextureAndSampler(ShaderStage stage, ulong binding, TextureBase texture, Sampler sampler)
+        public readonly void UpdateTextureAndSampler(ShaderStage stage, ulong binding, TextureBase texture, Sampler sampler)
         {
-            if (texture is TextureBuffer textureBuffer)
+            if (texture is TextureBuffer)
             {
                 // TODO: Texture buffers
             }
@@ -853,7 +853,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        private unsafe void SetViewports(MTLRenderCommandEncoder renderCommandEncoder)
+        private readonly unsafe void SetViewports(MTLRenderCommandEncoder renderCommandEncoder)
         {
             if (_currentState.Viewports.Length > 0)
             {
@@ -864,7 +864,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        private void UpdatePipelineVertexState(VertexBufferDescriptor[] bufferDescriptors, VertexAttribDescriptor[] attribDescriptors)
+        private readonly void UpdatePipelineVertexState(VertexBufferDescriptor[] bufferDescriptors, VertexAttribDescriptor[] attribDescriptors)
         {
             ref PipelineState pipeline = ref _currentState.Pipeline;
             uint indexMask = 0;
@@ -941,7 +941,7 @@ namespace Ryujinx.Graphics.Metal
             pipeline.VertexBindingDescriptionsCount = Constants.ZeroBufferIndex + 1; // TODO: move this out?
         }
 
-        private void SetVertexBuffers(MTLRenderCommandEncoder renderCommandEncoder, VertexBufferDescriptor[] bufferDescriptors)
+        private readonly void SetVertexBuffers(MTLRenderCommandEncoder renderCommandEncoder, VertexBufferDescriptor[] bufferDescriptors)
         {
             for (int i = 0; i < bufferDescriptors.Length; i++)
             {
@@ -974,7 +974,7 @@ namespace Ryujinx.Graphics.Metal
             renderCommandEncoder.SetVertexBuffer(zeroMtlBuffer, 0, Constants.ZeroBufferIndex);
         }
 
-        private void UpdateAndBind(MTLRenderCommandEncoder renderCommandEncoder, Program program, int setIndex)
+        private readonly void UpdateAndBind(MTLRenderCommandEncoder renderCommandEncoder, Program program, int setIndex)
         {
             var bindingSegments = program.BindingSegments[setIndex];
 
@@ -1193,7 +1193,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        private void UpdateAndBind(MTLComputeCommandEncoder computeCommandEncoder, Program program, int setIndex)
+        private readonly void UpdateAndBind(MTLComputeCommandEncoder computeCommandEncoder, Program program, int setIndex)
         {
             var bindingSegments = program.BindingSegments[setIndex];
 

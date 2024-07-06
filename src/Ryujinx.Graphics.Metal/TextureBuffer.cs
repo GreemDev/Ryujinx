@@ -37,23 +37,23 @@ namespace Ryujinx.Graphics.Metal
             // Find the parent buffer, and try to build a texture from it.
 
             // TODO: texture uses should register read/write usage on the assigned buffer.
-            Auto<DisposableBuffer> bufferAuto = _renderer.BufferManager.GetBuffer(_bufferHandle, false);
+            Auto<DisposableBuffer> bufferAuto = Renderer.BufferManager.GetBuffer(_bufferHandle, false);
 
-            if (_mtlTexture.NativePtr != 0)
+            if (MtlTexture.NativePtr != 0)
             {
-                _mtlTexture.Dispose();
+                MtlTexture.Dispose();
             }
 
             if (bufferAuto == null)
             {
-                _mtlTexture = default;
+                MtlTexture = default;
             }
             else
             {
-                DisposableBuffer buffer = bufferAuto.Get(_pipeline.Cbs, _offset, _size);
+                DisposableBuffer buffer = bufferAuto.Get(Pipeline.Cbs, _offset, _size);
 
                 _descriptor.Width = (uint)(_size / Info.BytesPerPixel);
-                _mtlTexture = buffer.Value.NewTexture(_descriptor, (ulong)_offset, (ulong)_size);
+                MtlTexture = buffer.Value.NewTexture(_descriptor, (ulong)_offset, (ulong)_size);
             }
         }
 
@@ -79,7 +79,7 @@ namespace Ryujinx.Graphics.Metal
 
         public PinnedSpan<byte> GetData()
         {
-            return _renderer.GetBufferData(_bufferHandle, _offset, _size);
+            return Renderer.GetBufferData(_bufferHandle, _offset, _size);
         }
 
         public PinnedSpan<byte> GetData(int layer, int level)
@@ -94,7 +94,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetData(IMemoryOwner<byte> data)
         {
-            _renderer.SetBufferData(_bufferHandle, _offset, data.Memory.Span);
+            Renderer.SetBufferData(_bufferHandle, _offset, data.Memory.Span);
             data.Dispose();
         }
 
@@ -113,7 +113,7 @@ namespace Ryujinx.Graphics.Metal
             if (_bufferHandle == buffer.Handle &&
                 _offset == buffer.Offset &&
                 _size == buffer.Size &&
-                _bufferCount == _renderer.BufferManager.BufferCount)
+                _bufferCount == Renderer.BufferManager.BufferCount)
             {
                 return;
             }
@@ -121,7 +121,7 @@ namespace Ryujinx.Graphics.Metal
             _bufferHandle = buffer.Handle;
             _offset = buffer.Offset;
             _size = buffer.Size;
-            _bufferCount = _renderer.BufferManager.BufferCount;
+            _bufferCount = Renderer.BufferManager.BufferCount;
 
             RebuildStorage();
         }

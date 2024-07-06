@@ -12,7 +12,7 @@ namespace Ryujinx.Graphics.Metal
     class Texture : TextureBase, ITexture
     {
         private MTLTexture _identitySwizzleHandle;
-        private bool _identityIsDifferent;
+        private readonly bool _identityIsDifferent;
 
         public Texture(MTLDevice device, MetalRenderer renderer, Pipeline pipeline, TextureCreateInfo info) : base(device, renderer, pipeline, info)
         {
@@ -40,15 +40,15 @@ namespace Ryujinx.Graphics.Metal
 
             MTLTextureSwizzleChannels swizzle = GetSwizzle(info, descriptor.PixelFormat);
 
-            _identitySwizzleHandle = _device.NewTexture(descriptor);
+            _identitySwizzleHandle = Device.NewTexture(descriptor);
 
             if (SwizzleIsIdentity(swizzle))
             {
-                _mtlTexture = _identitySwizzleHandle;
+                MtlTexture = _identitySwizzleHandle;
             }
             else
             {
-                _mtlTexture = CreateDefaultView(_identitySwizzleHandle, swizzle, descriptor);
+                MtlTexture = CreateDefaultView(_identitySwizzleHandle, swizzle, descriptor);
                 _identityIsDifferent = true;
             }
 
@@ -73,11 +73,11 @@ namespace Ryujinx.Graphics.Metal
 
             if (SwizzleIsIdentity(swizzle))
             {
-                _mtlTexture = _identitySwizzleHandle;
+                MtlTexture = _identitySwizzleHandle;
             }
             else
             {
-                _mtlTexture = sourceTexture.NewTextureView(pixelFormat, textureType, levels, slices, swizzle);
+                MtlTexture = sourceTexture.NewTextureView(pixelFormat, textureType, levels, slices, swizzle);
                 _identityIsDifferent = true;
             }
 
@@ -146,7 +146,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void CopyTo(ITexture destination, int firstLayer, int firstLevel)
         {
-            CommandBufferScoped cbs = _pipeline.Cbs;
+            CommandBufferScoped cbs = Pipeline.Cbs;
 
             TextureBase src = this;
             TextureBase dst = (TextureBase)destination;
@@ -156,30 +156,30 @@ namespace Ryujinx.Graphics.Metal
 
             if (!dst.Info.Target.IsMultisample() && Info.Target.IsMultisample())
             {
-                //int layers = Math.Min(Info.GetLayers(), dst.Info.GetLayers() - firstLayer);
+                // int layers = Math.Min(Info.GetLayers(), dst.Info.GetLayers() - firstLayer);
 
-                //_gd.HelperShader.CopyMSToNonMS(_gd, cbs, src, dst, 0, firstLayer, layers);
+                // _gd.HelperShader.CopyMSToNonMS(_gd, cbs, src, dst, 0, firstLayer, layers);
             }
             else if (dst.Info.Target.IsMultisample() && !Info.Target.IsMultisample())
             {
-                //int layers = Math.Min(Info.GetLayers(), dst.Info.GetLayers() - firstLayer);
+                // int layers = Math.Min(Info.GetLayers(), dst.Info.GetLayers() - firstLayer);
 
-                //_gd.HelperShader.CopyNonMSToMS(_gd, cbs, src, dst, 0, firstLayer, layers);
+                // _gd.HelperShader.CopyNonMSToMS(_gd, cbs, src, dst, 0, firstLayer, layers);
             }
             else if (dst.Info.BytesPerPixel != Info.BytesPerPixel)
             {
-                //int layers = Math.Min(Info.GetLayers(), dst.Info.GetLayers() - firstLayer);
-                //int levels = Math.Min(Info.Levels, dst.Info.Levels - firstLevel);
+                // int layers = Math.Min(Info.GetLayers(), dst.Info.GetLayers() - firstLayer);
+                // int levels = Math.Min(Info.Levels, dst.Info.Levels - firstLevel);
 
-                //_gd.HelperShader.CopyIncompatibleFormats(_gd, cbs, src, dst, 0, firstLayer, 0, firstLevel, layers, levels);
+                // _gd.HelperShader.CopyIncompatibleFormats(_gd, cbs, src, dst, 0, firstLayer, 0, firstLevel, layers, levels);
             }
             else if (src.Info.Format.IsDepthOrStencil() != dst.Info.Format.IsDepthOrStencil())
             {
-                int layers = Math.Min(Info.GetLayers(), dst.Info.GetLayers() - firstLayer);
-                int levels = Math.Min(Info.Levels, dst.Info.Levels - firstLevel);
+                // int layers = Math.Min(Info.GetLayers(), dst.Info.GetLayers() - firstLayer);
+                // int levels = Math.Min(Info.Levels, dst.Info.Levels - firstLevel);
 
                 // TODO: depth copy?
-                //_gd.HelperShader.CopyColor(_gd, cbs, src, dst, 0, firstLayer, 0, FirstLevel, layers, levels);
+                // _gd.HelperShader.CopyColor(_gd, cbs, src, dst, 0, firstLayer, 0, FirstLevel, layers, levels);
             }
             else
             {
@@ -198,7 +198,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void CopyTo(ITexture destination, int srcLayer, int dstLayer, int srcLevel, int dstLevel)
         {
-            CommandBufferScoped cbs = _pipeline.Cbs;
+            CommandBufferScoped cbs = Pipeline.Cbs;
 
             TextureBase src = this;
             TextureBase dst = (TextureBase)destination;
@@ -208,19 +208,19 @@ namespace Ryujinx.Graphics.Metal
 
             if (!dst.Info.Target.IsMultisample() && Info.Target.IsMultisample())
             {
-                //_gd.HelperShader.CopyMSToNonMS(_gd, cbs, src, dst, srcLayer, dstLayer, 1);
+                // _gd.HelperShader.CopyMSToNonMS(_gd, cbs, src, dst, srcLayer, dstLayer, 1);
             }
             else if (dst.Info.Target.IsMultisample() && !Info.Target.IsMultisample())
             {
-                //_gd.HelperShader.CopyNonMSToMS(_gd, cbs, src, dst, srcLayer, dstLayer, 1);
+                // _gd.HelperShader.CopyNonMSToMS(_gd, cbs, src, dst, srcLayer, dstLayer, 1);
             }
             else if (dst.Info.BytesPerPixel != Info.BytesPerPixel)
             {
-                //_gd.HelperShader.CopyIncompatibleFormats(_gd, cbs, src, dst, srcLayer, dstLayer, srcLevel, dstLevel, 1, 1);
+                // _gd.HelperShader.CopyIncompatibleFormats(_gd, cbs, src, dst, srcLayer, dstLayer, srcLevel, dstLevel, 1, 1);
             }
             else if (src.Info.Format.IsDepthOrStencil() != dst.Info.Format.IsDepthOrStencil())
             {
-                //_gd.HelperShader.CopyColor(_gd, cbs, src, dst, srcLayer, dstLayer, srcLevel, dstLevel, 1, 1);
+                // _gd.HelperShader.CopyColor(_gd, cbs, src, dst, srcLayer, dstLayer, srcLevel, dstLevel, 1, 1);
             }
             else
             {
@@ -241,7 +241,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void CopyTo(ITexture destination, Extents2D srcRegion, Extents2D dstRegion, bool linearFilter)
         {
-            if (!_renderer.CommandBufferPool.OwnedByCurrentThread)
+            if (!Renderer.CommandBufferPool.OwnedByCurrentThread)
             {
                 Logger.Warning?.PrintMsg(LogClass.Gpu, "Metal doesn't currently support scaled blit on background thread.");
 
@@ -256,29 +256,29 @@ namespace Ryujinx.Graphics.Metal
                 Console.WriteLine("shit");
             }
 
-            _pipeline.Blit(this, destination, srcRegion, dstRegion, isDepthOrStencil, linearFilter);
+            Pipeline.Blit(this, destination, srcRegion, dstRegion, isDepthOrStencil, linearFilter);
         }
 
         public void CopyTo(BufferRange range, int layer, int level, int stride)
         {
-            var cbs = _pipeline.Cbs;
+            var cbs = Pipeline.Cbs;
 
             int outSize = Info.GetMipSize(level);
             int hostSize = GetBufferDataLength(outSize);
 
             int offset = range.Offset;
 
-            var autoBuffer = _renderer.BufferManager.GetBuffer(range.Handle, true);
+            var autoBuffer = Renderer.BufferManager.GetBuffer(range.Handle, true);
             var mtlBuffer = autoBuffer.Get(cbs, range.Offset, outSize).Value;
 
             // TODO: D32S8 conversion via temp copy holder
 
-            CopyFromOrToBuffer(cbs, mtlBuffer, _mtlTexture, hostSize, true, layer, level, 1, 1, singleSlice: true, offset: offset, stride: stride);
+            CopyFromOrToBuffer(cbs, mtlBuffer, MtlTexture, hostSize, true, layer, level, 1, 1, singleSlice: true, offset: offset, stride: stride);
         }
 
         public ITexture CreateView(TextureCreateInfo info, int firstLayer, int firstLevel)
         {
-            return new Texture(_device, _renderer, _pipeline, info, _identitySwizzleHandle, firstLayer, firstLevel);
+            return new Texture(Device, Renderer, Pipeline, info, _identitySwizzleHandle, firstLayer, firstLevel);
         }
 
         private int GetBufferDataLength(int size)
@@ -415,13 +415,13 @@ namespace Ryujinx.Graphics.Metal
 
         public PinnedSpan<byte> GetData()
         {
-            BackgroundResource resources = _renderer.BackgroundResources.Get();
+            BackgroundResource resources = Renderer.BackgroundResources.Get();
 
-            if (_renderer.CommandBufferPool.OwnedByCurrentThread)
+            if (Renderer.CommandBufferPool.OwnedByCurrentThread)
             {
-                _renderer.FlushAllCommands();
+                Renderer.FlushAllCommands();
 
-                return PinnedSpan<byte>.UnsafeFromSpan(GetData(_renderer.CommandBufferPool, resources.GetFlushBuffer()));
+                return PinnedSpan<byte>.UnsafeFromSpan(GetData(Renderer.CommandBufferPool, resources.GetFlushBuffer()));
             }
 
             return PinnedSpan<byte>.UnsafeFromSpan(GetData(resources.GetPool(), resources.GetFlushBuffer()));
@@ -429,13 +429,13 @@ namespace Ryujinx.Graphics.Metal
 
         public PinnedSpan<byte> GetData(int layer, int level)
         {
-            BackgroundResource resources = _renderer.BackgroundResources.Get();
+            BackgroundResource resources = Renderer.BackgroundResources.Get();
 
-            if (_renderer.CommandBufferPool.OwnedByCurrentThread)
+            if (Renderer.CommandBufferPool.OwnedByCurrentThread)
             {
-                _renderer.FlushAllCommands();
+                Renderer.FlushAllCommands();
 
-                return PinnedSpan<byte>.UnsafeFromSpan(GetData(_renderer.CommandBufferPool, resources.GetFlushBuffer(), layer, level));
+                return PinnedSpan<byte>.UnsafeFromSpan(GetData(Renderer.CommandBufferPool, resources.GetFlushBuffer(), layer, level));
             }
 
             return PinnedSpan<byte>.UnsafeFromSpan(GetData(resources.GetPool(), resources.GetFlushBuffer(), layer, level));
@@ -443,13 +443,13 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetData(IMemoryOwner<byte> data)
         {
-            var blitCommandEncoder = _pipeline.GetOrCreateBlitEncoder();
+            var blitCommandEncoder = Pipeline.GetOrCreateBlitEncoder();
 
             var dataSpan = data.Memory.Span;
 
-            var buffer = _renderer.BufferManager.Create(dataSpan.Length);
+            var buffer = Renderer.BufferManager.Create(dataSpan.Length);
             buffer.SetDataUnchecked(0, dataSpan);
-            var mtlBuffer = buffer.GetBuffer(false).Get(_pipeline.Cbs).Value;
+            var mtlBuffer = buffer.GetBuffer(false).Get(Pipeline.Cbs).Value;
 
             int width = Info.Width;
             int height = Info.Height;
@@ -478,7 +478,7 @@ namespace Ryujinx.Graphics.Metal
                         (ulong)Info.GetMipStride(level),
                         (ulong)mipSize,
                         new MTLSize { width = (ulong)width, height = (ulong)height, depth = is3D ? (ulong)depth : 1 },
-                        _mtlTexture,
+                        MtlTexture,
                         (ulong)layer,
                         (ulong)level,
                         new MTLOrigin()
@@ -504,11 +504,11 @@ namespace Ryujinx.Graphics.Metal
         {
             int bufferDataLength = GetBufferDataLength(data.Length);
 
-            using var bufferHolder = _renderer.BufferManager.Create(bufferDataLength);
+            using var bufferHolder = Renderer.BufferManager.Create(bufferDataLength);
 
             // TODO: loadInline logic
 
-            var cbs = _pipeline.Cbs;
+            var cbs = Pipeline.Cbs;
 
             CopyDataToBuffer(bufferHolder.GetDataStorage(0, bufferDataLength), data);
 
@@ -527,20 +527,20 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetData(IMemoryOwner<byte> data, int layer, int level, Rectangle<int> region)
         {
-            var blitCommandEncoder = _pipeline.GetOrCreateBlitEncoder();
+            var blitCommandEncoder = Pipeline.GetOrCreateBlitEncoder();
 
             ulong bytesPerRow = (ulong)Info.GetMipStride(level);
             ulong bytesPerImage = 0;
-            if (_mtlTexture.TextureType == MTLTextureType.Type3D)
+            if (MtlTexture.TextureType == MTLTextureType.Type3D)
             {
                 bytesPerImage = bytesPerRow * (ulong)Info.Height;
             }
 
             var dataSpan = data.Memory.Span;
 
-            var buffer = _renderer.BufferManager.Create(dataSpan.Length);
+            var buffer = Renderer.BufferManager.Create(dataSpan.Length);
             buffer.SetDataUnchecked(0, dataSpan);
-            var mtlBuffer = buffer.GetBuffer(false).Get(_pipeline.Cbs).Value;
+            var mtlBuffer = buffer.GetBuffer(false).Get(Pipeline.Cbs).Value;
 
             blitCommandEncoder.CopyFromBuffer(
                 mtlBuffer,
@@ -548,7 +548,7 @@ namespace Ryujinx.Graphics.Metal
                 bytesPerRow,
                 bytesPerImage,
                 new MTLSize { width = (ulong)region.Width, height = (ulong)region.Height, depth = 1 },
-                _mtlTexture,
+                MtlTexture,
                 (ulong)layer,
                 (ulong)level,
                 new MTLOrigin { x = (ulong)region.X, y = (ulong)region.Y }

@@ -10,14 +10,13 @@ namespace Ryujinx.Graphics.Metal
     {
         private bool _disposed;
 
-        protected readonly TextureCreateInfo _info;
-        protected readonly Pipeline _pipeline;
-        protected readonly MTLDevice _device;
-        protected readonly MetalRenderer _renderer;
+        protected readonly Pipeline Pipeline;
+        protected readonly MTLDevice Device;
+        protected readonly MetalRenderer Renderer;
 
-        protected MTLTexture _mtlTexture;
+        protected MTLTexture MtlTexture;
 
-        public TextureCreateInfo Info => _info;
+        public readonly TextureCreateInfo Info;
         public int Width => Info.Width;
         public int Height => Info.Height;
         public int Depth => Info.Depth;
@@ -28,10 +27,10 @@ namespace Ryujinx.Graphics.Metal
 
         public TextureBase(MTLDevice device, MetalRenderer renderer, Pipeline pipeline, TextureCreateInfo info)
         {
-            _device = device;
-            _renderer = renderer;
-            _pipeline = pipeline;
-            _info = info;
+            Device = device;
+            Renderer = renderer;
+            Pipeline = pipeline;
+            Info = info;
         }
 
         public MTLTexture GetHandle()
@@ -41,7 +40,7 @@ namespace Ryujinx.Graphics.Metal
                 return new MTLTexture(IntPtr.Zero);
             }
 
-            return _mtlTexture;
+            return MtlTexture;
         }
 
         public virtual void Release()
@@ -51,9 +50,9 @@ namespace Ryujinx.Graphics.Metal
 
         public void Dispose()
         {
-            if (_mtlTexture != IntPtr.Zero)
+            if (MtlTexture != IntPtr.Zero)
             {
-                _mtlTexture.Dispose();
+                MtlTexture.Dispose();
             }
             _disposed = true;
         }

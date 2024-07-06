@@ -10,15 +10,13 @@ namespace Ryujinx.Graphics.Metal
     class BackgroundResource : IDisposable
     {
         private readonly MetalRenderer _renderer;
-        private readonly Pipeline _pipeline;
 
         private CommandBufferPool _pool;
         private PersistentFlushBuffer _flushBuffer;
 
-        public BackgroundResource(MetalRenderer renderer, Pipeline pipeline)
+        public BackgroundResource(MetalRenderer renderer)
         {
             _renderer = renderer;
-            _pipeline = pipeline;
         }
 
         public CommandBufferPool GetPool()
@@ -35,7 +33,7 @@ namespace Ryujinx.Graphics.Metal
 
         public PersistentFlushBuffer GetFlushBuffer()
         {
-            _flushBuffer ??= new PersistentFlushBuffer(_renderer, _pipeline);
+            _flushBuffer ??= new PersistentFlushBuffer(_renderer);
 
             return _flushBuffer;
         }
@@ -51,14 +49,12 @@ namespace Ryujinx.Graphics.Metal
     class BackgroundResources : IDisposable
     {
         private readonly MetalRenderer _renderer;
-        private readonly Pipeline _pipeline;
 
         private readonly Dictionary<Thread, BackgroundResource> _resources;
 
-        public BackgroundResources(MetalRenderer renderer, Pipeline pipeline)
+        public BackgroundResources(MetalRenderer renderer)
         {
             _renderer = renderer;
-            _pipeline = pipeline;
 
             _resources = new Dictionary<Thread, BackgroundResource>();
         }
@@ -88,7 +84,7 @@ namespace Ryujinx.Graphics.Metal
                 {
                     Cleanup();
 
-                    resource = new BackgroundResource(_renderer, _pipeline);
+                    resource = new BackgroundResource(_renderer);
 
                     _resources[thread] = resource;
                 }

@@ -31,7 +31,6 @@ namespace Ryujinx.Graphics.Metal
         private int _freeSize;
 
         private readonly MetalRenderer _renderer;
-        private readonly Pipeline _pipeline;
         private readonly BufferHolder _buffer;
         private readonly int _resourceAlignment;
 
@@ -52,10 +51,9 @@ namespace Ryujinx.Graphics.Metal
 
         private readonly Queue<PendingCopy> _pendingCopies;
 
-        public StagingBuffer(MetalRenderer renderer, Pipeline pipeline, BufferManager bufferManager)
+        public StagingBuffer(MetalRenderer renderer, BufferManager bufferManager)
         {
             _renderer = renderer;
-            _pipeline = pipeline;
 
             Handle = bufferManager.CreateWithHandle(BufferSize, out _buffer);
             _pendingCopies = new Queue<PendingCopy>();
