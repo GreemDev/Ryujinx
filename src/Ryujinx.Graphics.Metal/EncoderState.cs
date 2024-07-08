@@ -122,7 +122,7 @@ namespace Ryujinx.Graphics.Metal
         public Array8<ColorBlendStateUid> StoredBlend;
         public ColorF BlendColor = new();
 
-        public readonly VertexBufferDescriptor[] VertexBuffers = new VertexBufferDescriptor[Constants.MaxVertexBuffers];
+        public readonly VertexBufferState[] VertexBuffers = new VertexBufferState[Constants.MaxVertexBuffers];
         public readonly VertexAttribDescriptor[] VertexAttribs = new VertexAttribDescriptor[Constants.MaxVertexAttributes];
         // Dirty flags
         public DirtyFlags Dirty = DirtyFlags.None;

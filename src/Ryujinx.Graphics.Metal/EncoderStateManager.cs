@@ -52,8 +52,6 @@ namespace Ryujinx.Graphics.Metal
 
         public readonly void Dispose()
         {
-            // State
-
             _depthStencilCache.Dispose();
         }
 
@@ -676,7 +674,24 @@ namespace Ryujinx.Graphics.Metal
 
         public readonly void UpdateVertexBuffers(ReadOnlySpan<VertexBufferDescriptor> vertexBuffers)
         {
-            vertexBuffers.CopyTo(_currentState.VertexBuffers);
+            for (int i = 0; i < Constants.MaxVertexBuffers; i++)
+            {
+                if (i < vertexBuffers.Length)
+                {
+                    var vertexBuffer = vertexBuffers[i];
+
+                    _currentState.VertexBuffers[i] = new VertexBufferState(
+                        vertexBuffer.Buffer.Handle,
+                        vertexBuffer.Buffer.Offset,
+                        vertexBuffer.Buffer.Size,
+                        vertexBuffer.Divisor,
+                        vertexBuffer.Stride);
+                }
+                else
+                {
+                    _currentState.VertexBuffers[i] = VertexBufferState.Null;
+                }
+            }
 
             // Update the buffers on the pipeline
             UpdatePipelineVertexState(_currentState.VertexBuffers, _currentState.VertexAttribs);
@@ -855,7 +870,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        private readonly void UpdatePipelineVertexState(VertexBufferDescriptor[] bufferDescriptors, VertexAttribDescriptor[] attribDescriptors)
+        private readonly void UpdatePipelineVertexState(VertexBufferState[] bufferDescriptors, VertexAttribDescriptor[] attribDescriptors)
         {
             ref PipelineState pipeline = ref _currentState.Pipeline;
             uint indexMask = 0;
@@ -932,24 +947,16 @@ namespace Ryujinx.Graphics.Metal
             pipeline.VertexBindingDescriptionsCount = Constants.ZeroBufferIndex + 1; // TODO: move this out?
         }
 
-        private readonly void SetVertexBuffers(MTLRenderCommandEncoder renderCommandEncoder, VertexBufferDescriptor[] bufferDescriptors)
+        private readonly void SetVertexBuffers(MTLRenderCommandEncoder renderCommandEncoder, VertexBufferState[] bufferStates)
         {
-            for (int i = 0; i < bufferDescriptors.Length; i++)
+            for (int i = 0; i < bufferStates.Length; i++)
             {
-                Auto<DisposableBuffer> autoBuffer = bufferDescriptors[i].Buffer.Handle == BufferHandle.Null
-                    ? null
-                    : _bufferManager.GetBuffer(bufferDescriptors[i].Buffer.Handle, bufferDescriptors[i].Buffer.Write);
+                (MTLBuffer mtlBuffer, int offset) = bufferStates[i].GetVertexBuffer(_bufferManager, _pipeline.Cbs);
 
-                var range = bufferDescriptors[i].Buffer;
-                var offset = range.Offset;
-
-                if (autoBuffer == null)
+                if (mtlBuffer.NativePtr != IntPtr.Zero)
                 {
-                    continue;
+                    renderCommandEncoder.SetVertexBuffer(mtlBuffer, (ulong)offset, (ulong)i);
                 }
-
-                var mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Size, range.Write).Value;
-                renderCommandEncoder.SetVertexBuffer(mtlBuffer, (ulong)offset, (ulong)i);
             }
 
             Auto<DisposableBuffer> autoZeroBuffer = _zeroBuffer == BufferHandle.Null
