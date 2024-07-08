@@ -93,9 +93,7 @@ namespace Ryujinx.Graphics.Metal
         public readonly BufferRef[] StorageBufferRefs = new BufferRef[Constants.MaxStorageBufferBindings];
         public readonly TextureRef[] TextureRefs = new TextureRef[Constants.MaxTextureBindings];
 
-        public Auto<DisposableBuffer> IndexBuffer = default;
-        public MTLIndexType IndexType = MTLIndexType.UInt16;
-        public ulong IndexBufferOffset = 0;
+        public IndexBufferState IndexBuffer = default;
 
         public MTLDepthClipMode DepthClipMode = MTLDepthClipMode.Clip;
 
@@ -115,7 +113,7 @@ namespace Ryujinx.Graphics.Metal
         public MTLScissorRect[] Scissors = new MTLScissorRect[Constants.MaxViewports];
 
         // Changes to attachments take recreation!
-        public Texture DepthStencil = default;
+        public Texture DepthStencil;
         public Texture[] RenderTargets = new Texture[Constants.MaxColorAttachments];
         public ITexture PreMaskDepthStencil = default;
         public ITexture[] PreMaskRenderTargets;

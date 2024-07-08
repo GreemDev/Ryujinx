@@ -23,9 +23,7 @@ namespace Ryujinx.Graphics.Metal
         private readonly EncoderState _mainState = new();
         private EncoderState _currentState;
 
-        public readonly Auto<DisposableBuffer> IndexBuffer => _currentState.IndexBuffer;
-        public readonly MTLIndexType IndexType => _currentState.IndexType;
-        public readonly ulong IndexBufferOffset => _currentState.IndexBufferOffset;
+        public readonly IndexBufferState IndexBuffer => _currentState.IndexBuffer;
         public readonly PrimitiveTopology Topology => _currentState.Topology;
         public readonly Texture[] RenderTargets => _currentState.RenderTargets;
         public readonly Texture DepthStencil => _currentState.DepthStencil;
@@ -305,18 +303,11 @@ namespace Ryujinx.Graphics.Metal
         {
             if (buffer.Handle != BufferHandle.Null)
             {
-                if (type == GAL.IndexType.UByte)
-                {
-                    _currentState.IndexType = MTLIndexType.UInt16;
-                    _currentState.IndexBufferOffset = 0;
-                    _currentState.IndexBuffer = _bufferManager.GetBufferI8ToI16(_pipeline.Cbs, buffer.Handle, buffer.Offset, buffer.Size);
-                }
-                else
-                {
-                    _currentState.IndexType = type.Convert();
-                    _currentState.IndexBufferOffset = (ulong)buffer.Offset;
-                    _currentState.IndexBuffer = _bufferManager.GetBuffer(buffer.Handle, false);
-                }
+                _currentState.IndexBuffer = new IndexBufferState(buffer.Handle, buffer.Offset, buffer.Size, type);
+            }
+            else
+            {
+                _currentState.IndexBuffer = IndexBufferState.Null;
             }
         }
 

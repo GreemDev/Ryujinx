@@ -135,6 +135,18 @@ namespace Ryujinx.Graphics.Metal
             return null;
         }
 
+        public Auto<DisposableBuffer> GetBuffer(BufferHandle handle, bool isWrite, out int size)
+        {
+            if (TryGetBuffer(handle, out var holder))
+            {
+                size = holder.Size;
+                return holder.GetBuffer(isWrite);
+            }
+
+            size = 0;
+            return null;
+        }
+
         public Auto<DisposableBuffer> GetBuffer(BufferHandle handle, int offset, int size, bool isWrite)
         {
             if (TryGetBuffer(handle, out var holder))

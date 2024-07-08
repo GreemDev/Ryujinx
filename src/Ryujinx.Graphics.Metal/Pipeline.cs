@@ -377,8 +377,6 @@ namespace Ryujinx.Graphics.Metal
                 return;
             }
 
-            var renderCommandEncoder = GetOrCreateRenderEncoder(true);
-
             // TODO: Reindex unsupported topologies
             if (TopologyUnsupported(_encoderStateManager.Topology))
             {
@@ -387,21 +385,22 @@ namespace Ryujinx.Graphics.Metal
 
             var primitiveType = TopologyRemap(_encoderStateManager.Topology).Convert();
 
-            var indexBuffer = _encoderStateManager.IndexBuffer;
+            (MTLBuffer mtlBuffer, int offset, MTLIndexType type) = _encoderStateManager.IndexBuffer.GetIndexBuffer(_renderer, Cbs);
 
-            ulong offset = _encoderStateManager.IndexBufferOffset;
-            MTLIndexType type = _encoderStateManager.IndexType;
-            int indexSize = type == MTLIndexType.UInt32 ? sizeof(int) : sizeof(short);
+            if (mtlBuffer.NativePtr != IntPtr.Zero)
+            {
+                var renderCommandEncoder = GetOrCreateRenderEncoder(true);
 
-            renderCommandEncoder.DrawIndexedPrimitives(
-                primitiveType,
-                (ulong)indexCount,
-                type,
-                indexBuffer.Get(Cbs, (int)offset, indexCount * indexSize).Value,
-                offset,
-                (ulong)instanceCount,
-                firstVertex,
-                (ulong)firstInstance);
+                renderCommandEncoder.DrawIndexedPrimitives(
+                    primitiveType,
+                    (ulong)indexCount,
+                    type,
+                    mtlBuffer,
+                    (ulong)offset,
+                    (ulong)instanceCount,
+                    firstVertex,
+                    (ulong)firstInstance);
+            }
         }
 
         public void DrawIndexedIndirect(BufferRange indirectBuffer)
