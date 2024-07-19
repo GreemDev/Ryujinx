@@ -6,7 +6,7 @@ using System.Runtime.Versioning;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    internal struct VertexBufferState
+    readonly internal struct VertexBufferState
     {
         public static VertexBufferState Null => new(BufferHandle.Null, 0, 0, 0);
 

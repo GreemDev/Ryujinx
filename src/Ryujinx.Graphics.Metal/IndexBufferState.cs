@@ -6,7 +6,7 @@ using System.Runtime.Versioning;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    internal struct IndexBufferState
+    readonly internal struct IndexBufferState
     {
         public static IndexBufferState Null => new(BufferHandle.Null, 0, 0);
 
@@ -16,20 +16,12 @@ namespace Ryujinx.Graphics.Metal
 
         private readonly BufferHandle _handle;
 
-        public IndexBufferState(BufferHandle handle, int offset, int size, IndexType type)
+        public IndexBufferState(BufferHandle handle, int offset, int size, IndexType type = IndexType.UInt)
         {
             _handle = handle;
             _offset = offset;
             _size = size;
             _type = type;
-        }
-
-        public IndexBufferState(BufferHandle handle, int offset, int size)
-        {
-            _handle = handle;
-            _offset = offset;
-            _size = size;
-            _type = IndexType.UInt;
         }
 
         public (MTLBuffer, int, MTLIndexType) GetIndexBuffer(MetalRenderer renderer, CommandBufferScoped cbs)
