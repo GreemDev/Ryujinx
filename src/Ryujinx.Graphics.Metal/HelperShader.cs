@@ -71,7 +71,7 @@ namespace Ryujinx.Graphics.Metal
             var strideChangeResourceLayout = new ResourceLayoutBuilder()
                 .Add(ResourceStages.Compute, ResourceType.UniformBuffer, 0)
                 .Add(ResourceStages.Compute, ResourceType.StorageBuffer, 1)
-                .Add(ResourceStages.Compute, ResourceType.StorageBuffer, 2).Build();
+                .Add(ResourceStages.Compute, ResourceType.StorageBuffer, 2, true).Build();
 
             var strideChangeSource = ReadMsl("ChangeBufferStride.metal");
             _programStrideChange = new Program(

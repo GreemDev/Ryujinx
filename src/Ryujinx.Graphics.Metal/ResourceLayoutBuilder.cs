@@ -25,7 +25,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        public ResourceLayoutBuilder Add(ResourceStages stages, ResourceType type, int binding)
+        public ResourceLayoutBuilder Add(ResourceStages stages, ResourceType type, int binding, bool write = false)
         {
             int setIndex = type switch
             {
@@ -37,7 +37,7 @@ namespace Ryujinx.Graphics.Metal
             };
 
             _resourceDescriptors[setIndex].Add(new ResourceDescriptor(binding, 1, type, stages));
-            _resourceUsages[setIndex].Add(new ResourceUsage(binding, 1, type, stages));
+            _resourceUsages[setIndex].Add(new ResourceUsage(binding, 1, type, stages, write));
 
             return this;
         }
