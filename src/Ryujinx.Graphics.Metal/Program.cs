@@ -6,6 +6,7 @@ using SharpMetal.Metal;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
@@ -13,7 +14,11 @@ namespace Ryujinx.Graphics.Metal
     [SupportedOSPlatform("macos")]
     class Program : IProgram
     {
-        private readonly ProgramLinkStatus _status;
+        private ProgramLinkStatus _status;
+        private ShaderSource[] _shaders;
+        private GCHandle[] _handles;
+        private int _successCount;
+
         public MTLFunction VertexFunction;
         public MTLFunction FragmentFunction;
         public MTLFunction ComputeFunction;
@@ -33,44 +38,64 @@ namespace Ryujinx.Graphics.Metal
         public Program(ShaderSource[] shaders, ResourceLayout resourceLayout, MTLDevice device, ComputeSize computeLocalSize = default)
         {
             ComputeLocalSize = computeLocalSize;
+            _shaders = shaders;
+            _handles = new GCHandle[_shaders.Length];
 
-            for (int index = 0; index < shaders.Length; index++)
+            _status = ProgramLinkStatus.Incomplete;
+
+            for (int i = 0; i < _shaders.Length; i++)
             {
-                ShaderSource shader = shaders[index];
+                ShaderSource shader = _shaders[i];
 
                 var compileOptions = new MTLCompileOptions { PreserveInvariance = true };
+                var index = i;
 
-                var libraryError = new NSError(IntPtr.Zero);
-                var shaderLibrary = device.NewLibrary(StringHelper.NSString(shader.Code), compileOptions, ref libraryError);
-                if (libraryError != IntPtr.Zero)
-                {
-                    Logger.Warning?.PrintMsg(LogClass.Gpu, shader.Code);
-                    Logger.Warning?.Print(LogClass.Gpu, $"{shader.Stage} shader linking failed: \n{StringHelper.String(libraryError.LocalizedDescription)}");
-                    _status = ProgramLinkStatus.Failure;
-                    return;
-                }
-
-                switch (shaders[index].Stage)
-                {
-                    case ShaderStage.Compute:
-                        ComputeFunction = shaderLibrary.NewFunction(StringHelper.NSString("kernelMain"));
-                        break;
-                    case ShaderStage.Vertex:
-                        VertexFunction = shaderLibrary.NewFunction(StringHelper.NSString("vertexMain"));
-                        break;
-                    case ShaderStage.Fragment:
-                        FragmentFunction = shaderLibrary.NewFunction(StringHelper.NSString("fragmentMain"));
-                        break;
-                    default:
-                        Logger.Warning?.Print(LogClass.Gpu, $"Cannot handle stage {shaders[index].Stage}!");
-                        break;
-                }
+                _handles[i] = device.NewLibrary(StringHelper.NSString(shader.Code), compileOptions, (library, error) => CompilationResultHandler(library, error, index));
             }
 
             ClearSegments = BuildClearSegments(resourceLayout.Sets);
             (BindingSegments, ArgumentBufferSizes, FragArgumentBufferSizes) = BuildBindingSegments(resourceLayout.SetUsages);
+        }
 
-            _status = ProgramLinkStatus.Success;
+        public void CompilationResultHandler(MTLLibrary library, NSError error, int index)
+        {
+            var shader = _shaders[index];
+
+            if (_handles[index].IsAllocated)
+            {
+                _handles[index].Free();
+            }
+
+            if (error != IntPtr.Zero)
+            {
+                Logger.Warning?.PrintMsg(LogClass.Gpu, shader.Code);
+                Logger.Warning?.Print(LogClass.Gpu, $"{shader.Stage} shader linking failed: \n{StringHelper.String(error.LocalizedDescription)}");
+                _status = ProgramLinkStatus.Failure;
+                return;
+            }
+
+            switch (_shaders[index].Stage)
+            {
+                case ShaderStage.Compute:
+                    ComputeFunction = library.NewFunction(StringHelper.NSString("kernelMain"));
+                    break;
+                case ShaderStage.Vertex:
+                    VertexFunction = library.NewFunction(StringHelper.NSString("vertexMain"));
+                    break;
+                case ShaderStage.Fragment:
+                    FragmentFunction = library.NewFunction(StringHelper.NSString("fragmentMain"));
+                    break;
+                default:
+                    Logger.Warning?.Print(LogClass.Gpu, $"Cannot handle stage {_shaders[index].Stage}!");
+                    break;
+            }
+
+            _successCount++;
+
+            if (_successCount >= _shaders.Length && _status != ProgramLinkStatus.Failure)
+            {
+                _status = ProgramLinkStatus.Success;
+            }
         }
 
         private static ResourceBindingSegment[][] BuildClearSegments(ReadOnlyCollection<ResourceDescriptorCollection> sets)
@@ -218,12 +243,20 @@ namespace Ryujinx.Graphics.Metal
 
         public ProgramLinkStatus CheckProgramLink(bool blocking)
         {
+            if (blocking)
+            {
+                while (_status == ProgramLinkStatus.Incomplete)
+                { }
+
+                return _status;
+            }
+
             return _status;
         }
 
         public byte[] GetBinary()
         {
-            return ""u8.ToArray();
+            return [];
         }
 
         public void AddGraphicsPipeline(ref PipelineUid key, MTLRenderPipelineState pipeline)
