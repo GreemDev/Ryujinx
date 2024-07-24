@@ -1,4 +1,5 @@
 using Ryujinx.Common;
+using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Shader;
 using Ryujinx.Graphics.Shader.Translation;
@@ -21,6 +22,7 @@ namespace Ryujinx.Graphics.Metal
         private readonly ISampler _samplerLinear;
         private readonly ISampler _samplerNearest;
         private readonly IProgram _programColorBlit;
+        private readonly IProgram _programColorBlitMs;
         private readonly List<IProgram> _programsColorClear = new();
         private readonly IProgram _programDepthStencilClear;
         private readonly IProgram _programStrideChange;
@@ -45,6 +47,13 @@ namespace Ryujinx.Graphics.Metal
             [
                 new ShaderSource(blitSource, ShaderStage.Fragment, TargetLanguage.Msl),
                 new ShaderSource(blitSource, ShaderStage.Vertex, TargetLanguage.Msl)
+            ], blitResourceLayout, device);
+
+            var blitMsSource = ReadMsl("BlitMs.metal");
+            _programColorBlitMs = new Program(
+            [
+                new ShaderSource(blitMsSource, ShaderStage.Fragment, TargetLanguage.Msl),
+                new ShaderSource(blitMsSource, ShaderStage.Vertex, TargetLanguage.Msl)
             ], blitResourceLayout, device);
 
             var colorClearResourceLayout = new ResourceLayoutBuilder()
@@ -87,8 +96,8 @@ namespace Ryujinx.Graphics.Metal
 
         public unsafe void BlitColor(
             CommandBufferScoped cbs,
-            ITexture src,
-            ITexture dst,
+            Texture src,
+            Texture dst,
             Extents2D srcRegion,
             Extents2D dstRegion,
             bool linearFilter,
@@ -140,7 +149,23 @@ namespace Ryujinx.Graphics.Metal
                 0f,
                 1f);
 
-            _pipeline.SetProgram(_programColorBlit);
+            bool dstIsDepthOrStencil = dst.Info.Format.IsDepthOrStencil();
+
+            if (dstIsDepthOrStencil)
+            {
+                // TODO: Depth & stencil blit!
+                Logger.Warning?.PrintMsg(LogClass.Gpu, "Requested a depth or stencil blit!");
+                _pipeline.SwapState(null);
+                return;
+            }
+            else if (src.Info.Target.IsMultisample())
+            {
+                _pipeline.SetProgram(_programColorBlitMs);
+            }
+            else
+            {
+                _pipeline.SetProgram(_programColorBlit);
+            }
 
             int dstWidth = dst.Width;
             int dstHeight = dst.Height;

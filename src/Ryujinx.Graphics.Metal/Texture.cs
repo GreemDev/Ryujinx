@@ -249,14 +249,8 @@ namespace Ryujinx.Graphics.Metal
             }
 
             var dst = (Texture)destination;
-            bool isDepthOrStencil = dst.Info.Format.IsDepthOrStencil();
 
-            if (dst.Info.IsCompressed)
-            {
-                Console.WriteLine("shit");
-            }
-
-            Pipeline.Blit(this, destination, srcRegion, dstRegion, isDepthOrStencil, linearFilter);
+            Pipeline.Blit(this, dst, srcRegion, dstRegion, linearFilter);
         }
 
         public void CopyTo(BufferRange range, int layer, int level, int stride)
