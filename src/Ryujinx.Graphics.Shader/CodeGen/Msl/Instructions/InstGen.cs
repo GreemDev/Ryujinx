@@ -131,7 +131,8 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     case Instruction.FSIEnd:
                         return "|| FSI END ||";
                     case Instruction.GroupMemoryBarrier:
-                        return "|| FIND GROUP MEMORY BARRIER ||";
+                    case Instruction.MemoryBarrier:
+                        return MemoryBarrier(context, operation);
                     case Instruction.ImageLoad:
                     case Instruction.ImageStore:
                     case Instruction.ImageAtomic:
@@ -140,8 +141,6 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                         return Load(context, operation);
                     case Instruction.Lod:
                         return Lod(context, operation);
-                    case Instruction.MemoryBarrier:
-                        return "|| MEMORY BARRIER ||";
                     case Instruction.Store:
                         return Store(context, operation);
                     case Instruction.SwizzleAdd:
