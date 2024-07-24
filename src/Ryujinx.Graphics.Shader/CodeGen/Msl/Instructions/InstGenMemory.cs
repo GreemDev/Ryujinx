@@ -600,13 +600,6 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             return $"float2(as_type<half2>({srcExpr})){GetMask(operation.Index)}";
         }
 
-        public static string MemoryBarrier(CodeGenContext context, AstOperation operation)
-        {
-            var grouped = (operation.Inst & Instruction.Mask) == Instruction.GroupMemoryBarrier;
-
-            return $"threadgroup_barrier(mem_flags::mem_{(grouped ? "threadgroup" : "device")})";
-        }
-
         private static string GetMask(int index)
         {
             return $".{"xy".AsSpan(index, 1)}";

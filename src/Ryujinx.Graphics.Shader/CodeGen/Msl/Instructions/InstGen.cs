@@ -122,8 +122,6 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 {
                     case Instruction.Ballot:
                         return Ballot(context, operation);
-                    case Instruction.Barrier:
-                        return Barrier(context, operation);
                     case Instruction.Call:
                         return Call(context, operation);
                     case Instruction.FSIBegin:
@@ -132,7 +130,8 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                         return "|| FSI END ||";
                     case Instruction.GroupMemoryBarrier:
                     case Instruction.MemoryBarrier:
-                        return MemoryBarrier(context, operation);
+                    case Instruction.Barrier:
+                        return Barrier(context, operation);
                     case Instruction.ImageLoad:
                     case Instruction.ImageStore:
                     case Instruction.ImageAtomic:
