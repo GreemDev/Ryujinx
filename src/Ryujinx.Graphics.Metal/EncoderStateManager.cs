@@ -234,10 +234,10 @@ namespace Ryujinx.Graphics.Metal
                 UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, MetalRenderer.TextureSetIndex);
             }
 
-            // if (_currentState.Dirty.HasFlag(DirtyFlags.Images))
-            // {
-            //     UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, MetalRenderer.ImageSetIndex);
-            // }
+            if (_currentState.Dirty.HasFlag(DirtyFlags.Images))
+            {
+                UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, MetalRenderer.ImageSetIndex);
+            }
 
             _currentState.Dirty &= ~DirtyFlags.RenderAll;
         }
@@ -264,10 +264,10 @@ namespace Ryujinx.Graphics.Metal
                 UpdateAndBind(computeCommandEncoder, _currentState.ComputeProgram, MetalRenderer.TextureSetIndex);
             }
 
-            // if (_currentState.Dirty.HasFlag(DirtyFlags.Images))
-            // {
-            //     UpdateAndBind(computeCommandEncoder, _currentState.ComputeProgram, MetalRenderer.ImageSetIndex);
-            // }
+            if (_currentState.Dirty.HasFlag(DirtyFlags.Images))
+            {
+                UpdateAndBind(computeCommandEncoder, _currentState.ComputeProgram, MetalRenderer.ImageSetIndex);
+            }
 
             _currentState.Dirty &= ~DirtyFlags.ComputeAll;
         }
