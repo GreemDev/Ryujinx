@@ -65,14 +65,16 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             context.AppendLine("using namespace metal;");
             context.AppendLine();
 
+            var fsi = (info.HelperFunctionsMask & HelperFunctionsMask.FSI) != 0;
+
             DeclareInputAttributes(context, info.IoDefinitions.Where(x => IsUserDefined(x, StorageKind.Input)));
             context.AppendLine();
             DeclareOutputAttributes(context, info.IoDefinitions.Where(x => x.StorageKind == StorageKind.Output));
             context.AppendLine();
-            DeclareBufferStructures(context, context.Properties.ConstantBuffers.Values, true);
-            DeclareBufferStructures(context, context.Properties.StorageBuffers.Values, false);
+            DeclareBufferStructures(context, context.Properties.ConstantBuffers.Values, true, fsi);
+            DeclareBufferStructures(context, context.Properties.StorageBuffers.Values, false, fsi);
             DeclareTextures(context, context.Properties.Textures.Values);
-            DeclareImages(context, context.Properties.Images.Values);
+            DeclareImages(context, context.Properties.Images.Values, fsi);
 
             if ((info.HelperFunctionsMask & HelperFunctionsMask.FindLSB) != 0)
             {
@@ -180,7 +182,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             }
         }
 
-        private static void DeclareBufferStructures(CodeGenContext context, IEnumerable<BufferDefinition> buffers, bool constant)
+        private static void DeclareBufferStructures(CodeGenContext context, IEnumerable<BufferDefinition> buffers, bool constant, bool fsi)
         {
             var name = constant ? "ConstantBuffers" : "StorageBuffers";
             var addressSpace = constant ? "constant" : "device";
@@ -193,8 +195,9 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             foreach (BufferDefinition buffer in sortedBuffers)
             {
                 var needsPadding = buffer.Layout == BufferLayout.Std140;
+                string fsiSuffix = constant && fsi ? " [[raster_order_group(0)]]" : "";
 
-                argBufferPointers.Add($"{addressSpace} {Defaults.StructPrefix}_{buffer.Name}* {buffer.Name};");
+                argBufferPointers.Add($"{addressSpace} {Defaults.StructPrefix}_{buffer.Name}* {buffer.Name}{fsiSuffix};");
 
                 context.AppendLine($"struct {Defaults.StructPrefix}_{buffer.Name}");
                 context.EnterScope();
@@ -271,7 +274,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             context.AppendLine();
         }
 
-        private static void DeclareImages(CodeGenContext context, IEnumerable<TextureDefinition> images)
+        private static void DeclareImages(CodeGenContext context, IEnumerable<TextureDefinition> images, bool fsi)
         {
             context.AppendLine("struct Images");
             context.EnterScope();
@@ -284,7 +287,9 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             foreach (TextureDefinition image in sortedImages)
             {
                 var imageTypeName = image.Type.ToMslTextureType(true);
-                argBufferPointers.Add($"{imageTypeName} {image.Name};");
+                string fsiSuffix = fsi ? " [[raster_order_group(0)]]" : "";
+
+                argBufferPointers.Add($"{imageTypeName} {image.Name}{fsiSuffix};");
             }
 
             foreach (var pointer in argBufferPointers)

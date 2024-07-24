@@ -131,9 +131,8 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     case Instruction.Call:
                         return Call(context, operation);
                     case Instruction.FSIBegin:
-                        return "|| FSI BEGIN ||";
                     case Instruction.FSIEnd:
-                        return "|| FSI END ||";
+                        return "// FSI implemented with raster order groups in MSL";
                     case Instruction.GroupMemoryBarrier:
                     case Instruction.MemoryBarrier:
                     case Instruction.Barrier:

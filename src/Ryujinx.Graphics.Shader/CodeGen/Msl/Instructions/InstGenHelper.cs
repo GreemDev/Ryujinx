@@ -164,8 +164,8 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
         public static bool NeedsParenthesis(IAstNode node, Instruction pInst, InstInfo pInfo, bool isLhs)
         {
-            // If the node isn't a operation, then it can only be a operand,
-            // and those never needs to be surrounded in parenthesis.
+            // If the node isn't an operation, then it can only be an operand,
+            // and those never needs to be surrounded in parentheses.
             if (node is not AstOperation operation)
             {
                 // This is sort of a special case, if this is a negative constant,
