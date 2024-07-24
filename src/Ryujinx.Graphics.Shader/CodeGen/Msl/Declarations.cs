@@ -65,11 +65,6 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             context.AppendLine("using namespace metal;");
             context.AppendLine();
 
-            if ((info.HelperFunctionsMask & HelperFunctionsMask.SwizzleAdd) != 0)
-            {
-
-            }
-
             DeclareInputAttributes(context, info.IoDefinitions.Where(x => IsUserDefined(x, StorageKind.Input)));
             context.AppendLine();
             DeclareOutputAttributes(context, info.IoDefinitions.Where(x => x.StorageKind == StorageKind.Output));
@@ -92,6 +87,11 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             if ((info.HelperFunctionsMask & HelperFunctionsMask.FindMSBU32) != 0)
             {
                 AppendHelperFunction(context, "Ryujinx.Graphics.Shader/CodeGen/Msl/HelperFunctions/FindMSBU32.metal");
+            }
+
+            if ((info.HelperFunctionsMask & HelperFunctionsMask.SwizzleAdd) != 0)
+            {
+                AppendHelperFunction(context, "Ryujinx.Graphics.Shader/CodeGen/Msl/HelperFunctions/SwizzleAdd.metal");
             }
         }
 

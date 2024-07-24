@@ -116,7 +116,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             Add(Instruction.SquareRoot,               InstType.CallUnary,      "sqrt");
             Add(Instruction.Store,                    InstType.Special);
             Add(Instruction.Subtract,                 InstType.OpBinary,       "-",  2);
-            Add(Instruction.SwizzleAdd,               InstType.Special);
+            Add(Instruction.SwizzleAdd,               InstType.CallTernary,    HelperFunctionNames.SwizzleAdd);
             Add(Instruction.TextureSample,            InstType.Special);
             Add(Instruction.TextureQuerySamples,      InstType.Special);
             Add(Instruction.TextureQuerySize,         InstType.Special);

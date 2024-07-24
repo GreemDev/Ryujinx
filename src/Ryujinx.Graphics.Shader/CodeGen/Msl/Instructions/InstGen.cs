@@ -69,6 +69,12 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
                         builder.Append(GetSourceExpr(context, operation.GetSource(argIndex), dstType));
                     }
+
+                    if ((operation.Inst & Instruction.Mask) == Instruction.SwizzleAdd)
+                    {
+                        // SwizzleAdd takes one last argument, the thread_index_in_simdgroup
+                        builder.Append(", thread_index_in_simdgroup");
+                    }
                 }
 
                 return $"{info.OpName}({builder})";
@@ -142,8 +148,6 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                         return Lod(context, operation);
                     case Instruction.Store:
                         return Store(context, operation);
-                    case Instruction.SwizzleAdd:
-                        return "|| SWIZZLE ADD ||";
                     case Instruction.TextureSample:
                         return TextureSample(context, operation);
                     case Instruction.TextureQuerySamples:
