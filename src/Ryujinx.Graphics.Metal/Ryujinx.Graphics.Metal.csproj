@@ -20,6 +20,10 @@
       <EmbeddedResource Include="Shaders\ChangeBufferStride.metal" />
       <EmbeddedResource Include="Shaders\ColorClear.metal" />
       <EmbeddedResource Include="Shaders\DepthStencilClear.metal" />
+      <EmbeddedResource Include="Shaders\DepthBlit.metal" />
+      <EmbeddedResource Include="Shaders\DepthBlitMs.metal" />
+      <EmbeddedResource Include="Shaders\StencilBlit.metal" />
+      <EmbeddedResource Include="Shaders\StencilBlitMs.metal" />
     </ItemGroup>
 
 </Project>

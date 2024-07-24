@@ -9,13 +9,21 @@ struct CopyVertexOut {
 
 struct Textures
 {
-    texture2d_ms<float, access::read> texture;
+    texture2d_ms<uint, access::read> texture;
 };
 
-fragment float4 fragmentMain(CopyVertexOut in [[stage_in]],
+struct FragmentOut {
+    uint stencil [[stencil]];
+};
+
+fragment FragmentOut fragmentMain(CopyVertexOut in [[stage_in]],
                              constant Textures &textures [[buffer(22)]],
                              uint sample_id [[sample_id]]) {
+    FragmentOut out;
+
     uint2 tex_size = uint2(textures.texture.get_width(), textures.texture.get_height());
     uint2 tex_coord = uint2(in.uv * float2(tex_size));
-    return textures.texture.read(tex_coord, sample_id);
+    out.stencil = textures.texture.read(tex_coord, sample_id).r;
+
+    return out;
 }

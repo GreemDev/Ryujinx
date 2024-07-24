@@ -26,6 +26,10 @@ namespace Ryujinx.Graphics.Metal
         private readonly List<IProgram> _programsColorClear = new();
         private readonly IProgram _programDepthStencilClear;
         private readonly IProgram _programStrideChange;
+        private readonly IProgram _programDepthBlit;
+        private readonly IProgram _programDepthBlitMs;
+        private readonly IProgram _programStencilBlit;
+        private readonly IProgram _programStencilBlitMs;
 
         private readonly EncoderState _helperShaderState = new();
 
@@ -53,7 +57,7 @@ namespace Ryujinx.Graphics.Metal
             _programColorBlitMs = new Program(
             [
                 new ShaderSource(blitMsSource, ShaderStage.Fragment, TargetLanguage.Msl),
-                new ShaderSource(blitMsSource, ShaderStage.Vertex, TargetLanguage.Msl)
+                new ShaderSource(blitSource, ShaderStage.Vertex, TargetLanguage.Msl)
             ], blitResourceLayout, device);
 
             var colorClearResourceLayout = new ResourceLayoutBuilder()
@@ -87,6 +91,34 @@ namespace Ryujinx.Graphics.Metal
             [
                 new ShaderSource(strideChangeSource, ShaderStage.Compute, TargetLanguage.Msl)
             ], strideChangeResourceLayout, device, new ComputeSize(64, 1, 1));
+
+            var depthBlitSource = ReadMsl("DepthBlit.metal");
+            _programDepthBlit = new Program(
+            [
+                new ShaderSource(depthBlitSource, ShaderStage.Fragment, TargetLanguage.Msl),
+                new ShaderSource(blitSource, ShaderStage.Vertex, TargetLanguage.Msl)
+            ], blitResourceLayout, device);
+
+            var depthBlitMsSource = ReadMsl("DepthBlitMs.metal");
+            _programDepthBlitMs = new Program(
+            [
+                new ShaderSource(depthBlitMsSource, ShaderStage.Fragment, TargetLanguage.Msl),
+                new ShaderSource(blitSource, ShaderStage.Vertex, TargetLanguage.Msl)
+            ], blitResourceLayout, device);
+
+            var stencilBlitSource = ReadMsl("StencilBlit.metal");
+            _programStencilBlit = new Program(
+            [
+                new ShaderSource(stencilBlitSource, ShaderStage.Fragment, TargetLanguage.Msl),
+                new ShaderSource(blitSource, ShaderStage.Vertex, TargetLanguage.Msl)
+            ], blitResourceLayout, device);
+
+            var stencilBlitMsSource = ReadMsl("StencilBlitMs.metal");
+            _programStencilBlitMs = new Program(
+            [
+                new ShaderSource(stencilBlitMsSource, ShaderStage.Fragment, TargetLanguage.Msl),
+                new ShaderSource(blitSource, ShaderStage.Vertex, TargetLanguage.Msl)
+            ], blitResourceLayout, device);
         }
 
         private static string ReadMsl(string fileName)
@@ -191,6 +223,155 @@ namespace Ryujinx.Graphics.Metal
 
             // Restore previous state
             _pipeline.SwapState(null);
+        }
+
+        public unsafe void BlitDepthStencil(
+            CommandBufferScoped cbs,
+            Texture src,
+            Texture dst,
+            Extents2D srcRegion,
+            Extents2D dstRegion)
+        {
+            _pipeline.SwapState(_helperShaderState);
+
+            const int RegionBufferSize = 16;
+
+            Span<float> region = stackalloc float[RegionBufferSize / sizeof(float)];
+
+            region[0] = srcRegion.X1 / (float)src.Width;
+            region[1] = srcRegion.X2 / (float)src.Width;
+            region[2] = srcRegion.Y1 / (float)src.Height;
+            region[3] = srcRegion.Y2 / (float)src.Height;
+
+            if (dstRegion.X1 > dstRegion.X2)
+            {
+                (region[0], region[1]) = (region[1], region[0]);
+            }
+
+            if (dstRegion.Y1 > dstRegion.Y2)
+            {
+                (region[2], region[3]) = (region[3], region[2]);
+            }
+
+            using var buffer = _renderer.BufferManager.ReserveOrCreate(cbs, RegionBufferSize);
+            buffer.Holder.SetDataUnchecked<float>(buffer.Offset, region);
+            _pipeline.SetUniformBuffers([new BufferAssignment(0, buffer.Range)]);
+
+            Span<Viewport> viewports = stackalloc Viewport[16];
+
+            var rect = new Rectangle<float>(
+                MathF.Min(dstRegion.X1, dstRegion.X2),
+                MathF.Min(dstRegion.Y1, dstRegion.Y2),
+                MathF.Abs(dstRegion.X2 - dstRegion.X1),
+                MathF.Abs(dstRegion.Y2 - dstRegion.Y1));
+
+            viewports[0] = new Viewport(
+                rect,
+                ViewportSwizzle.PositiveX,
+                ViewportSwizzle.PositiveY,
+                ViewportSwizzle.PositiveZ,
+                ViewportSwizzle.PositiveW,
+                0f,
+                1f);
+
+            int dstWidth = dst.Width;
+            int dstHeight = dst.Height;
+
+            Span<Rectangle<int>> scissors = stackalloc Rectangle<int>[16];
+
+            scissors[0] = new Rectangle<int>(0, 0, dstWidth, dstHeight);
+
+            _pipeline.SetRenderTargets([], dst);
+            _pipeline.SetScissors(scissors);
+            _pipeline.SetViewports(viewports);
+            _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
+
+            if (src.Info.Format is
+                Format.D16Unorm or
+                Format.D32Float or
+                Format.X8UintD24Unorm or
+                Format.D24UnormS8Uint or
+                Format.D32FloatS8Uint or
+                Format.S8UintD24Unorm)
+            {
+                var depthTexture = CreateDepthOrStencilView(src, DepthStencilMode.Depth);
+
+                BlitDepthStencilDraw(depthTexture, isDepth: true);
+
+                if (depthTexture != src)
+                {
+                    depthTexture.Release();
+                }
+            }
+
+            if (src.Info.Format is
+                Format.S8Uint or
+                Format.D24UnormS8Uint or
+                Format.D32FloatS8Uint or
+                Format.S8UintD24Unorm)
+            {
+                var stencilTexture = CreateDepthOrStencilView(src, DepthStencilMode.Stencil);
+
+                BlitDepthStencilDraw(stencilTexture, isDepth: false);
+
+                if (stencilTexture != src)
+                {
+                    stencilTexture.Release();
+                }
+            }
+
+            // Restore previous state
+            _pipeline.SwapState(null);
+        }
+
+        private static Texture CreateDepthOrStencilView(Texture depthStencilTexture, DepthStencilMode depthStencilMode)
+        {
+            if (depthStencilTexture.Info.DepthStencilMode == depthStencilMode)
+            {
+                return depthStencilTexture;
+            }
+
+            return (Texture)depthStencilTexture.CreateView(new TextureCreateInfo(
+                depthStencilTexture.Info.Width,
+                depthStencilTexture.Info.Height,
+                depthStencilTexture.Info.Depth,
+                depthStencilTexture.Info.Levels,
+                depthStencilTexture.Info.Samples,
+                depthStencilTexture.Info.BlockWidth,
+                depthStencilTexture.Info.BlockHeight,
+                depthStencilTexture.Info.BytesPerPixel,
+                depthStencilTexture.Info.Format,
+                depthStencilMode,
+                depthStencilTexture.Info.Target,
+                SwizzleComponent.Red,
+                SwizzleComponent.Green,
+                SwizzleComponent.Blue,
+                SwizzleComponent.Alpha), 0, 0);
+        }
+
+        private void BlitDepthStencilDraw(Texture src, bool isDepth)
+        {
+            if (isDepth)
+            {
+                _pipeline.SetProgram(src.Info.Target.IsMultisample() ? _programDepthBlitMs : _programDepthBlit);
+                _pipeline.SetDepthTest(new DepthTestDescriptor(true, true, CompareOp.Always));
+            }
+            else
+            {
+                _pipeline.SetProgram(src.Info.Target.IsMultisample() ? _programStencilBlitMs : _programStencilBlit);
+                _pipeline.SetStencilTest(CreateStencilTestDescriptor(true));
+            }
+
+            _pipeline.Draw(4, 1, 0, 0);
+
+            if (isDepth)
+            {
+                _pipeline.SetDepthTest(new DepthTestDescriptor(false, false, CompareOp.Always));
+            }
+            else
+            {
+                _pipeline.SetStencilTest(CreateStencilTestDescriptor(false));
+            }
         }
 
         public unsafe void DrawTexture(

@@ -197,9 +197,17 @@ namespace Ryujinx.Graphics.Metal
             Texture dst,
             Extents2D srcRegion,
             Extents2D dstRegion,
+            bool isDepthOrStencil,
             bool linearFilter)
         {
-            _renderer.HelperShader.BlitColor(Cbs, src, dst, srcRegion, dstRegion, linearFilter);
+            if (isDepthOrStencil)
+            {
+                _renderer.HelperShader.BlitDepthStencil(Cbs, src, dst, srcRegion, dstRegion);
+            }
+            else
+            {
+                _renderer.HelperShader.BlitColor(Cbs, src, dst, srcRegion, dstRegion, linearFilter);
+            }
         }
 
         public void Barrier()
@@ -258,10 +266,8 @@ namespace Ryujinx.Graphics.Metal
         {
             var depthStencil = _encoderStateManager.DepthStencil;
 
-            // TODO: Remove workaround for Wonder which has an invalid texture due to unsupported format
             if (depthStencil == null)
             {
-                Logger.Warning?.PrintMsg(LogClass.Gpu, "Attempted to clear invalid depth stencil!");
                 return;
             }
 
