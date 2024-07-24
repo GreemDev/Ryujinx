@@ -3,6 +3,7 @@ using Ryujinx.Graphics.Shader.IntermediateRepresentation;
 using Ryujinx.Graphics.Shader.StructuredIr;
 using Ryujinx.Graphics.Shader.Translation;
 using System;
+using System.Text;
 using static Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions.InstGenHelper;
 using static Ryujinx.Graphics.Shader.StructuredIr.InstructionInfo;
 
@@ -148,6 +149,129 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             }
 
             return varName;
+        }
+
+        public static string ImageLoadOrStore(CodeGenContext context, AstOperation operation)
+        {
+            AstTextureOperation texOp = (AstTextureOperation)operation;
+
+            bool isArray = (texOp.Type & SamplerType.Array) != 0;
+
+            var texCallBuilder = new StringBuilder();
+
+            string imageName = GetImageName(context.Properties, texOp);
+            texCallBuilder.Append($"images.{imageName}");
+            texCallBuilder.Append('.');
+
+            if (texOp.Inst == Instruction.ImageAtomic)
+            {
+                texCallBuilder.Append((texOp.Flags & TextureFlags.AtomicMask) switch
+                {
+                    TextureFlags.Add => "atomic_fetch_add",
+                    TextureFlags.Minimum => "atomic_min",
+                    TextureFlags.Maximum => "atomic_max",
+                    TextureFlags.Increment => "atomic_fetch_add",
+                    TextureFlags.Decrement => "atomic_fetch_sub",
+                    TextureFlags.BitwiseAnd => "atomic_fetch_and",
+                    TextureFlags.BitwiseOr => "atomic_fetch_or",
+                    TextureFlags.BitwiseXor => "atomic_fetch_xor",
+                    TextureFlags.Swap => "atomic_exchange",
+                    TextureFlags.CAS => "atomic_compare_exchange_weak",
+                    _ => "atomic_fetch_add",
+                });
+            }
+            else
+            {
+                texCallBuilder.Append(texOp.Inst == Instruction.ImageLoad ? "read" : "write");
+            }
+
+            int srcIndex = 0;
+
+            string Src(AggregateType type)
+            {
+                return GetSourceExpr(context, texOp.GetSource(srcIndex++), type);
+            }
+
+            texCallBuilder.Append('(');
+
+            var coordsBuilder = new StringBuilder();
+
+            int coordsCount = texOp.Type.GetDimensions();
+
+            if (coordsCount > 1)
+            {
+                string[] elems = new string[coordsCount];
+
+                for (int index = 0; index < coordsCount; index++)
+                {
+                    elems[index] = Src(AggregateType.S32);
+                }
+
+                coordsBuilder.Append($"uint{coordsCount}({string.Join(", ", elems)})");
+            }
+            else
+            {
+                coordsBuilder.Append(Src(AggregateType.S32));
+            }
+
+            if (isArray)
+            {
+                coordsBuilder.Append(", ");
+                coordsBuilder.Append(Src(AggregateType.S32));
+            }
+
+            if (texOp.Inst == Instruction.ImageStore)
+            {
+                AggregateType type = texOp.Format.GetComponentType();
+
+                string[] cElems = new string[4];
+
+                for (int index = 0; index < 4; index++)
+                {
+                    if (srcIndex < texOp.SourcesCount)
+                    {
+                        cElems[index] = Src(type);
+                    }
+                    else
+                    {
+                        cElems[index] = type switch
+                        {
+                            AggregateType.S32 => NumberFormatter.FormatInt(0),
+                            AggregateType.U32 => NumberFormatter.FormatUint(0),
+                            _ => NumberFormatter.FormatFloat(0),
+                        };
+                    }
+                }
+
+                string prefix = type switch
+                {
+                    AggregateType.S32 => "int",
+                    AggregateType.U32 => "uint",
+                    AggregateType.FP32 => "float",
+                    _ => string.Empty,
+                };
+
+                texCallBuilder.Append($"{prefix}4({string.Join(", ", cElems)})");
+            }
+
+            texCallBuilder.Append(", ");
+            texCallBuilder.Append(coordsBuilder);
+
+            if (texOp.Inst == Instruction.ImageAtomic)
+            {
+                // TODO: Finish atomic stuff
+            }
+            else
+            {
+                texCallBuilder.Append(')');
+
+                if (texOp.Inst == Instruction.ImageLoad)
+                {
+                    texCallBuilder.Append(GetMaskMultiDest(texOp.Index));
+                }
+            }
+
+            return texCallBuilder.ToString();
         }
 
         public static string Load(CodeGenContext context, AstOperation operation)
@@ -359,9 +483,14 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             return texCall;
         }
 
-        private static string GetSamplerName(ShaderProperties resourceDefinitions, AstTextureOperation textOp)
+        private static string GetSamplerName(ShaderProperties resourceDefinitions, AstTextureOperation texOp)
         {
-            return resourceDefinitions.Textures[textOp.GetTextureSetAndBinding()].Name;
+            return resourceDefinitions.Textures[texOp.GetTextureSetAndBinding()].Name;
+        }
+
+        private static string GetImageName(ShaderProperties resourceDefinitions, AstTextureOperation texOp)
+        {
+            return resourceDefinitions.Images[texOp.GetTextureSetAndBinding()].Name;
         }
 
         private static string GetMaskMultiDest(int mask)

@@ -21,5 +21,6 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
         public const uint ConstantBuffersIndex = 20;
         public const uint StorageBuffersIndex = 21;
         public const uint TexturesIndex = 22;
+        public const uint ImagesIndex = 23;
     }
 }

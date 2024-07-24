@@ -77,6 +77,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             DeclareBufferStructures(context, context.Properties.ConstantBuffers.Values, true);
             DeclareBufferStructures(context, context.Properties.StorageBuffers.Values, false);
             DeclareTextures(context, context.Properties.Textures.Values);
+            DeclareImages(context, context.Properties.Images.Values);
 
             if ((info.HelperFunctionsMask & HelperFunctionsMask.FindLSB) != 0)
             {
@@ -259,6 +260,31 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 {
                     argBufferPointers.Add($"sampler samp_{texture.Name};");
                 }
+            }
+
+            foreach (var pointer in argBufferPointers)
+            {
+                context.AppendLine(pointer);
+            }
+
+            context.LeaveScope(";");
+            context.AppendLine();
+        }
+
+        private static void DeclareImages(CodeGenContext context, IEnumerable<TextureDefinition> images)
+        {
+            context.AppendLine("struct Images");
+            context.EnterScope();
+
+            List<string> argBufferPointers = [];
+
+            // TODO: Avoid Linq if we can
+            var sortedImages = images.OrderBy(x => x.Binding).ToArray();
+
+            foreach (TextureDefinition image in sortedImages)
+            {
+                var imageTypeName = image.Type.ToMslTextureType(true);
+                argBufferPointers.Add($"{imageTypeName} {image.Name};");
             }
 
             foreach (var pointer in argBufferPointers)

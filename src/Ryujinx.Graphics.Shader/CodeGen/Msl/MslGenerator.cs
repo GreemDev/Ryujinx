@@ -150,6 +150,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 args = args.Append($"constant ConstantBuffers &constant_buffers [[buffer({Defaults.ConstantBuffersIndex})]]").ToArray();
                 args = args.Append($"device StorageBuffers &storage_buffers [[buffer({Defaults.StorageBuffersIndex})]]").ToArray();
                 args = args.Append($"constant Textures &textures [[buffer({Defaults.TexturesIndex})]]").ToArray();
+                args = args.Append($"constant Images &images [[buffer({Defaults.ImagesIndex})]]").ToArray();
             }
 
             var funcPrefix = $"{funcKeyword} {returnType} {funcName ?? function.Name}(";

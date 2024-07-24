@@ -133,11 +133,9 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     case Instruction.GroupMemoryBarrier:
                         return "|| FIND GROUP MEMORY BARRIER ||";
                     case Instruction.ImageLoad:
-                        return "|| IMAGE LOAD ||";
                     case Instruction.ImageStore:
-                        return "|| IMAGE STORE ||";
                     case Instruction.ImageAtomic:
-                        return "|| IMAGE ATOMIC ||";
+                        return ImageLoadOrStore(context, operation);
                     case Instruction.Load:
                         return Load(context, operation);
                     case Instruction.Lod:
