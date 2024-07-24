@@ -497,7 +497,12 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetImage(ShaderStage stage, int binding, ITexture texture, Format imageFormat)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            if (texture is TextureBase tex)
+            {
+                var index = (ulong)binding;
+
+                _encoderStateManager.UpdateImage(stage, index, tex);
+            }
         }
 
         public void SetImageArray(ShaderStage stage, int binding, IImageArray array)

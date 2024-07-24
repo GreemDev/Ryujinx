@@ -821,6 +821,20 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Dirty |= DirtyFlags.Textures;
         }
 
+        public readonly void UpdateImage(ShaderStage stage, ulong binding, TextureBase texture)
+        {
+            if (texture is Texture view)
+            {
+                _currentState.ImageRefs[binding] = new(stage, view);
+            }
+            else
+            {
+                _currentState.ImageRefs[binding] = default;
+            }
+
+            _currentState.Dirty |= DirtyFlags.Images;
+        }
+
         private readonly void SetDepthStencilState(MTLRenderCommandEncoder renderCommandEncoder)
         {
             MTLDepthStencilState state = _depthStencilCache.GetOrCreate(_currentState.DepthStencilUid);
@@ -1171,7 +1185,42 @@ namespace Ryujinx.Graphics.Metal
                         }
                         break;
                     case MetalRenderer.ImageSetIndex:
-                        // TODO: Images
+                        if (!segment.IsArray)
+                        {
+                            for (int i = 0; i < count; i++)
+                            {
+                                 int index = binding + i;
+
+                                ref var image = ref _currentState.ImageRefs[index];
+
+                                var storage = image.Storage;
+
+                                if (storage == null)
+                                {
+                                    continue;
+                                }
+
+                                var mtlTexture = storage.GetHandle();
+
+                                MTLRenderStages renderStages = 0;
+
+                                if ((segment.Stages & ResourceStages.Vertex) != 0)
+                                {
+                                    vertResourceIds[vertResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                    vertResourceIdIndex++;
+                                    renderStages |= MTLRenderStages.RenderStageVertex;
+                                }
+
+                                if ((segment.Stages & ResourceStages.Fragment) != 0)
+                                {
+                                    fragResourceIds[fragResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                    fragResourceIdIndex++;
+                                    renderStages |= MTLRenderStages.RenderStageFragment;
+                                }
+
+                                renderCommandEncoder.UseResource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read | MTLResourceUsage.Write, renderStages);
+                            }
+                        }
                         break;
                 }
             }
@@ -1336,7 +1385,34 @@ namespace Ryujinx.Graphics.Metal
                         }
                         break;
                     case MetalRenderer.ImageSetIndex:
-                        // TODO: Images
+                        if (!segment.IsArray)
+                        {
+                            if (segment.Type != ResourceType.BufferTexture)
+                            {
+                                for (int i = 0; i < count; i++)
+                                {
+                                    int index = binding + i;
+
+                                    ref var image = ref _currentState.ImageRefs[index];
+
+                                    var storage = image.Storage;
+
+                                    if (storage == null)
+                                    {
+                                        continue;
+                                    }
+
+                                    var mtlTexture = storage.GetHandle();
+
+                                    if (segment.Stages.HasFlag(ResourceStages.Compute))
+                                    {
+                                        computeCommandEncoder.UseResource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read | MTLResourceUsage.Write);
+                                        resourceIds[resourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        resourceIdIndex++;
+                                    }
+                                }
+                            }
+                        }
                         break;
                 }
             }
@@ -1356,7 +1432,7 @@ namespace Ryujinx.Graphics.Metal
                 MetalRenderer.UniformSetIndex => Constants.ConstantBuffersIndex,
                 MetalRenderer.StorageSetIndex => Constants.StorageBuffersIndex,
                 MetalRenderer.TextureSetIndex => Constants.TexturesIndex,
-                MetalRenderer.ImageSetIndex => Constants.ImagessIndex,
+                MetalRenderer.ImageSetIndex => Constants.ImagesIndex,
             };
         }
 

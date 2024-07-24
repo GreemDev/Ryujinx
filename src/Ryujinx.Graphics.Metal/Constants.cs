@@ -26,6 +26,6 @@ namespace Ryujinx.Graphics.Metal
         public const uint ConstantBuffersIndex = 20;
         public const uint StorageBuffersIndex = 21;
         public const uint TexturesIndex = 22;
-        public const uint ImagessIndex = 23;
+        public const uint ImagesIndex = 23;
     }
 }

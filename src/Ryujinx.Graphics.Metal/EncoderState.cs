@@ -65,6 +65,18 @@ namespace Ryujinx.Graphics.Metal
         }
     }
 
+    record struct ImageRef
+    {
+        public ShaderStage Stage;
+        public Texture Storage;
+
+        public ImageRef(ShaderStage stage, Texture storage)
+        {
+            Stage = stage;
+            Storage = storage;
+        }
+    }
+
     struct PredrawState
     {
         public MTLCullMode CullMode;
@@ -92,6 +104,7 @@ namespace Ryujinx.Graphics.Metal
         public readonly BufferRef[] UniformBufferRefs = new BufferRef[Constants.MaxUniformBufferBindings];
         public readonly BufferRef[] StorageBufferRefs = new BufferRef[Constants.MaxStorageBufferBindings];
         public readonly TextureRef[] TextureRefs = new TextureRef[Constants.MaxTextureBindings];
+        public readonly ImageRef[] ImageRefs = new ImageRef[Constants.MaxTextureBindings];
 
         public IndexBufferState IndexBuffer = default;
 
