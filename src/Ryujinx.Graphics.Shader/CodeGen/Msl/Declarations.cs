@@ -112,12 +112,12 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 switch (stage)
                 {
                     case ShaderStage.Vertex:
-                        context.AppendLine("VertexOut out;");
+                        context.AppendLine("VertexOut out = {};");
                         // TODO: Only add if necessary
                         context.AppendLine("uint instance_index = instance_id + base_instance;");
                         break;
                     case ShaderStage.Fragment:
-                        context.AppendLine("FragmentOut out;");
+                        context.AppendLine("FragmentOut out = {};");
                         break;
                 }
 
@@ -420,6 +420,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                             IoVariable.PointSize => "float",
                             IoVariable.FragmentOutputColor => GetVarTypeName(context.Definitions.GetFragmentOutputColorType(ioDefinition.Location)),
                             IoVariable.FragmentOutputDepth => "float",
+                            IoVariable.ClipDistance => "float",
                             _ => GetVarTypeName(context.Definitions.GetUserDefinedType(ioDefinition.Location, isOutput: true))
                         };
                         string name = ioDefinition.IoVariable switch
@@ -428,6 +429,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                             IoVariable.PointSize => "point_size",
                             IoVariable.FragmentOutputColor => $"color{ioDefinition.Location}",
                             IoVariable.FragmentOutputDepth => "depth",
+                            IoVariable.ClipDistance => "clip_distance",
                             _ => $"{Defaults.OAttributePrefix}{ioDefinition.Location}"
                         };
                         string suffix = ioDefinition.IoVariable switch
@@ -437,6 +439,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                             IoVariable.UserDefined => $"[[user(loc{ioDefinition.Location})]]",
                             IoVariable.FragmentOutputColor => $"[[color({ioDefinition.Location})]]",
                             IoVariable.FragmentOutputDepth => "[[depth(any)]]",
+                            IoVariable.ClipDistance => $"[[clip_distance]][{Defaults.TotalClipDistances}]",
                             _ => ""
                         };
 

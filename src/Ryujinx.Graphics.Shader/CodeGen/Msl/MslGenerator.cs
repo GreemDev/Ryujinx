@@ -64,6 +64,14 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             bool isMainFunc = false)
         {
             int additionalArgCount = isMainFunc ? 0 : CodeGenContext.AdditionalArgCount + (context.Definitions.Stage != ShaderStage.Compute ? 1 : 0);
+            bool needsThreadIndex = false;
+
+            // TODO: Replace this with a proper flag
+            if (function.Name.Contains("Shuffle"))
+            {
+                needsThreadIndex = true;
+                additionalArgCount++;
+            }
 
             string[] args = new string[additionalArgCount + function.InArguments.Length + function.OutArguments.Length];
 
@@ -75,11 +83,21 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                     args[0] = stage == ShaderStage.Vertex ? "VertexIn in" : "FragmentIn in";
                     args[1] = "constant ConstantBuffers &constant_buffers";
                     args[2] = "device StorageBuffers &storage_buffers";
+
+                    if (needsThreadIndex)
+                    {
+                        args[3] = "uint thread_index_in_simdgroup";
+                    }
                 }
                 else
                 {
                     args[0] = "constant ConstantBuffers &constant_buffers";
                     args[1] = "device StorageBuffers &storage_buffers";
+
+                    if (needsThreadIndex)
+                    {
+                        args[2] = "uint thread_index_in_simdgroup";
+                    }
                 }
             }
 
@@ -93,8 +111,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             {
                 int j = i + function.InArguments.Length;
 
-                // Likely need to be made into pointers
-                args[argIndex++] = $"out {Declarations.GetVarTypeName(function.OutArguments[i])} {OperandManager.GetArgumentName(j)}";
+                args[argIndex++] = $"thread {Declarations.GetVarTypeName(function.OutArguments[i])} &{OperandManager.GetArgumentName(j)}";
             }
 
             string funcKeyword = "inline";
