@@ -628,7 +628,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetUserClipDistance(int index, bool enableClip)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            // TODO. Same as Vulkan
         }
 
         public void SetVertexAttribs(ReadOnlySpan<VertexAttribDescriptor> vertexAttribs)
