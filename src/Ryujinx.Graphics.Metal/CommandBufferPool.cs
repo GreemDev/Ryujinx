@@ -35,7 +35,12 @@ namespace Ryujinx.Graphics.Metal
 
             public void Use(MTLCommandQueue queue, IEncoderFactory stateManager)
             {
-                CommandBuffer = queue.CommandBuffer();
+                MTLCommandBufferDescriptor descriptor = new();
+#if DEBUG
+                descriptor.ErrorOptions = MTLCommandBufferErrorOption.EncoderExecutionStatus;
+#endif
+
+                CommandBuffer = queue.CommandBuffer(descriptor);
                 Fence = new FenceHolder(CommandBuffer);
 
                 Encoders.Initialize(CommandBuffer, stateManager);

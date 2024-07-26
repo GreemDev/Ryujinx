@@ -59,6 +59,9 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
         public static void Declare(CodeGenContext context, StructuredProgramInfo info)
         {
+            // TODO: Re-enable this warning
+            context.AppendLine("#pragma clang diagnostic ignored \"-Wunused-variable\"");
+            context.AppendLine();
             context.AppendLine("#include <metal_stdlib>");
             context.AppendLine("#include <simd/simd.h>");
             context.AppendLine();

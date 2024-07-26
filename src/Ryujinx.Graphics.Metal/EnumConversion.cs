@@ -137,7 +137,6 @@ namespace Ryujinx.Graphics.Metal
             };
         }
 
-        // TODO: Metal does not have native support for Triangle Fans but it is possible to emulate with TriangleStrip and moving around the indices
         public static MTLPrimitiveType Convert(this PrimitiveTopology topology)
         {
             return topology switch
