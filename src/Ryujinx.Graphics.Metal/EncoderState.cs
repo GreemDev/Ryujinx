@@ -54,10 +54,10 @@ namespace Ryujinx.Graphics.Metal
     record struct TextureRef
     {
         public ShaderStage Stage;
-        public Texture Storage;
+        public TextureBase Storage;
         public Sampler Sampler;
 
-        public TextureRef(ShaderStage stage, Texture storage, Sampler sampler)
+        public TextureRef(ShaderStage stage, TextureBase storage, Sampler sampler)
         {
             Stage = stage;
             Storage = storage;

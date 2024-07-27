@@ -805,13 +805,9 @@ namespace Ryujinx.Graphics.Metal
 
         public readonly void UpdateTextureAndSampler(ShaderStage stage, ulong binding, TextureBase texture, Sampler sampler)
         {
-            if (texture is TextureBuffer)
+            if (texture != null)
             {
-                // TODO: Texture buffers
-            }
-            else if (texture is Texture view)
-            {
-                _currentState.TextureRefs[binding] = new(stage, view, sampler);
+                _currentState.TextureRefs[binding] = new(stage, texture, sampler);
             }
             else
             {
@@ -1124,59 +1120,52 @@ namespace Ryujinx.Graphics.Metal
                     case MetalRenderer.TextureSetIndex:
                         if (!segment.IsArray)
                         {
-                            if (segment.Type != ResourceType.BufferTexture)
+                            for (int i = 0; i < count; i++)
                             {
-                                for (int i = 0; i < count; i++)
+                                int index = binding + i;
+
+                                ref var texture = ref _currentState.TextureRefs[index];
+
+                                var storage = texture.Storage;
+
+                                if (storage == null)
                                 {
-                                    int index = binding + i;
-
-                                    ref var texture = ref _currentState.TextureRefs[index];
-
-                                    var storage = texture.Storage;
-
-                                    if (storage == null)
-                                    {
-                                        continue;
-                                    }
-
-                                    var mtlTexture = storage.GetHandle();
-
-                                    MTLRenderStages renderStages = 0;
-
-                                    if ((segment.Stages & ResourceStages.Vertex) != 0)
-                                    {
-                                        vertResourceIds[vertResourceIdIndex] = mtlTexture.GpuResourceID._impl;
-                                        vertResourceIdIndex++;
-
-                                        if (texture.Sampler != null)
-                                        {
-                                            vertResourceIds[vertResourceIdIndex] = texture.Sampler.GetSampler().GpuResourceID._impl;
-                                            vertResourceIdIndex++;
-                                        }
-
-                                        renderStages |= MTLRenderStages.RenderStageVertex;
-                                    }
-
-                                    if ((segment.Stages & ResourceStages.Fragment) != 0)
-                                    {
-                                        fragResourceIds[fragResourceIdIndex] = mtlTexture.GpuResourceID._impl;
-                                        fragResourceIdIndex++;
-
-                                        if (texture.Sampler != null)
-                                        {
-                                            fragResourceIds[fragResourceIdIndex] = texture.Sampler.GetSampler().GpuResourceID._impl;
-                                            fragResourceIdIndex++;
-                                        }
-
-                                        renderStages |= MTLRenderStages.RenderStageFragment;
-                                    }
-
-                                    renderCommandEncoder.UseResource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read, renderStages);
+                                    continue;
                                 }
-                            }
-                            else
-                            {
-                                // TODO: Buffer textures
+
+                                var mtlTexture = storage.GetHandle();
+
+                                MTLRenderStages renderStages = 0;
+
+                                if ((segment.Stages & ResourceStages.Vertex) != 0)
+                                {
+                                    vertResourceIds[vertResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                    vertResourceIdIndex++;
+
+                                    if (texture.Sampler != null)
+                                    {
+                                        vertResourceIds[vertResourceIdIndex] = texture.Sampler.GetSampler().GpuResourceID._impl;
+                                        vertResourceIdIndex++;
+                                    }
+
+                                    renderStages |= MTLRenderStages.RenderStageVertex;
+                                }
+
+                                if ((segment.Stages & ResourceStages.Fragment) != 0)
+                                {
+                                    fragResourceIds[fragResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                    fragResourceIdIndex++;
+
+                                    if (texture.Sampler != null)
+                                    {
+                                        fragResourceIds[fragResourceIdIndex] = texture.Sampler.GetSampler().GpuResourceID._impl;
+                                        fragResourceIdIndex++;
+                                    }
+
+                                    renderStages |= MTLRenderStages.RenderStageFragment;
+                                }
+
+                                renderCommandEncoder.UseResource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read, renderStages);
                             }
                         }
                         else
@@ -1343,40 +1332,33 @@ namespace Ryujinx.Graphics.Metal
                     case MetalRenderer.TextureSetIndex:
                         if (!segment.IsArray)
                         {
-                            if (segment.Type != ResourceType.BufferTexture)
+                            for (int i = 0; i < count; i++)
                             {
-                                for (int i = 0; i < count; i++)
+                                int index = binding + i;
+
+                                ref var texture = ref _currentState.TextureRefs[index];
+
+                                var storage = texture.Storage;
+
+                                if (storage == null)
                                 {
-                                    int index = binding + i;
+                                    continue;
+                                }
 
-                                    ref var texture = ref _currentState.TextureRefs[index];
+                                var mtlTexture = storage.GetHandle();
 
-                                    var storage = texture.Storage;
+                                if (segment.Stages.HasFlag(ResourceStages.Compute))
+                                {
+                                    computeCommandEncoder.UseResource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read);
+                                    resourceIds[resourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                    resourceIdIndex++;
 
-                                    if (storage == null)
+                                    if (texture.Sampler != null)
                                     {
-                                        continue;
-                                    }
-
-                                    var mtlTexture = storage.GetHandle();
-
-                                    if (segment.Stages.HasFlag(ResourceStages.Compute))
-                                    {
-                                        computeCommandEncoder.UseResource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read);
-                                        resourceIds[resourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        resourceIds[resourceIdIndex] = texture.Sampler.GetSampler().GpuResourceID._impl;
                                         resourceIdIndex++;
-
-                                        if (texture.Sampler != null)
-                                        {
-                                            resourceIds[resourceIdIndex] = texture.Sampler.GetSampler().GpuResourceID._impl;
-                                            resourceIdIndex++;
-                                        }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                // TODO: Buffer textures
                             }
                         }
                         else
