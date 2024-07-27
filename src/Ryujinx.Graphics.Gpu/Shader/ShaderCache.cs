@@ -435,6 +435,8 @@ namespace Ryujinx.Graphics.Gpu.Shader
                             geometryAsCompute = CreateHostVertexAsComputeProgram(program, currentStage, tfEnabled);
                             program = null;
                         }
+
+                        infoBuilder.AddStageInfoVac(currentStage.GetVertexAsComputeInfo());
                     }
 
                     if (program != null)
@@ -533,7 +535,7 @@ namespace Ryujinx.Graphics.Gpu.Shader
         private ShaderAsCompute CreateHostVertexAsComputeProgram(ShaderProgram program, TranslatorContext context, bool tfEnabled)
         {
             ShaderSource source = new(program.Code, program.BinaryCode, ShaderStage.Compute, program.Language);
-            ShaderInfo info = ShaderInfoBuilder.BuildForVertexAsCompute(_context, program.Info, tfEnabled);
+            ShaderInfo info = ShaderInfoBuilder.BuildForVertexAsCompute(_context, program.Info, context.GetVertexAsComputeInfo(), tfEnabled);
 
             return new(_context.Renderer.CreateProgram(new[] { source }, info), program.Info, context.GetResourceReservations());
         }
