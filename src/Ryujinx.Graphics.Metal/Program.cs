@@ -28,7 +28,6 @@ namespace Ryujinx.Graphics.Metal
         private MTLComputePipelineState? _computePipelineCache;
         private bool _firstBackgroundUse;
 
-        public ResourceBindingSegment[][] ClearSegments { get; }
         public ResourceBindingSegment[][] BindingSegments { get; }
         // Argument buffer sizes for Vertex or Compute stages
         public int[] ArgumentBufferSizes { get; }
@@ -53,7 +52,6 @@ namespace Ryujinx.Graphics.Metal
                 _handles[i] = device.NewLibrary(StringHelper.NSString(shader.Code), compileOptions, (library, error) => CompilationResultHandler(library, error, index));
             }
 
-            ClearSegments = BuildClearSegments(resourceLayout.Sets);
             (BindingSegments, ArgumentBufferSizes, FragArgumentBufferSizes) = BuildBindingSegments(resourceLayout.SetUsages);
         }
 
@@ -96,62 +94,6 @@ namespace Ryujinx.Graphics.Metal
             {
                 _status = ProgramLinkStatus.Success;
             }
-        }
-
-        private static ResourceBindingSegment[][] BuildClearSegments(ReadOnlyCollection<ResourceDescriptorCollection> sets)
-        {
-            ResourceBindingSegment[][] segments = new ResourceBindingSegment[sets.Count][];
-
-            for (int setIndex = 0; setIndex < sets.Count; setIndex++)
-            {
-                List<ResourceBindingSegment> currentSegments = new();
-
-                ResourceDescriptor currentDescriptor = default;
-                int currentCount = 0;
-
-                for (int index = 0; index < sets[setIndex].Descriptors.Count; index++)
-                {
-                    ResourceDescriptor descriptor = sets[setIndex].Descriptors[index];
-
-                    if (currentDescriptor.Binding + currentCount != descriptor.Binding ||
-                        currentDescriptor.Type != descriptor.Type ||
-                        currentDescriptor.Stages != descriptor.Stages ||
-                        currentDescriptor.Count > 1 ||
-                        descriptor.Count > 1)
-                    {
-                        if (currentCount != 0)
-                        {
-                            currentSegments.Add(new ResourceBindingSegment(
-                                currentDescriptor.Binding,
-                                currentCount,
-                                currentDescriptor.Type,
-                                currentDescriptor.Stages,
-                                currentDescriptor.Count > 1));
-                        }
-
-                        currentDescriptor = descriptor;
-                        currentCount = descriptor.Count;
-                    }
-                    else
-                    {
-                        currentCount += descriptor.Count;
-                    }
-                }
-
-                if (currentCount != 0)
-                {
-                    currentSegments.Add(new ResourceBindingSegment(
-                        currentDescriptor.Binding,
-                        currentCount,
-                        currentDescriptor.Type,
-                        currentDescriptor.Stages,
-                        currentDescriptor.Count > 1));
-                }
-
-                segments[setIndex] = currentSegments.ToArray();
-            }
-
-            return segments;
         }
 
         private static (ResourceBindingSegment[][], int[], int[]) BuildBindingSegments(ReadOnlyCollection<ResourceUsageCollection> setUsages)
