@@ -522,21 +522,6 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed.ComputeDraw
         }
 
         /// <summary>
-        /// Gets the range for a dummy 16 bytes buffer, filled with zeros.
-        /// </summary>
-        /// <returns>Dummy buffer range</returns>
-        public BufferRange GetDummyBufferRange()
-        {
-            if (_dummyBuffer == BufferHandle.Null)
-            {
-                _dummyBuffer = _context.Renderer.CreateBuffer(DummyBufferSize, BufferAccess.DeviceMemory);
-                _context.Renderer.Pipeline.ClearBuffer(_dummyBuffer, 0, DummyBufferSize, 0);
-            }
-
-            return new BufferRange(_dummyBuffer, 0, DummyBufferSize);
-        }
-
-        /// <summary>
         /// Gets the range for a sequential index buffer, with ever incrementing index values.
         /// </summary>
         /// <param name="count">Minimum number of indices that the buffer should have</param>
