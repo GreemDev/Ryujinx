@@ -1133,6 +1133,11 @@ namespace Ryujinx.Graphics.Metal
                                     continue;
                                 }
 
+                                if (storage is TextureBuffer textureBuffer)
+                                {
+                                    textureBuffer.RebuildStorage(false);
+                                }
+
                                 var mtlTexture = storage.GetHandle();
 
                                 MTLRenderStages renderStages = 0;
@@ -1343,6 +1348,11 @@ namespace Ryujinx.Graphics.Metal
                                 if (storage == null)
                                 {
                                     continue;
+                                }
+
+                                if (storage is TextureBuffer textureBuffer)
+                                {
+                                    textureBuffer.RebuildStorage(false);
                                 }
 
                                 var mtlTexture = storage.GetHandle();

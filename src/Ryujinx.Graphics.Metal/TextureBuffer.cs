@@ -15,6 +15,7 @@ namespace Ryujinx.Graphics.Metal
         private int _size;
 
         private int _bufferCount;
+        private Auto<DisposableBuffer> _buffer;
 
         public TextureBuffer(MTLDevice device, MetalRenderer renderer, Pipeline pipeline, TextureCreateInfo info) : base(device, renderer, pipeline, info)
         {
@@ -32,25 +33,20 @@ namespace Ryujinx.Graphics.Metal
             MtlFormat = pixelFormat;
         }
 
-        private void RebuildStorage()
+        public void RebuildStorage(bool write)
         {
-            // Find the parent buffer, and try to build a texture from it.
-
-            // TODO: texture uses should register read/write usage on the assigned buffer.
-            Auto<DisposableBuffer> bufferAuto = Renderer.BufferManager.GetBuffer(_bufferHandle, false);
-
-            if (MtlTexture.NativePtr != 0)
+            if (MtlTexture != IntPtr.Zero)
             {
                 MtlTexture.Dispose();
             }
 
-            if (bufferAuto == null)
+            if (_buffer == null)
             {
                 MtlTexture = default;
             }
             else
             {
-                DisposableBuffer buffer = bufferAuto.Get(Pipeline.Cbs, _offset, _size);
+                DisposableBuffer buffer = _buffer.Get(Pipeline.Cbs, _offset, _size, write);
 
                 _descriptor.Width = (uint)(_size / Info.BytesPerPixel);
                 MtlTexture = buffer.Value.NewTexture(_descriptor, (ulong)_offset, (ulong)_size);
@@ -123,7 +119,7 @@ namespace Ryujinx.Graphics.Metal
             _size = buffer.Size;
             _bufferCount = Renderer.BufferManager.BufferCount;
 
-            RebuildStorage();
+            _buffer = Renderer.BufferManager.GetBuffer(_bufferHandle, false);
         }
 
         public override void Release()
