@@ -66,6 +66,7 @@ namespace Ryujinx.Graphics.Metal
             Add(Format.S8Uint, MTLPixelFormat.Stencil8);
             Add(Format.D16Unorm, MTLPixelFormat.Depth16Unorm);
             Add(Format.S8UintD24Unorm, MTLPixelFormat.Depth24UnormStencil8);
+            Add(Format.X8UintD24Unorm, MTLPixelFormat.Depth24UnormStencil8);
             Add(Format.D32Float, MTLPixelFormat.Depth32Float);
             Add(Format.D24UnormS8Uint, MTLPixelFormat.Depth24UnormStencil8);
             Add(Format.D32FloatS8Uint, MTLPixelFormat.Depth32FloatStencil8);
