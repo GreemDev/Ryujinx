@@ -1,4 +1,5 @@
 using Ryujinx.Common;
+using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.Shader.IntermediateRepresentation;
 using Ryujinx.Graphics.Shader.StructuredIr;
 using Ryujinx.Graphics.Shader.Translation;
@@ -308,7 +309,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
         {
             if (context.Definitions.IaIndexing)
             {
-                // Not handled
+                Logger.Warning?.PrintMsg(LogClass.Gpu, "Unhandled IA Indexing!");
             }
             else
             {
@@ -390,9 +391,9 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
         private static void DeclareOutputAttributes(CodeGenContext context, IEnumerable<IoDefinition> outputs)
         {
-            if (context.Definitions.IaIndexing)
+            if (context.Definitions.OaIndexing)
             {
-                // Not handled
+                Logger.Warning?.PrintMsg(LogClass.Gpu, "Unhandled OA Indexing!");
             }
             else
             {
@@ -415,7 +416,26 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
                     context.EnterScope();
 
-                    foreach (var ioDefinition in outputs.OrderBy(x => x.Location))
+                    outputs = outputs.OrderBy(x => x.Location);
+
+                    if (context.Definitions.Stage == ShaderStage.Fragment && context.Definitions.DualSourceBlend)
+                    {
+                        IoDefinition firstOutput = outputs.ElementAtOrDefault(0);
+                        IoDefinition secondOutput = outputs.ElementAtOrDefault(1);
+
+                        var type1 = GetVarTypeName(context.Definitions.GetFragmentOutputColorType(firstOutput.Location));
+                        var type2 = GetVarTypeName(context.Definitions.GetFragmentOutputColorType(secondOutput.Location));
+
+                        var name1 = $"color{firstOutput.Location}";
+                        var name2 = $"color{firstOutput.Location + 1}";
+
+                        context.AppendLine($"{type1} {name1} [[color({firstOutput.Location}), index(0)]];");
+                        context.AppendLine($"{type2} {name2} [[color({firstOutput.Location}), index(1)]];");
+
+                        outputs = outputs.Skip(2);
+                    }
+
+                    foreach (var ioDefinition in outputs)
                     {
                         string type = ioDefinition.IoVariable switch
                         {
