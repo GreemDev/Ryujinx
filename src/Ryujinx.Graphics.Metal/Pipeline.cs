@@ -402,30 +402,68 @@ namespace Ryujinx.Graphics.Metal
 
         public void DrawIndexedIndirect(BufferRange indirectBuffer)
         {
-            // var renderCommandEncoder = GetOrCreateRenderEncoder(true);
+            // TODO: Reindex unsupported topologies
+            if (TopologyUnsupported(_encoderStateManager.Topology))
+            {
+                Logger.Warning?.Print(LogClass.Gpu, $"Drawing indexed with unsupported topology: {_encoderStateManager.Topology}");
+            }
 
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            var buffer = _renderer.BufferManager
+                .GetBuffer(indirectBuffer.Handle, indirectBuffer.Offset, indirectBuffer.Size, false)
+                .Get(Cbs, indirectBuffer.Offset, indirectBuffer.Size).Value;
+
+            var primitiveType = TopologyRemap(_encoderStateManager.Topology).Convert();
+
+            (MTLBuffer indexBuffer, int offset, MTLIndexType type) = _encoderStateManager.IndexBuffer.GetIndexBuffer(_renderer, Cbs);
+
+            if (indexBuffer.NativePtr != IntPtr.Zero && buffer.NativePtr != IntPtr.Zero)
+            {
+                var renderCommandEncoder = GetOrCreateRenderEncoder(true);
+
+                renderCommandEncoder.DrawIndexedPrimitives(
+                    primitiveType,
+                    type,
+                    indexBuffer,
+                    (ulong)offset,
+                    buffer,
+                    (ulong)indirectBuffer.Offset);
+            }
         }
 
         public void DrawIndexedIndirectCount(BufferRange indirectBuffer, BufferRange parameterBuffer, int maxDrawCount, int stride)
         {
-            // var renderCommandEncoder = GetOrCreateRenderEncoder(true);
+            // TODO: Properly support count
 
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            DrawIndexedIndirect(indirectBuffer);
         }
 
         public void DrawIndirect(BufferRange indirectBuffer)
         {
-            // var renderCommandEncoder = GetOrCreateRenderEncoder(true);
+            var renderCommandEncoder = GetOrCreateRenderEncoder(true);
 
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            if (TopologyUnsupported(_encoderStateManager.Topology))
+            {
+                // TODO: Reindex unsupported topologies
+                Logger.Warning?.Print(LogClass.Gpu, $"Drawing indirect with unsupported topology: {_encoderStateManager.Topology}");
+            }
+
+            var buffer = _renderer.BufferManager
+                .GetBuffer(indirectBuffer.Handle, indirectBuffer.Offset, indirectBuffer.Size, false)
+                .Get(Cbs, indirectBuffer.Offset, indirectBuffer.Size).Value;
+
+            var primitiveType = TopologyRemap(_encoderStateManager.Topology).Convert();
+
+            renderCommandEncoder.DrawPrimitives(
+                primitiveType,
+                buffer,
+                (ulong)indirectBuffer.Offset);
         }
 
         public void DrawIndirectCount(BufferRange indirectBuffer, BufferRange parameterBuffer, int maxDrawCount, int stride)
         {
-            // var renderCommandEncoder = GetOrCreateRenderEncoder(true);
+            // TODO: Properly support count
 
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            DrawIndirect(indirectBuffer);
         }
 
         public void DrawTexture(ITexture texture, ISampler sampler, Extents2DF srcRegion, Extents2DF dstRegion)
