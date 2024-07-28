@@ -428,15 +428,14 @@ namespace Ryujinx.Graphics.Gpu.Shader
 
                             TranslatorContext lastInVertexPipeline = geometryToCompute ? translatorContexts[4] ?? currentStage : currentStage;
 
-                            program = lastInVertexPipeline.GenerateVertexPassthroughForCompute();
+                            (program, ShaderProgramInfo vacInfo) = lastInVertexPipeline.GenerateVertexPassthroughForCompute();
+                            infoBuilder.AddStageInfoVac(vacInfo);
                         }
                         else
                         {
                             geometryAsCompute = CreateHostVertexAsComputeProgram(program, currentStage, tfEnabled);
                             program = null;
                         }
-
-                        infoBuilder.AddStageInfoVac(currentStage.GetVertexAsComputeInfo());
                     }
 
                     if (program != null)

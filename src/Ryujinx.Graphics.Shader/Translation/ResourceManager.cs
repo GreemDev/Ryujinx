@@ -573,7 +573,7 @@ namespace Ryujinx.Graphics.Shader.Translation
             return descriptors.ToArray();
         }
 
-        public ShaderProgramInfo GetVertexAsComputeInfo()
+        public ShaderProgramInfo GetVertexAsComputeInfo(bool isVertex = false)
         {
             var cbDescriptors = new BufferDescriptor[_vacConstantBuffers.Count];
             int cbDescriptorIndex = 0;
@@ -630,7 +630,7 @@ namespace Ryujinx.Graphics.Shader.Translation
                 sbDescriptors,
                 tDescriptors,
                 iDescriptors,
-                ShaderStage.Compute,
+                isVertex ? ShaderStage.Vertex : ShaderStage.Compute,
                 0,
                 0,
                 0,

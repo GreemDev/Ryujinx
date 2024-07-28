@@ -491,7 +491,7 @@ namespace Ryujinx.Graphics.Shader.Translation
             _vertexOutput = vertexContext._program.GetIoUsage();
         }
 
-        public ShaderProgram GenerateVertexPassthroughForCompute()
+        public (ShaderProgram, ShaderProgramInfo) GenerateVertexPassthroughForCompute()
         {
             var attributeUsage = new AttributeUsage(GpuAccessor);
             var resourceManager = new ResourceManager(ShaderStage.Vertex, GpuAccessor);
@@ -571,14 +571,14 @@ namespace Ryujinx.Graphics.Shader.Translation
                 LastInVertexPipeline = true
             };
 
-            return Generate(
+            return (Generate(
                 new[] { function },
                 attributeUsage,
                 definitions,
                 definitions,
                 resourceManager,
                 FeatureFlags.None,
-                0);
+                0), resourceManager.GetVertexAsComputeInfo(isVertex: true));
         }
 
         public ShaderProgram GenerateGeometryPassthrough()

@@ -444,8 +444,8 @@ namespace Ryujinx.Graphics.Gpu.Shader
         {
             ShaderInfoBuilder builder = new(context, tfEnabled, vertexAsCompute: true, computeLocalSize: ComputeSize.VtgAsCompute);
 
-            builder.AddStageInfo(info, vertexAsCompute: true);
             builder.AddStageInfoVac(info2);
+            builder.AddStageInfo(info, vertexAsCompute: true);
 
             return builder.Build(null, fromCache);
         }
