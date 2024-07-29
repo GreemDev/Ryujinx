@@ -76,7 +76,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 return value.ToString(CultureInfo.InvariantCulture);
             }
 
-            return "0x" + value.ToString("X", CultureInfo.InvariantCulture);
+            return $"as_type<int>(0x{value.ToString("X", CultureInfo.InvariantCulture)})";
         }
 
         public static string FormatUint(uint value)
@@ -86,7 +86,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 return value.ToString(CultureInfo.InvariantCulture) + "u";
             }
 
-            return "0x" + value.ToString("X", CultureInfo.InvariantCulture) + "u";
+            return $"as_type<uint>(0x{value.ToString("X", CultureInfo.InvariantCulture)})";
         }
     }
 }
