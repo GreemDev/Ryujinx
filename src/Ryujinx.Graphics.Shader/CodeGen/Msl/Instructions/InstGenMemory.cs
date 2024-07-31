@@ -159,8 +159,15 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
             var texCallBuilder = new StringBuilder();
 
-            string imageName = GetImageName(context.Properties, texOp);
-            texCallBuilder.Append($"images.{imageName}");
+            int srcIndex = 0;
+
+            string Src(AggregateType type)
+            {
+                return GetSourceExpr(context, texOp.GetSource(srcIndex++), type);
+            }
+
+            string imageName = GetImageName(context, texOp, ref srcIndex);
+            texCallBuilder.Append(imageName);
             texCallBuilder.Append('.');
 
             if (texOp.Inst == Instruction.ImageAtomic)
@@ -183,13 +190,6 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             else
             {
                 texCallBuilder.Append(texOp.Inst == Instruction.ImageLoad ? "read" : "write");
-            }
-
-            int srcIndex = 0;
-
-            string Src(AggregateType type)
-            {
-                return GetSourceExpr(context, texOp.GetSource(srcIndex++), type);
             }
 
             texCallBuilder.Append('(');
@@ -286,7 +286,8 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             int coordsCount = texOp.Type.GetDimensions();
             int coordsIndex = 0;
 
-            string samplerName = GetSamplerName(context.Properties, texOp);
+            string textureName = GetTextureName(context, texOp, ref coordsIndex);
+            string samplerName = GetSamplerName(context, texOp, ref coordsIndex);
 
             string coordsExpr;
 
@@ -306,8 +307,8 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 coordsExpr = GetSourceExpr(context, texOp.GetSource(coordsIndex), AggregateType.FP32);
             }
 
-            var clamped = $"textures.tex_{samplerName}.calculate_clamped_lod(textures.samp_{samplerName}, {coordsExpr})";
-            var unclamped = $"textures.tex_{samplerName}.calculate_unclamped_lod(textures.samp_{samplerName}, {coordsExpr})";
+            var clamped = $"{textureName}.calculate_clamped_lod({samplerName}, {coordsExpr})";
+            var unclamped = $"{textureName}.calculate_unclamped_lod({samplerName}, {coordsExpr})";
 
             return $"float2({clamped}, {unclamped}){GetMask(texOp.Index)}";
         }
@@ -332,11 +333,9 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             bool isArray = (texOp.Type & SamplerType.Array) != 0;
             bool isShadow = (texOp.Type & SamplerType.Shadow) != 0;
 
-            bool colorIsVector = isGather || !isShadow;
+            var texCallBuilder = new StringBuilder();
 
-            string samplerName = GetSamplerName(context.Properties, texOp);
-            string texCall = $"textures.tex_{samplerName}";
-            texCall += ".";
+            bool colorIsVector = isGather || !isShadow;
 
             int srcIndex = 0;
 
@@ -345,27 +344,33 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 return GetSourceExpr(context, texOp.GetSource(srcIndex++), type);
             }
 
+            string textureName = GetTextureName(context, texOp, ref srcIndex);
+            string samplerName = GetSamplerName(context, texOp, ref srcIndex);
+
+            texCallBuilder.Append(textureName);
+            texCallBuilder.Append('.');
+
             if (intCoords)
             {
-                texCall += "read(";
+                texCallBuilder.Append("read(");
             }
             else
             {
                 if (isGather)
                 {
-                    texCall += "gather";
+                    texCallBuilder.Append("gather");
                 }
                 else
                 {
-                    texCall += "sample";
+                    texCallBuilder.Append("sample");
                 }
 
                 if (isShadow)
                 {
-                    texCall += "_compare";
+                    texCallBuilder.Append("_compare");
                 }
 
-                texCall += $"(textures.samp_{samplerName}, ";
+                texCallBuilder.Append($"({samplerName}, ");
             }
 
             int coordsCount = texOp.Type.GetDimensions();
@@ -377,13 +382,14 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             {
                 if (appended)
                 {
-                    texCall += ", ";
+                    texCallBuilder.Append(", ");
                 }
                 else
                 {
                     appended = true;
                 }
-                texCall += str;
+
+                texCallBuilder.Append(str);
             }
 
             AggregateType coordType = intCoords ? AggregateType.S32 : AggregateType.FP32;
@@ -478,19 +484,52 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 }
             }
 
-            texCall += ")" + (colorIsVector ? GetMaskMultiDest(texOp.Index) : "");
+            texCallBuilder.Append(')');
+            texCallBuilder.Append(colorIsVector ? GetMaskMultiDest(texOp.Index) : "");
 
-            return texCall;
+            return texCallBuilder.ToString();
         }
 
-        private static string GetSamplerName(ShaderProperties resourceDefinitions, AstTextureOperation texOp)
+        private static string GetTextureName(CodeGenContext context, AstTextureOperation texOp, ref int srcIndex)
         {
-            return resourceDefinitions.Textures[texOp.GetTextureSetAndBinding()].Name;
+            TextureDefinition textureDefinition = context.Properties.Textures[texOp.GetTextureSetAndBinding()];
+            string name = textureDefinition.Name;
+
+            if (textureDefinition.ArrayLength != 1)
+            {
+                name = $"{name}[{GetSourceExpr(context, texOp.GetSource(srcIndex++), AggregateType.S32)}]";
+            }
+
+            return $"textures.tex_{name}";
         }
 
-        private static string GetImageName(ShaderProperties resourceDefinitions, AstTextureOperation texOp)
+        private static string GetSamplerName(CodeGenContext context, AstTextureOperation texOp, ref int srcIndex)
         {
-            return resourceDefinitions.Images[texOp.GetTextureSetAndBinding()].Name;
+            var index = texOp.IsSeparate ? texOp.GetSamplerSetAndBinding() : texOp.GetTextureSetAndBinding();
+            var sourceIndex = texOp.IsSeparate ? srcIndex++ : srcIndex + 1;
+
+            TextureDefinition samplerDefinition = context.Properties.Textures[index];
+            string name = samplerDefinition.Name;
+
+            if (samplerDefinition.ArrayLength != 1)
+            {
+                name = $"{name}[{GetSourceExpr(context, texOp.GetSource(sourceIndex), AggregateType.S32)}]";
+            }
+
+            return $"textures.samp_{name}";
+        }
+
+        private static string GetImageName(CodeGenContext context, AstTextureOperation texOp, ref int srcIndex)
+        {
+            TextureDefinition definition = context.Properties.Images[texOp.GetTextureSetAndBinding()];
+            string name = definition.Name;
+
+            if (definition.ArrayLength != 1)
+            {
+                name = $"{name}[{GetSourceExpr(context, texOp.GetSource(srcIndex++), AggregateType.S32)}]";
+            }
+
+            return $"images.{name}";
         }
 
         private static string GetMaskMultiDest(int mask)
@@ -517,67 +556,62 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
         {
             AstTextureOperation texOp = (AstTextureOperation)operation;
 
-            bool isBindless = (texOp.Flags & TextureFlags.Bindless) != 0;
+            int srcIndex = 0;
 
-            // TODO: Bindless texture support. For now we just return 0.
-            if (isBindless)
-            {
-                return NumberFormatter.FormatInt(0);
-            }
+            string textureName = GetTextureName(context, texOp, ref srcIndex);
 
-            string samplerName = GetSamplerName(context.Properties, texOp);
-            string textureName = $"textures.tex_{samplerName}";
-            string texCall = textureName + ".";
-            texCall += "get_num_samples()";
-
-            return texCall;
+            return $"{textureName}.get_num_samples()";
         }
 
         public static string TextureQuerySize(CodeGenContext context, AstOperation operation)
         {
             AstTextureOperation texOp = (AstTextureOperation)operation;
 
-            string samplerName = GetSamplerName(context.Properties, texOp);
-            string textureName = $"textures.tex_{samplerName}";
-            string texCall = textureName + ".";
+            var texCallBuilder = new StringBuilder();
+
+            int srcIndex = 0;
+
+            string textureName = GetTextureName(context, texOp, ref srcIndex);
+            texCallBuilder.Append(textureName);
+            texCallBuilder.Append('.');
 
             if (texOp.Index == 3)
             {
-                texCall += "get_num_mip_levels()";
+                texCallBuilder.Append("get_num_mip_levels()");
             }
             else
             {
                 context.Properties.Textures.TryGetValue(texOp.GetTextureSetAndBinding(), out TextureDefinition definition);
                 bool hasLod = !definition.Type.HasFlag(SamplerType.Multisample) && (definition.Type & SamplerType.Mask) != SamplerType.TextureBuffer;
-                texCall += "get_";
+                texCallBuilder.Append("get_");
 
                 if (texOp.Index == 0)
                 {
-                    texCall += "width";
+                    texCallBuilder.Append("width");
                 }
                 else if (texOp.Index == 1)
                 {
-                    texCall += "height";
+                    texCallBuilder.Append("height");
                 }
                 else
                 {
-                    texCall += "depth";
+                    texCallBuilder.Append("depth");
                 }
 
-                texCall += "(";
+                texCallBuilder.Append('(');
 
                 if (hasLod)
                 {
                     IAstNode lod = operation.GetSource(0);
                     string lodExpr = GetSourceExpr(context, lod, GetSrcVarType(operation.Inst, 0));
 
-                    texCall += $"{lodExpr}";
+                    texCallBuilder.Append(lodExpr);
                 }
 
-                texCall += ")";
+                texCallBuilder.Append(')');
             }
 
-            return texCall;
+            return texCallBuilder.ToString();
         }
 
         public static string PackHalf2x16(CodeGenContext context, AstOperation operation)
