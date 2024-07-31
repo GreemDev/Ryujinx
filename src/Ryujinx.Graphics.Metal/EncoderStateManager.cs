@@ -14,6 +14,8 @@ namespace Ryujinx.Graphics.Metal
     [SupportedOSPlatform("macos")]
     struct EncoderStateManager : IDisposable
     {
+        private const int ArrayGrowthSize = 16;
+
         private readonly MTLDevice _device;
         private readonly Pipeline _pipeline;
         private readonly BufferManager _bufferManager;
@@ -88,6 +90,16 @@ namespace Ryujinx.Graphics.Metal
         public readonly void SetClearLoadAction(bool clear)
         {
             _currentState.ClearLoadAction = clear;
+        }
+
+        public void DirtyTextures()
+        {
+            _currentState.Dirty |= DirtyFlags.Textures;
+        }
+
+        public void DirtyImages()
+        {
+            _currentState.Dirty |= DirtyFlags.Images;
         }
 
         public readonly MTLRenderCommandEncoder CreateRenderCommandEncoder()
@@ -829,6 +841,66 @@ namespace Ryujinx.Graphics.Metal
             }
 
             _currentState.Dirty |= DirtyFlags.Images;
+        }
+
+        public void UpdateTextureArray(ShaderStage stage, ulong binding, TextureArray array)
+        {
+            ref EncoderState.ArrayRef<TextureArray> arrayRef = ref GetArrayRef(ref _currentState.TextureArrayRefs, (int)binding, ArrayGrowthSize);
+
+            if (arrayRef.Stage != stage || arrayRef.Array != array)
+            {
+                arrayRef = new EncoderState.ArrayRef<TextureArray>(stage, array);
+
+                _currentState.Dirty |= DirtyFlags.Textures;
+            }
+        }
+
+        public void UpdateTextureArraySeparate(ShaderStage stage, int setIndex, TextureArray array)
+        {
+            ref EncoderState.ArrayRef<TextureArray> arrayRef = ref GetArrayRef(ref _currentState.TextureArrayRefs, setIndex);
+
+            if (arrayRef.Stage != stage || arrayRef.Array != array)
+            {
+                arrayRef = new EncoderState.ArrayRef<TextureArray>(stage, array);
+
+                _currentState.Dirty |= DirtyFlags.Textures;
+            }
+        }
+
+        public void UpdateImageArray(ShaderStage stage, ulong binding, ImageArray array)
+        {
+            ref EncoderState.ArrayRef<ImageArray> arrayRef = ref GetArrayRef(ref _currentState.ImageArrayRefs, (int)binding, ArrayGrowthSize);
+
+            if (arrayRef.Stage != stage || arrayRef.Array != array)
+            {
+                arrayRef = new EncoderState.ArrayRef<ImageArray>(stage, array);
+
+                _currentState.Dirty |= DirtyFlags.Images;
+            }
+        }
+
+        public void UpdateImageArraySeparate(ShaderStage stage, int setIndex, ImageArray array)
+        {
+            ref EncoderState.ArrayRef<ImageArray> arrayRef = ref GetArrayRef(ref _currentState.ImageArrayExtraRefs, setIndex);
+
+            if (arrayRef.Stage != stage || arrayRef.Array != array)
+            {
+                arrayRef = new EncoderState.ArrayRef<ImageArray>(stage, array);
+
+                _currentState.Dirty |= DirtyFlags.Images;
+            }
+        }
+
+        private static ref EncoderState.ArrayRef<T> GetArrayRef<T>(ref EncoderState.ArrayRef<T>[] array, int index, int growthSize = 1)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+
+            if (array.Length <= index)
+            {
+                Array.Resize(ref array, index + growthSize);
+            }
+
+            return ref array[index];
         }
 
         private readonly void SetDepthStencilState(MTLRenderCommandEncoder renderCommandEncoder)

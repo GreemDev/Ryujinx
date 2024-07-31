@@ -1,5 +1,4 @@
 using Ryujinx.Common.Configuration;
-using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Shader.Translation;
 using SharpMetal.Metal;
@@ -97,7 +96,7 @@ namespace Ryujinx.Graphics.Metal
 
         public IImageArray CreateImageArray(int size, bool isBuffer)
         {
-            throw new NotImplementedException();
+            return new ImageArray(size, isBuffer, _pipeline);
         }
 
         public IProgram CreateProgram(ShaderSource[] shaders, ShaderInfo info)
@@ -122,7 +121,7 @@ namespace Ryujinx.Graphics.Metal
 
         public ITextureArray CreateTextureArray(int size, bool isBuffer)
         {
-            throw new NotImplementedException();
+            return new TextureArray(size, isBuffer, _pipeline);
         }
 
         public bool PrepareHostMapping(IntPtr address, ulong size)

@@ -192,6 +192,16 @@ namespace Ryujinx.Graphics.Metal
             _renderer.RegisterFlush();
         }
 
+        public void DirtyTextures()
+        {
+            _encoderStateManager.DirtyTextures();
+        }
+
+        public void DirtyImages()
+        {
+            _encoderStateManager.DirtyImages();
+        }
+
         public void Blit(
             Texture src,
             Texture dst,
@@ -542,12 +552,20 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetImageArray(ShaderStage stage, int binding, IImageArray array)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            if (array is ImageArray imageArray)
+            {
+                var index = (ulong)binding;
+
+                _encoderStateManager.UpdateImageArray(stage, index, imageArray);
+            }
         }
 
         public void SetImageArraySeparate(ShaderStage stage, int setIndex, IImageArray array)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            if (array is ImageArray imageArray)
+            {
+                _encoderStateManager.UpdateImageArraySeparate(stage, setIndex, imageArray);
+            }
         }
 
         public void SetLineParameters(float width, bool smooth)
@@ -656,12 +674,20 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetTextureArray(ShaderStage stage, int binding, ITextureArray array)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            if (array is TextureArray textureArray)
+            {
+                var index = (ulong)binding;
+
+                _encoderStateManager.UpdateTextureArray(stage, index, textureArray);
+            }
         }
 
         public void SetTextureArraySeparate(ShaderStage stage, int setIndex, ITextureArray array)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            if (array is TextureArray textureArray)
+            {
+                _encoderStateManager.UpdateTextureArraySeparate(stage, setIndex, textureArray);
+            }
         }
 
         public void SetUserClipDistance(int index, bool enableClip)

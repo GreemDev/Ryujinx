@@ -56,6 +56,7 @@ namespace Ryujinx.Graphics.Metal
         public ShaderStage Stage;
         public TextureBase Storage;
         public Sampler Sampler;
+        public Format ImageFormat;
 
         public TextureRef(ShaderStage stage, TextureBase storage, Sampler sampler)
         {
@@ -101,10 +102,18 @@ namespace Ryujinx.Graphics.Metal
         public PipelineState Pipeline;
         public DepthStencilUid DepthStencilUid;
 
+        public readonly record struct ArrayRef<T>(ShaderStage Stage, T Array);
+
         public readonly BufferRef[] UniformBufferRefs = new BufferRef[Constants.MaxUniformBufferBindings];
         public readonly BufferRef[] StorageBufferRefs = new BufferRef[Constants.MaxStorageBufferBindings];
         public readonly TextureRef[] TextureRefs = new TextureRef[Constants.MaxTextureBindings];
         public readonly ImageRef[] ImageRefs = new ImageRef[Constants.MaxTextureBindings];
+
+        public ArrayRef<TextureArray>[] TextureArrayRefs = [];
+        public ArrayRef<ImageArray>[] ImageArrayRefs = [];
+
+        public ArrayRef<TextureArray>[] TextureArrayExtraRefs = [];
+        public ArrayRef<ImageArray>[] ImageArrayExtraRefs = [];
 
         public IndexBufferState IndexBuffer = default;
 
