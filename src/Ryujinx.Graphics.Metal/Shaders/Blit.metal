@@ -22,7 +22,7 @@ struct Textures
 };
 
 vertex CopyVertexOut vertexMain(uint vid [[vertex_id]],
-                                constant ConstantBuffers &constant_buffers [[buffer(20)]]) {
+                                constant ConstantBuffers &constant_buffers [[buffer(CONSTANT_BUFFERS_INDEX)]]) {
     CopyVertexOut out;
 
     int low = vid & 1;
@@ -38,6 +38,6 @@ vertex CopyVertexOut vertexMain(uint vid [[vertex_id]],
 }
 
 fragment float4 fragmentMain(CopyVertexOut in [[stage_in]],
-                             constant Textures &textures [[buffer(22)]]) {
+                             constant Textures &textures [[buffer(TEXTURES_INDEX)]]) {
     return textures.texture.sample(textures.sampler, in.uv);
 }

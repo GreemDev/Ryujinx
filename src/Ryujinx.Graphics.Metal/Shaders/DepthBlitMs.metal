@@ -17,7 +17,7 @@ struct FragmentOut {
 };
 
 fragment FragmentOut fragmentMain(CopyVertexOut in [[stage_in]],
-                             constant Textures &textures [[buffer(22)]],
+                             constant Textures &textures [[buffer(TEXTURES_INDEX)]],
                              uint sample_id [[sample_id]]) {
     FragmentOut out;
 

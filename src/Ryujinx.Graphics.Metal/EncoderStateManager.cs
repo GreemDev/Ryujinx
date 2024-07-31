@@ -57,11 +57,16 @@ namespace Ryujinx.Graphics.Metal
             _depthStencilCache.Dispose();
         }
 
+        private readonly void SignalDirty(DirtyFlags flags)
+        {
+            _currentState.Dirty |= flags;
+        }
+
         public EncoderState SwapState(EncoderState state, DirtyFlags flags = DirtyFlags.All)
         {
             _currentState = state ?? _mainState;
 
-            _currentState.Dirty |= flags;
+            SignalDirty(flags);
 
             return _mainState;
         }
@@ -84,7 +89,7 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Topology = state.Topology;
             _currentState.Viewports = state.Viewports;
 
-            _currentState.Dirty |= DirtyFlags.CullMode | DirtyFlags.DepthStencil | DirtyFlags.Viewports;
+            SignalDirty(DirtyFlags.CullMode | DirtyFlags.DepthStencil | DirtyFlags.Viewports);
         }
 
         public readonly void SetClearLoadAction(bool clear)
@@ -94,12 +99,12 @@ namespace Ryujinx.Graphics.Metal
 
         public void DirtyTextures()
         {
-            _currentState.Dirty |= DirtyFlags.Textures;
+            SignalDirty(DirtyFlags.Textures);
         }
 
         public void DirtyImages()
         {
-            _currentState.Dirty |= DirtyFlags.Images;
+            SignalDirty(DirtyFlags.Images);
         }
 
         public readonly MTLRenderCommandEncoder CreateRenderCommandEncoder()
@@ -161,7 +166,7 @@ namespace Ryujinx.Graphics.Metal
             var renderCommandEncoder = _pipeline.CommandBuffer.RenderCommandEncoder(renderPassDescriptor);
 
             // Mark all state as dirty to ensure it is set on the encoder
-            _currentState.Dirty |= DirtyFlags.RenderAll;
+            SignalDirty(DirtyFlags.RenderAll);
 
             // Cleanup
             renderPassDescriptor.Dispose();
@@ -175,7 +180,7 @@ namespace Ryujinx.Graphics.Metal
             var computeCommandEncoder = _pipeline.CommandBuffer.ComputeCommandEncoder(descriptor);
 
             // Mark all state as dirty to ensure it is set on the encoder
-            _currentState.Dirty |= DirtyFlags.ComputeAll;
+            SignalDirty(DirtyFlags.ComputeAll);
 
             // Cleanup
             descriptor.Dispose();
@@ -233,22 +238,22 @@ namespace Ryujinx.Graphics.Metal
 
             if ((_currentState.Dirty & DirtyFlags.Uniforms) != 0)
             {
-                UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, MetalRenderer.UniformSetIndex);
+                UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, Constants.ConstantBuffersSetIndex);
             }
 
             if ((_currentState.Dirty & DirtyFlags.Storages) != 0)
             {
-                UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, MetalRenderer.StorageSetIndex);
+                UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, Constants.StorageBuffersSetIndex);
             }
 
             if ((_currentState.Dirty & DirtyFlags.Textures) != 0)
             {
-                UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, MetalRenderer.TextureSetIndex);
+                UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, Constants.TexturesSetIndex);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.Images))
+            if ((_currentState.Dirty & DirtyFlags.Images) != 0)
             {
-                UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, MetalRenderer.ImageSetIndex);
+                UpdateAndBind(renderCommandEncoder, _currentState.RenderProgram, Constants.ImagesSetIndex);
             }
 
             _currentState.Dirty &= ~DirtyFlags.RenderAll;
@@ -256,29 +261,29 @@ namespace Ryujinx.Graphics.Metal
 
         public readonly void RebindComputeState(MTLComputeCommandEncoder computeCommandEncoder)
         {
-            if (_currentState.Dirty.HasFlag(DirtyFlags.ComputePipeline))
+            if ((_currentState.Dirty & DirtyFlags.ComputePipeline) != 0)
             {
                 SetComputePipelineState(computeCommandEncoder);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.Uniforms))
+            if ((_currentState.Dirty & DirtyFlags.Uniforms) != 0)
             {
-                UpdateAndBind(computeCommandEncoder, _currentState.ComputeProgram, MetalRenderer.UniformSetIndex);
+                UpdateAndBind(computeCommandEncoder, _currentState.ComputeProgram, Constants.ConstantBuffersSetIndex);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.Storages))
+            if ((_currentState.Dirty & DirtyFlags.Storages) != 0)
             {
-                UpdateAndBind(computeCommandEncoder, _currentState.ComputeProgram, MetalRenderer.StorageSetIndex);
+                UpdateAndBind(computeCommandEncoder, _currentState.ComputeProgram, Constants.StorageBuffersSetIndex);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.Textures))
+            if ((_currentState.Dirty & DirtyFlags.Textures) != 0)
             {
-                UpdateAndBind(computeCommandEncoder, _currentState.ComputeProgram, MetalRenderer.TextureSetIndex);
+                UpdateAndBind(computeCommandEncoder, _currentState.ComputeProgram, Constants.TexturesSetIndex);
             }
 
-            if (_currentState.Dirty.HasFlag(DirtyFlags.Images))
+            if ((_currentState.Dirty & DirtyFlags.Images) != 0)
             {
-                UpdateAndBind(computeCommandEncoder, _currentState.ComputeProgram, MetalRenderer.ImageSetIndex);
+                UpdateAndBind(computeCommandEncoder, _currentState.ComputeProgram, Constants.ImagesSetIndex);
             }
 
             _currentState.Dirty &= ~DirtyFlags.ComputeAll;
@@ -347,13 +352,13 @@ namespace Ryujinx.Graphics.Metal
             {
                 _currentState.RenderProgram = prg;
 
-                _currentState.Dirty |= DirtyFlags.RenderPipeline | DirtyFlags.ArgBuffers;
+                SignalDirty(DirtyFlags.RenderPipeline | DirtyFlags.ArgBuffers);
             }
             else if (prg.ComputeFunction != IntPtr.Zero)
             {
                 _currentState.ComputeProgram = prg;
 
-                _currentState.Dirty |= DirtyFlags.ComputePipeline | DirtyFlags.ArgBuffers;
+                SignalDirty(DirtyFlags.ComputePipeline | DirtyFlags.ArgBuffers);
             }
         }
 
@@ -516,8 +521,7 @@ namespace Ryujinx.Graphics.Metal
             // Update the buffers on the pipeline
             UpdatePipelineVertexState(_currentState.VertexBuffers, _currentState.VertexAttribs);
 
-            // Mark dirty
-            _currentState.Dirty |= DirtyFlags.RenderPipeline;
+            SignalDirty(DirtyFlags.RenderPipeline);
         }
 
         public readonly void UpdateBlendDescriptors(int index, BlendDescriptor blend)
@@ -541,11 +545,9 @@ namespace Ryujinx.Graphics.Metal
 
             _currentState.BlendColor = blend.BlendConstant;
 
-            // Mark dirty
-            _currentState.Dirty |= DirtyFlags.RenderPipeline;
+            SignalDirty(DirtyFlags.RenderPipeline);
         }
 
-        // Inlineable
         public void UpdateStencilState(StencilTestDescriptor stencilTest)
         {
             ref DepthStencilUid uid = ref _currentState.DepthStencilUid;
@@ -574,8 +576,7 @@ namespace Ryujinx.Graphics.Metal
 
             UpdateStencilRefValue(stencilTest.FrontFuncRef, stencilTest.BackFuncRef);
 
-            // Mark dirty
-            _currentState.Dirty |= DirtyFlags.DepthStencil;
+            SignalDirty(DirtyFlags.DepthStencil);
         }
 
         public readonly void UpdateDepthState(DepthTestDescriptor depthTest)
@@ -585,11 +586,9 @@ namespace Ryujinx.Graphics.Metal
             uid.DepthCompareFunction = depthTest.TestEnable ? depthTest.Func.Convert() : MTLCompareFunction.Always;
             uid.DepthWriteEnabled = depthTest.TestEnable && depthTest.WriteEnable;
 
-            // Mark dirty
-            _currentState.Dirty |= DirtyFlags.DepthStencil;
+            SignalDirty(DirtyFlags.DepthStencil);
         }
 
-        // Inlineable
         public readonly void UpdateDepthClamp(bool clamp)
         {
             _currentState.DepthClipMode = clamp ? MTLDepthClipMode.Clamp : MTLDepthClipMode.Clip;
@@ -601,11 +600,9 @@ namespace Ryujinx.Graphics.Metal
                 return;
             }
 
-            // Mark dirty
-            _currentState.Dirty |= DirtyFlags.DepthClamp;
+            SignalDirty(DirtyFlags.DepthClamp);
         }
 
-        // Inlineable
         public readonly void UpdateDepthBias(float depthBias, float slopeScale, float clamp)
         {
             _currentState.DepthBias = depthBias;
@@ -619,11 +616,9 @@ namespace Ryujinx.Graphics.Metal
                 return;
             }
 
-            // Mark dirty
-            _currentState.Dirty |= DirtyFlags.DepthBias;
+            SignalDirty(DirtyFlags.DepthBias);
         }
 
-        // Inlineable
         public void UpdateScissors(ReadOnlySpan<Rectangle<int>> regions)
         {
             for (int i = 0; i < regions.Length; i++)
@@ -646,11 +641,9 @@ namespace Ryujinx.Graphics.Metal
                 return;
             }
 
-            // Mark dirty
-            _currentState.Dirty |= DirtyFlags.Scissors;
+            SignalDirty(DirtyFlags.Scissors);
         }
 
-        // Inlineable
         public void UpdateViewports(ReadOnlySpan<Viewport> viewports)
         {
             static float Clamp(float value)
@@ -680,8 +673,7 @@ namespace Ryujinx.Graphics.Metal
                 return;
             }
 
-            // Mark dirty
-            _currentState.Dirty |= DirtyFlags.Viewports;
+            SignalDirty(DirtyFlags.Viewports);
         }
 
         public readonly void UpdateVertexBuffers(ReadOnlySpan<VertexBufferDescriptor> vertexBuffers)
@@ -708,8 +700,7 @@ namespace Ryujinx.Graphics.Metal
             // Update the buffers on the pipeline
             UpdatePipelineVertexState(_currentState.VertexBuffers, _currentState.VertexAttribs);
 
-            // Mark dirty
-            _currentState.Dirty |= DirtyFlags.RenderPipeline;
+            SignalDirty(DirtyFlags.RenderPipeline);
         }
 
         public readonly void UpdateUniformBuffers(ReadOnlySpan<BufferAssignment> buffers)
@@ -726,7 +717,7 @@ namespace Ryujinx.Graphics.Metal
                 _currentState.UniformBufferRefs[index] = new BufferRef(mtlBuffer, ref buffer);
             }
 
-            _currentState.Dirty |= DirtyFlags.Uniforms;
+            SignalDirty(DirtyFlags.Uniforms);
         }
 
         public readonly void UpdateStorageBuffers(ReadOnlySpan<BufferAssignment> buffers)
@@ -743,7 +734,7 @@ namespace Ryujinx.Graphics.Metal
                 _currentState.StorageBufferRefs[index] = new BufferRef(mtlBuffer, ref buffer);
             }
 
-            _currentState.Dirty |= DirtyFlags.Storages;
+            SignalDirty(DirtyFlags.Storages);
         }
 
         public readonly void UpdateStorageBuffers(int first, ReadOnlySpan<Auto<DisposableBuffer>> buffers)
@@ -756,10 +747,9 @@ namespace Ryujinx.Graphics.Metal
                 _currentState.StorageBufferRefs[index] = new BufferRef(mtlBuffer);
             }
 
-            _currentState.Dirty |= DirtyFlags.Storages;
+            SignalDirty(DirtyFlags.Storages);
         }
 
-        // Inlineable
         public void UpdateCullMode(bool enable, Face face)
         {
             var dirtyScissor = (face == Face.FrontAndBack) != _currentState.CullBoth;
@@ -776,15 +766,14 @@ namespace Ryujinx.Graphics.Metal
             }
 
             // Mark dirty
-            _currentState.Dirty |= DirtyFlags.CullMode;
+            SignalDirty(DirtyFlags.CullMode);
 
             if (dirtyScissor)
             {
-                _currentState.Dirty |= DirtyFlags.Scissors;
+                SignalDirty(DirtyFlags.Scissors);
             }
         }
 
-        // Inlineable
         public readonly void UpdateFrontFace(FrontFace frontFace)
         {
             _currentState.Winding = frontFace.Convert();
@@ -796,8 +785,7 @@ namespace Ryujinx.Graphics.Metal
                 return;
             }
 
-            // Mark dirty
-            _currentState.Dirty |= DirtyFlags.FrontFace;
+            SignalDirty(DirtyFlags.FrontFace);
         }
 
         private readonly void UpdateStencilRefValue(int frontRef, int backRef)
@@ -811,8 +799,7 @@ namespace Ryujinx.Graphics.Metal
                 SetStencilRefValue(renderCommandEncoder);
             }
 
-            // Mark dirty
-            _currentState.Dirty |= DirtyFlags.StencilRef;
+            SignalDirty(DirtyFlags.StencilRef);
         }
 
         public readonly void UpdateTextureAndSampler(ShaderStage stage, ulong binding, TextureBase texture, Sampler sampler)
@@ -826,7 +813,7 @@ namespace Ryujinx.Graphics.Metal
                 _currentState.TextureRefs[binding] = default;
             }
 
-            _currentState.Dirty |= DirtyFlags.Textures;
+            SignalDirty(DirtyFlags.Textures);
         }
 
         public readonly void UpdateImage(ShaderStage stage, ulong binding, TextureBase texture)
@@ -840,7 +827,7 @@ namespace Ryujinx.Graphics.Metal
                 _currentState.ImageRefs[binding] = default;
             }
 
-            _currentState.Dirty |= DirtyFlags.Images;
+            SignalDirty(DirtyFlags.Images);
         }
 
         public void UpdateTextureArray(ShaderStage stage, ulong binding, TextureArray array)
@@ -851,19 +838,19 @@ namespace Ryujinx.Graphics.Metal
             {
                 arrayRef = new EncoderState.ArrayRef<TextureArray>(stage, array);
 
-                _currentState.Dirty |= DirtyFlags.Textures;
+                SignalDirty(DirtyFlags.Textures);
             }
         }
 
         public void UpdateTextureArraySeparate(ShaderStage stage, int setIndex, TextureArray array)
         {
-            ref EncoderState.ArrayRef<TextureArray> arrayRef = ref GetArrayRef(ref _currentState.TextureArrayRefs, setIndex);
+            ref EncoderState.ArrayRef<TextureArray> arrayRef = ref GetArrayRef(ref _currentState.TextureArrayExtraRefs, setIndex - MetalRenderer.TotalSets);
 
             if (arrayRef.Stage != stage || arrayRef.Array != array)
             {
                 arrayRef = new EncoderState.ArrayRef<TextureArray>(stage, array);
 
-                _currentState.Dirty |= DirtyFlags.Textures;
+                SignalDirty(DirtyFlags.Textures);
             }
         }
 
@@ -875,19 +862,19 @@ namespace Ryujinx.Graphics.Metal
             {
                 arrayRef = new EncoderState.ArrayRef<ImageArray>(stage, array);
 
-                _currentState.Dirty |= DirtyFlags.Images;
+                SignalDirty(DirtyFlags.Images);
             }
         }
 
         public void UpdateImageArraySeparate(ShaderStage stage, int setIndex, ImageArray array)
         {
-            ref EncoderState.ArrayRef<ImageArray> arrayRef = ref GetArrayRef(ref _currentState.ImageArrayExtraRefs, setIndex);
+            ref EncoderState.ArrayRef<ImageArray> arrayRef = ref GetArrayRef(ref _currentState.ImageArrayExtraRefs, setIndex - MetalRenderer.TotalSets);
 
             if (arrayRef.Stage != stage || arrayRef.Array != array)
             {
                 arrayRef = new EncoderState.ArrayRef<ImageArray>(stage, array);
 
-                _currentState.Dirty |= DirtyFlags.Images;
+                SignalDirty(DirtyFlags.Images);
             }
         }
 
@@ -1054,7 +1041,7 @@ namespace Ryujinx.Graphics.Metal
             renderCommandEncoder.SetVertexBuffer(zeroMtlBuffer, 0, Constants.ZeroBufferIndex);
         }
 
-        private readonly void UpdateAndBind(MTLRenderCommandEncoder renderCommandEncoder, Program program, int setIndex)
+        private readonly void UpdateAndBind(MTLRenderCommandEncoder renderCommandEncoder, Program program, uint setIndex)
         {
             var bindingSegments = program.BindingSegments[setIndex];
 
@@ -1089,7 +1076,7 @@ namespace Ryujinx.Graphics.Metal
 
                 switch (setIndex)
                 {
-                    case MetalRenderer.UniformSetIndex:
+                    case Constants.ConstantBuffersSetIndex:
                         for (int i = 0; i < count; i++)
                         {
                             int index = binding + i;
@@ -1139,7 +1126,7 @@ namespace Ryujinx.Graphics.Metal
                             renderCommandEncoder.UseResource(new MTLResource(mtlBuffer.NativePtr), MTLResourceUsage.Read, renderStages);
                         }
                         break;
-                    case MetalRenderer.StorageSetIndex:
+                    case Constants.StorageBuffersSetIndex:
                         for (int i = 0; i < count; i++)
                         {
                             int index = binding + i;
@@ -1170,7 +1157,7 @@ namespace Ryujinx.Graphics.Metal
 
                             MTLRenderStages renderStages = 0;
 
-                            if (segment.Stages.HasFlag(ResourceStages.Vertex))
+                            if ((segment.Stages & ResourceStages.Vertex) != 0)
                             {
                                 vertResourceIds[vertResourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
                                 vertResourceIdIndex++;
@@ -1178,7 +1165,7 @@ namespace Ryujinx.Graphics.Metal
                                 renderStages |= MTLRenderStages.RenderStageVertex;
                             }
 
-                            if (segment.Stages.HasFlag(ResourceStages.Fragment))
+                            if ((segment.Stages & ResourceStages.Fragment) != 0)
                             {
                                 fragResourceIds[fragResourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
                                 fragResourceIdIndex++;
@@ -1189,7 +1176,7 @@ namespace Ryujinx.Graphics.Metal
                             renderCommandEncoder.UseResource(new MTLResource(mtlBuffer.NativePtr), MTLResourceUsage.Read, renderStages);
                         }
                         break;
-                    case MetalRenderer.TextureSetIndex:
+                    case Constants.TexturesSetIndex:
                         if (!segment.IsArray)
                         {
                             for (int i = 0; i < count; i++)
@@ -1247,10 +1234,106 @@ namespace Ryujinx.Graphics.Metal
                         }
                         else
                         {
-                            // TODO: Texture arrays
+                            var textureArray = _currentState.TextureArrayRefs[binding].Array;
+
+                            if (segment.Type != ResourceType.BufferTexture)
+                            {
+                                var textures = textureArray.GetTextureRefs();
+                                var samplers = new Sampler[textures.Length];
+
+                                for (int i = 0; i < textures.Length; i++)
+                                {
+                                    TextureRef texture = textures[i];
+
+                                    if (texture.Storage == null)
+                                    {
+                                        continue;
+                                    }
+
+                                    var mtlTexture = texture.Storage.GetHandle();
+                                    samplers[i] = texture.Sampler;
+
+                                    MTLRenderStages renderStages = 0;
+
+                                    if ((segment.Stages & ResourceStages.Vertex) != 0)
+                                    {
+                                        vertResourceIds[vertResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        vertResourceIdIndex++;
+
+                                        renderStages |= MTLRenderStages.RenderStageVertex;
+                                    }
+
+                                    if ((segment.Stages & ResourceStages.Fragment) != 0)
+                                    {
+                                        fragResourceIds[fragResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        fragResourceIdIndex++;
+
+                                        renderStages |= MTLRenderStages.RenderStageFragment;
+                                    }
+
+                                    renderCommandEncoder.UseResource(new MTLResource(mtlTexture.NativePtr),
+                                        MTLResourceUsage.Read, renderStages);
+                                }
+
+                                foreach (var sampler in samplers)
+                                {
+                                    if (sampler == null)
+                                    {
+                                        continue;
+                                    }
+
+                                    if ((segment.Stages & ResourceStages.Vertex) != 0)
+                                    {
+                                        vertResourceIds[vertResourceIdIndex] = sampler.GetSampler().GpuResourceID._impl;
+                                        vertResourceIdIndex++;
+                                    }
+
+                                    if ((segment.Stages & ResourceStages.Fragment) != 0)
+                                    {
+                                        fragResourceIds[fragResourceIdIndex] = sampler.GetSampler().GpuResourceID._impl;
+                                        fragResourceIdIndex++;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                var bufferTextures = textureArray.GetBufferTextureRefs();
+
+                                foreach (TextureBuffer bufferTexture in bufferTextures)
+                                {
+                                    if (bufferTexture == null)
+                                    {
+                                        continue;
+                                    }
+
+                                    bufferTexture.RebuildStorage(false);
+
+                                    var mtlTexture = bufferTexture.GetHandle();
+
+                                    MTLRenderStages renderStages = 0;
+
+                                    if ((segment.Stages & ResourceStages.Vertex) != 0)
+                                    {
+                                        vertResourceIds[vertResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        vertResourceIdIndex++;
+
+                                        renderStages |= MTLRenderStages.RenderStageVertex;
+                                    }
+
+                                    if ((segment.Stages & ResourceStages.Fragment) != 0)
+                                    {
+                                        fragResourceIds[fragResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        fragResourceIdIndex++;
+
+                                        renderStages |= MTLRenderStages.RenderStageFragment;
+                                    }
+
+                                    renderCommandEncoder.UseResource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read, renderStages);
+                                }
+                            }
                         }
                         break;
-                    case MetalRenderer.ImageSetIndex:
+                    case Constants.ImagesSetIndex:
                         if (!segment.IsArray)
                         {
                             for (int i = 0; i < count; i++)
@@ -1306,7 +1389,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        private readonly void UpdateAndBind(MTLComputeCommandEncoder computeCommandEncoder, Program program, int setIndex)
+        private readonly void UpdateAndBind(MTLComputeCommandEncoder computeCommandEncoder, Program program, uint setIndex)
         {
             var bindingSegments = program.BindingSegments[setIndex];
 
@@ -1332,7 +1415,7 @@ namespace Ryujinx.Graphics.Metal
 
                 switch (setIndex)
                 {
-                    case MetalRenderer.UniformSetIndex:
+                    case Constants.ConstantBuffersSetIndex:
                         for (int i = 0; i < count; i++)
                         {
                             int index = binding + i;
@@ -1369,7 +1452,7 @@ namespace Ryujinx.Graphics.Metal
                             }
                         }
                         break;
-                    case MetalRenderer.StorageSetIndex:
+                    case Constants.StorageBuffersSetIndex:
                         for (int i = 0; i < count; i++)
                         {
                             int index = binding + i;
@@ -1406,7 +1489,7 @@ namespace Ryujinx.Graphics.Metal
                             }
                         }
                         break;
-                    case MetalRenderer.TextureSetIndex:
+                    case Constants.TexturesSetIndex:
                         if (!segment.IsArray)
                         {
                             for (int i = 0; i < count; i++)
@@ -1429,7 +1512,7 @@ namespace Ryujinx.Graphics.Metal
 
                                 var mtlTexture = storage.GetHandle();
 
-                                if (segment.Stages.HasFlag(ResourceStages.Compute))
+                                if ((segment.Stages & ResourceStages.Compute) != 0)
                                 {
                                     computeCommandEncoder.UseResource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read);
                                     resourceIds[resourceIdIndex] = mtlTexture.GpuResourceID._impl;
@@ -1445,10 +1528,70 @@ namespace Ryujinx.Graphics.Metal
                         }
                         else
                         {
-                            // TODO: Texture arrays
+                            var textureArray = _currentState.TextureArrayRefs[binding].Array;
+
+                            if (segment.Type != ResourceType.BufferTexture)
+                            {
+                                var textures = textureArray.GetTextureRefs();
+                                var samplers = new Sampler[textures.Length];
+
+                                for (int i = 0; i < textures.Length; i++)
+                                {
+                                    TextureRef texture = textures[i];
+
+                                    if (texture.Storage == null)
+                                    {
+                                        continue;
+                                    }
+
+                                    var mtlTexture = texture.Storage.GetHandle();
+
+                                    if ((segment.Stages & ResourceStages.Compute) != 0)
+                                    {
+                                        computeCommandEncoder.UseResource(new MTLResource(mtlTexture.NativePtr),
+                                            MTLResourceUsage.Read);
+                                        resourceIds[resourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        resourceIdIndex++;
+
+                                        samplers[i] = texture.Sampler;
+                                    }
+                                }
+
+                                foreach (var sampler in samplers)
+                                {
+                                    if (sampler != null)
+                                    {
+                                        resourceIds[resourceIdIndex] = sampler.GetSampler().GpuResourceID._impl;
+                                        resourceIdIndex++;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                var bufferTextures = textureArray.GetBufferTextureRefs();
+
+                                foreach (TextureBuffer bufferTexture in bufferTextures)
+                                {
+                                    if (bufferTexture == null)
+                                    {
+                                        continue;
+                                    }
+
+                                    bufferTexture.RebuildStorage(false);
+
+                                    var mtlTexture = bufferTexture.GetHandle();
+
+                                    if ((segment.Stages & ResourceStages.Compute) != 0)
+                                    {
+                                        computeCommandEncoder.UseResource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read);
+                                        resourceIds[resourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        resourceIdIndex++;
+                                    }
+                                }
+                            }
                         }
                         break;
-                    case MetalRenderer.ImageSetIndex:
+                    case Constants.ImagesSetIndex:
                         if (!segment.IsArray)
                         {
                             if (segment.Type != ResourceType.BufferTexture)
@@ -1468,7 +1611,7 @@ namespace Ryujinx.Graphics.Metal
 
                                     var mtlTexture = storage.GetHandle();
 
-                                    if (segment.Stages.HasFlag(ResourceStages.Compute))
+                                    if ((segment.Stages & ResourceStages.Compute) != 0)
                                     {
                                         computeCommandEncoder.UseResource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read | MTLResourceUsage.Write);
                                         resourceIds[resourceIdIndex] = mtlTexture.GpuResourceID._impl;
@@ -1489,14 +1632,14 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        private static uint SetIndexToBindingIndex(int setIndex)
+        private static uint SetIndexToBindingIndex(uint setIndex)
         {
             return setIndex switch
             {
-                MetalRenderer.UniformSetIndex => Constants.ConstantBuffersIndex,
-                MetalRenderer.StorageSetIndex => Constants.StorageBuffersIndex,
-                MetalRenderer.TextureSetIndex => Constants.TexturesIndex,
-                MetalRenderer.ImageSetIndex => Constants.ImagesIndex,
+                Constants.ConstantBuffersSetIndex => Constants.ConstantBuffersIndex,
+                Constants.StorageBuffersSetIndex => Constants.StorageBuffersIndex,
+                Constants.TexturesSetIndex => Constants.TexturesIndex,
+                Constants.ImagesSetIndex => Constants.ImagesIndex,
             };
         }
 

@@ -33,7 +33,7 @@ vertex VertexOut vertexMain(ushort vid [[vertex_id]]) {
 }
 
 fragment FragmentOut fragmentMain(VertexOut in [[stage_in]],
-                                  constant ConstantBuffers &constant_buffers [[buffer(20)]]) {
+                                  constant ConstantBuffers &constant_buffers [[buffer(CONSTANT_BUFFERS_INDEX)]]) {
     FragmentOut out;
 
     out.depth = constant_buffers.clear_depth->data;

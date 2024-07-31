@@ -20,28 +20,28 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
             CodeGenContext context = new(info, parameters);
 
-            Declarations.Declare(context, info);
+            var sets = Declarations.Declare(context, info);
 
             if (info.Functions.Count != 0)
             {
                 for (int i = 1; i < info.Functions.Count; i++)
                 {
-                    PrintFunction(context, info.Functions[i], parameters.Definitions.Stage);
+                    PrintFunction(context, info.Functions[i], parameters.Definitions.Stage, sets);
 
                     context.AppendLine();
                 }
             }
 
-            PrintFunction(context, info.Functions[0], parameters.Definitions.Stage, true);
+            PrintFunction(context, info.Functions[0], parameters.Definitions.Stage, sets, true);
 
             return context.GetCode();
         }
 
-        private static void PrintFunction(CodeGenContext context, StructuredFunction function, ShaderStage stage, bool isMainFunc = false)
+        private static void PrintFunction(CodeGenContext context, StructuredFunction function, ShaderStage stage, int[] sets, bool isMainFunc = false)
         {
             context.CurrentFunction = function;
 
-            context.AppendLine(GetFunctionSignature(context, function, stage, isMainFunc));
+            context.AppendLine(GetFunctionSignature(context, function, stage, sets, isMainFunc));
             context.EnterScope();
 
             Declarations.DeclareLocals(context, function, stage, isMainFunc);
@@ -61,6 +61,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             CodeGenContext context,
             StructuredFunction function,
             ShaderStage stage,
+            int[] sets,
             bool isMainFunc = false)
         {
             int additionalArgCount = isMainFunc ? 0 : CodeGenContext.AdditionalArgCount + (context.Definitions.Stage != ShaderStage.Compute ? 1 : 0);
@@ -166,8 +167,12 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
                 args = args.Append($"constant ConstantBuffers &constant_buffers [[buffer({Defaults.ConstantBuffersIndex})]]").ToArray();
                 args = args.Append($"device StorageBuffers &storage_buffers [[buffer({Defaults.StorageBuffersIndex})]]").ToArray();
-                args = args.Append($"constant Textures &textures [[buffer({Defaults.TexturesIndex})]]").ToArray();
-                args = args.Append($"constant Images &images [[buffer({Defaults.ImagesIndex})]]").ToArray();
+
+                foreach (var set in sets)
+                {
+                    var bindingIndex = set + Defaults.BaseSetIndex;
+                    args = args.Append($"constant {Declarations.GetNameForSet(set)} &{Declarations.GetNameForSet(set, true)} [[buffer({bindingIndex})]]").ToArray();
+                }
             }
 
             var funcPrefix = $"{funcKeyword} {returnType} {funcName ?? function.Name}(";

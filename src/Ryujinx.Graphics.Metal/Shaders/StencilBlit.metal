@@ -18,7 +18,7 @@ struct FragmentOut {
 };
 
 fragment FragmentOut fragmentMain(CopyVertexOut in [[stage_in]],
-                             constant Textures &textures [[buffer(22)]]) {
+                             constant Textures &textures [[buffer(TEXTURES_INDEX)]]) {
     FragmentOut out;
 
     out.stencil = textures.texture.sample(textures.sampler, in.uv).r;

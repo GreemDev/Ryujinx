@@ -58,7 +58,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
          *
          */
 
-        public static void Declare(CodeGenContext context, StructuredProgramInfo info)
+        public static int[] Declare(CodeGenContext context, StructuredProgramInfo info)
         {
             // TODO: Re-enable this warning
             context.AppendLine("#pragma clang diagnostic ignored \"-Wunused-variable\"");
@@ -75,10 +75,32 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             context.AppendLine();
             DeclareOutputAttributes(context, info.IoDefinitions.Where(x => x.StorageKind == StorageKind.Output));
             context.AppendLine();
-            DeclareBufferStructures(context, context.Properties.ConstantBuffers.Values, true, fsi);
-            DeclareBufferStructures(context, context.Properties.StorageBuffers.Values, false, fsi);
-            DeclareTextures(context, context.Properties.Textures.Values);
-            DeclareImages(context, context.Properties.Images.Values, fsi);
+            DeclareBufferStructures(context, context.Properties.ConstantBuffers.Values.OrderBy(x => x.Binding).ToArray(), true, fsi);
+            DeclareBufferStructures(context, context.Properties.StorageBuffers.Values.OrderBy(x => x.Binding).ToArray(), false, fsi);
+
+            // We need to declare each set as a new struct
+            var textureDefinitions = context.Properties.Textures.Values
+                .GroupBy(x => x.Set)
+                .ToDictionary(x => x.Key, x => x.OrderBy(y => y.Binding).ToArray());
+
+            var imageDefinitions = context.Properties.Images.Values
+                .GroupBy(x => x.Set)
+                .ToDictionary(x => x.Key, x => x.OrderBy(y => y.Binding).ToArray());
+
+            var textureSets = textureDefinitions.Keys.ToArray();
+            var imageSets = imageDefinitions.Keys.ToArray();
+
+            var sets = textureSets.Union(imageSets).ToArray();
+
+            foreach (var set in textureDefinitions)
+            {
+                DeclareTextures(context, set.Value, set.Key);
+            }
+
+            foreach (var set in imageDefinitions)
+            {
+                DeclareImages(context, set.Value, set.Key, fsi);
+            }
 
             if ((info.HelperFunctionsMask & HelperFunctionsMask.FindLSB) != 0)
             {
@@ -99,6 +121,8 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             {
                 AppendHelperFunction(context, "Ryujinx.Graphics.Shader/CodeGen/Msl/HelperFunctions/SwizzleAdd.metal");
             }
+
+            return sets;
         }
 
         static bool IsUserDefined(IoDefinition ioDefinition, StorageKind storageKind)
@@ -186,22 +210,21 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             }
         }
 
-        private static void DeclareBufferStructures(CodeGenContext context, IEnumerable<BufferDefinition> buffers, bool constant, bool fsi)
+        private static void DeclareBufferStructures(CodeGenContext context, BufferDefinition[] buffers, bool constant, bool fsi)
         {
             var name = constant ? "ConstantBuffers" : "StorageBuffers";
             var addressSpace = constant ? "constant" : "device";
 
-            List<string> argBufferPointers = [];
+            string[] bufferDec = new string[buffers.Length];
 
-            // TODO: Avoid Linq if we can
-            var sortedBuffers = buffers.OrderBy(x => x.Binding).ToArray();
-
-            foreach (BufferDefinition buffer in sortedBuffers)
+            for (int i = 0; i < buffers.Length; i++)
             {
+                BufferDefinition buffer = buffers[i];
+
                 var needsPadding = buffer.Layout == BufferLayout.Std140;
                 string fsiSuffix = constant && fsi ? " [[raster_order_group(0)]]" : "";
 
-                argBufferPointers.Add($"{addressSpace} {Defaults.StructPrefix}_{buffer.Name}* {buffer.Name}{fsiSuffix};");
+                bufferDec[i] = $"{addressSpace} {Defaults.StructPrefix}_{buffer.Name}* {buffer.Name}{fsiSuffix};";
 
                 context.AppendLine($"struct {Defaults.StructPrefix}_{buffer.Name}");
                 context.EnterScope();
@@ -209,7 +232,9 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 foreach (StructureField field in buffer.Type.Fields)
                 {
                     var type = field.Type;
-                    type |= (needsPadding && (field.Type & AggregateType.Array) != 0) ? AggregateType.Vector4 : AggregateType.Invalid;
+                    type |= (needsPadding && (field.Type & AggregateType.Array) != 0)
+                        ? AggregateType.Vector4
+                        : AggregateType.Invalid;
 
                     type &= ~AggregateType.Array;
 
@@ -239,66 +264,85 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             context.AppendLine($"struct {name}");
             context.EnterScope();
 
-            foreach (var pointer in argBufferPointers)
+            foreach (var declaration in bufferDec)
             {
-                context.AppendLine(pointer);
+                context.AppendLine(declaration);
             }
 
             context.LeaveScope(";");
             context.AppendLine();
         }
 
-        private static void DeclareTextures(CodeGenContext context, IEnumerable<TextureDefinition> textures)
+        private static void DeclareTextures(CodeGenContext context, TextureDefinition[] textures, int set)
         {
-            context.AppendLine("struct Textures");
+            var setName = GetNameForSet(set);
+            context.AppendLine($"struct {setName}");
             context.EnterScope();
 
-            List<string> argBufferPointers = [];
+            List<string> textureDec = [];
 
-            // TODO: Avoid Linq if we can
-            var sortedTextures = textures.OrderBy(x => x.Binding).ToArray();
-
-            foreach (TextureDefinition texture in sortedTextures)
+            foreach (TextureDefinition texture in textures)
             {
-                var textureTypeName = texture.Type.ToMslTextureType();
-                argBufferPointers.Add($"{textureTypeName} tex_{texture.Name};");
+                if (texture.Type != SamplerType.None)
+                {
+                    var textureTypeName = texture.Type.ToMslTextureType();
+
+                    if (texture.ArrayLength > 1)
+                    {
+                        textureTypeName = $"array<{textureTypeName}, {texture.ArrayLength}>";
+                    }
+
+                    textureDec.Add($"{textureTypeName} tex_{texture.Name};");
+                }
 
                 if (!texture.Separate && texture.Type != SamplerType.TextureBuffer)
                 {
-                    argBufferPointers.Add($"sampler samp_{texture.Name};");
+                    var samplerType = "sampler";
+
+                    if (texture.ArrayLength > 1)
+                    {
+                        samplerType = $"array<{samplerType}, {texture.ArrayLength}>";
+                    }
+
+                    textureDec.Add($"{samplerType} samp_{texture.Name};");
                 }
             }
 
-            foreach (var pointer in argBufferPointers)
+            foreach (var declaration in textureDec)
             {
-                context.AppendLine(pointer);
+                context.AppendLine(declaration);
             }
 
             context.LeaveScope(";");
             context.AppendLine();
         }
 
-        private static void DeclareImages(CodeGenContext context, IEnumerable<TextureDefinition> images, bool fsi)
+        private static void DeclareImages(CodeGenContext context, TextureDefinition[] images, int set, bool fsi)
         {
-            context.AppendLine("struct Images");
+            var setName = GetNameForSet(set);
+            context.AppendLine($"struct {setName}");
             context.EnterScope();
 
-            List<string> argBufferPointers = [];
+            string[] imageDec = new string[images.Length];
 
-            // TODO: Avoid Linq if we can
-            var sortedImages = images.OrderBy(x => x.Binding).ToArray();
-
-            foreach (TextureDefinition image in sortedImages)
+            for (int i = 0; i < images.Length; i++)
             {
+                TextureDefinition image = images[i];
+
                 var imageTypeName = image.Type.ToMslTextureType(true);
+                if (image.ArrayLength > 1)
+                {
+                    imageTypeName = $"array<{imageTypeName}, {image.ArrayLength}>";
+                }
+
                 string fsiSuffix = fsi ? " [[raster_order_group(0)]]" : "";
 
-                argBufferPointers.Add($"{imageTypeName} {image.Name}{fsiSuffix};");
+                imageDec[i] = $"{imageTypeName} {image.Name}{fsiSuffix};";
             }
 
-            foreach (var pointer in argBufferPointers)
+            foreach (var declaration in imageDec)
             {
-                context.AppendLine(pointer);
+                context.AppendLine(declaration);
             }
 
             context.LeaveScope(";");
@@ -482,6 +526,16 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
             context.AppendLine(code);
             context.AppendLine();
+        }
+
+        public static string GetNameForSet(int set, bool forVar = false)
+        {
+            return (uint)set switch
+            {
+                Defaults.TexturesSetIndex => forVar ? "textures" : "Textures",
+                Defaults.ImagesSetIndex => forVar ? "images" : "Images",
+                _ => $"{(forVar ? "set" : "Set")}{set}"
+            };
         }
     }
 }

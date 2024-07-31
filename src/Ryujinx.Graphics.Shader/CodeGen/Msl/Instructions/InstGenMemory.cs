@@ -494,13 +494,14 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
         {
             TextureDefinition textureDefinition = context.Properties.Textures[texOp.GetTextureSetAndBinding()];
             string name = textureDefinition.Name;
+            string setName = Declarations.GetNameForSet(textureDefinition.Set, true);
 
             if (textureDefinition.ArrayLength != 1)
             {
                 name = $"{name}[{GetSourceExpr(context, texOp.GetSource(srcIndex++), AggregateType.S32)}]";
             }
 
-            return $"textures.tex_{name}";
+            return $"{setName}.tex_{name}";
         }
 
         private static string GetSamplerName(CodeGenContext context, AstTextureOperation texOp, ref int srcIndex)
@@ -510,26 +511,28 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
             TextureDefinition samplerDefinition = context.Properties.Textures[index];
             string name = samplerDefinition.Name;
+            string setName = Declarations.GetNameForSet(samplerDefinition.Set, true);
 
             if (samplerDefinition.ArrayLength != 1)
             {
                 name = $"{name}[{GetSourceExpr(context, texOp.GetSource(sourceIndex), AggregateType.S32)}]";
             }
 
-            return $"textures.samp_{name}";
+            return $"{setName}.samp_{name}";
         }
 
         private static string GetImageName(CodeGenContext context, AstTextureOperation texOp, ref int srcIndex)
         {
-            TextureDefinition definition = context.Properties.Images[texOp.GetTextureSetAndBinding()];
-            string name = definition.Name;
+            TextureDefinition imageDefinition = context.Properties.Images[texOp.GetTextureSetAndBinding()];
+            string name = imageDefinition.Name;
+            string setName = Declarations.GetNameForSet(imageDefinition.Set, true);
 
-            if (definition.ArrayLength != 1)
+            if (imageDefinition.ArrayLength != 1)
             {
                 name = $"{name}[{GetSourceExpr(context, texOp.GetSource(srcIndex++), AggregateType.S32)}]";
             }
 
-            return $"images.{name}";
+            return $"{setName}.{name}";
         }
 
         private static string GetMaskMultiDest(int mask)

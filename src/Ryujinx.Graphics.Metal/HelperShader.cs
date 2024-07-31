@@ -123,7 +123,16 @@ namespace Ryujinx.Graphics.Metal
 
         private static string ReadMsl(string fileName)
         {
-            return EmbeddedResources.ReadAllText(string.Join('/', ShadersSourcePath, fileName));
+            var msl = EmbeddedResources.ReadAllText(string.Join('/', ShadersSourcePath, fileName));
+
+#pragma warning disable IDE0055 // Disable formatting
+            msl = msl.Replace("CONSTANT_BUFFERS_INDEX", $"{Constants.ConstantBuffersIndex}")
+                     .Replace("STORAGE_BUFFERS_INDEX", $"{Constants.StorageBuffersIndex}")
+                     .Replace("TEXTURES_INDEX", $"{Constants.TexturesIndex}")
+                     .Replace("IMAGES_INDEX", $"{Constants.ImagesIndex}");
+#pragma warning restore IDE0055
+
+            return msl;
         }
 
         public unsafe void BlitColor(

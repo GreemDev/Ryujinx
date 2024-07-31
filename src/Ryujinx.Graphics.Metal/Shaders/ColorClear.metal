@@ -33,6 +33,6 @@ struct FragmentOut {
 };
 
 fragment FragmentOut fragmentMain(VertexOut in [[stage_in]],
-                                  constant ConstantBuffers &constant_buffers [[buffer(20)]]) {
+                                  constant ConstantBuffers &constant_buffers [[buffer(CONSTANT_BUFFERS_INDEX)]]) {
     return {constant_buffers.clear_color->data};
 }

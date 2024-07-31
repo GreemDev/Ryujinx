@@ -192,7 +192,7 @@ namespace Ryujinx.Graphics.Shader
                 typeName += "_array";
             }
 
-            return $"{typeName} <float{(image ? ", access::read_write" : "")}>";
+            return $"{typeName}<float{(image ? ", access::read_write" : "")}>";
         }
     }
 }

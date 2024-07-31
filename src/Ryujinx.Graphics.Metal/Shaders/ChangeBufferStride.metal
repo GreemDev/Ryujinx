@@ -23,8 +23,8 @@ struct StorageBuffers {
     device OutData* out_data;
 };
 
-kernel void kernelMain(constant ConstantBuffers &constant_buffers [[buffer(20)]],
-                       device StorageBuffers &storage_buffers [[buffer(21)]],
+kernel void kernelMain(constant ConstantBuffers &constant_buffers [[buffer(CONSTANT_BUFFERS_INDEX)]],
+                       device StorageBuffers &storage_buffers [[buffer(STORAGE_BUFFERS_INDEX)]],
                        uint3 thread_position_in_grid [[thread_position_in_grid]],
                        uint3 threads_per_threadgroup [[threads_per_threadgroup]],
                        uint3 threadgroups_per_grid [[threads_per_grid]])

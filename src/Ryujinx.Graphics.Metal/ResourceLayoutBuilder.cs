@@ -27,12 +27,12 @@ namespace Ryujinx.Graphics.Metal
 
         public ResourceLayoutBuilder Add(ResourceStages stages, ResourceType type, int binding, bool write = false)
         {
-            int setIndex = type switch
+            uint setIndex = type switch
             {
-                ResourceType.UniformBuffer => MetalRenderer.UniformSetIndex,
-                ResourceType.StorageBuffer => MetalRenderer.StorageSetIndex,
-                ResourceType.TextureAndSampler or ResourceType.BufferTexture => MetalRenderer.TextureSetIndex,
-                ResourceType.Image or ResourceType.BufferImage => MetalRenderer.ImageSetIndex,
+                ResourceType.UniformBuffer => Constants.ConstantBuffersSetIndex,
+                ResourceType.StorageBuffer => Constants.StorageBuffersSetIndex,
+                ResourceType.TextureAndSampler or ResourceType.BufferTexture => Constants.TexturesSetIndex,
+                ResourceType.Image or ResourceType.BufferImage => Constants.ImagesSetIndex,
                 _ => throw new ArgumentException($"Invalid resource type \"{type}\"."),
             };
 
