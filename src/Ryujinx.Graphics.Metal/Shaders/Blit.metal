@@ -17,7 +17,7 @@ struct ConstantBuffers {
 
 struct Textures
 {
-    texture2d<float, access::sample> texture;
+    texture2d<FORMAT, access::sample> texture;
     sampler sampler;
 };
 
@@ -37,7 +37,7 @@ vertex CopyVertexOut vertexMain(uint vid [[vertex_id]],
     return out;
 }
 
-fragment float4 fragmentMain(CopyVertexOut in [[stage_in]],
+fragment FORMAT4 fragmentMain(CopyVertexOut in [[stage_in]],
                              constant Textures &textures [[buffer(TEXTURES_INDEX)]]) {
     return textures.texture.sample(textures.sampler, in.uv);
 }

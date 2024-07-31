@@ -269,7 +269,7 @@ namespace Ryujinx.Graphics.Metal
                 return;
             }
 
-            _renderer.HelperShader.ClearColor(index, colors, componentMask, dst.Width, dst.Height);
+            _renderer.HelperShader.ClearColor(index, colors, componentMask, dst.Width, dst.Height, dst.Info.Format);
         }
 
         public void ClearRenderTargetDepthStencil(int layer, int layerCount, float depthValue, bool depthMask, int stencilValue, int stencilMask)

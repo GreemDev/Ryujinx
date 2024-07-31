@@ -7,7 +7,7 @@ struct VertexOut {
 };
 
 struct ClearColor {
-    float4 data;
+    FORMAT4 data;
 };
 
 struct ConstantBuffers {
@@ -29,7 +29,7 @@ vertex VertexOut vertexMain(ushort vid [[vertex_id]]) {
 }
 
 struct FragmentOut {
-    float4 color [[color(COLOR_ATTACHMENT_INDEX)]];
+    FORMAT4 color [[color(COLOR_ATTACHMENT_INDEX)]];
 };
 
 fragment FragmentOut fragmentMain(VertexOut in [[stage_in]],
