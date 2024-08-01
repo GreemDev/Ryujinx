@@ -332,6 +332,7 @@ namespace Ryujinx.Graphics.Shader.Translation
                 definitions,
                 resourceManager,
                 Options.TargetLanguage,
+                usedFeatures.HasFlag(FeatureFlags.Precise),
                 Options.Flags.HasFlag(TranslationFlags.DebugMode));
 
             int geometryVerticesPerPrimitive = Definitions.OutputTopology switch

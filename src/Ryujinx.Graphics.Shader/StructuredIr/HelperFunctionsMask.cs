@@ -14,5 +14,7 @@ namespace Ryujinx.Graphics.Shader.StructuredIr
 
         SwizzleAdd = 1 << 10,
         FSI = 1 << 11,
+
+        Precise = 1 << 13
     }
 }

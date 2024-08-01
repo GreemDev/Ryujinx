@@ -118,6 +118,18 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                         return op + expr[0];
 
                     case 2:
+                        if (operation.ForcePrecise)
+                        {
+                            var func = (inst & Instruction.Mask) switch
+                            {
+                                Instruction.Add => "PreciseFAdd",
+                                Instruction.Subtract => "PreciseFSub",
+                                Instruction.Multiply => "PreciseFMul",
+                            };
+
+                            return $"{func}({expr[0]}, {expr[1]})";
+                        }
+
                         return $"{expr[0]} {op} {expr[1]}";
 
                     case 3:

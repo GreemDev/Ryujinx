@@ -49,9 +49,11 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 return false;
             }
 
-            formatted = value.ToString("F9", CultureInfo.InvariantCulture);
+            formatted = value.ToString("G9", CultureInfo.InvariantCulture);
 
-            if (!formatted.Contains('.'))
+            if (!(formatted.Contains('.') ||
+                  formatted.Contains('e') ||
+                  formatted.Contains('E')))
             {
                 formatted += ".0f";
             }

@@ -122,6 +122,11 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 AppendHelperFunction(context, "Ryujinx.Graphics.Shader/CodeGen/Msl/HelperFunctions/SwizzleAdd.metal");
             }
 
+            if ((info.HelperFunctionsMask & HelperFunctionsMask.Precise) != 0)
+            {
+                AppendHelperFunction(context, "Ryujinx.Graphics.Shader/CodeGen/Msl/HelperFunctions/Precise.metal");
+            }
+
             return sets;
         }
 

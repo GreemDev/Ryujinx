@@ -20,5 +20,6 @@
     <EmbeddedResource Include="CodeGen\Msl\HelperFunctions\FindMSBS32.metal" />
     <EmbeddedResource Include="CodeGen\Msl\HelperFunctions\FindMSBU32.metal" />
     <EmbeddedResource Include="CodeGen\Msl\HelperFunctions\SwizzleAdd.metal" />
+    <EmbeddedResource Include="CodeGen\Msl\HelperFunctions\Precise.metal" />
   </ItemGroup>
 </Project>
