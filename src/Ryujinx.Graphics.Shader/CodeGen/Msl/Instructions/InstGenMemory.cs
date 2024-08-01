@@ -255,19 +255,11 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             }
 
             texCallBuilder.Append(coordsBuilder);
+            texCallBuilder.Append(')');
 
-            if (texOp.Inst == Instruction.ImageAtomic)
+            if (texOp.Inst == Instruction.ImageLoad)
             {
-                // TODO: Finish atomic stuff
-            }
-            else
-            {
-                texCallBuilder.Append(')');
-
-                if (texOp.Inst == Instruction.ImageLoad)
-                {
-                    texCallBuilder.Append(GetMaskMultiDest(texOp.Index));
-                }
+                texCallBuilder.Append(GetMaskMultiDest(texOp.Index));
             }
 
             return texCallBuilder.ToString();
