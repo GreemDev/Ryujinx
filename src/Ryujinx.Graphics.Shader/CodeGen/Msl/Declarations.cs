@@ -222,7 +222,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 BufferDefinition buffer = buffers[i];
 
                 var needsPadding = buffer.Layout == BufferLayout.Std140;
-                string fsiSuffix = constant && fsi ? " [[raster_order_group(0)]]" : "";
+                string fsiSuffix = !constant && fsi ? " [[raster_order_group(0)]]" : "";
 
                 bufferDec[i] = $"{addressSpace} {Defaults.StructPrefix}_{buffer.Name}* {buffer.Name}{fsiSuffix};";
 
@@ -285,7 +285,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             {
                 if (texture.Type != SamplerType.None)
                 {
-                    var textureTypeName = texture.Type.ToMslTextureType();
+                    var textureTypeName = texture.Type.ToMslTextureType(texture.Format.GetComponentType());
 
                     if (texture.ArrayLength > 1)
                     {
@@ -329,7 +329,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             {
                 TextureDefinition image = images[i];
 
-                var imageTypeName = image.Type.ToMslTextureType(true);
+                var imageTypeName = image.Type.ToMslTextureType(image.Format.GetComponentType(), true);
                 if (image.ArrayLength > 1)
                 {
                     imageTypeName = $"array<{imageTypeName}, {image.ArrayLength}>";

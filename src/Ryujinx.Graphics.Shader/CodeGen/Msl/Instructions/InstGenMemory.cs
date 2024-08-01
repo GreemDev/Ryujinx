@@ -251,10 +251,9 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     _ => string.Empty,
                 };
 
-                texCallBuilder.Append($"{prefix}4({string.Join(", ", cElems)})");
+                texCallBuilder.Append($"{prefix}4({string.Join(", ", cElems)}), ");
             }
 
-            texCallBuilder.Append(", ");
             texCallBuilder.Append(coordsBuilder);
 
             if (texOp.Inst == Instruction.ImageAtomic)

@@ -156,7 +156,7 @@ namespace Ryujinx.Graphics.Shader
             return typeName;
         }
 
-        public static string ToMslTextureType(this SamplerType type, bool image = false)
+        public static string ToMslTextureType(this SamplerType type, AggregateType aggregateType, bool image = false)
         {
             string typeName;
 
@@ -192,7 +192,14 @@ namespace Ryujinx.Graphics.Shader
                 typeName += "_array";
             }
 
-            return $"{typeName}<float{(image ? ", access::read_write" : "")}>";
+            var format = aggregateType switch
+            {
+                AggregateType.S32 => "int",
+                AggregateType.U32 => "uint",
+                _ => "float"
+            };
+
+            return $"{typeName}<{format}{(image ? ", access::read_write" : "")}>";
         }
     }
 }
