@@ -253,13 +253,12 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
 
                 texCallBuilder.Append($"{prefix}4({string.Join(", ", cElems)})");
                 texCallBuilder.Append(", ");
-                texCallBuilder.Append(coordsBuilder);
             }
+
+            texCallBuilder.Append(coordsBuilder);
 
             if (texOp.Inst == Instruction.ImageAtomic)
             {
-                // Atomics do (coord, value)
-                texCallBuilder.Append(coordsBuilder);
                 texCallBuilder.Append(", ");
 
                 AggregateType type = texOp.Format.GetComponentType();
