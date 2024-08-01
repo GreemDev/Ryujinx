@@ -46,7 +46,11 @@ namespace Ryujinx.Graphics.Metal
             {
                 ShaderSource shader = _shaders[i];
 
-                var compileOptions = new MTLCompileOptions { PreserveInvariance = true };
+                var compileOptions = new MTLCompileOptions
+                {
+                    PreserveInvariance = true,
+                    LanguageVersion = MTLLanguageVersion.Version31,
+                };
                 var index = i;
 
                 _handles[i] = device.NewLibrary(StringHelper.NSString(shader.Code), compileOptions, (library, error) => CompilationResultHandler(library, error, index));

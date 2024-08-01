@@ -211,7 +211,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             }
             else
             {
-                coordsBuilder.Append(Src(AggregateType.S32));
+                coordsBuilder.Append($"uint({Src(AggregateType.S32)})");
             }
 
             if (isArray)
@@ -251,15 +251,44 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                     _ => string.Empty,
                 };
 
-                texCallBuilder.Append($"{prefix}4({string.Join(", ", cElems)}), ");
+                texCallBuilder.Append($"{prefix}4({string.Join(", ", cElems)})");
+                texCallBuilder.Append(", ");
+                texCallBuilder.Append(coordsBuilder);
             }
 
-            texCallBuilder.Append(coordsBuilder);
-            texCallBuilder.Append(')');
-
-            if (texOp.Inst == Instruction.ImageLoad)
+            if (texOp.Inst == Instruction.ImageAtomic)
             {
-                texCallBuilder.Append(GetMaskMultiDest(texOp.Index));
+                // Atomics do (coord, value)
+                texCallBuilder.Append(coordsBuilder);
+                texCallBuilder.Append(", ");
+
+                AggregateType type = texOp.Format.GetComponentType();
+
+                if ((texOp.Flags & TextureFlags.AtomicMask) == TextureFlags.CAS)
+                {
+                    texCallBuilder.Append(Src(type)); // Compare value.
+                }
+
+                string value = (texOp.Flags & TextureFlags.AtomicMask) switch
+                {
+                    TextureFlags.Increment => NumberFormatter.FormatInt(1, type), // TODO: Clamp value
+                    TextureFlags.Decrement => NumberFormatter.FormatInt(-1, type), // TODO: Clamp value
+                    _ => Src(type),
+                };
+
+                texCallBuilder.Append(value);
+                // This doesn't match what the MSL spec document says so either
+                // it is wrong or the MSL compiler has a bug.
+                texCallBuilder.Append(")[0]");
+            }
+            else
+            {
+                texCallBuilder.Append(')');
+
+                if (texOp.Inst == Instruction.ImageLoad)
+                {
+                    texCallBuilder.Append(GetMaskMultiDest(texOp.Index));
+                }
             }
 
             return texCallBuilder.ToString();
