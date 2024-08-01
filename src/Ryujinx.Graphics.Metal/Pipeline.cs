@@ -540,13 +540,11 @@ namespace Ryujinx.Graphics.Metal
             _encoderStateManager.UpdateIndexBuffer(buffer, type);
         }
 
-        public void SetImage(ShaderStage stage, int binding, ITexture texture, Format imageFormat)
+        public void SetImage(ShaderStage stage, int binding, ITexture image, Format imageFormat)
         {
-            if (texture is TextureBase tex)
+            if (image is TextureBase img)
             {
-                var index = (ulong)binding;
-
-                _encoderStateManager.UpdateImage(stage, index, tex);
+                _encoderStateManager.UpdateImage(stage, binding, img);
             }
         }
 
@@ -554,9 +552,7 @@ namespace Ryujinx.Graphics.Metal
         {
             if (array is ImageArray imageArray)
             {
-                var index = (ulong)binding;
-
-                _encoderStateManager.UpdateImageArray(stage, index, imageArray);
+                _encoderStateManager.UpdateImageArray(stage, binding, imageArray);
             }
         }
 
@@ -665,9 +661,7 @@ namespace Ryujinx.Graphics.Metal
             {
                 if (sampler == null || sampler is Sampler)
                 {
-                    var index = (ulong)binding;
-
-                    _encoderStateManager.UpdateTextureAndSampler(stage, index, tex, (Sampler)sampler);
+                    _encoderStateManager.UpdateTextureAndSampler(stage, binding, tex, (Sampler)sampler);
                 }
             }
         }
@@ -676,9 +670,7 @@ namespace Ryujinx.Graphics.Metal
         {
             if (array is TextureArray textureArray)
             {
-                var index = (ulong)binding;
-
-                _encoderStateManager.UpdateTextureArray(stage, index, textureArray);
+                _encoderStateManager.UpdateTextureArray(stage, binding, textureArray);
             }
         }
 

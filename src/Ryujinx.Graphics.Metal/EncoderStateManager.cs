@@ -802,7 +802,7 @@ namespace Ryujinx.Graphics.Metal
             SignalDirty(DirtyFlags.StencilRef);
         }
 
-        public readonly void UpdateTextureAndSampler(ShaderStage stage, ulong binding, TextureBase texture, Sampler sampler)
+        public readonly void UpdateTextureAndSampler(ShaderStage stage, int binding, TextureBase texture, Sampler sampler)
         {
             if (texture != null)
             {
@@ -816,9 +816,9 @@ namespace Ryujinx.Graphics.Metal
             SignalDirty(DirtyFlags.Textures);
         }
 
-        public readonly void UpdateImage(ShaderStage stage, ulong binding, TextureBase texture)
+        public readonly void UpdateImage(ShaderStage stage, int binding, TextureBase image)
         {
-            if (texture is Texture view)
+            if (image is Texture view)
             {
                 _currentState.ImageRefs[binding] = new(stage, view);
             }
@@ -830,9 +830,9 @@ namespace Ryujinx.Graphics.Metal
             SignalDirty(DirtyFlags.Images);
         }
 
-        public void UpdateTextureArray(ShaderStage stage, ulong binding, TextureArray array)
+        public void UpdateTextureArray(ShaderStage stage, int binding, TextureArray array)
         {
-            ref EncoderState.ArrayRef<TextureArray> arrayRef = ref GetArrayRef(ref _currentState.TextureArrayRefs, (int)binding, ArrayGrowthSize);
+            ref EncoderState.ArrayRef<TextureArray> arrayRef = ref GetArrayRef(ref _currentState.TextureArrayRefs, binding, ArrayGrowthSize);
 
             if (arrayRef.Stage != stage || arrayRef.Array != array)
             {
@@ -854,9 +854,9 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        public void UpdateImageArray(ShaderStage stage, ulong binding, ImageArray array)
+        public void UpdateImageArray(ShaderStage stage, int binding, ImageArray array)
         {
-            ref EncoderState.ArrayRef<ImageArray> arrayRef = ref GetArrayRef(ref _currentState.ImageArrayRefs, (int)binding, ArrayGrowthSize);
+            ref EncoderState.ArrayRef<ImageArray> arrayRef = ref GetArrayRef(ref _currentState.ImageArrayRefs, binding, ArrayGrowthSize);
 
             if (arrayRef.Stage != stage || arrayRef.Array != array)
             {

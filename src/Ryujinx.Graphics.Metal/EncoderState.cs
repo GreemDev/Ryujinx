@@ -106,8 +106,8 @@ namespace Ryujinx.Graphics.Metal
 
         public readonly BufferRef[] UniformBufferRefs = new BufferRef[Constants.MaxUniformBufferBindings];
         public readonly BufferRef[] StorageBufferRefs = new BufferRef[Constants.MaxStorageBufferBindings];
-        public readonly TextureRef[] TextureRefs = new TextureRef[Constants.MaxTextureBindings];
-        public readonly ImageRef[] ImageRefs = new ImageRef[Constants.MaxTextureBindings];
+        public readonly TextureRef[] TextureRefs = new TextureRef[Constants.MaxTextureBindings * 2];
+        public readonly ImageRef[] ImageRefs = new ImageRef[Constants.MaxImageBindings * 2];
 
         public ArrayRef<TextureArray>[] TextureArrayRefs = [];
         public ArrayRef<ImageArray>[] ImageArrayRefs = [];
