@@ -15,8 +15,8 @@ namespace Ryujinx.Graphics.Metal
     class Program : IProgram
     {
         private ProgramLinkStatus _status;
-        private ShaderSource[] _shaders;
-        private GCHandle[] _handles;
+        private readonly ShaderSource[] _shaders;
+        private readonly GCHandle[] _handles;
         private int _successCount;
 
         public MTLFunction VertexFunction;

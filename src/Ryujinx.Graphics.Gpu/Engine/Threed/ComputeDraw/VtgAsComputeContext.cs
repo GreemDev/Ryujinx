@@ -11,8 +11,6 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed.ComputeDraw
     /// </summary>
     class VtgAsComputeContext : IDisposable
     {
-        private const int DummyBufferSize = 16;
-
         private readonly GpuContext _context;
 
         /// <summary>

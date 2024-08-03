@@ -97,12 +97,12 @@ namespace Ryujinx.Graphics.Metal
             _currentState.ClearLoadAction = clear;
         }
 
-        public void DirtyTextures()
+        public readonly void DirtyTextures()
         {
             SignalDirty(DirtyFlags.Textures);
         }
 
-        public void DirtyImages()
+        public readonly void DirtyImages()
         {
             SignalDirty(DirtyFlags.Images);
         }
@@ -830,7 +830,7 @@ namespace Ryujinx.Graphics.Metal
             SignalDirty(DirtyFlags.Images);
         }
 
-        public void UpdateTextureArray(ShaderStage stage, int binding, TextureArray array)
+        public readonly void UpdateTextureArray(ShaderStage stage, int binding, TextureArray array)
         {
             ref EncoderState.ArrayRef<TextureArray> arrayRef = ref GetArrayRef(ref _currentState.TextureArrayRefs, binding, ArrayGrowthSize);
 
@@ -842,7 +842,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        public void UpdateTextureArraySeparate(ShaderStage stage, int setIndex, TextureArray array)
+        public readonly void UpdateTextureArraySeparate(ShaderStage stage, int setIndex, TextureArray array)
         {
             ref EncoderState.ArrayRef<TextureArray> arrayRef = ref GetArrayRef(ref _currentState.TextureArrayExtraRefs, setIndex - MetalRenderer.TotalSets);
 
@@ -854,7 +854,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        public void UpdateImageArray(ShaderStage stage, int binding, ImageArray array)
+        public readonly void UpdateImageArray(ShaderStage stage, int binding, ImageArray array)
         {
             ref EncoderState.ArrayRef<ImageArray> arrayRef = ref GetArrayRef(ref _currentState.ImageArrayRefs, binding, ArrayGrowthSize);
 
@@ -866,7 +866,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        public void UpdateImageArraySeparate(ShaderStage stage, int setIndex, ImageArray array)
+        public readonly void UpdateImageArraySeparate(ShaderStage stage, int setIndex, ImageArray array)
         {
             ref EncoderState.ArrayRef<ImageArray> arrayRef = ref GetArrayRef(ref _currentState.ImageArrayExtraRefs, setIndex - MetalRenderer.TotalSets);
 
@@ -1338,7 +1338,7 @@ namespace Ryujinx.Graphics.Metal
                         {
                             for (int i = 0; i < count; i++)
                             {
-                                 int index = binding + i;
+                                int index = binding + i;
 
                                 ref var image = ref _currentState.ImageRefs[index];
 
