@@ -16,7 +16,7 @@ namespace Ryujinx.Graphics.Metal
 
             MTLSamplerBorderColor borderColor = GetConstrainedBorderColor(info.BorderColor, out _);
 
-            var samplerState = device.NewSamplerState(new MTLSamplerDescriptor
+            using var descriptor = new MTLSamplerDescriptor
             {
                 BorderColor = borderColor,
                 MinFilter = minFilter,
@@ -31,7 +31,9 @@ namespace Ryujinx.Graphics.Metal
                 TAddressMode = info.AddressV.Convert(),
                 RAddressMode = info.AddressP.Convert(),
                 SupportArgumentBuffers = true
-            });
+            };
+
+            var samplerState = device.NewSamplerState(descriptor);
 
             _mtlSamplerState = samplerState;
         }

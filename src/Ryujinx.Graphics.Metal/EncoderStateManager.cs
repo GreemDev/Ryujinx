@@ -176,14 +176,11 @@ namespace Ryujinx.Graphics.Metal
 
         public readonly MTLComputeCommandEncoder CreateComputeCommandEncoder()
         {
-            var descriptor = new MTLComputePassDescriptor();
+            using var descriptor = new MTLComputePassDescriptor();
             var computeCommandEncoder = _pipeline.CommandBuffer.ComputeCommandEncoder(descriptor);
 
             // Mark all state as dirty to ensure it is set on the encoder
             SignalDirty(DirtyFlags.ComputeAll);
-
-            // Cleanup
-            descriptor.Dispose();
 
             return computeCommandEncoder;
         }

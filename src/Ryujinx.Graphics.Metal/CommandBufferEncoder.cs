@@ -149,7 +149,7 @@ class CommandBufferEncoder
     {
         EndCurrentPass();
 
-        var descriptor = new MTLBlitPassDescriptor();
+        using var descriptor = new MTLBlitPassDescriptor();
         var blitCommandEncoder = _commandBuffer.BlitCommandEncoder(descriptor);
 
         CurrentEncoder = blitCommandEncoder;

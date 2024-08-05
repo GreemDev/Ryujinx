@@ -2,13 +2,16 @@ using Ryujinx.Graphics.GAL;
 using SharpMetal.Metal;
 using System;
 using System.Runtime.Versioning;
+using System.Threading;
 
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
     abstract class TextureBase : IDisposable
     {
-        private bool _disposed;
+        private int _isValid = 1;
+
+        public bool Valid => Volatile.Read(ref _isValid) != 0;
 
         protected readonly Pipeline Pipeline;
         protected readonly MTLDevice Device;
@@ -35,7 +38,7 @@ namespace Ryujinx.Graphics.Metal
 
         public MTLTexture GetHandle()
         {
-            if (_disposed)
+            if (_isValid == 0)
             {
                 return new MTLTexture(IntPtr.Zero);
             }
@@ -50,11 +53,15 @@ namespace Ryujinx.Graphics.Metal
 
         public void Dispose()
         {
-            if (MtlTexture != IntPtr.Zero)
+            bool wasValid = Interlocked.Exchange(ref _isValid, 0) != 0;
+
+            if (wasValid)
             {
-                MtlTexture.Dispose();
+                if (MtlTexture != IntPtr.Zero)
+                {
+                    MtlTexture.Dispose();
+                }
             }
-            _disposed = true;
         }
     }
 }

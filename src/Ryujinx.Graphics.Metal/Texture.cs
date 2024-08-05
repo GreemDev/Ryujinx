@@ -151,6 +151,11 @@ namespace Ryujinx.Graphics.Metal
             TextureBase src = this;
             TextureBase dst = (TextureBase)destination;
 
+            if (!Valid || !dst.Valid)
+            {
+                return;
+            }
+
             var srcImage = GetHandle();
             var dstImage = dst.GetHandle();
 
@@ -202,6 +207,11 @@ namespace Ryujinx.Graphics.Metal
 
             TextureBase src = this;
             TextureBase dst = (TextureBase)destination;
+
+            if (!Valid || !dst.Valid)
+            {
+                return;
+            }
 
             var srcImage = GetHandle();
             var dstImage = dst.GetHandle();
