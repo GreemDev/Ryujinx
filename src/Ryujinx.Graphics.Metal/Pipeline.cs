@@ -597,7 +597,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetMultisampleState(MultisampleDescriptor multisample)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            _encoderStateManager.UpdateMultisampleState(multisample);
         }
 
         public void SetPatchParameters(int vertices, ReadOnlySpan<float> defaultOuterLevel, ReadOnlySpan<float> defaultInnerLevel)
@@ -638,7 +638,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetRasterizerDiscard(bool discard)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            _encoderStateManager.UpdateRasterizerDiscard(discard);
         }
 
         public void SetRenderTargetColorMasks(ReadOnlySpan<uint> componentMask)

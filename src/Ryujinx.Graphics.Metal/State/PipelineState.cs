@@ -208,12 +208,9 @@ namespace Ryujinx.Graphics.Metal
                 }
             }
 
-            /* TODO: enable when sharpmetal fixes the bindings
-            renderPipelineDescriptor.AlphaToCoverageEnabled = AlphaToCoverageEnable;
-            renderPipelineDescriptor.AlphaToOneEnabled = AlphaToOneEnable;
-            renderPipelineDescriptor.RasterizationEnabled = !RasterizerDiscardEnable;
-            */
-
+            renderPipelineDescriptor.SetAlphaToCoverageEnabled(AlphaToCoverageEnable);
+            renderPipelineDescriptor.SetAlphaToOneEnabled(AlphaToOneEnable);
+            renderPipelineDescriptor.SetRasterizationEnabled(!RasterizerDiscardEnable);
             renderPipelineDescriptor.SampleCount = Math.Max(1, SamplesCount);
 
             var vertexDescriptor = BuildVertexDescriptor();

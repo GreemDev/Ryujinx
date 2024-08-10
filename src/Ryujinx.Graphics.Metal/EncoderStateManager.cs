@@ -399,6 +399,13 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
+        public readonly void UpdateRasterizerDiscard(bool discard)
+        {
+            _currentState.Pipeline.RasterizerDiscardEnable = discard;
+
+            SignalDirty(DirtyFlags.RenderPipeline);
+        }
+
         public readonly void UpdateRenderTargets(ITexture[] colors, ITexture depthStencil)
         {
             _currentState.FramebufferUsingColorWriteMask = false;
@@ -654,6 +661,14 @@ namespace Ryujinx.Graphics.Metal
             }
 
             SignalDirty(DirtyFlags.DepthBias);
+        }
+
+        public readonly void UpdateMultisampleState(MultisampleDescriptor multisample)
+        {
+            _currentState.Pipeline.AlphaToCoverageEnable = multisample.AlphaToCoverageEnable;
+            _currentState.Pipeline.AlphaToOneEnable = multisample.AlphaToOneEnable;
+
+            SignalDirty(DirtyFlags.RenderPipeline);
         }
 
         public void UpdateScissors(ReadOnlySpan<Rectangle<int>> regions)
