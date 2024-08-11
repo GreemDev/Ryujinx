@@ -76,7 +76,7 @@ namespace Ryujinx.Graphics.Metal
                 return;
             }
 
-            switch (_shaders[index].Stage)
+            switch (shader.Stage)
             {
                 case ShaderStage.Compute:
                     ComputeFunction = library.NewFunction(StringHelper.NSString("kernelMain"));
@@ -88,7 +88,7 @@ namespace Ryujinx.Graphics.Metal
                     FragmentFunction = library.NewFunction(StringHelper.NSString("fragmentMain"));
                     break;
                 default:
-                    Logger.Warning?.Print(LogClass.Gpu, $"Cannot handle stage {_shaders[index].Stage}!");
+                    Logger.Warning?.Print(LogClass.Gpu, $"Cannot handle stage {shader.Stage}!");
                     break;
             }
 

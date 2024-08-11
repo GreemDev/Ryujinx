@@ -139,6 +139,19 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
         {
             if (isMainFunc)
             {
+                // TODO: Support OaIndexing
+                if (context.Definitions.IaIndexing)
+                {
+                    context.EnterScope($"array<float4, {Constants.MaxAttributes}> {Defaults.IAttributePrefix} = ");
+
+                    for (int i = 0; i < Constants.MaxAttributes; i++)
+                    {
+                        context.AppendLine($"in.{Defaults.IAttributePrefix}{i},");
+                    }
+
+                    context.LeaveScope(";");
+                }
+
                 DeclareMemories(context, context.Properties.LocalMemories.Values, isShared: false);
                 DeclareMemories(context, context.Properties.SharedMemories.Values, isShared: true);
 
@@ -356,171 +369,189 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
 
         private static void DeclareInputAttributes(CodeGenContext context, IEnumerable<IoDefinition> inputs)
         {
+            if (context.Definitions.Stage == ShaderStage.Compute)
+            {
+                return;
+            }
+
+            switch (context.Definitions.Stage)
+            {
+                case ShaderStage.Vertex:
+                    context.AppendLine("struct VertexIn");
+                    break;
+                case ShaderStage.Fragment:
+                    context.AppendLine("struct FragmentIn");
+                    break;
+            }
+
+            context.EnterScope();
+
+            if (context.Definitions.Stage == ShaderStage.Fragment)
+            {
+                // TODO: check if it's needed
+                context.AppendLine("float4 position [[position, invariant]];");
+                context.AppendLine("bool front_facing [[front_facing]];");
+                context.AppendLine("float2 point_coord [[point_coord]];");
+            }
+
             if (context.Definitions.IaIndexing)
             {
-                Logger.Warning?.PrintMsg(LogClass.Gpu, "Unhandled IA Indexing!");
-            }
-            else
-            {
-                if (inputs.Any() || context.Definitions.Stage != ShaderStage.Compute)
+                // MSL does not support arrays in stage I/O
+                // We need to use the SPIRV-Cross workaround
+                for (int i = 0; i < Constants.MaxAttributes; i++)
                 {
-                    string prefix = "";
+                    var suffix = context.Definitions.Stage == ShaderStage.Fragment ? $"[[user(loc{i})]]" : $"[[attribute({i})]]";
+                    context.AppendLine($"float4 {Defaults.IAttributePrefix}{i} {suffix};");
+                }
+            }
 
-                    switch (context.Definitions.Stage)
+            if (inputs.Any())
+            {
+                foreach (var ioDefinition in inputs.OrderBy(x => x.Location))
+                {
+                    if (context.Definitions.IaIndexing && ioDefinition.IoVariable == IoVariable.UserDefined)
                     {
-                        case ShaderStage.Vertex:
-                            context.AppendLine($"struct VertexIn");
-                            break;
-                        case ShaderStage.Fragment:
-                            context.AppendLine($"struct FragmentIn");
-                            break;
+                        continue;
                     }
 
-                    context.EnterScope();
+                    string iq = string.Empty;
 
                     if (context.Definitions.Stage == ShaderStage.Fragment)
                     {
-                        // TODO: check if it's needed
-                        context.AppendLine("float4 position [[position, invariant]];");
-                        context.AppendLine("bool front_facing [[front_facing]];");
-                        context.AppendLine("float2 point_coord [[point_coord]];");
+                        iq = context.Definitions.ImapTypes[ioDefinition.Location].GetFirstUsedType() switch
+                        {
+                            PixelImap.Constant => "[[flat]] ",
+                            PixelImap.ScreenLinear => "[[center_no_perspective]] ",
+                            _ => string.Empty,
+                        };
                     }
 
-                    foreach (var ioDefinition in inputs.OrderBy(x => x.Location))
+                    string type = ioDefinition.IoVariable switch
                     {
-                        string iq = string.Empty;
+                        // IoVariable.Position => "float4",
+                        IoVariable.GlobalId => "uint3",
+                        IoVariable.VertexId => "uint",
+                        IoVariable.VertexIndex => "uint",
+                        // IoVariable.PointCoord => "float2",
+                        _ => GetVarTypeName(context.Definitions.GetUserDefinedType(ioDefinition.Location, isOutput: false))
+                    };
+                    string name = ioDefinition.IoVariable switch
+                    {
+                        // IoVariable.Position => "position",
+                        IoVariable.GlobalId => "global_id",
+                        IoVariable.VertexId => "vertex_id",
+                        IoVariable.VertexIndex => "vertex_index",
+                        // IoVariable.PointCoord => "point_coord",
+                        _ => $"{Defaults.IAttributePrefix}{ioDefinition.Location}"
+                    };
+                    string suffix = ioDefinition.IoVariable switch
+                    {
+                        // IoVariable.Position => "[[position, invariant]]",
+                        IoVariable.GlobalId => "[[thread_position_in_grid]]",
+                        IoVariable.VertexId => "[[vertex_id]]",
+                        // TODO: Avoid potential redeclaration
+                        IoVariable.VertexIndex => "[[vertex_id]]",
+                        // IoVariable.PointCoord => "[[point_coord]]",
+                        IoVariable.UserDefined => context.Definitions.Stage == ShaderStage.Fragment ? $"[[user(loc{ioDefinition.Location})]]" : $"[[attribute({ioDefinition.Location})]]",
+                        _ => ""
+                    };
 
-                        if (context.Definitions.Stage == ShaderStage.Fragment)
-                        {
-                            iq = context.Definitions.ImapTypes[ioDefinition.Location].GetFirstUsedType() switch
-                            {
-                                PixelImap.Constant => "[[flat]] ",
-                                PixelImap.ScreenLinear => "[[center_no_perspective]] ",
-                                _ => string.Empty,
-                            };
-                        }
-
-                        string type = ioDefinition.IoVariable switch
-                        {
-                            // IoVariable.Position => "float4",
-                            IoVariable.GlobalId => "uint3",
-                            IoVariable.VertexId => "uint",
-                            IoVariable.VertexIndex => "uint",
-                            // IoVariable.PointCoord => "float2",
-                            _ => GetVarTypeName(context.Definitions.GetUserDefinedType(ioDefinition.Location, isOutput: false))
-                        };
-                        string name = ioDefinition.IoVariable switch
-                        {
-                            // IoVariable.Position => "position",
-                            IoVariable.GlobalId => "global_id",
-                            IoVariable.VertexId => "vertex_id",
-                            IoVariable.VertexIndex => "vertex_index",
-                            // IoVariable.PointCoord => "point_coord",
-                            _ => $"{Defaults.IAttributePrefix}{ioDefinition.Location}"
-                        };
-                        string suffix = ioDefinition.IoVariable switch
-                        {
-                            // IoVariable.Position => "[[position, invariant]]",
-                            IoVariable.GlobalId => "[[thread_position_in_grid]]",
-                            IoVariable.VertexId => "[[vertex_id]]",
-                            // TODO: Avoid potential redeclaration
-                            IoVariable.VertexIndex => "[[vertex_id]]",
-                            // IoVariable.PointCoord => "[[point_coord]]",
-                            IoVariable.UserDefined => context.Definitions.Stage == ShaderStage.Fragment ? $"[[user(loc{ioDefinition.Location})]]" : $"[[attribute({ioDefinition.Location})]]",
-                            _ => ""
-                        };
-
-                        context.AppendLine($"{type} {name} {iq}{suffix};");
-                    }
-
-                    context.LeaveScope(";");
+                    context.AppendLine($"{type} {name} {iq}{suffix};");
                 }
             }
+
+            context.LeaveScope(";");
         }
 
         private static void DeclareOutputAttributes(CodeGenContext context, IEnumerable<IoDefinition> outputs)
         {
+            switch (context.Definitions.Stage)
+            {
+                case ShaderStage.Vertex:
+                    context.AppendLine("struct VertexOut");
+                    break;
+                case ShaderStage.Fragment:
+                    context.AppendLine("struct FragmentOut");
+                    break;
+                case ShaderStage.Compute:
+                    context.AppendLine("struct KernelOut");
+                    break;
+            }
+
+            context.EnterScope();
+
             if (context.Definitions.OaIndexing)
             {
-                Logger.Warning?.PrintMsg(LogClass.Gpu, "Unhandled OA Indexing!");
-            }
-            else
-            {
-                if (outputs.Any() || context.Definitions.Stage == ShaderStage.Fragment)
+                // MSL does not support arrays in stage I/O
+                // We need to use the SPIRV-Cross workaround
+                for (int i = 0; i < Constants.MaxAttributes; i++)
                 {
-                    string prefix = "";
-
-                    switch (context.Definitions.Stage)
-                    {
-                        case ShaderStage.Vertex:
-                            context.AppendLine($"struct VertexOut");
-                            break;
-                        case ShaderStage.Fragment:
-                            context.AppendLine($"struct FragmentOut");
-                            break;
-                        case ShaderStage.Compute:
-                            context.AppendLine($"struct KernelOut");
-                            break;
-                    }
-
-                    context.EnterScope();
-
-                    outputs = outputs.OrderBy(x => x.Location);
-
-                    if (context.Definitions.Stage == ShaderStage.Fragment && context.Definitions.DualSourceBlend)
-                    {
-                        IoDefinition firstOutput = outputs.ElementAtOrDefault(0);
-                        IoDefinition secondOutput = outputs.ElementAtOrDefault(1);
-
-                        var type1 = GetVarTypeName(context.Definitions.GetFragmentOutputColorType(firstOutput.Location));
-                        var type2 = GetVarTypeName(context.Definitions.GetFragmentOutputColorType(secondOutput.Location));
-
-                        var name1 = $"color{firstOutput.Location}";
-                        var name2 = $"color{firstOutput.Location + 1}";
-
-                        context.AppendLine($"{type1} {name1} [[color({firstOutput.Location}), index(0)]];");
-                        context.AppendLine($"{type2} {name2} [[color({firstOutput.Location}), index(1)]];");
-
-                        outputs = outputs.Skip(2);
-                    }
-
-                    foreach (var ioDefinition in outputs)
-                    {
-                        string type = ioDefinition.IoVariable switch
-                        {
-                            IoVariable.Position => "float4",
-                            IoVariable.PointSize => "float",
-                            IoVariable.FragmentOutputColor => GetVarTypeName(context.Definitions.GetFragmentOutputColorType(ioDefinition.Location)),
-                            IoVariable.FragmentOutputDepth => "float",
-                            IoVariable.ClipDistance => "float",
-                            _ => GetVarTypeName(context.Definitions.GetUserDefinedType(ioDefinition.Location, isOutput: true))
-                        };
-                        string name = ioDefinition.IoVariable switch
-                        {
-                            IoVariable.Position => "position",
-                            IoVariable.PointSize => "point_size",
-                            IoVariable.FragmentOutputColor => $"color{ioDefinition.Location}",
-                            IoVariable.FragmentOutputDepth => "depth",
-                            IoVariable.ClipDistance => "clip_distance",
-                            _ => $"{Defaults.OAttributePrefix}{ioDefinition.Location}"
-                        };
-                        string suffix = ioDefinition.IoVariable switch
-                        {
-                            IoVariable.Position => "[[position, invariant]]",
-                            IoVariable.PointSize => "[[point_size]]",
-                            IoVariable.UserDefined => $"[[user(loc{ioDefinition.Location})]]",
-                            IoVariable.FragmentOutputColor => $"[[color({ioDefinition.Location})]]",
-                            IoVariable.FragmentOutputDepth => "[[depth(any)]]",
-                            IoVariable.ClipDistance => $"[[clip_distance]][{Defaults.TotalClipDistances}]",
-                            _ => ""
-                        };
-
-                        context.AppendLine($"{type} {name} {suffix};");
-                    }
-
-                    context.LeaveScope(";");
+                    context.AppendLine($"float4 {Defaults.OAttributePrefix}{i} [[user(loc{i})]];");
                 }
             }
+
+            if (outputs.Any())
+            {
+                outputs = outputs.OrderBy(x => x.Location);
+
+                if (context.Definitions.Stage == ShaderStage.Fragment && context.Definitions.DualSourceBlend)
+                {
+                    IoDefinition firstOutput = outputs.ElementAtOrDefault(0);
+                    IoDefinition secondOutput = outputs.ElementAtOrDefault(1);
+
+                    var type1 = GetVarTypeName(context.Definitions.GetFragmentOutputColorType(firstOutput.Location));
+                    var type2 = GetVarTypeName(context.Definitions.GetFragmentOutputColorType(secondOutput.Location));
+
+                    var name1 = $"color{firstOutput.Location}";
+                    var name2 = $"color{firstOutput.Location + 1}";
+
+                    context.AppendLine($"{type1} {name1} [[color({firstOutput.Location}), index(0)]];");
+                    context.AppendLine($"{type2} {name2} [[color({firstOutput.Location}), index(1)]];");
+
+                    outputs = outputs.Skip(2);
+                }
+
+                foreach (var ioDefinition in outputs)
+                {
+                    if (context.Definitions.OaIndexing && ioDefinition.IoVariable == IoVariable.UserDefined)
+                    {
+                        continue;
+                    }
+
+                    string type = ioDefinition.IoVariable switch
+                    {
+                        IoVariable.Position => "float4",
+                        IoVariable.PointSize => "float",
+                        IoVariable.FragmentOutputColor => GetVarTypeName(context.Definitions.GetFragmentOutputColorType(ioDefinition.Location)),
+                        IoVariable.FragmentOutputDepth => "float",
+                        IoVariable.ClipDistance => "float",
+                        _ => GetVarTypeName(context.Definitions.GetUserDefinedType(ioDefinition.Location, isOutput: true))
+                    };
+                    string name = ioDefinition.IoVariable switch
+                    {
+                        IoVariable.Position => "position",
+                        IoVariable.PointSize => "point_size",
+                        IoVariable.FragmentOutputColor => $"color{ioDefinition.Location}",
+                        IoVariable.FragmentOutputDepth => "depth",
+                        IoVariable.ClipDistance => "clip_distance",
+                        _ => $"{Defaults.OAttributePrefix}{ioDefinition.Location}"
+                    };
+                    string suffix = ioDefinition.IoVariable switch
+                    {
+                        IoVariable.Position => "[[position, invariant]]",
+                        IoVariable.PointSize => "[[point_size]]",
+                        IoVariable.UserDefined => $"[[user(loc{ioDefinition.Location})]]",
+                        IoVariable.FragmentOutputColor => $"[[color({ioDefinition.Location})]]",
+                        IoVariable.FragmentOutputDepth => "[[depth(any)]]",
+                        IoVariable.ClipDistance => $"[[clip_distance]][{Defaults.TotalClipDistances}]",
+                        _ => ""
+                    };
+
+                    context.AppendLine($"{type} {name} {suffix};");
+                }
+            }
+
+            context.LeaveScope(";");
         }
 
         private static void AppendHelperFunction(CodeGenContext context, string filename)

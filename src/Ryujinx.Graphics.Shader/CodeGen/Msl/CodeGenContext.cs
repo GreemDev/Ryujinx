@@ -60,9 +60,9 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
             return _sb.ToString();
         }
 
-        public void EnterScope()
+        public void EnterScope(string prefix = "")
         {
-            AppendLine("{");
+            AppendLine(prefix + "{");
 
             _level++;
 
