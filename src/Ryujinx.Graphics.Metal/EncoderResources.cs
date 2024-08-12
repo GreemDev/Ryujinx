@@ -11,7 +11,7 @@ namespace Ryujinx.Graphics.Metal
 
         public RenderEncoderResources() { }
 
-        public void Clear()
+        public readonly void Clear()
         {
             Resources.Clear();
             VertexBuffers.Clear();
@@ -26,7 +26,7 @@ namespace Ryujinx.Graphics.Metal
 
         public ComputeEncoderResources() { }
 
-        public void Clear()
+        public readonly void Clear()
         {
             Resources.Clear();
             Buffers.Clear();

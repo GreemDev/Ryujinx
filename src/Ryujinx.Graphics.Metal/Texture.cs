@@ -460,7 +460,7 @@ namespace Ryujinx.Graphics.Metal
             int width = Info.Width;
             int height = Info.Height;
             int depth = Info.Depth;
-            int levels = Info.GetLevelsClamped();
+            int levels = Info.Levels;
             int layers = Info.GetLayers();
             bool is3D = Info.Target == Target.Texture3D;
 

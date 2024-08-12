@@ -62,12 +62,12 @@ namespace Ryujinx.Graphics.Metal
             _currentState.Dirty |= flags;
         }
 
-        public void SignalRenderDirty()
+        public readonly void SignalRenderDirty()
         {
             SignalDirty(DirtyFlags.RenderAll);
         }
 
-        public void SignalComputeDirty()
+        public readonly void SignalComputeDirty()
         {
             SignalDirty(DirtyFlags.ComputeAll);
         }
@@ -186,7 +186,7 @@ namespace Ryujinx.Graphics.Metal
             return computeCommandEncoder;
         }
 
-        public void RenderResourcesPrepass()
+        public readonly void RenderResourcesPrepass()
         {
             _currentState.RenderEncoderResources.Clear();
 
@@ -216,7 +216,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        public void ComputeResourcesPrepass()
+        public readonly void ComputeResourcesPrepass()
         {
             _currentState.ComputeEncoderResources.Clear();
 
