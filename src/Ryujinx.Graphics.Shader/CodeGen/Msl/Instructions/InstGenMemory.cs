@@ -605,6 +605,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
             {
                 context.Properties.Textures.TryGetValue(texOp.GetTextureSetAndBinding(), out TextureDefinition definition);
                 bool hasLod = !definition.Type.HasFlag(SamplerType.Multisample) && (definition.Type & SamplerType.Mask) != SamplerType.TextureBuffer;
+                bool isArray = definition.Type.HasFlag(SamplerType.Array);
                 texCallBuilder.Append("get_");
 
                 if (texOp.Index == 0)
@@ -617,12 +618,19 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                 }
                 else
                 {
-                    texCallBuilder.Append("depth");
+                    if (isArray)
+                    {
+                        texCallBuilder.Append("array_size");
+                    }
+                    else
+                    {
+                        texCallBuilder.Append("depth");
+                    }
                 }
 
                 texCallBuilder.Append('(');
 
-                if (hasLod)
+                if (hasLod && !isArray)
                 {
                     IAstNode lod = operation.GetSource(0);
                     string lodExpr = GetSourceExpr(context, lod, GetSrcVarType(operation.Inst, 0));
