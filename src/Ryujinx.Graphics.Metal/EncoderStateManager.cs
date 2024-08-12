@@ -663,6 +663,14 @@ namespace Ryujinx.Graphics.Metal
             SignalDirty(DirtyFlags.DepthBias);
         }
 
+        public readonly void UpdateLogicOpState(bool enable, LogicalOp op)
+        {
+            _currentState.Pipeline.LogicOpEnable = enable;
+            _currentState.Pipeline.LogicOp = op.Convert();
+
+            SignalDirty(DirtyFlags.RenderPipeline);
+        }
+
         public readonly void UpdateMultisampleState(MultisampleDescriptor multisample)
         {
             _currentState.Pipeline.AlphaToCoverageEnable = multisample.AlphaToCoverageEnable;

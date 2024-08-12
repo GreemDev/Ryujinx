@@ -669,7 +669,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetLogicOpState(bool enable, LogicalOp op)
         {
-            // Metal does not support logic operations.
+            _encoderStateManager.UpdateLogicOpState(enable, op);
         }
 
         public void SetMultisampleState(MultisampleDescriptor multisample)

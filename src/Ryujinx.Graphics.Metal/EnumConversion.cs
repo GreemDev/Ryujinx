@@ -1,6 +1,7 @@
 using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.GAL;
 using SharpMetal.Metal;
+using System;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
@@ -109,6 +110,30 @@ namespace Ryujinx.Graphics.Metal
                 IndexType.UShort => MTLIndexType.UInt16,
                 IndexType.UInt => MTLIndexType.UInt32,
                 _ => LogInvalidAndReturn(type, nameof(IndexType), MTLIndexType.UInt16)
+            };
+        }
+
+        public static MTLLogicOperation Convert(this LogicalOp op)
+        {
+            return op switch
+            {
+                LogicalOp.Clear => MTLLogicOperation.Clear,
+                LogicalOp.And => MTLLogicOperation.And,
+                LogicalOp.AndReverse => MTLLogicOperation.AndReverse,
+                LogicalOp.Copy => MTLLogicOperation.Copy,
+                LogicalOp.AndInverted => MTLLogicOperation.AndInverted,
+                LogicalOp.Noop => MTLLogicOperation.Noop,
+                LogicalOp.Xor => MTLLogicOperation.Xor,
+                LogicalOp.Or => MTLLogicOperation.Or,
+                LogicalOp.Nor => MTLLogicOperation.Nor,
+                LogicalOp.Equiv => MTLLogicOperation.Equivalence,
+                LogicalOp.Invert => MTLLogicOperation.Invert,
+                LogicalOp.OrReverse => MTLLogicOperation.OrReverse,
+                LogicalOp.CopyInverted => MTLLogicOperation.CopyInverted,
+                LogicalOp.OrInverted => MTLLogicOperation.OrInverted,
+                LogicalOp.Nand => MTLLogicOperation.Nand,
+                LogicalOp.Set => MTLLogicOperation.Set,
+                _ => LogInvalidAndReturn(op, nameof(LogicalOp), MTLLogicOperation.And)
             };
         }
 

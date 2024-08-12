@@ -45,10 +45,9 @@ namespace Ryujinx.Graphics.Metal
         }
         */
 
-        // Reserved for when API is available.
-        public int LogicOp
+        public MTLLogicOperation LogicOp
         {
-            readonly get => (int)((Internal.Id0 >> 32) & 0xF);
+            readonly get => (MTLLogicOperation)((Internal.Id0 >> 32) & 0xF);
             set => Internal.Id0 = (Internal.Id0 & 0xFFFFFFF0FFFFFFFF) | ((ulong)value << 32);
         }
 
@@ -65,7 +64,6 @@ namespace Ryujinx.Graphics.Metal
             set => Internal.Id0 = (Internal.Id0 & 0xFFFFFFDFFFFFFFFF) | ((value ? 1UL : 0UL) << 37);
         }
 
-        // Reserved for when API is available.
         public bool LogicOpEnable
         {
             readonly get => ((Internal.Id0 >> 38) & 0x1) != 0UL;
@@ -208,9 +206,11 @@ namespace Ryujinx.Graphics.Metal
                 }
             }
 
-            renderPipelineDescriptor.SetAlphaToCoverageEnabled(AlphaToCoverageEnable);
-            renderPipelineDescriptor.SetAlphaToOneEnabled(AlphaToOneEnable);
-            renderPipelineDescriptor.SetRasterizationEnabled(!RasterizerDiscardEnable);
+            renderPipelineDescriptor.LogicOperationEnabled = LogicOpEnable;
+            renderPipelineDescriptor.LogicOperation = LogicOp;
+            renderPipelineDescriptor.AlphaToCoverageEnabled = AlphaToCoverageEnable;
+            renderPipelineDescriptor.AlphaToOneEnabled = AlphaToOneEnable;
+            renderPipelineDescriptor.RasterizationEnabled = !RasterizerDiscardEnable;
             renderPipelineDescriptor.SampleCount = Math.Max(1, SamplesCount);
 
             var vertexDescriptor = BuildVertexDescriptor();
