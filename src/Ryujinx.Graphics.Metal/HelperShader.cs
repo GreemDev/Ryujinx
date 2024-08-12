@@ -258,18 +258,24 @@ namespace Ryujinx.Graphics.Metal
                 _pipeline.SwapState(null);
                 return;
             }
-            else if (src.Info.Target.IsMultisample())
+
+            var debugGroupName = "Blit Color ";
+
+            if (src.Info.Target.IsMultisample())
             {
                 if (dst.Info.Format.IsSint())
                 {
+                    debugGroupName += "MS Int";
                     _pipeline.SetProgram(_programColorBlitMsI);
                 }
                 else if (dst.Info.Format.IsUint())
                 {
+                    debugGroupName += "MS UInt";
                     _pipeline.SetProgram(_programColorBlitMsU);
                 }
                 else
                 {
+                    debugGroupName += "MS Float";
                     _pipeline.SetProgram(_programColorBlitMsF);
                 }
             }
@@ -277,14 +283,17 @@ namespace Ryujinx.Graphics.Metal
             {
                 if (dst.Info.Format.IsSint())
                 {
+                    debugGroupName += "Int";
                     _pipeline.SetProgram(_programColorBlitI);
                 }
                 else if (dst.Info.Format.IsUint())
                 {
+                    debugGroupName += "UInt";
                     _pipeline.SetProgram(_programColorBlitU);
                 }
                 else
                 {
+                    debugGroupName += "Float";
                     _pipeline.SetProgram(_programColorBlitF);
                 }
             }
@@ -303,7 +312,7 @@ namespace Ryujinx.Graphics.Metal
 
             _pipeline.SetViewports(viewports);
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
-            _pipeline.Draw(4, 1, 0, 0);
+            _pipeline.Draw(4, 1, 0, 0, debugGroupName);
 
             // Cleanup
             if (clear)
@@ -441,18 +450,22 @@ namespace Ryujinx.Graphics.Metal
 
         private void BlitDepthStencilDraw(Texture src, bool isDepth)
         {
+            string debugGroupName;
+
             if (isDepth)
             {
+                debugGroupName = "Depth Blit";
                 _pipeline.SetProgram(src.Info.Target.IsMultisample() ? _programDepthBlitMs : _programDepthBlit);
                 _pipeline.SetDepthTest(new DepthTestDescriptor(true, true, CompareOp.Always));
             }
             else
             {
+                debugGroupName = "Stencil Blit";
                 _pipeline.SetProgram(src.Info.Target.IsMultisample() ? _programStencilBlitMs : _programStencilBlit);
                 _pipeline.SetStencilTest(CreateStencilTestDescriptor(true));
             }
 
-            _pipeline.Draw(4, 1, 0, 0);
+            _pipeline.Draw(4, 1, 0, 0, debugGroupName);
 
             if (isDepth)
             {
@@ -522,7 +535,7 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SetProgram(_programColorBlitF);
             _pipeline.SetViewports(viewports);
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
-            _pipeline.Draw(4, 1, 0, 0);
+            _pipeline.Draw(4, 1, 0, 0, "Draw Texture");
 
             _renderer.BufferManager.Delete(bufferHandle);
 
@@ -572,7 +585,7 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SetStorageBuffers(1, sbRanges);
 
             _pipeline.SetProgram(_programStrideChange);
-            _pipeline.DispatchCompute(1 + elems / ConvertElementsPerWorkgroup, 1, 1);
+            _pipeline.DispatchCompute(1 + elems / ConvertElementsPerWorkgroup, 1, 1, "Change Stride");
 
             // Restore previous state
             _pipeline.SwapState(null);
@@ -618,16 +631,21 @@ namespace Ryujinx.Graphics.Metal
             Span<uint> componentMasks = stackalloc uint[index + 1];
             componentMasks[index] = componentMask;
 
+            var debugGroupName = "Clear Color ";
+
             if (format.IsSint())
             {
+                debugGroupName += "Int";
                 _pipeline.SetProgram(_programsColorClearI[index]);
             }
             else if (format.IsUint())
             {
+                debugGroupName += "UInt";
                 _pipeline.SetProgram(_programsColorClearU[index]);
             }
             else
             {
+                debugGroupName += "Float";
                 _pipeline.SetProgram(_programsColorClearF[index]);
             }
 
@@ -637,7 +655,7 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SetRenderTargetColorMasks(componentMasks);
             _pipeline.SetViewports(viewports);
             _pipeline.SetPrimitiveTopology(PrimitiveTopology.TriangleStrip);
-            _pipeline.Draw(4, 1, 0, 0);
+            _pipeline.Draw(4, 1, 0, 0, debugGroupName);
 
             // Restore previous state
             _pipeline.SwapState(null, clearFlags, false);
@@ -686,7 +704,7 @@ namespace Ryujinx.Graphics.Metal
             _pipeline.SetViewports(viewports);
             _pipeline.SetDepthTest(new DepthTestDescriptor(true, depthMask, CompareOp.Always));
             _pipeline.SetStencilTest(CreateStencilTestDescriptor(stencilMask != 0, stencilValue, 0xFF, stencilMask));
-            _pipeline.Draw(4, 1, 0, 0);
+            _pipeline.Draw(4, 1, 0, 0, "Clear Depth Stencil");
 
             // Cleanup
             _pipeline.SetDepthTest(new DepthTestDescriptor(false, false, CompareOp.Always));

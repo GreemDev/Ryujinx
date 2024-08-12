@@ -319,18 +319,85 @@ namespace Ryujinx.Graphics.Metal
             BufferHolder.Copy(Cbs, srcBuffer, dstBuffer, srcOffset, dstOffset, size);
         }
 
+        public void PushDebugGroup(string name)
+        {
+            var encoder = Encoders.CurrentEncoder;
+            var debugGroupName = StringHelper.NSString(name);
+
+            if (encoder == null)
+            {
+                return;
+            }
+
+            switch (Encoders.CurrentEncoderType)
+            {
+                case EncoderType.Render:
+                    encoder.Value.PushDebugGroup(debugGroupName);
+                    break;
+                case EncoderType.Blit:
+                    encoder.Value.PushDebugGroup(debugGroupName);
+                    break;
+                case EncoderType.Compute:
+                    encoder.Value.PushDebugGroup(debugGroupName);
+                    break;
+            }
+        }
+
+        public void PopDebugGroup()
+        {
+            var encoder = Encoders.CurrentEncoder;
+
+            if (encoder == null)
+            {
+                return;
+            }
+
+            switch (Encoders.CurrentEncoderType)
+            {
+                case EncoderType.Render:
+                    encoder.Value.PopDebugGroup();
+                    break;
+                case EncoderType.Blit:
+                    encoder.Value.PopDebugGroup();
+                    break;
+                case EncoderType.Compute:
+                    encoder.Value.PopDebugGroup();
+                    break;
+            }
+        }
+
         public void DispatchCompute(int groupsX, int groupsY, int groupsZ)
+        {
+            DispatchCompute(groupsX, groupsY, groupsZ, String.Empty);
+        }
+
+        public void DispatchCompute(int groupsX, int groupsY, int groupsZ, string debugGroupName)
         {
             var computeCommandEncoder = GetOrCreateComputeEncoder(true);
 
             ComputeSize localSize = _encoderStateManager.ComputeLocalSize;
 
+            if (debugGroupName != String.Empty)
+            {
+                PushDebugGroup(debugGroupName);
+            }
+
             computeCommandEncoder.DispatchThreadgroups(
                 new MTLSize { width = (ulong)groupsX, height = (ulong)groupsY, depth = (ulong)groupsZ },
                 new MTLSize { width = (ulong)localSize.X, height = (ulong)localSize.Y, depth = (ulong)localSize.Z });
+
+            if (debugGroupName != String.Empty)
+            {
+                PopDebugGroup();
+            }
         }
 
         public void Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance)
+        {
+            Draw(vertexCount, instanceCount, firstVertex, firstInstance, String.Empty);
+        }
+
+        public void Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance, string debugGroupName)
         {
             if (vertexCount == 0)
             {
@@ -360,12 +427,22 @@ namespace Ryujinx.Graphics.Metal
                 var primitiveType = TopologyRemap(_encoderStateManager.Topology).Convert();
                 var renderCommandEncoder = GetOrCreateRenderEncoder(true);
 
+                if (debugGroupName != String.Empty)
+                {
+                    PushDebugGroup(debugGroupName);
+                }
+
                 renderCommandEncoder.DrawPrimitives(
                     primitiveType,
                     (ulong)firstVertex,
                     (ulong)vertexCount,
                     (ulong)instanceCount,
                     (ulong)firstInstance);
+
+                if (debugGroupName != String.Empty)
+                {
+                    PopDebugGroup();
+                }
             }
         }
 
