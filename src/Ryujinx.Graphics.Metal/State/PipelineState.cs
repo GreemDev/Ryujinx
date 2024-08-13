@@ -103,24 +103,6 @@ namespace Ryujinx.Graphics.Metal
 
         // Advanced blend not supported
 
-        private struct RenderPipelineDescriptorResult : IDisposable
-        {
-            public MTLRenderPipelineDescriptor Pipeline;
-            private MTLVertexDescriptor _vertex;
-
-            public RenderPipelineDescriptorResult(MTLRenderPipelineDescriptor pipeline, MTLVertexDescriptor vertex)
-            {
-                Pipeline = pipeline;
-                _vertex = vertex;
-            }
-
-            public void Dispose()
-            {
-                Pipeline.Dispose();
-                _vertex.Dispose();
-            }
-        }
-
         private readonly void BuildColorAttachment(MTLRenderPipelineColorAttachmentDescriptor descriptor, ColorBlendStateUid blendState)
         {
             descriptor.PixelFormat = blendState.PixelFormat;
@@ -162,7 +144,7 @@ namespace Ryujinx.Graphics.Metal
             return vertexDescriptor;
         }
 
-        private RenderPipelineDescriptorResult CreateRenderDescriptor(Program program)
+        private MTLRenderPipelineDescriptor CreateRenderDescriptor(Program program)
         {
             var renderPipelineDescriptor = new MTLRenderPipelineDescriptor();
 
@@ -223,7 +205,7 @@ namespace Ryujinx.Graphics.Metal
                 renderPipelineDescriptor.FragmentFunction = program.FragmentFunction;
             }
 
-            return new RenderPipelineDescriptorResult(renderPipelineDescriptor, vertexDescriptor);
+            return renderPipelineDescriptor;
         }
 
         public MTLRenderPipelineState CreateRenderPipeline(MTLDevice device, Program program)
@@ -233,10 +215,10 @@ namespace Ryujinx.Graphics.Metal
                 return pipelineState;
             }
 
-            using RenderPipelineDescriptorResult descriptors = CreateRenderDescriptor(program);
+            using var descriptor = CreateRenderDescriptor(program);
 
             var error = new NSError(IntPtr.Zero);
-            pipelineState = device.NewRenderPipelineState(descriptors.Pipeline, ref error);
+            pipelineState = device.NewRenderPipelineState(descriptor, ref error);
             if (error != IntPtr.Zero)
             {
                 Logger.Error?.PrintMsg(LogClass.Gpu, $"Failed to create Render Pipeline State: {StringHelper.String(error.LocalizedDescription)}");
