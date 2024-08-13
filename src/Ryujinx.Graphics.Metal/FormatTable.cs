@@ -172,21 +172,25 @@ namespace Ryujinx.Graphics.Metal
         {
             var mtlFormat = _table[(int)format];
 
-            if (mtlFormat == MTLPixelFormat.Depth24UnormStencil8)
+            if (IsD24S8(format))
             {
                 if (!MTLDevice.CreateSystemDefaultDevice().Depth24Stencil8PixelFormatSupported)
                 {
-                    Logger.Error?.PrintMsg(LogClass.Gpu, "Application requested Depth24Stencil8, which is unsupported on this device!");
                     mtlFormat = MTLPixelFormat.Depth32FloatStencil8;
                 }
             }
 
             if (mtlFormat == MTLPixelFormat.Invalid)
             {
-                Logger.Error?.PrintMsg(LogClass.Gpu, $"Application requested {format}, no direct equivalent was found!");
+                Logger.Error?.PrintMsg(LogClass.Gpu, $"Format {format} is not supported by the host.");
             }
 
             return mtlFormat;
+        }
+
+        public static bool IsD24S8(Format format)
+        {
+            return format == Format.D24UnormS8Uint || format == Format.S8UintD24Unorm || format == Format.X8UintD24Unorm;
         }
     }
 }

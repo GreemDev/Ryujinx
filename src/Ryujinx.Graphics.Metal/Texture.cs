@@ -277,9 +277,18 @@ namespace Ryujinx.Graphics.Metal
             var autoBuffer = Renderer.BufferManager.GetBuffer(range.Handle, true);
             var mtlBuffer = autoBuffer.Get(cbs, range.Offset, outSize).Value;
 
-            // TODO: D32S8 conversion via temp copy holder
+            if (PrepareOutputBuffer(cbs, hostSize, mtlBuffer, out MTLBuffer copyToBuffer, out BufferHolder tempCopyHolder))
+            {
+                offset = 0;
+            }
 
-            CopyFromOrToBuffer(cbs, mtlBuffer, MtlTexture, hostSize, true, layer, level, 1, 1, singleSlice: true, offset: offset, stride: stride);
+            CopyFromOrToBuffer(cbs, copyToBuffer, MtlTexture, hostSize, true, layer, level, 1, 1, singleSlice: true, offset, stride);
+
+            if (tempCopyHolder != null)
+            {
+                CopyDataToOutputBuffer(cbs, tempCopyHolder, autoBuffer, hostSize, range.Offset);
+                tempCopyHolder.Dispose();
+            }
         }
 
         public ITexture CreateView(TextureCreateInfo info, int firstLayer, int firstLevel)
@@ -287,25 +296,60 @@ namespace Ryujinx.Graphics.Metal
             return new Texture(Device, Renderer, Pipeline, info, _identitySwizzleHandle, firstLayer, firstLevel);
         }
 
-        private int GetBufferDataLength(int size)
-        {
-            // TODO: D32S8 conversion
-
-            return size;
-        }
-
         private void CopyDataToBuffer(Span<byte> storage, ReadOnlySpan<byte> input)
         {
-            // TODO: D32S8 conversion
+            if (NeedsD24S8Conversion())
+            {
+                FormatConverter.ConvertD24S8ToD32FS8(storage, input);
+                return;
+            }
 
             input.CopyTo(storage);
         }
 
         private ReadOnlySpan<byte> GetDataFromBuffer(ReadOnlySpan<byte> storage, int size, Span<byte> output)
         {
-            // TODO: D32S8 conversion
+            if (NeedsD24S8Conversion())
+            {
+                if (output.IsEmpty)
+                {
+                    output = new byte[GetBufferDataLength(size)];
+                }
+
+                FormatConverter.ConvertD32FS8ToD24S8(output, storage);
+                return output;
+            }
 
             return storage;
+        }
+
+        private bool PrepareOutputBuffer(CommandBufferScoped cbs, int hostSize, MTLBuffer target, out MTLBuffer copyTarget, out BufferHolder copyTargetHolder)
+        {
+            if (NeedsD24S8Conversion())
+            {
+                copyTargetHolder = Renderer.BufferManager.Create(hostSize);
+                copyTarget = copyTargetHolder.GetBuffer().Get(cbs, 0, hostSize).Value;
+
+                return true;
+            }
+
+            copyTarget = target;
+            copyTargetHolder = null;
+
+            return false;
+        }
+
+        private void CopyDataToOutputBuffer(CommandBufferScoped cbs, BufferHolder hostData, Auto<DisposableBuffer> copyTarget, int hostSize, int dstOffset)
+        {
+            if (NeedsD24S8Conversion())
+            {
+                Renderer.HelperShader.ConvertD32S8ToD24S8(cbs, hostData, copyTarget, hostSize / (2 * sizeof(int)), dstOffset);
+            }
+        }
+
+        private bool NeedsD24S8Conversion()
+        {
+            return FormatTable.IsD24S8(Info.Format) && MtlFormat == MTLPixelFormat.Depth32FloatStencil8;
         }
 
         public void CopyFromOrToBuffer(
@@ -562,6 +606,16 @@ namespace Ryujinx.Graphics.Metal
 
             // Cleanup
             buffer.Dispose();
+        }
+
+        private int GetBufferDataLength(int length)
+        {
+            if (NeedsD24S8Conversion())
+            {
+                return length * 2;
+            }
+
+            return length;
         }
 
         public void SetStorage(BufferRange buffer)

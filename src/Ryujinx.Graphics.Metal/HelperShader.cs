@@ -32,6 +32,7 @@ namespace Ryujinx.Graphics.Metal
         private readonly List<IProgram> _programsColorClearU = new();
         private readonly IProgram _programDepthStencilClear;
         private readonly IProgram _programStrideChange;
+        private readonly IProgram _programConvertD32S8ToD24S8;
         private readonly IProgram _programDepthBlit;
         private readonly IProgram _programDepthBlitMs;
         private readonly IProgram _programStencilBlit;
@@ -150,6 +151,17 @@ namespace Ryujinx.Graphics.Metal
             [
                 new ShaderSource(strideChangeSource, ShaderStage.Compute, TargetLanguage.Msl)
             ], strideChangeResourceLayout, device, new ComputeSize(64, 1, 1));
+
+            var convertD32S8ToD24S8ResourceLayout = new ResourceLayoutBuilder()
+                .Add(ResourceStages.Compute, ResourceType.UniformBuffer, 0)
+                .Add(ResourceStages.Compute, ResourceType.StorageBuffer, 1)
+                .Add(ResourceStages.Compute, ResourceType.StorageBuffer, 2, true).Build();
+
+            var convertD32S8ToD24S8Source = ReadMsl("ConvertD32S8ToD24S8.metal");
+            _programConvertD32S8ToD24S8 = new Program(
+            [
+                new ShaderSource(convertD32S8ToD24S8Source, ShaderStage.Compute, TargetLanguage.Msl)
+            ], convertD32S8ToD24S8ResourceLayout, device, new ComputeSize(64, 1, 1));
 
             var depthBlitSource = ReadMsl("DepthBlit.metal");
             _programDepthBlit = new Program(
@@ -586,6 +598,39 @@ namespace Ryujinx.Graphics.Metal
 
             _pipeline.SetProgram(_programStrideChange);
             _pipeline.DispatchCompute(1 + elems / ConvertElementsPerWorkgroup, 1, 1, "Change Stride");
+
+            // Restore previous state
+            _pipeline.SwapState(null);
+        }
+
+        public unsafe void ConvertD32S8ToD24S8(CommandBufferScoped cbs, BufferHolder src, Auto<DisposableBuffer> dstBuffer, int pixelCount, int dstOffset)
+        {
+            int inSize = pixelCount * 2 * sizeof(int);
+
+            var srcBuffer = src.GetBuffer();
+
+            const int ParamsBufferSize = sizeof(int) * 2;
+
+            // Save current state
+            _pipeline.SwapState(_helperShaderState);
+
+            Span<int> shaderParams = stackalloc int[2];
+
+            shaderParams[0] = pixelCount;
+            shaderParams[1] = dstOffset;
+
+            using var buffer = _renderer.BufferManager.ReserveOrCreate(cbs, ParamsBufferSize);
+            buffer.Holder.SetDataUnchecked<int>(buffer.Offset, shaderParams);
+            _pipeline.SetUniformBuffers([new BufferAssignment(0, buffer.Range)]);
+
+            Span<Auto<DisposableBuffer>> sbRanges = new Auto<DisposableBuffer>[2];
+
+            sbRanges[0] = srcBuffer;
+            sbRanges[1] = dstBuffer;
+            _pipeline.SetStorageBuffers(1, sbRanges);
+
+            _pipeline.SetProgram(_programConvertD32S8ToD24S8);
+            _pipeline.DispatchCompute(1 + inSize / ConvertElementsPerWorkgroup, 1, 1, "D32S8 to D24S8 Conversion");
 
             // Restore previous state
             _pipeline.SwapState(null);
