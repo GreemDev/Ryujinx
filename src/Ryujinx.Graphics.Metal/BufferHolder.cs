@@ -318,6 +318,35 @@ namespace Ryujinx.Graphics.Metal
             return holder.GetBuffer();
         }
 
+        public Auto<DisposableBuffer> GetBufferTopologyConversion(CommandBufferScoped cbs, int offset, int size, IndexBufferPattern pattern, int indexSize)
+        {
+            if (!BoundToRange(offset, ref size))
+            {
+                return null;
+            }
+
+            var key = new TopologyConversionCacheKey(_renderer, pattern, indexSize);
+
+            if (!_cachedConvertedBuffers.TryGetValue(offset, size, key, out var holder))
+            {
+                // The destination index size is always I32.
+
+                int indexCount = size / indexSize;
+
+                int convertedCount = pattern.GetConvertedCount(indexCount);
+
+                holder = _renderer.BufferManager.Create(convertedCount * 4);
+
+                _renderer.HelperShader.ConvertIndexBuffer(cbs, this, holder, pattern, indexSize, offset, indexCount);
+
+                key.SetBuffer(holder.GetBuffer());
+
+                _cachedConvertedBuffers.Add(offset, size, key, holder);
+            }
+
+            return holder.GetBuffer();
+        }
+
         public bool TryGetCachedConvertedBuffer(int offset, int size, ICacheKey key, out BufferHolder holder)
         {
             return _cachedConvertedBuffers.TryGetValue(offset, size, key, out holder);

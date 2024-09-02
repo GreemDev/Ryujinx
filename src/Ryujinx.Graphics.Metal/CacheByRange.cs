@@ -39,80 +39,42 @@ namespace Ryujinx.Graphics.Metal
         }
     }
 
-    // [SupportedOSPlatform("macos")]
-    // struct AlignedVertexBufferCacheKey : ICacheKey
-    // {
-    //     private readonly int _stride;
-    //     private readonly int _alignment;
-    //
-    //     // Used to notify the pipeline that bindings have invalidated on dispose.
-    //     // private readonly MetalRenderer _renderer;
-    //     // private Auto<DisposableBuffer> _buffer;
-    //
-    //     public AlignedVertexBufferCacheKey(MetalRenderer renderer, int stride, int alignment)
-    //     {
-    //         // _renderer = renderer;
-    //         _stride = stride;
-    //         _alignment = alignment;
-    //         // _buffer = null;
-    //     }
-    //
-    //     public readonly bool KeyEqual(ICacheKey other)
-    //     {
-    //         return other is AlignedVertexBufferCacheKey entry &&
-    //                entry._stride == _stride &&
-    //                entry._alignment == _alignment;
-    //     }
-    //
-    //     public void SetBuffer(Auto<DisposableBuffer> buffer)
-    //     {
-    //         // _buffer = buffer;
-    //     }
-    //
-    //     public readonly void Dispose()
-    //     {
-    //         // TODO: Tell pipeline buffer is dirty!
-    //         // _renderer.PipelineInternal.DirtyVertexBuffer(_buffer);
-    //     }
-    // }
+    [SupportedOSPlatform("macos")]
+    struct TopologyConversionCacheKey : ICacheKey
+    {
+        private readonly IndexBufferPattern _pattern;
+        private readonly int _indexSize;
 
-    // [SupportedOSPlatform("macos")]
-    // struct TopologyConversionCacheKey : ICacheKey
-    // {
-    //     // TODO: Patterns
-    //     // private readonly IndexBufferPattern _pattern;
-    //     private readonly int _indexSize;
-    //
-    //     // Used to notify the pipeline that bindings have invalidated on dispose.
-    //     // private readonly MetalRenderer _renderer;
-    //     // private Auto<DisposableBuffer> _buffer;
-    //
-    //     public TopologyConversionCacheKey(MetalRenderer renderer, /*IndexBufferPattern pattern, */int indexSize)
-    //     {
-    //         // _renderer = renderer;
-    //         // _pattern = pattern;
-    //         _indexSize = indexSize;
-    //         // _buffer = null;
-    //     }
-    //
-    //     public readonly bool KeyEqual(ICacheKey other)
-    //     {
-    //         return other is TopologyConversionCacheKey entry &&
-    //                // entry._pattern == _pattern &&
-    //                entry._indexSize == _indexSize;
-    //     }
-    //
-    //     public void SetBuffer(Auto<DisposableBuffer> buffer)
-    //     {
-    //         // _buffer = buffer;
-    //     }
-    //
-    //     public readonly void Dispose()
-    //     {
-    //         // TODO: Tell pipeline buffer is dirty!
-    //         // _renderer.PipelineInternal.DirtyVertexBuffer(_buffer);
-    //     }
-    // }
+        // Used to notify the pipeline that bindings have invalidated on dispose.
+        // private readonly MetalRenderer _renderer;
+        // private Auto<DisposableBuffer> _buffer;
+
+        public TopologyConversionCacheKey(MetalRenderer renderer, IndexBufferPattern pattern, int indexSize)
+        {
+            // _renderer = renderer;
+            // _buffer = null;
+            _pattern = pattern;
+            _indexSize = indexSize;
+        }
+
+        public readonly bool KeyEqual(ICacheKey other)
+        {
+            return other is TopologyConversionCacheKey entry &&
+                   entry._pattern == _pattern &&
+                   entry._indexSize == _indexSize;
+        }
+
+        public void SetBuffer(Auto<DisposableBuffer> buffer)
+        {
+            // _buffer = buffer;
+        }
+
+        public readonly void Dispose()
+        {
+            // TODO: Tell pipeline buffer is dirty!
+            // _renderer.PipelineInternal.DirtyVertexBuffer(_buffer);
+        }
+    }
 
     [SupportedOSPlatform("macos")]
     readonly struct Dependency

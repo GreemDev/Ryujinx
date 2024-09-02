@@ -404,6 +404,8 @@ namespace Ryujinx.Graphics.Metal
                 return;
             }
 
+            var primitiveType = TopologyRemap(_encoderStateManager.Topology).Convert();
+
             if (TopologyUnsupported(_encoderStateManager.Topology))
             {
                 var pattern = GetIndexBufferPattern();
@@ -412,7 +414,6 @@ namespace Ryujinx.Graphics.Metal
                 var buffer = _renderer.BufferManager.GetBuffer(handle, false);
                 var mtlBuffer = buffer.Get(Cbs, 0, indexCount * sizeof(int)).Value;
 
-                var primitiveType = TopologyRemap(_encoderStateManager.Topology).Convert();
                 var renderCommandEncoder = GetOrCreateRenderEncoder(true);
 
                 renderCommandEncoder.DrawIndexedPrimitives(
@@ -424,7 +425,6 @@ namespace Ryujinx.Graphics.Metal
             }
             else
             {
-                var primitiveType = TopologyRemap(_encoderStateManager.Topology).Convert();
                 var renderCommandEncoder = GetOrCreateRenderEncoder(true);
 
                 if (debugGroupName != String.Empty)
@@ -483,15 +483,26 @@ namespace Ryujinx.Graphics.Metal
                 return;
             }
 
-            // TODO: Reindex unsupported topologies
-            if (TopologyUnsupported(_encoderStateManager.Topology))
-            {
-                Logger.Warning?.Print(LogClass.Gpu, $"Drawing indexed with unsupported topology: {_encoderStateManager.Topology}");
-            }
+            MTLBuffer mtlBuffer;
+            int offset;
+            MTLIndexType type;
+            int finalIndexCount = indexCount;
 
             var primitiveType = TopologyRemap(_encoderStateManager.Topology).Convert();
 
-            (MTLBuffer mtlBuffer, int offset, MTLIndexType type) = _encoderStateManager.IndexBuffer.GetIndexBuffer(_renderer, Cbs);
+            if (TopologyUnsupported(_encoderStateManager.Topology))
+            {
+                var pattern = GetIndexBufferPattern();
+                int convertedCount = pattern.GetConvertedCount(indexCount);
+
+                finalIndexCount = convertedCount;
+
+                (mtlBuffer, offset, type) = _encoderStateManager.IndexBuffer.GetConvertedIndexBuffer(_renderer, Cbs, firstIndex, indexCount, convertedCount, pattern);
+            }
+            else
+            {
+                (mtlBuffer, offset, type) = _encoderStateManager.IndexBuffer.GetIndexBuffer(_renderer, Cbs);
+            }
 
             if (mtlBuffer.NativePtr != IntPtr.Zero)
             {
@@ -499,7 +510,7 @@ namespace Ryujinx.Graphics.Metal
 
                 renderCommandEncoder.DrawIndexedPrimitives(
                     primitiveType,
-                    (ulong)indexCount,
+                    (ulong)finalIndexCount,
                     type,
                     mtlBuffer,
                     (ulong)offset,

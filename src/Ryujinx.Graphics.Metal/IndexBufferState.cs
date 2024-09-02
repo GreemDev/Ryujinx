@@ -62,5 +62,42 @@ namespace Ryujinx.Graphics.Metal
 
             return (new MTLBuffer(IntPtr.Zero), 0, MTLIndexType.UInt16);
         }
+
+        public (MTLBuffer, int, MTLIndexType) GetConvertedIndexBuffer(
+            MetalRenderer renderer,
+            CommandBufferScoped cbs,
+            int firstIndex,
+            int indexCount,
+            int convertedCount,
+            IndexBufferPattern pattern)
+        {
+            // Convert the index buffer using the given pattern.
+            int indexSize = GetIndexSize();
+
+            int firstIndexOffset = firstIndex * indexSize;
+
+            var autoBuffer = renderer.BufferManager.GetBufferTopologyConversion(cbs, _handle, _offset + firstIndexOffset, indexCount * indexSize, pattern, indexSize);
+
+            int size = convertedCount * 4;
+
+            if (autoBuffer != null)
+            {
+                DisposableBuffer buffer = autoBuffer.Get(cbs, 0, size);
+
+                return (buffer.Value, 0, MTLIndexType.UInt32);
+            }
+
+            return (new MTLBuffer(IntPtr.Zero), 0, MTLIndexType.UInt32);
+        }
+
+        private int GetIndexSize()
+        {
+            return _type switch
+            {
+                IndexType.UInt => 4,
+                IndexType.UShort => 2,
+                _ => 1,
+            };
+        }
     }
 }

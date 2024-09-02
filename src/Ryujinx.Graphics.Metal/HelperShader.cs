@@ -33,6 +33,7 @@ namespace Ryujinx.Graphics.Metal
         private readonly IProgram _programDepthStencilClear;
         private readonly IProgram _programStrideChange;
         private readonly IProgram _programConvertD32S8ToD24S8;
+        private readonly IProgram _programConvertIndexBuffer;
         private readonly IProgram _programDepthBlit;
         private readonly IProgram _programDepthBlitMs;
         private readonly IProgram _programStencilBlit;
@@ -162,6 +163,17 @@ namespace Ryujinx.Graphics.Metal
             [
                 new ShaderSource(convertD32S8ToD24S8Source, ShaderStage.Compute, TargetLanguage.Msl)
             ], convertD32S8ToD24S8ResourceLayout, device, new ComputeSize(64, 1, 1));
+
+            var convertIndexBufferLayout = new ResourceLayoutBuilder()
+                .Add(ResourceStages.Compute, ResourceType.StorageBuffer, 1)
+                .Add(ResourceStages.Compute, ResourceType.StorageBuffer, 2, true)
+                .Add(ResourceStages.Compute, ResourceType.StorageBuffer, 3).Build();
+
+            var convertIndexBufferSource = ReadMsl("ConvertIndexBuffer.metal");
+            _programConvertIndexBuffer = new Program(
+            [
+                new ShaderSource(convertIndexBufferSource, ShaderStage.Compute, TargetLanguage.Msl)
+            ], convertIndexBufferLayout, device, new ComputeSize(16, 1, 1));
 
             var depthBlitSource = ReadMsl("DepthBlit.metal");
             _programDepthBlit = new Program(
@@ -574,7 +586,7 @@ namespace Ryujinx.Graphics.Metal
             var srcBuffer = src.GetBuffer();
             var dstBuffer = dst.GetBuffer();
 
-            const int ParamsBufferSize = 16;
+            const int ParamsBufferSize = 4 * sizeof(int);
 
             // Save current state
             _pipeline.SwapState(_helperShaderState);
@@ -631,6 +643,58 @@ namespace Ryujinx.Graphics.Metal
 
             _pipeline.SetProgram(_programConvertD32S8ToD24S8);
             _pipeline.DispatchCompute(1 + inSize / ConvertElementsPerWorkgroup, 1, 1, "D32S8 to D24S8 Conversion");
+
+            // Restore previous state
+            _pipeline.SwapState(null);
+        }
+
+        public void ConvertIndexBuffer(
+            CommandBufferScoped cbs,
+            BufferHolder src,
+            BufferHolder dst,
+            IndexBufferPattern pattern,
+            int indexSize,
+            int srcOffset,
+            int indexCount)
+        {
+            // TODO: Support conversion with primitive restart enabled.
+
+            int primitiveCount = pattern.GetPrimitiveCount(indexCount);
+            int outputIndexSize = 4;
+
+            var srcBuffer = src.GetBuffer();
+            var dstBuffer = dst.GetBuffer();
+
+            const int ParamsBufferSize = 16 * sizeof(int);
+
+            // Save current state
+            _pipeline.SwapState(_helperShaderState);
+
+            Span<int> shaderParams = stackalloc int[ParamsBufferSize / sizeof(int)];
+
+            shaderParams[8] = pattern.PrimitiveVertices;
+            shaderParams[9] = pattern.PrimitiveVerticesOut;
+            shaderParams[10] = indexSize;
+            shaderParams[11] = outputIndexSize;
+            shaderParams[12] = pattern.BaseIndex;
+            shaderParams[13] = pattern.IndexStride;
+            shaderParams[14] = srcOffset;
+            shaderParams[15] = primitiveCount;
+
+            pattern.OffsetIndex.CopyTo(shaderParams[..pattern.OffsetIndex.Length]);
+
+            using var patternScoped = _renderer.BufferManager.ReserveOrCreate(cbs, ParamsBufferSize);
+            patternScoped.Holder.SetDataUnchecked<int>(patternScoped.Offset, shaderParams);
+
+            Span<Auto<DisposableBuffer>> sbRanges = new Auto<DisposableBuffer>[2];
+
+            sbRanges[0] = srcBuffer;
+            sbRanges[1] = dstBuffer;
+            _pipeline.SetStorageBuffers(1, sbRanges);
+            _pipeline.SetStorageBuffers([new BufferAssignment(3, patternScoped.Range)]);
+
+            _pipeline.SetProgram(_programConvertIndexBuffer);
+            _pipeline.DispatchCompute(BitUtils.DivRoundUp(primitiveCount, 16), 1, 1, "Convert Index Buffer");
 
             // Restore previous state
             _pipeline.SwapState(null);
