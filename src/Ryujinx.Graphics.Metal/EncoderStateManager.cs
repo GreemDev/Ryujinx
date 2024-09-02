@@ -1147,29 +1147,33 @@ namespace Ryujinx.Graphics.Metal
                             var autoBuffer = buffer.Buffer;
                             var offset = 0;
 
-                            if (autoBuffer == null)
-                            {
-                                continue;
-                            }
+                            ulong gpuAddress = 0;
+                            IntPtr nativePtr = IntPtr.Zero;
 
-                            MTLBuffer mtlBuffer;
-
-                            if (range.HasValue)
+                            if (autoBuffer != null)
                             {
-                                offset = range.Value.Offset;
-                                mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Value.Size, range.Value.Write).Value;
+                                MTLBuffer mtlBuffer;
 
-                            }
-                            else
-                            {
-                                mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
+                                if (range.HasValue)
+                                {
+                                    offset = range.Value.Offset;
+                                    mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Value.Size, range.Value.Write).Value;
+
+                                }
+                                else
+                                {
+                                    mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
+                                }
+
+                                gpuAddress = mtlBuffer.GpuAddress + (ulong)offset;
+                                nativePtr = mtlBuffer.NativePtr;
                             }
 
                             MTLRenderStages renderStages = 0;
 
                             if ((segment.Stages & ResourceStages.Vertex) != 0)
                             {
-                                vertResourceIds[vertResourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
+                                vertResourceIds[vertResourceIdIndex] = gpuAddress;
                                 vertResourceIdIndex++;
 
                                 renderStages |= MTLRenderStages.RenderStageVertex;
@@ -1177,13 +1181,13 @@ namespace Ryujinx.Graphics.Metal
 
                             if ((segment.Stages & ResourceStages.Fragment) != 0)
                             {
-                                fragResourceIds[fragResourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
+                                fragResourceIds[fragResourceIdIndex] = gpuAddress;
                                 fragResourceIdIndex++;
 
                                 renderStages |= MTLRenderStages.RenderStageFragment;
                             }
 
-                            resources.Resources.Add(new Resource(new MTLResource(mtlBuffer.NativePtr), MTLResourceUsage.Read, renderStages));
+                            resources.Resources.Add(new Resource(new MTLResource(nativePtr), MTLResourceUsage.Read, renderStages));
                         }
                         break;
                     case Constants.StorageBuffersSetIndex:
@@ -1197,29 +1201,33 @@ namespace Ryujinx.Graphics.Metal
                             var autoBuffer = buffer.Buffer;
                             var offset = 0;
 
-                            if (autoBuffer == null)
-                            {
-                                continue;
-                            }
+                            ulong gpuAddress = 0;
+                            IntPtr nativePtr = IntPtr.Zero;
 
-                            MTLBuffer mtlBuffer;
-
-                            if (range.HasValue)
+                            if (autoBuffer != null)
                             {
-                                offset = range.Value.Offset;
-                                mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Value.Size, range.Value.Write).Value;
+                                MTLBuffer mtlBuffer;
 
-                            }
-                            else
-                            {
-                                mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
+                                if (range.HasValue)
+                                {
+                                    offset = range.Value.Offset;
+                                    mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Value.Size, range.Value.Write).Value;
+
+                                }
+                                else
+                                {
+                                    mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
+                                }
+
+                                gpuAddress = mtlBuffer.GpuAddress + (ulong)offset;
+                                nativePtr = mtlBuffer.NativePtr;
                             }
 
                             MTLRenderStages renderStages = 0;
 
                             if ((segment.Stages & ResourceStages.Vertex) != 0)
                             {
-                                vertResourceIds[vertResourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
+                                vertResourceIds[vertResourceIdIndex] = gpuAddress;
                                 vertResourceIdIndex++;
 
                                 renderStages |= MTLRenderStages.RenderStageVertex;
@@ -1227,13 +1235,13 @@ namespace Ryujinx.Graphics.Metal
 
                             if ((segment.Stages & ResourceStages.Fragment) != 0)
                             {
-                                fragResourceIds[fragResourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
+                                fragResourceIds[fragResourceIdIndex] = gpuAddress;
                                 fragResourceIdIndex++;
 
                                 renderStages |= MTLRenderStages.RenderStageFragment;
                             }
 
-                            resources.Resources.Add(new Resource(new MTLResource(mtlBuffer.NativePtr), MTLResourceUsage.Read, renderStages));
+                            resources.Resources.Add(new Resource(new MTLResource(nativePtr), MTLResourceUsage.Read, renderStages));
                         }
                         break;
                     case Constants.TexturesSetIndex:
@@ -1247,23 +1255,27 @@ namespace Ryujinx.Graphics.Metal
 
                                 var storage = texture.Storage;
 
-                                if (storage == null)
-                                {
-                                    continue;
-                                }
+                                ulong gpuAddress = 0;
+                                IntPtr nativePtr = IntPtr.Zero;
 
-                                if (storage is TextureBuffer textureBuffer)
+                                if (storage != null)
                                 {
-                                    textureBuffer.RebuildStorage(false);
-                                }
+                                    if (storage is TextureBuffer textureBuffer)
+                                    {
+                                        textureBuffer.RebuildStorage(false);
+                                    }
 
-                                var mtlTexture = storage.GetHandle();
+                                    var mtlTexture = storage.GetHandle();
+
+                                    gpuAddress = mtlTexture.GpuResourceID._impl;
+                                    nativePtr = mtlTexture.NativePtr;
+                                }
 
                                 MTLRenderStages renderStages = 0;
 
                                 if ((segment.Stages & ResourceStages.Vertex) != 0)
                                 {
-                                    vertResourceIds[vertResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                    vertResourceIds[vertResourceIdIndex] = gpuAddress;
                                     vertResourceIdIndex++;
 
                                     if (texture.Sampler != null)
@@ -1277,7 +1289,7 @@ namespace Ryujinx.Graphics.Metal
 
                                 if ((segment.Stages & ResourceStages.Fragment) != 0)
                                 {
-                                    fragResourceIds[fragResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                    fragResourceIds[fragResourceIdIndex] = gpuAddress;
                                     fragResourceIdIndex++;
 
                                     if (texture.Sampler != null)
@@ -1289,7 +1301,7 @@ namespace Ryujinx.Graphics.Metal
                                     renderStages |= MTLRenderStages.RenderStageFragment;
                                 }
 
-                                resources.Resources.Add(new Resource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read, renderStages));
+                                resources.Resources.Add(new Resource(new MTLResource(nativePtr), MTLResourceUsage.Read, renderStages));
                             }
                         }
                         else
@@ -1305,19 +1317,24 @@ namespace Ryujinx.Graphics.Metal
                                 {
                                     TextureRef texture = textures[i];
 
-                                    if (texture.Storage == null)
+                                    ulong gpuAddress = 0;
+                                    IntPtr nativePtr = IntPtr.Zero;
+
+                                    if (texture.Storage != null)
                                     {
-                                        continue;
+                                        var mtlTexture = texture.Storage.GetHandle();
+
+                                        gpuAddress = mtlTexture.GpuResourceID._impl;
+                                        nativePtr = mtlTexture.NativePtr;
                                     }
 
-                                    var mtlTexture = texture.Storage.GetHandle();
                                     samplers[i] = texture.Sampler;
 
                                     MTLRenderStages renderStages = 0;
 
                                     if ((segment.Stages & ResourceStages.Vertex) != 0)
                                     {
-                                        vertResourceIds[vertResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        vertResourceIds[vertResourceIdIndex] = gpuAddress;
                                         vertResourceIdIndex++;
 
                                         renderStages |= MTLRenderStages.RenderStageVertex;
@@ -1325,31 +1342,33 @@ namespace Ryujinx.Graphics.Metal
 
                                     if ((segment.Stages & ResourceStages.Fragment) != 0)
                                     {
-                                        fragResourceIds[fragResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        fragResourceIds[fragResourceIdIndex] = gpuAddress;
                                         fragResourceIdIndex++;
 
                                         renderStages |= MTLRenderStages.RenderStageFragment;
                                     }
 
-                                    resources.Resources.Add(new Resource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read, renderStages));
+                                    resources.Resources.Add(new Resource(new MTLResource(nativePtr), MTLResourceUsage.Read, renderStages));
                                 }
 
                                 foreach (var sampler in samplers)
                                 {
-                                    if (sampler == null)
+                                    ulong gpuAddress = 0;
+
+                                    if (sampler != null)
                                     {
-                                        continue;
+                                        gpuAddress = sampler.GetSampler().GpuResourceID._impl;
                                     }
 
                                     if ((segment.Stages & ResourceStages.Vertex) != 0)
                                     {
-                                        vertResourceIds[vertResourceIdIndex] = sampler.GetSampler().GpuResourceID._impl;
+                                        vertResourceIds[vertResourceIdIndex] = gpuAddress;
                                         vertResourceIdIndex++;
                                     }
 
                                     if ((segment.Stages & ResourceStages.Fragment) != 0)
                                     {
-                                        fragResourceIds[fragResourceIdIndex] = sampler.GetSampler().GpuResourceID._impl;
+                                        fragResourceIds[fragResourceIdIndex] = gpuAddress;
                                         fragResourceIdIndex++;
                                     }
                                 }
@@ -1360,20 +1379,24 @@ namespace Ryujinx.Graphics.Metal
 
                                 foreach (TextureBuffer bufferTexture in bufferTextures)
                                 {
-                                    if (bufferTexture == null)
+                                    ulong gpuAddress = 0;
+                                    IntPtr nativePtr = IntPtr.Zero;
+
+                                    if (bufferTexture != null)
                                     {
-                                        continue;
+                                        bufferTexture.RebuildStorage(false);
+
+                                        var mtlTexture = bufferTexture.GetHandle();
+
+                                        gpuAddress = mtlTexture.GpuResourceID._impl;
+                                        nativePtr = mtlTexture.NativePtr;
                                     }
-
-                                    bufferTexture.RebuildStorage(false);
-
-                                    var mtlTexture = bufferTexture.GetHandle();
 
                                     MTLRenderStages renderStages = 0;
 
                                     if ((segment.Stages & ResourceStages.Vertex) != 0)
                                     {
-                                        vertResourceIds[vertResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        vertResourceIds[vertResourceIdIndex] = gpuAddress;
                                         vertResourceIdIndex++;
 
                                         renderStages |= MTLRenderStages.RenderStageVertex;
@@ -1381,13 +1404,13 @@ namespace Ryujinx.Graphics.Metal
 
                                     if ((segment.Stages & ResourceStages.Fragment) != 0)
                                     {
-                                        fragResourceIds[fragResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        fragResourceIds[fragResourceIdIndex] = gpuAddress;
                                         fragResourceIdIndex++;
 
                                         renderStages |= MTLRenderStages.RenderStageFragment;
                                     }
 
-                                    resources.Resources.Add(new Resource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read, renderStages));
+                                    resources.Resources.Add(new Resource(new MTLResource(nativePtr), MTLResourceUsage.Read, renderStages));
                                 }
                             }
                         }
@@ -1403,30 +1426,34 @@ namespace Ryujinx.Graphics.Metal
 
                                 var storage = image.Storage;
 
-                                if (storage == null)
-                                {
-                                    continue;
-                                }
+                                ulong gpuAddress = 0;
+                                IntPtr nativePtr = IntPtr.Zero;
 
-                                var mtlTexture = storage.GetHandle();
+                                if (storage != null)
+                                {
+                                    var mtlTexture = storage.GetHandle();
+
+                                    gpuAddress = mtlTexture.GpuResourceID._impl;
+                                    nativePtr = mtlTexture.NativePtr;
+                                }
 
                                 MTLRenderStages renderStages = 0;
 
                                 if ((segment.Stages & ResourceStages.Vertex) != 0)
                                 {
-                                    vertResourceIds[vertResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                    vertResourceIds[vertResourceIdIndex] = gpuAddress;
                                     vertResourceIdIndex++;
                                     renderStages |= MTLRenderStages.RenderStageVertex;
                                 }
 
                                 if ((segment.Stages & ResourceStages.Fragment) != 0)
                                 {
-                                    fragResourceIds[fragResourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                    fragResourceIds[fragResourceIdIndex] = gpuAddress;
                                     fragResourceIdIndex++;
                                     renderStages |= MTLRenderStages.RenderStageFragment;
                                 }
 
-                                resources.Resources.Add(new Resource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read | MTLResourceUsage.Write, renderStages));
+                                resources.Resources.Add(new Resource(new MTLResource(nativePtr), MTLResourceUsage.Read | MTLResourceUsage.Write, renderStages));
                             }
                         }
                         break;
@@ -1485,28 +1512,32 @@ namespace Ryujinx.Graphics.Metal
                             var autoBuffer = buffer.Buffer;
                             var offset = 0;
 
-                            if (autoBuffer == null)
-                            {
-                                continue;
-                            }
+                            ulong gpuAddress = 0;
+                            IntPtr nativePtr = IntPtr.Zero;
 
-                            MTLBuffer mtlBuffer;
-
-                            if (range.HasValue)
+                            if (autoBuffer != null)
                             {
-                                offset = range.Value.Offset;
-                                mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Value.Size, range.Value.Write).Value;
+                                MTLBuffer mtlBuffer;
 
-                            }
-                            else
-                            {
-                                mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
+                                if (range.HasValue)
+                                {
+                                    offset = range.Value.Offset;
+                                    mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Value.Size, range.Value.Write).Value;
+
+                                }
+                                else
+                                {
+                                    mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
+                                }
+
+                                gpuAddress = mtlBuffer.GpuAddress + (ulong)offset;
+                                nativePtr = mtlBuffer.NativePtr;
                             }
 
                             if ((segment.Stages & ResourceStages.Compute) != 0)
                             {
-                                resources.Resources.Add(new Resource(new MTLResource(mtlBuffer.NativePtr), MTLResourceUsage.Read, 0));
-                                resourceIds[resourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
+                                resources.Resources.Add(new Resource(new MTLResource(nativePtr), MTLResourceUsage.Read, 0));
+                                resourceIds[resourceIdIndex] = gpuAddress;
                                 resourceIdIndex++;
                             }
                         }
@@ -1522,28 +1553,32 @@ namespace Ryujinx.Graphics.Metal
                             var autoBuffer = buffer.Buffer;
                             var offset = 0;
 
-                            if (autoBuffer == null)
-                            {
-                                continue;
-                            }
+                            ulong gpuAddress = 0;
+                            IntPtr nativePtr = IntPtr.Zero;
 
-                            MTLBuffer mtlBuffer;
-
-                            if (range.HasValue)
+                            if (autoBuffer != null)
                             {
-                                offset = range.Value.Offset;
-                                mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Value.Size, range.Value.Write).Value;
+                                MTLBuffer mtlBuffer;
 
-                            }
-                            else
-                            {
-                                mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
+                                if (range.HasValue)
+                                {
+                                    offset = range.Value.Offset;
+                                    mtlBuffer = autoBuffer.Get(_pipeline.Cbs, offset, range.Value.Size, range.Value.Write).Value;
+
+                                }
+                                else
+                                {
+                                    mtlBuffer = autoBuffer.Get(_pipeline.Cbs).Value;
+                                }
+
+                                gpuAddress = mtlBuffer.GpuAddress + (ulong)offset;
+                                nativePtr = mtlBuffer.NativePtr;
                             }
 
                             if ((segment.Stages & ResourceStages.Compute) != 0)
                             {
-                                resources.Resources.Add(new Resource(new MTLResource(mtlBuffer.NativePtr), MTLResourceUsage.Read | MTLResourceUsage.Write, 0));
-                                resourceIds[resourceIdIndex] = mtlBuffer.GpuAddress + (ulong)offset;
+                                resources.Resources.Add(new Resource(new MTLResource(nativePtr), MTLResourceUsage.Read | MTLResourceUsage.Write, 0));
+                                resourceIds[resourceIdIndex] = gpuAddress;
                                 resourceIdIndex++;
                             }
                         }
@@ -1559,22 +1594,26 @@ namespace Ryujinx.Graphics.Metal
 
                                 var storage = texture.Storage;
 
-                                if (storage == null)
-                                {
-                                    continue;
-                                }
+                                ulong gpuAddress = 0;
+                                IntPtr nativePtr = IntPtr.Zero;
 
-                                if (storage is TextureBuffer textureBuffer)
+                                if (storage != null)
                                 {
-                                    textureBuffer.RebuildStorage(false);
-                                }
+                                    if (storage is TextureBuffer textureBuffer)
+                                    {
+                                        textureBuffer.RebuildStorage(false);
+                                    }
 
-                                var mtlTexture = storage.GetHandle();
+                                    var mtlTexture = storage.GetHandle();
+
+                                    gpuAddress = mtlTexture.GpuResourceID._impl;
+                                    nativePtr = mtlTexture.NativePtr;
+                                }
 
                                 if ((segment.Stages & ResourceStages.Compute) != 0)
                                 {
-                                    resources.Resources.Add(new Resource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read, 0));
-                                    resourceIds[resourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                    resources.Resources.Add(new Resource(new MTLResource(nativePtr), MTLResourceUsage.Read, 0));
+                                    resourceIds[resourceIdIndex] = gpuAddress;
                                     resourceIdIndex++;
 
                                     if (texture.Sampler != null)
@@ -1598,17 +1637,21 @@ namespace Ryujinx.Graphics.Metal
                                 {
                                     TextureRef texture = textures[i];
 
-                                    if (texture.Storage == null)
-                                    {
-                                        continue;
-                                    }
+                                    ulong gpuAddress = 0;
+                                    IntPtr nativePtr = IntPtr.Zero;
 
-                                    var mtlTexture = texture.Storage.GetHandle();
+                                    if (texture.Storage != null)
+                                    {
+                                        var mtlTexture = texture.Storage.GetHandle();
+
+                                        gpuAddress = mtlTexture.GpuResourceID._impl;
+                                        nativePtr = mtlTexture.NativePtr;
+                                    }
 
                                     if ((segment.Stages & ResourceStages.Compute) != 0)
                                     {
-                                        resources.Resources.Add(new Resource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read, 0));
-                                        resourceIds[resourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        resources.Resources.Add(new Resource(new MTLResource(nativePtr), MTLResourceUsage.Read, 0));
+                                        resourceIds[resourceIdIndex] = gpuAddress;
                                         resourceIdIndex++;
 
                                         samplers[i] = texture.Sampler;
@@ -1630,19 +1673,23 @@ namespace Ryujinx.Graphics.Metal
 
                                 foreach (TextureBuffer bufferTexture in bufferTextures)
                                 {
-                                    if (bufferTexture == null)
+                                    ulong gpuAddress = 0;
+                                    IntPtr nativePtr = IntPtr.Zero;
+
+                                    if (bufferTexture != null)
                                     {
-                                        continue;
+                                        bufferTexture.RebuildStorage(false);
+
+                                        var mtlTexture = bufferTexture.GetHandle();
+
+                                        gpuAddress = mtlTexture.GpuResourceID._impl;
+                                        nativePtr = mtlTexture.NativePtr;
                                     }
-
-                                    bufferTexture.RebuildStorage(false);
-
-                                    var mtlTexture = bufferTexture.GetHandle();
 
                                     if ((segment.Stages & ResourceStages.Compute) != 0)
                                     {
-                                        resources.Resources.Add(new Resource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read, 0));
-                                        resourceIds[resourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        resources.Resources.Add(new Resource(new MTLResource(nativePtr), MTLResourceUsage.Read, 0));
+                                        resourceIds[resourceIdIndex] = gpuAddress;
                                         resourceIdIndex++;
                                     }
                                 }
@@ -1662,17 +1709,21 @@ namespace Ryujinx.Graphics.Metal
 
                                     var storage = image.Storage;
 
-                                    if (storage == null)
-                                    {
-                                        continue;
-                                    }
+                                    ulong gpuAddress = 0;
+                                    IntPtr nativePtr = IntPtr.Zero;
 
-                                    var mtlTexture = storage.GetHandle();
+                                    if (storage != null)
+                                    {
+                                        var mtlTexture = storage.GetHandle();
+
+                                        gpuAddress = mtlTexture.GpuResourceID._impl;
+                                        nativePtr = mtlTexture.NativePtr;
+                                    }
 
                                     if ((segment.Stages & ResourceStages.Compute) != 0)
                                     {
-                                        resources.Resources.Add(new Resource(new MTLResource(mtlTexture.NativePtr), MTLResourceUsage.Read | MTLResourceUsage.Write, 0));
-                                        resourceIds[resourceIdIndex] = mtlTexture.GpuResourceID._impl;
+                                        resources.Resources.Add(new Resource(new MTLResource(nativePtr), MTLResourceUsage.Read | MTLResourceUsage.Write, 0));
+                                        resourceIds[resourceIdIndex] = gpuAddress;
                                         resourceIdIndex++;
                                     }
                                 }
