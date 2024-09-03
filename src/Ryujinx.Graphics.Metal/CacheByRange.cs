@@ -40,7 +40,7 @@ namespace Ryujinx.Graphics.Metal
     }
 
     [SupportedOSPlatform("macos")]
-    struct TopologyConversionCacheKey : ICacheKey
+    readonly struct TopologyConversionCacheKey : ICacheKey
     {
         private readonly IndexBufferPattern _pattern;
         private readonly int _indexSize;
