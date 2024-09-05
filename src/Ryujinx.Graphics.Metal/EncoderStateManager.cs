@@ -21,6 +21,7 @@ namespace Ryujinx.Graphics.Metal
         private readonly BufferManager _bufferManager;
 
         private readonly DepthStencilCache _depthStencilCache;
+        private readonly MTLDepthStencilState _defaultState;
 
         private readonly EncoderState _mainState = new();
         private EncoderState _currentState;
@@ -43,6 +44,8 @@ namespace Ryujinx.Graphics.Metal
 
             _depthStencilCache = new(device);
             _currentState = _mainState;
+
+            _defaultState = _depthStencilCache.GetOrCreate(_currentState.DepthStencilUid);
 
             // Zero buffer
             byte[] zeros = new byte[ZeroBufferSize];
@@ -952,9 +955,16 @@ namespace Ryujinx.Graphics.Metal
 
         private readonly void SetDepthStencilState(MTLRenderCommandEncoder renderCommandEncoder)
         {
-            MTLDepthStencilState state = _depthStencilCache.GetOrCreate(_currentState.DepthStencilUid);
+            if (DepthStencil != null)
+            {
+                MTLDepthStencilState state = _depthStencilCache.GetOrCreate(_currentState.DepthStencilUid);
 
-            renderCommandEncoder.SetDepthStencilState(state);
+                renderCommandEncoder.SetDepthStencilState(state);
+            }
+            else
+            {
+                renderCommandEncoder.SetDepthStencilState(_defaultState);
+            }
         }
 
         private readonly void SetDepthClamp(MTLRenderCommandEncoder renderCommandEncoder)
