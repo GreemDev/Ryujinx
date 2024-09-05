@@ -59,6 +59,17 @@ namespace Ryujinx.Graphics.Metal
         public Texture(MTLDevice device, MetalRenderer renderer, Pipeline pipeline, TextureCreateInfo info, MTLTexture sourceTexture, int firstLayer, int firstLevel) : base(device, renderer, pipeline, info)
         {
             var pixelFormat = FormatTable.GetFormat(Info.Format);
+
+            if (info.DepthStencilMode == DepthStencilMode.Stencil)
+            {
+                pixelFormat = pixelFormat switch
+                {
+                    MTLPixelFormat.Depth32FloatStencil8 => MTLPixelFormat.X32Stencil8,
+                    MTLPixelFormat.Depth24UnormStencil8 => MTLPixelFormat.X24Stencil8,
+                    _ => pixelFormat
+                };
+            }
+
             var textureType = Info.Target.Convert();
             NSRange levels;
             levels.location = (ulong)firstLevel;
