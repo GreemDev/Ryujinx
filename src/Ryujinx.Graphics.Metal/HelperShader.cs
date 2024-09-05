@@ -474,6 +474,9 @@ namespace Ryujinx.Graphics.Metal
 
         private void BlitDepthStencilDraw(Texture src, bool isDepth)
         {
+            // TODO: Check this https://github.com/Ryujinx/Ryujinx/pull/5003/
+            _pipeline.SetTextureAndSampler(ShaderStage.Fragment, 0, src, _samplerNearest);
+
             string debugGroupName;
 
             if (isDepth)
