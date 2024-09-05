@@ -27,7 +27,7 @@ kernel void kernelMain(constant ConstantBuffers &constant_buffers [[buffer(CONST
                        device StorageBuffers &storage_buffers [[buffer(STORAGE_BUFFERS_INDEX)]],
                        uint3 thread_position_in_grid [[thread_position_in_grid]],
                        uint3 threads_per_threadgroup [[threads_per_threadgroup]],
-                       uint3 threadgroups_per_grid [[threads_per_grid]])
+                       uint3 threadgroups_per_grid [[threadgroups_per_grid]])
 {
     // Determine what slice of the stride copies this invocation will perform.
 
