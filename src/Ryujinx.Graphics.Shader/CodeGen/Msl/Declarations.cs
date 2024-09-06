@@ -392,6 +392,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 context.AppendLine("float4 position [[position, invariant]];");
                 context.AppendLine("bool front_facing [[front_facing]];");
                 context.AppendLine("float2 point_coord [[point_coord]];");
+                context.AppendLine("uint primitive_id [[primitive_id]];");
             }
 
             if (context.Definitions.IaIndexing)
