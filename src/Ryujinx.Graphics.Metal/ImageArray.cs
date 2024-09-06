@@ -64,6 +64,16 @@ namespace Ryujinx.Graphics.Metal
             SetDirty();
         }
 
+        public TextureRef[] GetTextureRefs()
+        {
+            return _textureRefs;
+        }
+
+        public TextureBuffer[] GetBufferTextureRefs()
+        {
+            return _bufferTextureRefs;
+        }
+
         private void SetDirty()
         {
             _pipeline.DirtyImages();
