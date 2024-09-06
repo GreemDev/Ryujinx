@@ -35,7 +35,14 @@ namespace Ryujinx.Graphics.Metal
             }
             else if (info.Target != Target.Cubemap)
             {
-                descriptor.ArrayLength = (ulong)Info.Depth;
+                if (info.Target == Target.CubemapArray)
+                {
+                    descriptor.ArrayLength = (ulong)(Info.Depth / 6);
+                }
+                else
+                {
+                    descriptor.ArrayLength = (ulong)Info.Depth;
+                }
             }
 
             MTLTextureSwizzleChannels swizzle = GetSwizzle(info, descriptor.PixelFormat);
