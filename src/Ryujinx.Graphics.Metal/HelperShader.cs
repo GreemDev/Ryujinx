@@ -57,48 +57,42 @@ namespace Ryujinx.Graphics.Metal
             var blitSource = ReadMsl("Blit.metal");
 
             var blitSourceF = blitSource.Replace("FORMAT", "float", StringComparison.Ordinal);
-            _programColorBlitF = new Program(
-            [
+            _programColorBlitF = new Program(renderer, device, [
                 new ShaderSource(blitSourceF, ShaderStage.Fragment, TargetLanguage.Msl),
                 new ShaderSource(blitSourceF, ShaderStage.Vertex, TargetLanguage.Msl)
-            ], blitResourceLayout, device);
+            ], blitResourceLayout);
 
             var blitSourceI = blitSource.Replace("FORMAT", "int");
-            _programColorBlitI = new Program(
-            [
+            _programColorBlitI = new Program(renderer, device, [
                 new ShaderSource(blitSourceI, ShaderStage.Fragment, TargetLanguage.Msl),
                 new ShaderSource(blitSourceI, ShaderStage.Vertex, TargetLanguage.Msl)
-            ], blitResourceLayout, device);
+            ], blitResourceLayout);
 
             var blitSourceU = blitSource.Replace("FORMAT", "uint");
-            _programColorBlitU = new Program(
-            [
+            _programColorBlitU = new Program(renderer, device, [
                 new ShaderSource(blitSourceU, ShaderStage.Fragment, TargetLanguage.Msl),
                 new ShaderSource(blitSourceU, ShaderStage.Vertex, TargetLanguage.Msl)
-            ], blitResourceLayout, device);
+            ], blitResourceLayout);
 
             var blitMsSource = ReadMsl("BlitMs.metal");
 
             var blitMsSourceF = blitMsSource.Replace("FORMAT", "float");
-            _programColorBlitMsF = new Program(
-            [
+            _programColorBlitMsF = new Program(renderer, device, [
                 new ShaderSource(blitMsSourceF, ShaderStage.Fragment, TargetLanguage.Msl),
                 new ShaderSource(blitMsSourceF, ShaderStage.Vertex, TargetLanguage.Msl)
-            ], blitResourceLayout, device);
+            ], blitResourceLayout);
 
             var blitMsSourceI = blitMsSource.Replace("FORMAT", "int");
-            _programColorBlitMsI = new Program(
-            [
+            _programColorBlitMsI = new Program(renderer, device, [
                 new ShaderSource(blitMsSourceI, ShaderStage.Fragment, TargetLanguage.Msl),
                 new ShaderSource(blitMsSourceI, ShaderStage.Vertex, TargetLanguage.Msl)
-            ], blitResourceLayout, device);
+            ], blitResourceLayout);
 
             var blitMsSourceU = blitMsSource.Replace("FORMAT", "uint");
-            _programColorBlitMsU = new Program(
-            [
+            _programColorBlitMsU = new Program(renderer, device, [
                 new ShaderSource(blitMsSourceU, ShaderStage.Fragment, TargetLanguage.Msl),
                 new ShaderSource(blitMsSourceU, ShaderStage.Vertex, TargetLanguage.Msl)
-            ], blitResourceLayout, device);
+            ], blitResourceLayout);
 
             var colorClearResourceLayout = new ResourceLayoutBuilder()
                 .Add(ResourceStages.Fragment, ResourceType.UniformBuffer, 0).Build();
@@ -108,39 +102,35 @@ namespace Ryujinx.Graphics.Metal
             for (int i = 0; i < Constants.MaxColorAttachments; i++)
             {
                 var crntSource = colorClearSource.Replace("COLOR_ATTACHMENT_INDEX", i.ToString()).Replace("FORMAT", "float");
-                _programsColorClearF.Add(new Program(
-                [
+                _programsColorClearF.Add(new Program(renderer, device, [
                     new ShaderSource(crntSource, ShaderStage.Fragment, TargetLanguage.Msl),
                     new ShaderSource(crntSource, ShaderStage.Vertex, TargetLanguage.Msl)
-                ], colorClearResourceLayout, device));
+                ], colorClearResourceLayout));
             }
 
             for (int i = 0; i < Constants.MaxColorAttachments; i++)
             {
                 var crntSource = colorClearSource.Replace("COLOR_ATTACHMENT_INDEX", i.ToString()).Replace("FORMAT", "int");
-                _programsColorClearI.Add(new Program(
-                [
+                _programsColorClearI.Add(new Program(renderer, device, [
                     new ShaderSource(crntSource, ShaderStage.Fragment, TargetLanguage.Msl),
                     new ShaderSource(crntSource, ShaderStage.Vertex, TargetLanguage.Msl)
-                ], colorClearResourceLayout, device));
+                ], colorClearResourceLayout));
             }
 
             for (int i = 0; i < Constants.MaxColorAttachments; i++)
             {
                 var crntSource = colorClearSource.Replace("COLOR_ATTACHMENT_INDEX", i.ToString()).Replace("FORMAT", "uint");
-                _programsColorClearU.Add(new Program(
-                [
+                _programsColorClearU.Add(new Program(renderer, device, [
                     new ShaderSource(crntSource, ShaderStage.Fragment, TargetLanguage.Msl),
                     new ShaderSource(crntSource, ShaderStage.Vertex, TargetLanguage.Msl)
-                ], colorClearResourceLayout, device));
+                ], colorClearResourceLayout));
             }
 
             var depthStencilClearSource = ReadMsl("DepthStencilClear.metal");
-            _programDepthStencilClear = new Program(
-            [
+            _programDepthStencilClear = new Program(renderer, device, [
                 new ShaderSource(depthStencilClearSource, ShaderStage.Fragment, TargetLanguage.Msl),
                 new ShaderSource(depthStencilClearSource, ShaderStage.Vertex, TargetLanguage.Msl)
-            ], colorClearResourceLayout, device);
+            ], colorClearResourceLayout);
 
             var strideChangeResourceLayout = new ResourceLayoutBuilder()
                 .Add(ResourceStages.Compute, ResourceType.UniformBuffer, 0)
@@ -148,10 +138,9 @@ namespace Ryujinx.Graphics.Metal
                 .Add(ResourceStages.Compute, ResourceType.StorageBuffer, 2, true).Build();
 
             var strideChangeSource = ReadMsl("ChangeBufferStride.metal");
-            _programStrideChange = new Program(
-            [
+            _programStrideChange = new Program(renderer, device, [
                 new ShaderSource(strideChangeSource, ShaderStage.Compute, TargetLanguage.Msl)
-            ], strideChangeResourceLayout, device, new ComputeSize(64, 1, 1));
+            ], strideChangeResourceLayout, new ComputeSize(64, 1, 1));
 
             var convertD32S8ToD24S8ResourceLayout = new ResourceLayoutBuilder()
                 .Add(ResourceStages.Compute, ResourceType.UniformBuffer, 0)
@@ -159,10 +148,9 @@ namespace Ryujinx.Graphics.Metal
                 .Add(ResourceStages.Compute, ResourceType.StorageBuffer, 2, true).Build();
 
             var convertD32S8ToD24S8Source = ReadMsl("ConvertD32S8ToD24S8.metal");
-            _programConvertD32S8ToD24S8 = new Program(
-            [
+            _programConvertD32S8ToD24S8 = new Program(renderer, device, [
                 new ShaderSource(convertD32S8ToD24S8Source, ShaderStage.Compute, TargetLanguage.Msl)
-            ], convertD32S8ToD24S8ResourceLayout, device, new ComputeSize(64, 1, 1));
+            ], convertD32S8ToD24S8ResourceLayout, new ComputeSize(64, 1, 1));
 
             var convertIndexBufferLayout = new ResourceLayoutBuilder()
                 .Add(ResourceStages.Compute, ResourceType.StorageBuffer, 1)
@@ -170,38 +158,33 @@ namespace Ryujinx.Graphics.Metal
                 .Add(ResourceStages.Compute, ResourceType.StorageBuffer, 3).Build();
 
             var convertIndexBufferSource = ReadMsl("ConvertIndexBuffer.metal");
-            _programConvertIndexBuffer = new Program(
-            [
+            _programConvertIndexBuffer = new Program(renderer, device, [
                 new ShaderSource(convertIndexBufferSource, ShaderStage.Compute, TargetLanguage.Msl)
-            ], convertIndexBufferLayout, device, new ComputeSize(16, 1, 1));
+            ], convertIndexBufferLayout, new ComputeSize(16, 1, 1));
 
             var depthBlitSource = ReadMsl("DepthBlit.metal");
-            _programDepthBlit = new Program(
-            [
+            _programDepthBlit = new Program(renderer, device, [
                 new ShaderSource(depthBlitSource, ShaderStage.Fragment, TargetLanguage.Msl),
                 new ShaderSource(blitSourceF, ShaderStage.Vertex, TargetLanguage.Msl)
-            ], blitResourceLayout, device);
+            ], blitResourceLayout);
 
             var depthBlitMsSource = ReadMsl("DepthBlitMs.metal");
-            _programDepthBlitMs = new Program(
-            [
+            _programDepthBlitMs = new Program(renderer, device, [
                 new ShaderSource(depthBlitMsSource, ShaderStage.Fragment, TargetLanguage.Msl),
                 new ShaderSource(blitSourceF, ShaderStage.Vertex, TargetLanguage.Msl)
-            ], blitResourceLayout, device);
+            ], blitResourceLayout);
 
             var stencilBlitSource = ReadMsl("StencilBlit.metal");
-            _programStencilBlit = new Program(
-            [
+            _programStencilBlit = new Program(renderer, device, [
                 new ShaderSource(stencilBlitSource, ShaderStage.Fragment, TargetLanguage.Msl),
                 new ShaderSource(blitSourceF, ShaderStage.Vertex, TargetLanguage.Msl)
-            ], blitResourceLayout, device);
+            ], blitResourceLayout);
 
             var stencilBlitMsSource = ReadMsl("StencilBlitMs.metal");
-            _programStencilBlitMs = new Program(
-            [
+            _programStencilBlitMs = new Program(renderer, device, [
                 new ShaderSource(stencilBlitMsSource, ShaderStage.Fragment, TargetLanguage.Msl),
                 new ShaderSource(blitSourceF, ShaderStage.Vertex, TargetLanguage.Msl)
-            ], blitResourceLayout, device);
+            ], blitResourceLayout);
         }
 
         private static string ReadMsl(string fileName)

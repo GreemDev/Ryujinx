@@ -34,11 +34,13 @@ namespace Ryujinx.Graphics.Metal
         internal Action<Action> InterruptAction { get; private set; }
         internal SyncManager SyncManager { get; private set; }
 
+        internal HashSet<Program> Programs { get; }
         internal HashSet<SamplerHolder> Samplers { get; }
 
         public MetalRenderer(Func<CAMetalLayer> metalLayer)
         {
             _device = MTLDevice.CreateSystemDefaultDevice();
+            Programs = new HashSet<Program>();
             Samplers = new HashSet<SamplerHolder>();
 
             if (_device.ArgumentBuffersSupport != MTLArgumentBuffersTier.Tier2)
@@ -100,7 +102,7 @@ namespace Ryujinx.Graphics.Metal
 
         public IProgram CreateProgram(ShaderSource[] shaders, ShaderInfo info)
         {
-            return new Program(shaders, info.ResourceLayout, _device, info.ComputeLocalSize);
+            return new Program(this, _device, shaders, info.ResourceLayout, info.ComputeLocalSize);
         }
 
         public ISampler CreateSampler(SamplerCreateInfo info)
@@ -285,6 +287,11 @@ namespace Ryujinx.Graphics.Metal
         public void Dispose()
         {
             BackgroundResources.Dispose();
+
+            foreach (var program in Programs)
+            {
+                program.Dispose();
+            }
 
             foreach (var sampler in Samplers)
             {

@@ -19,6 +19,8 @@ namespace Ryujinx.Graphics.Metal
         private readonly GCHandle[] _handles;
         private int _successCount;
 
+        private readonly MetalRenderer _renderer;
+
         public MTLFunction VertexFunction;
         public MTLFunction FragmentFunction;
         public MTLFunction ComputeFunction;
@@ -34,8 +36,16 @@ namespace Ryujinx.Graphics.Metal
         // Argument buffer sizes for Fragment stage
         public int[] FragArgumentBufferSizes { get; }
 
-        public Program(ShaderSource[] shaders, ResourceLayout resourceLayout, MTLDevice device, ComputeSize computeLocalSize = default)
+        public Program(
+            MetalRenderer renderer,
+            MTLDevice device,
+            ShaderSource[] shaders,
+            ResourceLayout resourceLayout,
+            ComputeSize computeLocalSize = default)
         {
+            _renderer = renderer;
+            renderer.Programs.Add(this);
+
             ComputeLocalSize = computeLocalSize;
             _shaders = shaders;
             _handles = new GCHandle[_shaders.Length];
@@ -253,6 +263,11 @@ namespace Ryujinx.Graphics.Metal
 
         public void Dispose()
         {
+            if (!_renderer.Programs.Remove(this))
+            {
+                return;
+            }
+
             if (_graphicsPipelineCache != null)
             {
                 foreach (MTLRenderPipelineState pipeline in _graphicsPipelineCache.Values)
