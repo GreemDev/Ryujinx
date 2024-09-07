@@ -522,6 +522,11 @@ namespace Ryujinx.Graphics.Metal
 
         public void DrawIndexedIndirect(BufferRange indirectBuffer)
         {
+            DrawIndexedIndirectOffset(indirectBuffer);
+        }
+
+        public void DrawIndexedIndirectOffset(BufferRange indirectBuffer, int offset = 0)
+        {
             // TODO: Reindex unsupported topologies
             if (TopologyUnsupported(_encoderStateManager.Topology))
             {
@@ -534,7 +539,7 @@ namespace Ryujinx.Graphics.Metal
 
             var primitiveType = TopologyRemap(_encoderStateManager.Topology).Convert();
 
-            (MTLBuffer indexBuffer, int offset, MTLIndexType type) = _encoderStateManager.IndexBuffer.GetIndexBuffer(_renderer, Cbs);
+            (MTLBuffer indexBuffer, int indexOffset, MTLIndexType type) = _encoderStateManager.IndexBuffer.GetIndexBuffer(_renderer, Cbs);
 
             if (indexBuffer.NativePtr != IntPtr.Zero && buffer.NativePtr != IntPtr.Zero)
             {
@@ -544,20 +549,26 @@ namespace Ryujinx.Graphics.Metal
                     primitiveType,
                     type,
                     indexBuffer,
-                    (ulong)offset,
+                    (ulong)indexOffset,
                     buffer,
-                    (ulong)indirectBuffer.Offset);
+                    (ulong)(indirectBuffer.Offset + offset));
             }
         }
 
         public void DrawIndexedIndirectCount(BufferRange indirectBuffer, BufferRange parameterBuffer, int maxDrawCount, int stride)
         {
-            // TODO: Properly support count
-
-            DrawIndexedIndirect(indirectBuffer);
+            for (int i = 0; i < maxDrawCount; i++)
+            {
+                DrawIndexedIndirectOffset(indirectBuffer, stride * i);
+            }
         }
 
         public void DrawIndirect(BufferRange indirectBuffer)
+        {
+            DrawIndirectOffset(indirectBuffer);
+        }
+
+        public void DrawIndirectOffset(BufferRange indirectBuffer, int offset = 0)
         {
             if (TopologyUnsupported(_encoderStateManager.Topology))
             {
@@ -575,14 +586,15 @@ namespace Ryujinx.Graphics.Metal
             renderCommandEncoder.DrawPrimitives(
                 primitiveType,
                 buffer,
-                (ulong)indirectBuffer.Offset);
+                (ulong)(indirectBuffer.Offset + offset));
         }
 
         public void DrawIndirectCount(BufferRange indirectBuffer, BufferRange parameterBuffer, int maxDrawCount, int stride)
         {
-            // TODO: Properly support count
-
-            DrawIndirect(indirectBuffer);
+            for (int i = 0; i < maxDrawCount; i++)
+            {
+                DrawIndirectOffset(indirectBuffer, stride * i);
+            }
         }
 
         public void DrawTexture(ITexture texture, ISampler sampler, Extents2DF srcRegion, Extents2DF dstRegion)
