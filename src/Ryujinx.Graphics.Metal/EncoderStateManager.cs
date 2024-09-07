@@ -869,7 +869,7 @@ namespace Ryujinx.Graphics.Metal
         {
             if (texture != null)
             {
-                _currentState.TextureRefs[binding] = new(stage, texture, samplerHolder.GetSampler());
+                _currentState.TextureRefs[binding] = new(stage, texture, samplerHolder?.GetSampler());
             }
             else
             {
