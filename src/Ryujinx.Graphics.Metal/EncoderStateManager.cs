@@ -293,7 +293,10 @@ namespace Ryujinx.Graphics.Metal
 
             foreach (var resource in _currentState.RenderEncoderResources.Resources)
             {
-                renderCommandEncoder.UseResource(resource.MtlResource, resource.ResourceUsage, resource.Stages);
+                if (resource.MtlResource.NativePtr != IntPtr.Zero)
+                {
+                    renderCommandEncoder.UseResource(resource.MtlResource, resource.ResourceUsage, resource.Stages);
+                }
             }
 
             foreach (var buffer in _currentState.RenderEncoderResources.VertexBuffers)
