@@ -47,8 +47,8 @@ namespace Ryujinx.Graphics.Metal
             _renderer = renderer;
             _pipeline = pipeline;
 
-            _samplerNearest = new Sampler(_device, SamplerCreateInfo.Create(MinFilter.Nearest, MagFilter.Nearest));
-            _samplerLinear = new Sampler(_device, SamplerCreateInfo.Create(MinFilter.Linear, MagFilter.Linear));
+            _samplerNearest = new SamplerHolder(renderer, _device, SamplerCreateInfo.Create(MinFilter.Nearest, MagFilter.Nearest));
+            _samplerLinear = new SamplerHolder(renderer, _device, SamplerCreateInfo.Create(MinFilter.Linear, MagFilter.Linear));
 
             var blitResourceLayout = new ResourceLayoutBuilder()
                 .Add(ResourceStages.Vertex, ResourceType.UniformBuffer, 0)

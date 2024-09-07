@@ -768,9 +768,9 @@ namespace Ryujinx.Graphics.Metal
         {
             if (texture is TextureBase tex)
             {
-                if (sampler == null || sampler is Sampler)
+                if (sampler == null || sampler is SamplerHolder)
                 {
-                    _encoderStateManager.UpdateTextureAndSampler(stage, binding, tex, (Sampler)sampler);
+                    _encoderStateManager.UpdateTextureAndSampler(stage, binding, tex, (SamplerHolder)sampler);
                 }
             }
         }

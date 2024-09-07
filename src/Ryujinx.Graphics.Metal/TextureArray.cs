@@ -33,9 +33,9 @@ namespace Ryujinx.Graphics.Metal
             {
                 ISampler sampler = samplers[i];
 
-                if (sampler is Sampler samp)
+                if (sampler is SamplerHolder samp)
                 {
-                    _textureRefs[index + i].Sampler = samp;
+                    _textureRefs[index + i].Sampler = samp.GetSampler();
                 }
                 else
                 {

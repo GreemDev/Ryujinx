@@ -865,11 +865,11 @@ namespace Ryujinx.Graphics.Metal
             SignalDirty(DirtyFlags.StencilRef);
         }
 
-        public readonly void UpdateTextureAndSampler(ShaderStage stage, int binding, TextureBase texture, Sampler sampler)
+        public readonly void UpdateTextureAndSampler(ShaderStage stage, int binding, TextureBase texture, SamplerHolder samplerHolder)
         {
             if (texture != null)
             {
-                _currentState.TextureRefs[binding] = new(stage, texture, sampler);
+                _currentState.TextureRefs[binding] = new(stage, texture, samplerHolder.GetSampler());
             }
             else
             {
@@ -1312,7 +1312,7 @@ namespace Ryujinx.Graphics.Metal
 
                                     if (texture.Sampler != null)
                                     {
-                                        vertResourceIds[vertResourceIdIndex] = texture.Sampler.GetSampler().GpuResourceID._impl;
+                                        vertResourceIds[vertResourceIdIndex] = texture.Sampler.Get(_pipeline.Cbs).Value.GpuResourceID._impl;
                                         vertResourceIdIndex++;
                                     }
 
@@ -1326,7 +1326,7 @@ namespace Ryujinx.Graphics.Metal
 
                                     if (texture.Sampler != null)
                                     {
-                                        fragResourceIds[fragResourceIdIndex] = texture.Sampler.GetSampler().GpuResourceID._impl;
+                                        fragResourceIds[fragResourceIdIndex] = texture.Sampler.Get(_pipeline.Cbs).Value.GpuResourceID._impl;
                                         fragResourceIdIndex++;
                                     }
 
@@ -1343,7 +1343,7 @@ namespace Ryujinx.Graphics.Metal
                             if (segment.Type != ResourceType.BufferTexture)
                             {
                                 var textures = textureArray.GetTextureRefs();
-                                var samplers = new Sampler[textures.Length];
+                                var samplers = new Auto<DisposableSampler>[textures.Length];
 
                                 for (int i = 0; i < textures.Length; i++)
                                 {
@@ -1379,7 +1379,7 @@ namespace Ryujinx.Graphics.Metal
 
                                     if (sampler != null)
                                     {
-                                        gpuAddress = sampler.GetSampler().GpuResourceID._impl;
+                                        gpuAddress = sampler.Get(_pipeline.Cbs).Value.GpuResourceID._impl;
                                     }
 
                                     if ((segment.Stages & ResourceStages.Vertex) != 0)
@@ -1612,7 +1612,7 @@ namespace Ryujinx.Graphics.Metal
 
                                     if (texture.Sampler != null)
                                     {
-                                        resourceIds[resourceIdIndex] = texture.Sampler.GetSampler().GpuResourceID._impl;
+                                        resourceIds[resourceIdIndex] = texture.Sampler.Get(_pipeline.Cbs).Value.GpuResourceID._impl;
                                         resourceIdIndex++;
                                     }
                                 }
@@ -1625,7 +1625,7 @@ namespace Ryujinx.Graphics.Metal
                             if (segment.Type != ResourceType.BufferTexture)
                             {
                                 var textures = textureArray.GetTextureRefs();
-                                var samplers = new Sampler[textures.Length];
+                                var samplers = new Auto<DisposableSampler>[textures.Length];
 
                                 for (int i = 0; i < textures.Length; i++)
                                 {
@@ -1646,7 +1646,7 @@ namespace Ryujinx.Graphics.Metal
                                 {
                                     if (sampler != null)
                                     {
-                                        resourceIds[resourceIdIndex] = sampler.GetSampler().GpuResourceID._impl;
+                                        resourceIds[resourceIdIndex] = sampler.Get(_pipeline.Cbs).Value.GpuResourceID._impl;
                                         resourceIdIndex++;
                                     }
                                 }

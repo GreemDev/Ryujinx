@@ -6,12 +6,17 @@ using System.Runtime.Versioning;
 namespace Ryujinx.Graphics.Metal
 {
     [SupportedOSPlatform("macos")]
-    class Sampler : ISampler
+    class SamplerHolder : ISampler
     {
-        private readonly MTLSamplerState _mtlSamplerState;
+        private readonly MetalRenderer _renderer;
+        private readonly Auto<DisposableSampler> _sampler;
 
-        public Sampler(MTLDevice device, SamplerCreateInfo info)
+        public SamplerHolder(MetalRenderer renderer, MTLDevice device, SamplerCreateInfo info)
         {
+            _renderer = renderer;
+
+            renderer.Samplers.Add(this);
+
             (MTLSamplerMinMagFilter minFilter, MTLSamplerMipFilter mipFilter) = info.MinFilter.Convert();
 
             MTLSamplerBorderColor borderColor = GetConstrainedBorderColor(info.BorderColor, out _);
@@ -33,14 +38,9 @@ namespace Ryujinx.Graphics.Metal
                 SupportArgumentBuffers = true
             };
 
-            var samplerState = device.NewSamplerState(descriptor);
+            var sampler = device.NewSamplerState(descriptor);
 
-            _mtlSamplerState = samplerState;
-        }
-
-        public Sampler(MTLSamplerState samplerState)
-        {
-            _mtlSamplerState = samplerState;
+            _sampler = new Auto<DisposableSampler>(new DisposableSampler(sampler));
         }
 
         private static MTLSamplerBorderColor GetConstrainedBorderColor(ColorF arbitraryBorderColor, out bool cantConstrain)
@@ -74,14 +74,17 @@ namespace Ryujinx.Graphics.Metal
             return MTLSamplerBorderColor.OpaqueBlack;
         }
 
-        public MTLSamplerState GetSampler()
+        public Auto<DisposableSampler> GetSampler()
         {
-            return _mtlSamplerState;
+            return _sampler;
         }
 
         public void Dispose()
         {
-            _mtlSamplerState.Dispose();
+            if (_renderer.Samplers.Remove(this))
+            {
+                _sampler.Dispose();
+            }
         }
     }
 }

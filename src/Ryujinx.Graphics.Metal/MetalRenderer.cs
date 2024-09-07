@@ -4,6 +4,7 @@ using Ryujinx.Graphics.Shader.Translation;
 using SharpMetal.Metal;
 using SharpMetal.QuartzCore;
 using System;
+using System.Collections.Generic;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
@@ -33,9 +34,12 @@ namespace Ryujinx.Graphics.Metal
         internal Action<Action> InterruptAction { get; private set; }
         internal SyncManager SyncManager { get; private set; }
 
+        internal HashSet<SamplerHolder> Samplers { get; }
+
         public MetalRenderer(Func<CAMetalLayer> metalLayer)
         {
             _device = MTLDevice.CreateSystemDefaultDevice();
+            Samplers = new HashSet<SamplerHolder>();
 
             if (_device.ArgumentBuffersSupport != MTLArgumentBuffersTier.Tier2)
             {
@@ -101,7 +105,7 @@ namespace Ryujinx.Graphics.Metal
 
         public ISampler CreateSampler(SamplerCreateInfo info)
         {
-            return new Sampler(_device, info);
+            return new SamplerHolder(this, _device, info);
         }
 
         public ITexture CreateTexture(TextureCreateInfo info)
@@ -281,6 +285,12 @@ namespace Ryujinx.Graphics.Metal
         public void Dispose()
         {
             BackgroundResources.Dispose();
+
+            foreach (var sampler in Samplers)
+            {
+                sampler.Dispose();
+            }
+
             _pipeline.Dispose();
             _window.Dispose();
         }

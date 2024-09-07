@@ -55,10 +55,10 @@ namespace Ryujinx.Graphics.Metal
     {
         public ShaderStage Stage;
         public TextureBase Storage;
-        public Sampler Sampler;
+        public Auto<DisposableSampler> Sampler;
         public Format ImageFormat;
 
-        public TextureRef(ShaderStage stage, TextureBase storage, Sampler sampler)
+        public TextureRef(ShaderStage stage, TextureBase storage, Auto<DisposableSampler> sampler)
         {
             Stage = stage;
             Storage = storage;
