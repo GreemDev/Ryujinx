@@ -27,16 +27,6 @@ namespace Ryujinx.Graphics.Metal
             _pipeline = pipeline;
         }
 
-        public void SetFormats(int index, Format[] imageFormats)
-        {
-            for (int i = 0; i < imageFormats.Length; i++)
-            {
-                _textureRefs[index + i].ImageFormat = imageFormats[i];
-            }
-
-            SetDirty();
-        }
-
         public void SetImages(int index, ITexture[] images)
         {
             for (int i = 0; i < images.Length; i++)

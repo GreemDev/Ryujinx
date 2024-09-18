@@ -661,7 +661,7 @@ namespace Ryujinx.Graphics.Metal
             _encoderStateManager.UpdateIndexBuffer(buffer, type);
         }
 
-        public void SetImage(ShaderStage stage, int binding, ITexture image, Format imageFormat)
+        public void SetImage(ShaderStage stage, int binding, ITexture image)
         {
             if (image is TextureBase img)
             {
