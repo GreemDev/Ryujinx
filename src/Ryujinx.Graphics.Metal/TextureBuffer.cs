@@ -1,7 +1,7 @@
+using Ryujinx.Common.Memory;
 using Ryujinx.Graphics.GAL;
 using SharpMetal.Metal;
 using System;
-using System.Buffers;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
@@ -88,18 +88,18 @@ namespace Ryujinx.Graphics.Metal
             throw new NotImplementedException();
         }
 
-        public void SetData(IMemoryOwner<byte> data)
+        public void SetData(MemoryOwner<byte> data)
         {
             Renderer.SetBufferData(_bufferHandle, _offset, data.Memory.Span);
             data.Dispose();
         }
 
-        public void SetData(IMemoryOwner<byte> data, int layer, int level)
+        public void SetData(MemoryOwner<byte> data, int layer, int level)
         {
             throw new NotSupportedException();
         }
 
-        public void SetData(IMemoryOwner<byte> data, int layer, int level, Rectangle<int> region)
+        public void SetData(MemoryOwner<byte> data, int layer, int level, Rectangle<int> region)
         {
             throw new NotSupportedException();
         }

@@ -1,9 +1,9 @@
 using Ryujinx.Common.Logging;
+using Ryujinx.Common.Memory;
 using Ryujinx.Graphics.GAL;
 using SharpMetal.Foundation;
 using SharpMetal.Metal;
 using System;
-using System.Buffers;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
@@ -509,7 +509,7 @@ namespace Ryujinx.Graphics.Metal
             return PinnedSpan<byte>.UnsafeFromSpan(GetData(resources.GetPool(), resources.GetFlushBuffer(), layer, level));
         }
 
-        public void SetData(IMemoryOwner<byte> data)
+        public void SetData(MemoryOwner<byte> data)
         {
             var blitCommandEncoder = Pipeline.GetOrCreateBlitEncoder();
 
@@ -586,14 +586,14 @@ namespace Ryujinx.Graphics.Metal
             CopyFromOrToBuffer(cbs, buffer, image, bufferDataLength, false, layer, level, layers, levels, singleSlice);
         }
 
-        public void SetData(IMemoryOwner<byte> data, int layer, int level)
+        public void SetData(MemoryOwner<byte> data, int layer, int level)
         {
             SetData(data.Memory.Span, layer, level, 1, 1, singleSlice: true);
 
             data.Dispose();
         }
 
-        public void SetData(IMemoryOwner<byte> data, int layer, int level, Rectangle<int> region)
+        public void SetData(MemoryOwner<byte> data, int layer, int level, Rectangle<int> region)
         {
             var blitCommandEncoder = Pipeline.GetOrCreateBlitEncoder();
 
