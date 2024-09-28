@@ -209,7 +209,8 @@ namespace Ryujinx.Graphics.Metal
                 shaderSubgroupSize: 256,
                 storageBufferOffsetAlignment: 16,
                 textureBufferOffsetAlignment: 16,
-                gatherBiasPrecision: 0
+                gatherBiasPrecision: 0,
+                maximumGpuMemory: 0
             );
         }
 
