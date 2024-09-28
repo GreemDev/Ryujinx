@@ -205,7 +205,7 @@ namespace Ryujinx.Graphics.Metal
                 maximumTexturesPerStage: Constants.MaxTexturesPerStage,
                 maximumImagesPerStage: Constants.MaxImagesPerStage,
                 maximumComputeSharedMemorySize: (int)_device.MaxThreadgroupMemoryLength,
-                maximumSupportedAnisotropy: 0,
+                maximumSupportedAnisotropy: 16,
                 shaderSubgroupSize: 256,
                 storageBufferOffsetAlignment: 16,
                 textureBufferOffsetAlignment: 16,
