@@ -152,8 +152,8 @@ namespace Ryujinx.Graphics.Metal
         // Only to be used for present
         public bool ClearLoadAction = false;
 
-        public RenderEncoderResources RenderEncoderResources = new();
-        public ComputeEncoderResources ComputeEncoderResources = new();
+        public RenderEncoderBindings RenderEncoderBindings = new();
+        public ComputeEncoderBindings ComputeEncoderBindings = new();
 
         public EncoderState()
         {

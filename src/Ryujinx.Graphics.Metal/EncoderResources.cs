@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace Ryujinx.Graphics.Metal
 {
-    public struct RenderEncoderResources
+    public struct RenderEncoderBindings
     {
         public List<Resource> Resources = new();
         public List<BufferResource> VertexBuffers = new();
         public List<BufferResource> FragmentBuffers = new();
 
-        public RenderEncoderResources() { }
+        public RenderEncoderBindings() { }
 
         public readonly void Clear()
         {
@@ -19,12 +19,12 @@ namespace Ryujinx.Graphics.Metal
         }
     }
 
-    public struct ComputeEncoderResources
+    public struct ComputeEncoderBindings
     {
         public List<Resource> Resources = new();
         public List<BufferResource> Buffers = new();
 
-        public ComputeEncoderResources() { }
+        public ComputeEncoderBindings() { }
 
         public readonly void Clear()
         {
