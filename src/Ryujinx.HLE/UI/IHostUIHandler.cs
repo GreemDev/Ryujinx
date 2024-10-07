@@ -25,7 +25,7 @@ namespace Ryujinx.HLE.UI
         bool DisplayMessageDialog(ControllerAppletUIArgs args);
 
         /// <summary>
-        /// Tell the UI that we need to transisition to another program.
+        /// Tell the UI that we need to transition to another program.
         /// </summary>
         /// <param name="device">The device instance.</param>
         /// <param name="kind">The program kind.</param>
