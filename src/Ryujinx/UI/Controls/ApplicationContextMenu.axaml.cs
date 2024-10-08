@@ -86,7 +86,7 @@ namespace Ryujinx.Ava.UI.Controls
 
             if (viewModel?.SelectedApplication != null)
             {
-                await TitleUpdateWindow.Show(viewModel.VirtualFileSystem, viewModel.SelectedApplication);
+                await TitleUpdateWindow.Show(viewModel.ApplicationLibrary, viewModel.SelectedApplication);
             }
         }
 
@@ -96,7 +96,7 @@ namespace Ryujinx.Ava.UI.Controls
 
             if (viewModel?.SelectedApplication != null)
             {
-                await DownloadableContentManagerWindow.Show(viewModel.VirtualFileSystem, viewModel.SelectedApplication);
+                await DownloadableContentManagerWindow.Show(viewModel.ApplicationLibrary, viewModel.SelectedApplication);
             }
         }
 

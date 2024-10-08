@@ -4,6 +4,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using DynamicData;
 using FluentAvalonia.UI.Controls;
 using LibHac.Tools.FsSystem;
 using Ryujinx.Ava.Common;
@@ -26,6 +27,7 @@ using Ryujinx.UI.Common.Configuration;
 using Ryujinx.UI.Common.Helper;
 using System;
 using System.Collections.Generic;
+using System.Reactive.Linq;
 using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,6 +47,7 @@ namespace Ryujinx.Ava.UI.Windows
         private static string _launchApplicationId;
         private static bool _startFullscreen;
         internal readonly AvaHostUIHandler UiHandler;
+        private IDisposable _appLibraryAppsSubscription;
 
         public VirtualFileSystem VirtualFileSystem { get; private set; }
         public ContentManager ContentManager { get; private set; }
@@ -134,14 +137,6 @@ namespace Ryujinx.Ava.UI.Windows
         private void OnScalingChanged(object sender, EventArgs e)
         {
             Program.DesktopScaleFactor = this.RenderScaling;
-        }
-
-        private void ApplicationLibrary_ApplicationAdded(object sender, ApplicationAddedEventArgs e)
-        {
-            Dispatcher.UIThread.Post(() =>
-            {
-                ViewModel.Applications.Add(e.AppData);
-            });
         }
 
         private void ApplicationLibrary_ApplicationCountUpdated(object sender, ApplicationCountUpdatedEventArgs e)
@@ -472,7 +467,12 @@ namespace Ryujinx.Ava.UI.Windows
                 this);
 
             ApplicationLibrary.ApplicationCountUpdated += ApplicationLibrary_ApplicationCountUpdated;
-            ApplicationLibrary.ApplicationAdded += ApplicationLibrary_ApplicationAdded;
+            _appLibraryAppsSubscription?.Dispose();
+            _appLibraryAppsSubscription = ApplicationLibrary.Applications
+                    .Connect()
+                    .ObserveOn(SynchronizationContext.Current)
+                    .Bind(ViewModel.Applications)
+                    .Subscribe();
 
             ViewModel.RefreshFirmwareStatus();
 
@@ -575,6 +575,7 @@ namespace Ryujinx.Ava.UI.Windows
 
             ApplicationLibrary.CancelLoading();
             InputManager.Dispose();
+            _appLibraryAppsSubscription?.Dispose();
             Program.Exit();
 
             base.OnClosing(e);
@@ -596,7 +597,6 @@ namespace Ryujinx.Ava.UI.Windows
         public void LoadApplications()
         {
             _applicationsLoadedOnce = true;
-            ViewModel.Applications.Clear();
 
             StatusBarView.LoadProgressBar.IsVisible = true;
             ViewModel.StatusBarProgressMaximum = 0;
@@ -638,7 +638,17 @@ namespace Ryujinx.Ava.UI.Windows
             Thread applicationLibraryThread = new(() =>
             {
                 ApplicationLibrary.DesiredLanguage = ConfigurationState.Instance.System.Language;
+
                 ApplicationLibrary.LoadApplications(ConfigurationState.Instance.UI.GameDirs);
+
+                var autoloadDirs = ConfigurationState.Instance.UI.AutoloadDirs.Value;
+                if (autoloadDirs.Count > 0)
+                {
+                    var updatesLoaded = ApplicationLibrary.AutoLoadTitleUpdates(autoloadDirs);
+                    var dlcLoaded = ApplicationLibrary.AutoLoadDownloadableContents(autoloadDirs);
+
+                    ShowNewContentAddedDialog(dlcLoaded, updatesLoaded);
+                }
 
                 _isLoading = false;
             })
@@ -647,6 +657,34 @@ namespace Ryujinx.Ava.UI.Windows
                 IsBackground = true,
             };
             applicationLibraryThread.Start();
+        }
+
+        private Task ShowNewContentAddedDialog(int numDlcAdded, int numUpdatesAdded)
+        {
+            var msg = "";
+
+            if (numDlcAdded > 0 && numUpdatesAdded > 0)
+            {
+                msg = string.Format(LocaleManager.Instance[LocaleKeys.AutoloadDlcAndUpdateAddedMessage], numDlcAdded, numUpdatesAdded);
+            }
+            else if (numDlcAdded > 0)
+            {
+                msg = string.Format(LocaleManager.Instance[LocaleKeys.AutoloadDlcAddedMessage], numDlcAdded);
+            }
+            else if (numUpdatesAdded > 0)
+            {
+                msg = string.Format(LocaleManager.Instance[LocaleKeys.AutoloadUpdateAddedMessage], numUpdatesAdded);
+            }
+            else
+            {
+                return Task.CompletedTask;
+            }
+
+            return Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                await ContentDialogHelper.ShowTextDialog(LocaleManager.Instance[LocaleKeys.DialogConfirmationTitle],
+                    msg, "", "", "", LocaleManager.Instance[LocaleKeys.InputDialogOk], (int)Symbol.Checkmark);
+            });
         }
     }
 }

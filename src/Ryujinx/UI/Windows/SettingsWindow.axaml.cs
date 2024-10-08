@@ -39,7 +39,7 @@ namespace Ryujinx.Ava.UI.Windows
         {
             InputPage.InputView?.SaveCurrentProfile();
 
-            if (Owner is MainWindow window && ViewModel.DirectoryChanged)
+            if (Owner is MainWindow window && (ViewModel.GameDirectoryChanged || ViewModel.AutoloadDirectoryChanged))
             {
                 window.LoadApplications();
             }

@@ -85,8 +85,8 @@
                     Orientation="Vertical"
                     Spacing="10">
                     <ListBox
-                        Name="GameList"
-                        MinHeight="230"
+                        Name="GameDirsList"
+                        MinHeight="120"
                         ItemsSource="{Binding GameDirectories}">
                         <ListBox.Styles>
                             <Style Selector="ListBoxItem">
@@ -102,27 +102,78 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBox
-                            Name="PathBox"
+                            Name="GameDirPathBox"
                             Margin="0"
                             ToolTip.Tip="{locale:Locale AddGameDirBoxTooltip}"
                             VerticalAlignment="Stretch" />
                         <Button
-                            Name="AddButton"
+                            Name="AddGameDirButton"
                             Grid.Column="1"
                             MinWidth="90"
                             Margin="10,0,0,0"
                             ToolTip.Tip="{locale:Locale AddGameDirTooltip}"
-                            Click="AddButton_OnClick">
+                            Click="AddGameDirButton_OnClick">
                             <TextBlock HorizontalAlignment="Center"
                                        Text="{locale:Locale SettingsTabGeneralAdd}" />
                         </Button>
                         <Button
-                            Name="RemoveButton"
+                            Name="RemoveGameDirButton"
                             Grid.Column="2"
                             MinWidth="90"
                             Margin="10,0,0,0"
                             ToolTip.Tip="{locale:Locale RemoveGameDirTooltip}"
-                            Click="RemoveButton_OnClick">
+                            Click="RemoveGameDirButton_OnClick">
+                            <TextBlock HorizontalAlignment="Center"
+                                       Text="{locale:Locale SettingsTabGeneralRemove}" />
+                        </Button>
+                    </Grid>
+                </StackPanel>
+                <Separator Height="1" />
+                <TextBlock Classes="h1" Text="{locale:Locale SettingsTabGeneralAutoloadDirectories}" />
+                <StackPanel
+                    Margin="10,0,0,0"
+                    HorizontalAlignment="Stretch"
+                    Orientation="Vertical"
+                    Spacing="10">
+                    <ListBox
+                        Name="AutoloadDirsList"
+                        MinHeight="120"
+                        ItemsSource="{Binding AutoloadDirectories}">
+                        <ListBox.Styles>
+                            <Style Selector="ListBoxItem">
+                                <Setter Property="Padding" Value="10" />
+                                <Setter Property="Background" Value="{DynamicResource ListBoxBackground}" />
+                            </Style>
+                        </ListBox.Styles>
+                    </ListBox>
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox
+                            Name="AutoloadDirPathBox"
+                            Margin="0"
+                            ToolTip.Tip="{locale:Locale AddAutoloadDirBoxTooltip}"
+                            VerticalAlignment="Stretch" />
+                        <Button
+                            Name="AddAutoloadDirButton"
+                            Grid.Column="1"
+                            MinWidth="90"
+                            Margin="10,0,0,0"
+                            ToolTip.Tip="{locale:Locale AddAutoloadDirTooltip}"
+                            Click="AddAutoloadDirButton_OnClick">
+                            <TextBlock HorizontalAlignment="Center"
+                                       Text="{locale:Locale SettingsTabGeneralAdd}" />
+                        </Button>
+                        <Button
+                            Name="RemoveAutoloadDirButton"
+                            Grid.Column="2"
+                            MinWidth="90"
+                            Margin="10,0,0,0"
+                            ToolTip.Tip="{locale:Locale RemoveAutoloadDirTooltip}"
+                            Click="RemoveAutoloadDirButton_OnClick">
                             <TextBlock HorizontalAlignment="Center"
                                        Text="{locale:Locale SettingsTabGeneralRemove}" />
                         </Button>

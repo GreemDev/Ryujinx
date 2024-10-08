@@ -6,7 +6,9 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using DynamicData;
+using DynamicData.Alias;
 using DynamicData.Binding;
+using FluentAvalonia.UI.Controls;
 using LibHac.Common;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
@@ -38,6 +40,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Key = Ryujinx.Input.Key;
@@ -50,7 +53,7 @@ namespace Ryujinx.Ava.UI.ViewModels
     {
         private const int HotKeyPressDelayMs = 500;
 
-        private ObservableCollection<ApplicationData> _applications;
+        private ObservableCollectionExtended<ApplicationData> _applications;
         private string _aspectStatusText;
 
         private string _loadHeading;
@@ -112,7 +115,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public MainWindowViewModel()
         {
-            Applications = new ObservableCollection<ApplicationData>();
+            Applications = new ObservableCollectionExtended<ApplicationData>();
 
             Applications.ToObservableChangeSet()
                 .Filter(Filter)
@@ -741,7 +744,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             get => FileAssociationHelper.IsTypeAssociationSupported;
         }
 
-        public ObservableCollection<ApplicationData> Applications
+        public ObservableCollectionExtended<ApplicationData> Applications
         {
             get => _applications;
             set
@@ -1256,6 +1259,30 @@ namespace Ryujinx.Ava.UI.ViewModels
             _rendererWaitEvent.Set();
         }
 
+        private async Task LoadContentFromFolder(LocaleKeys localeMessageKey, Func<List<string>, int> onDirsSelected)
+        {
+            var result = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+            {
+                Title = LocaleManager.Instance[LocaleKeys.OpenFolderDialogTitle],
+                AllowMultiple = true,
+            });
+
+            if (result.Count > 0)
+            {
+                var dirs = result.Select(it => it.Path.LocalPath).ToList();
+                var numAdded = onDirsSelected(dirs);
+
+                var msg = string.Format(LocaleManager.Instance[localeMessageKey], numAdded);
+
+                await Dispatcher.UIThread.InvokeAsync(async () =>
+                {
+                    await ContentDialogHelper.ShowTextDialog(
+                        LocaleManager.Instance[numAdded > 0 ? LocaleKeys.RyujinxConfirm : LocaleKeys.RyujinxInfo],
+                        msg, "", "", "", LocaleManager.Instance[LocaleKeys.InputDialogOk], (int)Symbol.Checkmark);
+                });
+            }
+        }
+
         #endregion
 
         #region PublicMethods
@@ -1502,6 +1529,18 @@ namespace Ryujinx.Ava.UI.ViewModels
                     await ContentDialogHelper.CreateErrorDialog(LocaleManager.Instance[LocaleKeys.MenuBarFileOpenFromFileError]);
                 }
             }
+        }
+
+        public async Task LoadDlcFromFolder()
+        {
+            await LoadContentFromFolder(LocaleKeys.AutoloadDlcAddedMessage,
+                dirs => ApplicationLibrary.AutoLoadDownloadableContents(dirs));
+        }
+
+        public async Task LoadTitleUpdatesFromFolder()
+        {
+            await LoadContentFromFolder(LocaleKeys.AutoloadUpdateAddedMessage,
+                dirs => ApplicationLibrary.AutoLoadTitleUpdates(dirs));
         }
 
         public async Task OpenFolder()

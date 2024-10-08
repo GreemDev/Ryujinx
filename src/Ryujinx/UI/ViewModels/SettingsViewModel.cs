@@ -44,7 +44,8 @@ namespace Ryujinx.Ava.UI.ViewModels
         private int _graphicsBackendMultithreadingIndex;
         private float _volume;
         private bool _isVulkanAvailable = true;
-        private bool _directoryChanged;
+        private bool _gameDirectoryChanged;
+        private bool _autoloadDirectoryChanged;
         private readonly List<string> _gpuIds = new();
         private int _graphicsBackendIndex;
         private int _scalingFilter;
@@ -115,12 +116,23 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public bool IsHypervisorAvailable => OperatingSystem.IsMacOS() && RuntimeInformation.ProcessArchitecture == Architecture.Arm64;
 
-        public bool DirectoryChanged
+        public bool GameDirectoryChanged
         {
-            get => _directoryChanged;
+            get => _gameDirectoryChanged;
             set
             {
-                _directoryChanged = value;
+                _gameDirectoryChanged = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool AutoloadDirectoryChanged
+        {
+            get => _autoloadDirectoryChanged;
+            set
+            {
+                _autoloadDirectoryChanged = value;
 
                 OnPropertyChanged();
             }
@@ -230,6 +242,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         internal AvaloniaList<TimeZone> TimeZones { get; set; }
         public AvaloniaList<string> GameDirectories { get; set; }
+        public AvaloniaList<string> AutoloadDirectories { get; set; }
         public ObservableCollection<ComboBoxItem> AvailableGpus { get; set; }
 
         public AvaloniaList<string> NetworkInterfaceList
@@ -272,6 +285,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         public SettingsViewModel()
         {
             GameDirectories = new AvaloniaList<string>();
+            AutoloadDirectories = new AvaloniaList<string>();
             TimeZones = new AvaloniaList<TimeZone>();
             AvailableGpus = new ObservableCollection<ComboBoxItem>();
             _validTzRegions = new List<string>();
@@ -397,6 +411,9 @@ namespace Ryujinx.Ava.UI.ViewModels
             GameDirectories.Clear();
             GameDirectories.AddRange(config.UI.GameDirs.Value);
 
+            AutoloadDirectories.Clear();
+            AutoloadDirectories.AddRange(config.UI.AutoloadDirs.Value);
+
             BaseStyleIndex = config.UI.BaseStyle.Value switch
             {
                 "Auto" => 0,
@@ -486,10 +503,16 @@ namespace Ryujinx.Ava.UI.ViewModels
             config.RememberWindowState.Value = RememberWindowState;
             config.HideCursor.Value = (HideCursorMode)HideCursor;
 
-            if (_directoryChanged)
+            if (_gameDirectoryChanged)
             {
                 List<string> gameDirs = new(GameDirectories);
                 config.UI.GameDirs.Value = gameDirs;
+            }
+
+            if (_autoloadDirectoryChanged)
+            {
+                List<string> autoloadDirs = new(AutoloadDirectories);
+                config.UI.AutoloadDirs.Value = autoloadDirs;
             }
 
             config.UI.BaseStyle.Value = BaseStyleIndex switch
@@ -587,7 +610,8 @@ namespace Ryujinx.Ava.UI.ViewModels
 
             SaveSettingsEvent?.Invoke();
 
-            _directoryChanged = false;
+            _gameDirectoryChanged = false;
+            _autoloadDirectoryChanged = false;
         }
 
         private static void RevertIfNotSaved()

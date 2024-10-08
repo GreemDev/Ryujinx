@@ -34,6 +34,16 @@
                     Header="{locale:Locale MenuBarFileOpenUnpacked}"
                     IsEnabled="{Binding EnableNonGameRunningControls}"
                     ToolTip.Tip="{locale:Locale LoadApplicationFolderTooltip}" />
+                <MenuItem
+                    Command="{Binding LoadDlcFromFolder}"
+                    Header="{locale:Locale MenuBarFileLoadDlcFromFolder}"
+                    IsEnabled="{Binding EnableNonGameRunningControls}"
+                    ToolTip.Tip="{locale:Locale LoadDlcFromFolderTooltip}" />
+                <MenuItem
+                    Command="{Binding LoadTitleUpdatesFromFolder}"
+                    Header="{locale:Locale MenuBarFileLoadTitleUpdatesFromFolder}"
+                    IsEnabled="{Binding EnableNonGameRunningControls}"
+                    ToolTip.Tip="{locale:Locale LoadTitleUpdatesFromFolderTooltip}" />
                 <MenuItem Header="{locale:Locale MenuBarFileOpenApplet}" IsEnabled="{Binding IsAppletMenuActive}">
                     <MenuItem
                         Click="OpenMiiApplet"

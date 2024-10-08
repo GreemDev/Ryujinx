@@ -3,11 +3,10 @@ using Avalonia.Interactivity;
 using Avalonia.Styling;
 using FluentAvalonia.UI.Controls;
 using Ryujinx.Ava.Common.Locale;
-using Ryujinx.Ava.UI.Models;
 using Ryujinx.Ava.UI.ViewModels;
-using Ryujinx.HLE.FileSystem;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common.Helper;
+using Ryujinx.UI.Common.Models;
 using System.Threading.Tasks;
 
 namespace Ryujinx.Ava.UI.Windows
@@ -23,21 +22,21 @@ namespace Ryujinx.Ava.UI.Windows
             InitializeComponent();
         }
 
-        public DownloadableContentManagerWindow(VirtualFileSystem virtualFileSystem, ApplicationData applicationData)
+        public DownloadableContentManagerWindow(ApplicationLibrary applicationLibrary, ApplicationData applicationData)
         {
-            DataContext = ViewModel = new DownloadableContentManagerViewModel(virtualFileSystem, applicationData);
+            DataContext = ViewModel = new DownloadableContentManagerViewModel(applicationLibrary, applicationData);
 
             InitializeComponent();
         }
 
-        public static async Task Show(VirtualFileSystem virtualFileSystem, ApplicationData applicationData)
+        public static async Task Show(ApplicationLibrary applicationLibrary, ApplicationData applicationData)
         {
             ContentDialog contentDialog = new()
             {
                 PrimaryButtonText = "",
                 SecondaryButtonText = "",
                 CloseButtonText = "",
-                Content = new DownloadableContentManagerWindow(virtualFileSystem, applicationData),
+                Content = new DownloadableContentManagerWindow(applicationLibrary, applicationData),
                 Title = string.Format(LocaleManager.Instance[LocaleKeys.DlcWindowTitle], applicationData.Name, applicationData.IdBaseString),
             };
 
@@ -88,12 +87,7 @@ namespace Ryujinx.Ava.UI.Windows
             {
                 if (content is DownloadableContentModel model)
                 {
-                    var index = ViewModel.DownloadableContents.IndexOf(model);
-
-                    if (index != -1)
-                    {
-                        ViewModel.DownloadableContents[index].Enabled = true;
-                    }
+                    ViewModel.Enable(model);
                 }
             }
 
@@ -101,12 +95,7 @@ namespace Ryujinx.Ava.UI.Windows
             {
                 if (content is DownloadableContentModel model)
                 {
-                    var index = ViewModel.DownloadableContents.IndexOf(model);
-
-                    if (index != -1)
-                    {
-                        ViewModel.DownloadableContents[index].Enabled = false;
-                    }
+                    ViewModel.Disable(model);
                 }
             }
         }
