@@ -169,14 +169,28 @@ namespace Ryujinx.Audio.Renderer.Server
             {
                 if (command.Enabled)
                 {
-                    return command.Parameter.ChannelCount switch
+                    if (command.Parameter.StatisticsEnabled)
                     {
-                        1 => 34431,
-                        2 => 44253,
-                        4 => 63827,
-                        6 => 83361,
-                        _ => throw new NotImplementedException($"{command.Parameter.ChannelCount}"),
-                    };
+                        return command.Parameter.ChannelCount switch
+                        {
+                            1 => 22100,
+                            2 => 33211,
+                            4 => 41587,
+                            6 => 58819,
+                            _ => throw new NotImplementedException($"{command.Parameter.ChannelCount}"),
+                        };
+                    }
+                    else
+                    {
+                        return command.Parameter.ChannelCount switch
+                        {
+                            1 => 19052,
+                            2 => 29852,
+                            4 => 37904,
+                            6 => 55020,
+                            _ => throw new NotImplementedException($"{command.Parameter.ChannelCount}"),
+                        };
+                    }
                 }
 
                 return command.Parameter.ChannelCount switch
@@ -191,14 +205,28 @@ namespace Ryujinx.Audio.Renderer.Server
 
             if (command.Enabled)
             {
-                return command.Parameter.ChannelCount switch
+                if (command.Parameter.StatisticsEnabled)
                 {
-                    1 => 51095,
-                    2 => 65693,
-                    4 => 95383,
-                    6 => 124510,
-                    _ => throw new NotImplementedException($"{command.Parameter.ChannelCount}"),
-                };
+                    return command.Parameter.ChannelCount switch
+                    {
+                        1 => 32518,
+                        2 => 49102,
+                        4 => 61685,
+                        6 => 87250,
+                        _ => throw new NotImplementedException($"{command.Parameter.ChannelCount}"),
+                    };
+                }
+                else
+                {
+                    return command.Parameter.ChannelCount switch
+                    {
+                        1 => 27963,
+                        2 => 44016,
+                        4 => 56183,
+                        6 => 81862,
+                        _ => throw new NotImplementedException($"{command.Parameter.ChannelCount}"),
+                    };
+                }
             }
 
             return command.Parameter.ChannelCount switch

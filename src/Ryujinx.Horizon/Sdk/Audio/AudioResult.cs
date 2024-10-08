@@ -8,5 +8,6 @@ namespace Ryujinx.Horizon.Sdk.Audio
 
         public static Result DeviceNotFound => new(ModuleId, 1);
         public static Result UnsupportedRevision => new(ModuleId, 2);
+        public static Result NotImplemented => new(ModuleId, 513);
     }
 }

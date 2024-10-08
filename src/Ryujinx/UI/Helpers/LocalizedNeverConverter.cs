@@ -11,6 +11,7 @@ namespace Ryujinx.Ava.UI.Helpers
     /// This <see cref="IValueConverter"/> makes sure that the string "Never" that's returned by <see cref="ValueFormatUtils.FormatDateTime"/> is properly localized in the Avalonia UI.
     /// After the Avalonia UI has been made the default and the GTK UI is removed, <see cref="ValueFormatUtils"/> should be updated to directly return a localized string.
     /// </summary>
+    // TODO: localize ValueFormatUtils.FormateDateTime 
     internal class LocalizedNeverConverter : MarkupExtension, IValueConverter
     {
         private static readonly LocalizedNeverConverter _instance = new();

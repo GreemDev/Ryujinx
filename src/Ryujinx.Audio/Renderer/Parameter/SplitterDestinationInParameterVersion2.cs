@@ -43,9 +43,15 @@ namespace Ryujinx.Audio.Renderer.Parameter
         public bool IsUsed;
 
         /// <summary>
+        /// Set to true to force resetting the previous mix volumes.
+        /// </summary>
+        [MarshalAs(UnmanagedType.I1)]
+        public bool ResetPrevVolume;
+
+        /// <summary>
         /// Reserved/padding.
         /// </summary>
-        private unsafe fixed byte _reserved[11];
+        private unsafe fixed byte _reserved[10];
 
         [StructLayout(LayoutKind.Sequential, Size = sizeof(float) * Constants.MixBufferCountMax, Pack = 1)]
         private struct MixArray { }
@@ -63,6 +69,7 @@ namespace Ryujinx.Audio.Renderer.Parameter
         readonly Array2<BiquadFilterParameter> ISplitterDestinationInParameter.BiquadFilters => BiquadFilters;
 
         readonly bool ISplitterDestinationInParameter.IsUsed => IsUsed;
+        readonly bool ISplitterDestinationInParameter.ResetPrevVolume => ResetPrevVolume;
 
         /// <summary>
         /// The expected constant of any input header.

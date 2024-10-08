@@ -109,9 +109,17 @@ namespace Ryujinx.Audio.Renderer.Server
         public const int Revision12 = 12 << 24;
 
         /// <summary>
+        /// REV13:
+        /// The compressor effect can now output statistics.
+        /// Splitter destinations now explicitly reset the previous mix volume, instead of doing so on first use.
+        /// </summary>
+        /// <remarks>This was added in system update 18.0.0</remarks>
+        public const int Revision13 = 13 << 24;
+
+        /// <summary>
         /// Last revision supported by the implementation.
         /// </summary>
-        public const int LastRevision = Revision12;
+        public const int LastRevision = Revision13;
 
         /// <summary>
         /// Target revision magic supported by the implementation.
@@ -382,6 +390,15 @@ namespace Ryujinx.Audio.Renderer.Server
         public bool IsBiquadFilterParameterForSplitterEnabled()
         {
             return CheckFeatureSupported(UserRevision, BaseRevisionMagic + Revision12);
+        }
+
+        /// <summary>
+        /// Check if the audio renderer should support explicit previous mix volume reset on splitter.
+        /// </summary>
+        /// <returns>True if the audio renderer support explicit previous mix volume reset on splitter</returns>
+        public bool IsSplitterPrevVolumeResetSupported()
+        {
+            return CheckFeatureSupported(UserRevision, BaseRevisionMagic + Revision13);
         }
 
         /// <summary>

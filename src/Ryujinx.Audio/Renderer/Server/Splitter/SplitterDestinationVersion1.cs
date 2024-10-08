@@ -93,7 +93,8 @@ namespace Ryujinx.Audio.Renderer.Server.Splitter
         /// Update the <see cref="SplitterDestinationVersion1"/> from user parameter.
         /// </summary>
         /// <param name="parameter">The user parameter.</param>
-        public void Update<T>(in T parameter) where T : ISplitterDestinationInParameter
+        /// <param name="isPrevVolumeResetSupported">Indicates that the audio renderer revision in use supports explicitly resetting the volume.</param>
+        public void Update<T>(in T parameter, bool isPrevVolumeResetSupported) where T : ISplitterDestinationInParameter
         {
             Debug.Assert(Id == parameter.Id);
 
@@ -103,7 +104,8 @@ namespace Ryujinx.Audio.Renderer.Server.Splitter
 
                 parameter.MixBufferVolume.CopyTo(MixBufferVolume);
 
-                if (!IsUsed && parameter.IsUsed)
+                bool resetPrevVolume = isPrevVolumeResetSupported ? parameter.ResetPrevVolume : !IsUsed && parameter.IsUsed;
+                if (resetPrevVolume)
                 {
                     MixBufferVolume.CopyTo(PreviousMixBufferVolume);
 

@@ -233,6 +233,48 @@ namespace Ryujinx.Horizon.Sdk.Audio.Detail
             return Result.Success;
         }
 
+        [CmifCommand(15)] // 17.0.0+
+        public Result AcquireAudioOutputDeviceNotification([CopyHandle] out int eventHandle, ulong deviceId)
+        {
+            eventHandle = 0;
+
+            return AudioResult.NotImplemented;
+        }
+
+        [CmifCommand(16)] // 17.0.0+
+        public Result ReleaseAudioOutputDeviceNotification(ulong deviceId)
+        {
+            return AudioResult.NotImplemented;
+        }
+
+        [CmifCommand(17)] // 17.0.0+
+        public Result AcquireAudioInputDeviceNotification([CopyHandle] out int eventHandle, ulong deviceId)
+        {
+            eventHandle = 0;
+
+            return AudioResult.NotImplemented;
+        }
+
+        [CmifCommand(18)] // 17.0.0+
+        public Result ReleaseAudioInputDeviceNotification(ulong deviceId)
+        {
+            return AudioResult.NotImplemented;
+        }
+
+        [CmifCommand(19)] // 18.0.0+
+        public Result SetAudioDeviceOutputVolumeAutoTuneEnabled(bool enabled)
+        {
+            return AudioResult.NotImplemented;
+        }
+
+        [CmifCommand(20)] // 18.0.0+
+        public Result IsAudioDeviceOutputVolumeAutoTuneEnabled(out bool enabled)
+        {
+            enabled = false;
+
+            return AudioResult.NotImplemented;
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
