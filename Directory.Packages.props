@@ -11,7 +11,7 @@
     <PackageVersion Include="Avalonia.Svg" Version="11.0.0.18" />
     <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.18" />
     <PackageVersion Include="CommandLineParser" Version="2.9.1" />
-    <PackageVersion Include="Concentus" Version="2.2.0" />
+    <PackageVersion Include="Concentus" Version="2.2.2" />
     <PackageVersion Include="DiscordRichPresence" Version="1.2.1.24" />
     <PackageVersion Include="DynamicData" Version="9.0.4" />
     <PackageVersion Include="FluentAvaloniaUI" Version="2.0.5" />
