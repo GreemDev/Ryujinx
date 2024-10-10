@@ -320,23 +320,7 @@ namespace Ryujinx.Input.SDL2
                 return (0.0f, 0.0f);
             }
 
-            short stickX;
-            short stickY;
-
-            if (inputId == StickInputId.Left)
-            {
-                stickX = SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_LEFTX);
-                stickY = SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_LEFTY);
-            }
-            else if (inputId == StickInputId.Right)
-            {
-                stickX = SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_RIGHTX);
-                stickY = SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_RIGHTY);
-            }
-            else
-            {
-                throw new NotSupportedException($"Unsupported stick {inputId}");
-            }
+            (short stickX, short stickY) = GetStickXY(inputId);
 
             float resultX = ConvertRawStickValue(stickX);
             float resultY = -ConvertRawStickValue(stickY);
@@ -366,6 +350,18 @@ namespace Ryujinx.Input.SDL2
 
             return (resultX, resultY);
         }
+
+        private (short, short) GetStickXY(StickInputId inputId) =>
+            inputId switch
+            {
+                StickInputId.Left => (
+                    SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_LEFTX),
+                    SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_LEFTY)),
+                StickInputId.Right => (
+                    SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_RIGHTX),
+                    SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_RIGHTY)),
+                _ => throw new NotSupportedException($"Unsupported stick {inputId}")
+            };
 
         public bool IsPressed(GamepadButtonInputId inputId)
         {

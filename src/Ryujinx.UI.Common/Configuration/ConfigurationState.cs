@@ -527,36 +527,36 @@ namespace Ryujinx.UI.Common.Configuration
             public GraphicsSection()
             {
                 BackendThreading = new ReactiveObject<BackendThreading>();
-                BackendThreading.Event += static (sender, e) => LogValueChange(e, nameof(BackendThreading));
+                BackendThreading.Event += static (_, e) => LogValueChange(e, nameof(BackendThreading));
                 ResScale = new ReactiveObject<int>();
-                ResScale.Event += static (sender, e) => LogValueChange(e, nameof(ResScale));
+                ResScale.Event += static (_, e) => LogValueChange(e, nameof(ResScale));
                 ResScaleCustom = new ReactiveObject<float>();
-                ResScaleCustom.Event += static (sender, e) => LogValueChange(e, nameof(ResScaleCustom));
+                ResScaleCustom.Event += static (_, e) => LogValueChange(e, nameof(ResScaleCustom));
                 MaxAnisotropy = new ReactiveObject<float>();
-                MaxAnisotropy.Event += static (sender, e) => LogValueChange(e, nameof(MaxAnisotropy));
+                MaxAnisotropy.Event += static (_, e) => LogValueChange(e, nameof(MaxAnisotropy));
                 AspectRatio = new ReactiveObject<AspectRatio>();
-                AspectRatio.Event += static (sender, e) => LogValueChange(e, nameof(AspectRatio));
+                AspectRatio.Event += static (_, e) => LogValueChange(e, nameof(AspectRatio));
                 ShadersDumpPath = new ReactiveObject<string>();
                 EnableVsync = new ReactiveObject<bool>();
-                EnableVsync.Event += static (sender, e) => LogValueChange(e, nameof(EnableVsync));
+                EnableVsync.Event += static (_, e) => LogValueChange(e, nameof(EnableVsync));
                 EnableShaderCache = new ReactiveObject<bool>();
-                EnableShaderCache.Event += static (sender, e) => LogValueChange(e, nameof(EnableShaderCache));
+                EnableShaderCache.Event += static (_, e) => LogValueChange(e, nameof(EnableShaderCache));
                 EnableTextureRecompression = new ReactiveObject<bool>();
-                EnableTextureRecompression.Event += static (sender, e) => LogValueChange(e, nameof(EnableTextureRecompression));
+                EnableTextureRecompression.Event += static (_, e) => LogValueChange(e, nameof(EnableTextureRecompression));
                 GraphicsBackend = new ReactiveObject<GraphicsBackend>();
-                GraphicsBackend.Event += static (sender, e) => LogValueChange(e, nameof(GraphicsBackend));
+                GraphicsBackend.Event += static (_, e) => LogValueChange(e, nameof(GraphicsBackend));
                 PreferredGpu = new ReactiveObject<string>();
-                PreferredGpu.Event += static (sender, e) => LogValueChange(e, nameof(PreferredGpu));
+                PreferredGpu.Event += static (_, e) => LogValueChange(e, nameof(PreferredGpu));
                 EnableMacroHLE = new ReactiveObject<bool>();
-                EnableMacroHLE.Event += static (sender, e) => LogValueChange(e, nameof(EnableMacroHLE));
+                EnableMacroHLE.Event += static (_, e) => LogValueChange(e, nameof(EnableMacroHLE));
                 EnableColorSpacePassthrough = new ReactiveObject<bool>();
-                EnableColorSpacePassthrough.Event += static (sender, e) => LogValueChange(e, nameof(EnableColorSpacePassthrough));
+                EnableColorSpacePassthrough.Event += static (_, e) => LogValueChange(e, nameof(EnableColorSpacePassthrough));
                 AntiAliasing = new ReactiveObject<AntiAliasing>();
-                AntiAliasing.Event += static (sender, e) => LogValueChange(e, nameof(AntiAliasing));
+                AntiAliasing.Event += static (_, e) => LogValueChange(e, nameof(AntiAliasing));
                 ScalingFilter = new ReactiveObject<ScalingFilter>();
-                ScalingFilter.Event += static (sender, e) => LogValueChange(e, nameof(ScalingFilter));
+                ScalingFilter.Event += static (_, e) => LogValueChange(e, nameof(ScalingFilter));
                 ScalingFilterLevel = new ReactiveObject<int>();
-                ScalingFilterLevel.Event += static (sender, e) => LogValueChange(e, nameof(ScalingFilterLevel));
+                ScalingFilterLevel.Event += static (_, e) => LogValueChange(e, nameof(ScalingFilterLevel));
             }
         }
 
@@ -766,8 +766,8 @@ namespace Ryujinx.UI.Common.Configuration
                 EnableKeyboard = Hid.EnableKeyboard,
                 EnableMouse = Hid.EnableMouse,
                 Hotkeys = Hid.Hotkeys,
-                KeyboardConfig = new List<JsonObject>(),
-                ControllerConfig = new List<JsonObject>(),
+                KeyboardConfig = [],
+                ControllerConfig = [],
                 InputConfig = Hid.InputConfig,
                 GraphicsBackend = Graphics.GraphicsBackend,
                 PreferredGpu = Graphics.PreferredGpu,
@@ -880,8 +880,8 @@ namespace Ryujinx.UI.Common.Configuration
                 VolumeUp = Key.Unbound,
                 VolumeDown = Key.Unbound,
             };
-            Hid.InputConfig.Value = new List<InputConfig>
-            {
+            Hid.InputConfig.Value =
+            [
                 new StandardKeyboardInputConfig
                 {
                     Version = InputConfig.CurrentVersion,
@@ -929,15 +929,16 @@ namespace Ryujinx.UI.Common.Configuration
                         StickRight = Key.L,
                         StickButton = Key.H,
                     },
-                },
-            };
+                }
+
+            ];
         }
 
         public void Load(ConfigurationFileFormat configurationFileFormat, string configurationFilePath)
         {
             bool configurationFileUpdated = false;
 
-            if (configurationFileFormat.Version < 0 || configurationFileFormat.Version > ConfigurationFileFormat.CurrentVersion)
+            if (configurationFileFormat.Version is < 0 or > ConfigurationFileFormat.CurrentVersion)
             {
                 Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Unsupported configuration version {configurationFileFormat.Version}, loading default.");
 

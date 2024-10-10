@@ -115,9 +115,6 @@ namespace Ryujinx.Ava.UI.Windows
             base.OnClosed(e);
             if (PlatformSettings != null)
             {
-                /// <summary>
-                /// Unsubscribe to the ColorValuesChanged event
-                /// </summary>
                 PlatformSettings.ColorValuesChanged -= OnPlatformColorValuesChanged;
             }
         }

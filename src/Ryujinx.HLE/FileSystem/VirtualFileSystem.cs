@@ -629,8 +629,8 @@ namespace Ryujinx.HLE.FileSystem
         }
 
         private static readonly ExtraDataFixInfo[] _systemExtraDataFixInfo =
-        {
-            new ExtraDataFixInfo()
+        [
+            new()
             {
                 StaticSaveDataId = 0x8000000000000030,
                 OwnerId = 0x010000000000001F,
@@ -638,15 +638,15 @@ namespace Ryujinx.HLE.FileSystem
                 DataSize = 0x10000,
                 JournalSize = 0x10000,
             },
-            new ExtraDataFixInfo()
+            new()
             {
                 StaticSaveDataId = 0x8000000000001040,
                 OwnerId = 0x0100000000001009,
                 Flags = SaveDataFlags.None,
                 DataSize = 0xC000,
                 JournalSize = 0xC000,
-            },
-        };
+            }
+        ];
 
         public void Dispose()
         {

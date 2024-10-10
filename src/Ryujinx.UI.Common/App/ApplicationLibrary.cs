@@ -80,7 +80,7 @@ namespace Ryujinx.UI.App.Common
 
         private static byte[] GetResourceBytes(string resourceName)
         {
-            Stream resourceStream = Assembly.GetCallingAssembly().GetManifestResourceStream(resourceName);
+            Stream resourceStream = Assembly.GetCallingAssembly().GetManifestResourceStream(resourceName)!;
             byte[] resourceByteArray = new byte[resourceStream.Length];
 
             resourceStream.ReadExactly(resourceByteArray);
@@ -1081,7 +1081,7 @@ namespace Ryujinx.UI.App.Common
 
                     using FileStream file = new(applicationPath, FileMode.Open, FileAccess.Read);
 
-                    if (extension == ".nsp" || extension == ".pfs0" || extension == ".xci")
+                    if (extension is ".nsp" or ".pfs0" or ".xci")
                     {
                         try
                         {
