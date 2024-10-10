@@ -1,14 +1,20 @@
 using DiscordRPC;
+using Humanizer;
 using Ryujinx.Common;
+using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common.Configuration;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Ryujinx.UI.Common
 {
     public static class DiscordIntegrationModule
     {
+        public static Timestamps StartedAt { get; set; }
+        
         private const string Description = "A simple, experimental Nintendo Switch emulator.";
-        private const string ApplicationId = "1216775165866807456";
+        private const string ApplicationId = "1293250299716173864";
 
         private const int ApplicationByteLimit = 128;
         private const string Ellipsis = "…";
@@ -23,19 +29,11 @@ namespace Ryujinx.UI.Common
                 Assets = new Assets
                 {
                     LargeImageKey = "ryujinx",
-                    LargeImageText = Description,
+                    LargeImageText = Description
                 },
                 Details = "Main Menu",
                 State = "Idling",
-                Timestamps = Timestamps.Now,
-                Buttons =
-                [
-                    new Button
-                    {
-                        Label = "Website",
-                        Url = "https://ryujinx.org/",
-                    },
-                ],
+                Timestamps = StartedAt
             };
 
             ConfigurationState.Instance.EnableDiscordIntegration.Event += Update;
@@ -64,34 +62,27 @@ namespace Ryujinx.UI.Common
             }
         }
 
-        public static void SwitchToPlayingState(string titleId, string applicationName)
+        private static readonly string[] _discordGameAssets = [ 
+            "0100f2c0115b6000", // Tears of the Kingdom
+            "0100744001588000", // Cars 3: Driven to Win
+
+        ];
+
+        public static void SwitchToPlayingState(string titleId, ApplicationMetadata appMeta)
         {
             _discordClient?.SetPresence(new RichPresence
             {
                 Assets = new Assets
                 {
-                    LargeImageKey = "game",
-                    LargeImageText = TruncateToByteLength(applicationName, ApplicationByteLimit),
+                    LargeImageKey = _discordGameAssets.Contains(titleId.ToLower()) ? titleId : "game",
+                    LargeImageText = TruncateToByteLength(appMeta.Title, ApplicationByteLimit),
                     SmallImageKey = "ryujinx",
-                    SmallImageText = Description,
+                    SmallImageText = Description
                 },
-                Details = TruncateToByteLength($"Playing {applicationName}", ApplicationByteLimit),
-                State = (titleId == "0000000000000000") ? "Homebrew" : titleId.ToUpper(),
-                Timestamps = Timestamps.Now,
-                Buttons =
-                [
-                    new Button
-                    {
-                        Label = "Website",
-                        Url = "https://ryujinx.org/",
-                    },
-                ],
+                Details = TruncateToByteLength($"Playing {appMeta.Title}", ApplicationByteLimit),
+                State = $"Total play time: {appMeta.TimePlayed.Humanize(2, false)}",
+                Timestamps = Timestamps.Now
             });
-        }
-
-        public static void SwitchToMainMenu()
-        {
-            _discordClient?.SetPresence(_discordPresenceMain);
         }
 
         private static string TruncateToByteLength(string input, int byteLimit)
