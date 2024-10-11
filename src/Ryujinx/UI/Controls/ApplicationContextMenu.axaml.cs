@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform.Storage;
 using LibHac.Fs;
 using LibHac.Tools.FsSystem.NcaUtils;
 using Ryujinx.Ava.Common;
@@ -325,13 +326,29 @@ namespace Ryujinx.Ava.UI.Controls
         {
             var viewModel = (sender as MenuItem)?.DataContext as MainWindowViewModel;
 
-            if (viewModel?.SelectedApplication != null)
+            if (viewModel?.SelectedApplication is { } selectedApp)
             {
-                await ApplicationHelper.ExtractSection(
-                    viewModel.StorageProvider,
+                var result = await viewModel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+                {
+                    Title = LocaleManager.Instance[LocaleKeys.FolderDialogExtractTitle],
+                    AllowMultiple = false,
+                });
+
+                if (result.Count == 0)
+                {
+                    return;
+                }
+
+                ApplicationHelper.ExtractSection(
+                    result[0].Path.LocalPath,
                     NcaSectionType.Logo,
                     viewModel.SelectedApplication.Path,
                     viewModel.SelectedApplication.Name);
+
+                var iconFile = await result[0].CreateFileAsync(selectedApp.IdString + ".png");
+                await using var fileStream = await iconFile.OpenWriteAsync();
+
+                fileStream.Write(selectedApp.Icon);
             }
         }
 
