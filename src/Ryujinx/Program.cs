@@ -36,7 +36,7 @@ namespace Ryujinx.Ava
 
         private const uint MbIconwarning = 0x30;
 
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
             Version = ReleaseInformation.Version;
 
@@ -51,7 +51,7 @@ namespace Ryujinx.Ava
 
             LoggerAdapter.Register();
 
-            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            return BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
 
         public static AppBuilder BuildAvaloniaApp()

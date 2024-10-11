@@ -6,33 +6,23 @@ using System;
 
 namespace Ryujinx.Ava.Common.Locale
 {
-    internal class LocaleExtension : MarkupExtension
+    internal class LocaleExtension(LocaleKeys key) : MarkupExtension
     {
-        public LocaleExtension(LocaleKeys key)
-        {
-            Key = key;
-        }
-
-        public LocaleKeys Key { get; }
+        public LocaleKeys Key { get; } = key;
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            LocaleKeys keyToUse = Key;
-
             var builder = new CompiledBindingPathBuilder();
 
-            builder
-                .Property(new ClrPropertyInfo("Item",
-                obj => (LocaleManager.Instance[keyToUse]),
-                null,
-                typeof(string)), (weakRef, iPropInfo) =>
-                {
-                    return PropertyInfoAccessorFactory.CreateInpcPropertyAccessor(weakRef, iPropInfo);
-                });
+            builder.Property(
+                new ClrPropertyInfo("Item", 
+                    _ => LocaleManager.Instance[Key], 
+                    null, 
+                    typeof(string)
+                    ),
+                PropertyInfoAccessorFactory.CreateInpcPropertyAccessor);
 
-            var path = builder.Build();
-
-            var binding = new CompiledBindingExtension(path)
+            var binding = new CompiledBindingExtension(builder.Build())
             {
                 Source = LocaleManager.Instance
             };

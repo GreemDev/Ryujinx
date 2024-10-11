@@ -11,7 +11,7 @@ namespace Ryujinx.UI.Common.Helper
 {
     public static partial class FileAssociationHelper
     {
-        private static readonly string[] _fileExtensions = { ".nca", ".nro", ".nso", ".nsp", ".xci" };
+        private static readonly string[] _fileExtensions = [".nca", ".nro", ".nso", ".nsp", ".xci"];
 
         [SupportedOSPlatform("linux")]
         private static readonly string _mimeDbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local", "share", "mime");

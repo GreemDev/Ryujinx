@@ -40,7 +40,7 @@ namespace Ryujinx.UI.Common.SystemInfo
                 }
             }
 
-            return Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER").Trim();
+            return Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER")?.Trim();
         }
 
         [StructLayout(LayoutKind.Sequential)]

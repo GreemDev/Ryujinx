@@ -47,15 +47,9 @@ namespace Ryujinx.Common
         }
     }
 
-    public class ReactiveEventArgs<T>
+    public class ReactiveEventArgs<T>(T oldValue, T newValue)
     {
-        public T OldValue { get; }
-        public T NewValue { get; }
-
-        public ReactiveEventArgs(T oldValue, T newValue)
-        {
-            OldValue = oldValue;
-            NewValue = newValue;
-        }
+        public T OldValue { get; } = oldValue;
+        public T NewValue { get; } = newValue;
     }
 }

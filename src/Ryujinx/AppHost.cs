@@ -825,7 +825,7 @@ namespace Ryujinx.Ava
             {
                 renderer = new VulkanRenderer(
                     Vk.GetApi(),
-                    (RendererHost.EmbeddedWindow as EmbeddedWindowVulkan).CreateSurface,
+                    (RendererHost.EmbeddedWindow as EmbeddedWindowVulkan)!.CreateSurface,
                     VulkanHelper.GetRequiredInstanceExtensions,
                     ConfigurationState.Instance.Graphics.PreferredGpu.Value);
             }
@@ -845,36 +845,39 @@ namespace Ryujinx.Ava
             Logger.Info?.PrintMsg(LogClass.Gpu, $"Backend Threading ({threadingMode}): {isGALThreaded}");
 
             // Initialize Configuration.
-            var memoryConfiguration = ConfigurationState.Instance.System.ExpandRam.Value ? MemoryConfiguration.MemoryConfiguration8GiB : MemoryConfiguration.MemoryConfiguration4GiB;
+            var memoryConfiguration = ConfigurationState.Instance.System.ExpandRam 
+                ? MemoryConfiguration.MemoryConfiguration8GiB 
+                : MemoryConfiguration.MemoryConfiguration4GiB;
 
-            HLEConfiguration configuration = new(VirtualFileSystem,
-                                                 _viewModel.LibHacHorizonManager,
-                                                 ContentManager,
-                                                 _accountManager,
-                                                 _userChannelPersistence,
-                                                 renderer,
-                                                 InitializeAudio(),
-                                                 memoryConfiguration,
-                                                 _viewModel.UiHandler,
-                                                 (SystemLanguage)ConfigurationState.Instance.System.Language.Value,
-                                                 (RegionCode)ConfigurationState.Instance.System.Region.Value,
-                                                 ConfigurationState.Instance.Graphics.EnableVsync,
-                                                 ConfigurationState.Instance.System.EnableDockedMode,
-                                                 ConfigurationState.Instance.System.EnablePtc,
-                                                 ConfigurationState.Instance.System.EnableInternetAccess,
-                                                 ConfigurationState.Instance.System.EnableFsIntegrityChecks ? IntegrityCheckLevel.ErrorOnInvalid : IntegrityCheckLevel.None,
-                                                 ConfigurationState.Instance.System.FsGlobalAccessLogMode,
-                                                 ConfigurationState.Instance.System.SystemTimeOffset,
-                                                 ConfigurationState.Instance.System.TimeZone,
-                                                 ConfigurationState.Instance.System.MemoryManagerMode,
-                                                 ConfigurationState.Instance.System.IgnoreMissingServices,
-                                                 ConfigurationState.Instance.Graphics.AspectRatio,
-                                                 ConfigurationState.Instance.System.AudioVolume,
-                                                 ConfigurationState.Instance.System.UseHypervisor,
-                                                 ConfigurationState.Instance.Multiplayer.LanInterfaceId.Value,
-                                                 ConfigurationState.Instance.Multiplayer.Mode);
-
-            Device = new Switch(configuration);
+            Device = new Switch(new HLEConfiguration(
+                VirtualFileSystem,
+                _viewModel.LibHacHorizonManager,
+                ContentManager,
+                _accountManager,
+                _userChannelPersistence,
+                renderer,
+                InitializeAudio(),
+                memoryConfiguration,
+                _viewModel.UiHandler,
+                (SystemLanguage)ConfigurationState.Instance.System.Language.Value,
+                (RegionCode)ConfigurationState.Instance.System.Region.Value,
+                ConfigurationState.Instance.Graphics.EnableVsync,
+                ConfigurationState.Instance.System.EnableDockedMode,
+                ConfigurationState.Instance.System.EnablePtc,
+                ConfigurationState.Instance.System.EnableInternetAccess,
+                ConfigurationState.Instance.System.EnableFsIntegrityChecks ? IntegrityCheckLevel.ErrorOnInvalid : IntegrityCheckLevel.None,
+                ConfigurationState.Instance.System.FsGlobalAccessLogMode,
+                ConfigurationState.Instance.System.SystemTimeOffset, 
+                ConfigurationState.Instance.System.TimeZone,
+                ConfigurationState.Instance.System.MemoryManagerMode,
+                ConfigurationState.Instance.System.IgnoreMissingServices,
+                ConfigurationState.Instance.Graphics.AspectRatio,
+                ConfigurationState.Instance.System.AudioVolume,
+                ConfigurationState.Instance.System.UseHypervisor,
+                ConfigurationState.Instance.Multiplayer.LanInterfaceId,
+                ConfigurationState.Instance.Multiplayer.Mode
+                )
+            );
         }
 
         private static IHardwareDeviceDriver InitializeAudio()
