@@ -58,7 +58,6 @@ jobs:
   release:
     name: Release for ${{ matrix.platform.name }}
     runs-on: ${{ matrix.platform.os }}
-    timeout-minutes: ${{ vars.JOB_TIMEOUT }}
     strategy:
       matrix:
         platform:
@@ -147,7 +146,6 @@ jobs:
   macos_release:
     name: Release MacOS universal
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ vars.JOB_TIMEOUT }}
     steps:
       - uses: actions/checkout@v4
 
