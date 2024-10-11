@@ -24,6 +24,9 @@ namespace Ryujinx.Ava.UI.ViewModels
 {
     public class AmiiboWindowViewModel : BaseModel, IDisposable
     {
+        // ReSharper disable once InconsistentNaming
+        private static bool _cachedUseRandomUuid;
+
         private const string DefaultJson = "{ \"amiibo\": [] }";
         private const float AmiiboImageSize = 350f;
 
@@ -41,7 +44,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         private int _seriesSelectedIndex;
         private bool _enableScanning;
         private bool _showAllAmiibo;
-        private bool _useRandomUuid;
+        private bool _useRandomUuid = _cachedUseRandomUuid;
         private string _usage;
 
         private static readonly AmiiboJsonSerializerContext _serializerContext = new(JsonHelper.GetDefaultSerializerOptions());
@@ -82,7 +85,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             get => _useRandomUuid;
             set
             {
-                _useRandomUuid = value;
+                _cachedUseRandomUuid = _useRandomUuid = value;
 
                 OnPropertyChanged();
             }
