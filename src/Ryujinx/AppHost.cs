@@ -785,12 +785,11 @@ namespace Ryujinx.Ava
                 return false;
             }
 
-            ApplicationMetadata appMeta = ApplicationLibrary.LoadAndSaveMetaData(Device.Processes.ActiveApplication.ProgramIdText, appMetadata =>
-            {
-                appMetadata.UpdatePreGame();
-            });
+            ApplicationMetadata appMeta = ApplicationLibrary.LoadAndSaveMetaData(Device.Processes.ActiveApplication.ProgramIdText, 
+                appMetadata => appMetadata.UpdatePreGame()
+            );
 
-            DiscordIntegrationModule.SwitchToPlayingState(Device.Processes.ActiveApplication.ProgramIdText, appMeta);
+            DiscordIntegrationModule.SwitchToPlayingState(appMeta, Device.Processes.ActiveApplication);
 
             return true;
         }

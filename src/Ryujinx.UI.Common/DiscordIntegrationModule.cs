@@ -1,6 +1,8 @@
 using DiscordRPC;
 using Humanizer;
+using LibHac.Bcat;
 using Ryujinx.Common;
+using Ryujinx.HLE.Loaders.Processes;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common.Configuration;
 using System.Collections.Generic;
@@ -13,7 +15,7 @@ namespace Ryujinx.UI.Common
     {
         public static Timestamps StartedAt { get; set; }
         
-        private const string Description = "A simple, experimental Nintendo Switch emulator.";
+        private static readonly string _description = $"{ReleaseInformation.ReleaseChannelOwner}/{ReleaseInformation.ReleaseChannelRepo} {ReleaseInformation.Version}";
         private const string ApplicationId = "1293250299716173864";
 
         private const int ApplicationByteLimit = 128;
@@ -29,7 +31,7 @@ namespace Ryujinx.UI.Common
                 Assets = new Assets
                 {
                     LargeImageKey = "ryujinx",
-                    LargeImageText = Description
+                    LargeImageText = TruncateToByteLength(_description)
                 },
                 Details = "Main Menu",
                 State = "Idling",
@@ -62,19 +64,21 @@ namespace Ryujinx.UI.Common
             }
         }
 
-        public static void SwitchToPlayingState(string titleId, ApplicationMetadata appMeta)
+        public static void SwitchToPlayingState(ApplicationMetadata appMeta, ProcessResult procRes)
         {
             _discordClient?.SetPresence(new RichPresence
             {
                 Assets = new Assets
                 {
-                    LargeImageKey = _discordGameAssets.Contains(titleId.ToLower()) ? titleId : "game",
-                    LargeImageText = TruncateToByteLength(appMeta.Title),
+                    LargeImageKey = _discordGameAssets.Contains(procRes.ProgramIdText.ToLower()) ? procRes.ProgramIdText : "game",
+                    LargeImageText = TruncateToByteLength($"{appMeta.Title} | {procRes.DisplayVersion}"),
                     SmallImageKey = "ryujinx",
-                    SmallImageText = Description
+                    SmallImageText = TruncateToByteLength(_description)
                 },
                 Details = TruncateToByteLength($"Playing {appMeta.Title}"),
-                State = $"Total play time: {appMeta.TimePlayed.Humanize(2, false)}",
+                State = appMeta.LastPlayed.HasValue 
+                    ? $"Total play time: {appMeta.TimePlayed.Humanize(2, false)}" 
+                    : "Never played",
                 Timestamps = Timestamps.Now
             });
         }
