@@ -182,41 +182,33 @@ namespace Ryujinx.Ava
             UseHardwareAcceleration = ConfigurationState.Instance.EnableHardwareAcceleration.Value;
 
             // Check if graphics backend was overridden
-            if (CommandLineState.OverrideGraphicsBackend != null)
-            {
-                if (CommandLineState.OverrideGraphicsBackend.ToLower() == "opengl")
+            if (CommandLineState.OverrideGraphicsBackend is not null)
+                ConfigurationState.Instance.Graphics.GraphicsBackend.Value = CommandLineState.OverrideGraphicsBackend.ToLower() switch
                 {
-                    ConfigurationState.Instance.Graphics.GraphicsBackend.Value = GraphicsBackend.OpenGl;
-                }
-                else if (CommandLineState.OverrideGraphicsBackend.ToLower() == "vulkan")
-                {
-                    ConfigurationState.Instance.Graphics.GraphicsBackend.Value = GraphicsBackend.Vulkan;
-                }
-            }
+                    "opengl" => GraphicsBackend.OpenGl,
+                    "vulkan" => GraphicsBackend.Vulkan,
+                    _ => ConfigurationState.Instance.Graphics.GraphicsBackend
+                };
 
             // Check if docked mode was overriden.
             if (CommandLineState.OverrideDockedMode.HasValue)
-            {
                 ConfigurationState.Instance.System.EnableDockedMode.Value = CommandLineState.OverrideDockedMode.Value;
-            }
+            
 
             // Check if HideCursor was overridden.
             if (CommandLineState.OverrideHideCursor is not null)
-            {
-                ConfigurationState.Instance.HideCursor.Value = CommandLineState.OverrideHideCursor!.ToLower() switch
+                ConfigurationState.Instance.HideCursor.Value = CommandLineState.OverrideHideCursor.ToLower() switch
                 {
                     "never" => HideCursorMode.Never,
                     "onidle" => HideCursorMode.OnIdle,
                     "always" => HideCursorMode.Always,
-                    _ => ConfigurationState.Instance.HideCursor.Value,
+                    _ => ConfigurationState.Instance.HideCursor,
                 };
-            }
+            
 
             // Check if hardware-acceleration was overridden.
             if (CommandLineState.OverrideHardwareAcceleration != null)
-            {
                 UseHardwareAcceleration = CommandLineState.OverrideHardwareAcceleration.Value;
-            }
         }
 
         private static void PrintSystemInfo()

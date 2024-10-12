@@ -24,7 +24,7 @@ namespace Ryujinx.Common.Logging
         public readonly struct Log
         {
             private static readonly string _homeDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            private static readonly string _homeDirRedacted = Path.Combine(Directory.GetParent(_homeDir).FullName, "[redacted]");
+            private static readonly string _homeDirRedacted = Path.Combine(Directory.GetParent(_homeDir)!.FullName, "[redacted]");
 
             internal readonly LogLevel Level;
 
@@ -233,7 +233,7 @@ namespace Ryujinx.Common.Logging
                 case LogLevel.AccessLog : AccessLog = enabled ? new Log(LogLevel.AccessLog) : new Log?(); break;
                 case LogLevel.Stub      : Stub      = enabled ? new Log(LogLevel.Stub)      : new Log?(); break;
                 case LogLevel.Trace     : Trace     = enabled ? new Log(LogLevel.Trace)     : new Log?(); break;
-                default: throw new ArgumentException("Unknown Log Level");
+                default: throw new ArgumentException("Unknown Log Level", nameof(logLevel));
 #pragma warning restore IDE0055
             }
         }

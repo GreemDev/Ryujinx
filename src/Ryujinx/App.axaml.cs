@@ -112,7 +112,7 @@ namespace Ryujinx.Ava
             }
             catch (Exception)
             {
-                Logger.Warning?.Print(LogClass.Application, "Failed to Apply Theme. A restart is needed to apply the selected theme");
+                Logger.Warning?.Print(LogClass.Application, "Failed to apply theme. A restart is needed to apply the selected theme.");
 
                 ShowRestartDialog();
             }

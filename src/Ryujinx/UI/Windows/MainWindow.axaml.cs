@@ -443,10 +443,7 @@ namespace Ryujinx.Ava.UI.Windows
 
             Initialize();
 
-            /// <summary>
-            /// Subscribe to the ColorValuesChanged event
-            /// </summary>
-            PlatformSettings.ColorValuesChanged += OnPlatformColorValuesChanged;
+            PlatformSettings!.ColorValuesChanged += OnPlatformColorValuesChanged;
 
             ViewModel.Initialize(
                 ContentManager,
@@ -467,7 +464,7 @@ namespace Ryujinx.Ava.UI.Windows
             _appLibraryAppsSubscription?.Dispose();
             _appLibraryAppsSubscription = ApplicationLibrary.Applications
                     .Connect()
-                    .ObserveOn(SynchronizationContext.Current)
+                    .ObserveOn(SynchronizationContext.Current!)
                     .Bind(ViewModel.Applications)
                     .Subscribe();
 
@@ -656,28 +653,20 @@ namespace Ryujinx.Ava.UI.Windows
             applicationLibraryThread.Start();
         }
 
-        private Task ShowNewContentAddedDialog(int numDlcAdded, int numUpdatesAdded)
+        private void ShowNewContentAddedDialog(int numDlcAdded, int numUpdatesAdded)
         {
-            var msg = "";
+            string msg = numDlcAdded > 0 && numUpdatesAdded > 0
+                ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadDlcAndUpdateAddedMessage], numDlcAdded, numUpdatesAdded)
+                : numDlcAdded > 0
+                    ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadDlcAddedMessage], numDlcAdded)
+                    : numUpdatesAdded > 0
+                        ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadUpdateAddedMessage], numUpdatesAdded)
+                        : null;
 
-            if (numDlcAdded > 0 && numUpdatesAdded > 0)
-            {
-                msg = string.Format(LocaleManager.Instance[LocaleKeys.AutoloadDlcAndUpdateAddedMessage], numDlcAdded, numUpdatesAdded);
-            }
-            else if (numDlcAdded > 0)
-            {
-                msg = string.Format(LocaleManager.Instance[LocaleKeys.AutoloadDlcAddedMessage], numDlcAdded);
-            }
-            else if (numUpdatesAdded > 0)
-            {
-                msg = string.Format(LocaleManager.Instance[LocaleKeys.AutoloadUpdateAddedMessage], numUpdatesAdded);
-            }
-            else
-            {
-                return Task.CompletedTask;
-            }
+            if (msg is null) return;
+            
 
-            return Dispatcher.UIThread.InvokeAsync(async () =>
+            Dispatcher.UIThread.InvokeAsync(async () =>
             {
                 await ContentDialogHelper.ShowTextDialog(LocaleManager.Instance[LocaleKeys.DialogConfirmationTitle],
                     msg, "", "", "", LocaleManager.Instance[LocaleKeys.InputDialogOk], (int)Symbol.Checkmark);

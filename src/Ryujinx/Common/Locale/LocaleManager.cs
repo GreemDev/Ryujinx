@@ -57,40 +57,32 @@ namespace Ryujinx.Ava.Common.Locale
                 {
                     // Check if the localized string needs to be formatted.
                     if (_dynamicValues.TryGetValue(key, out var dynamicValue))
-                    {
                         try
                         {
                             return string.Format(value, dynamicValue);
                         }
-                        catch (Exception)
+                        catch
                         {
                             // If formatting failed use the default text instead.
                             if (_localeDefaultStrings.TryGetValue(key, out value))
-                            {
                                 try
                                 {
                                     return string.Format(value, dynamicValue);
                                 }
-                                catch (Exception)
+                                catch
                                 {
                                     // If formatting the default text failed return the key.
                                     return key.ToString();
                                 }
-                            }
                         }
-                    }
 
                     return value;
                 }
 
                 // If the locale doesn't contain the key return the default one.
-                if (_localeDefaultStrings.TryGetValue(key, out string defaultValue))
-                {
-                    return defaultValue;
-                }
-
-                // If the locale text doesn't exist return the key.
-                return key.ToString();
+                return _localeDefaultStrings.TryGetValue(key, out string defaultValue) 
+                    ? defaultValue 
+                    : key.ToString(); // If the locale text doesn't exist return the key.
             }
             set
             {
@@ -100,14 +92,12 @@ namespace Ryujinx.Ava.Common.Locale
             }
         }
 
-        public bool IsRTL()
-        {
-            return _localeLanguageCode switch
+        public bool IsRTL() =>
+            _localeLanguageCode switch
             {
                 "ar_SA" or "he_IL" => true,
                 _ => false
             };
-        }
 
         public string UpdateAndGetDynamicValue(LocaleKeys key, params object[] values)
         {
