@@ -75,15 +75,10 @@ namespace Ryujinx.Common.Utilities
 
                     if (char.IsUpper(c))
                     {
-                        if (i == 0 || char.IsUpper(name[i - 1]))
-                        {
-                            builder.Append(char.ToLowerInvariant(c));
-                        }
-                        else
-                        {
+                        if (!(i == 0 || char.IsUpper(name[i - 1])))
                             builder.Append('_');
-                            builder.Append(char.ToLowerInvariant(c));
-                        }
+
+                        builder.Append(char.ToLowerInvariant(c));
                     }
                     else
                     {

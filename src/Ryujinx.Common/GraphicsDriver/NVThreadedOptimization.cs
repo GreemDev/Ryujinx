@@ -2,6 +2,7 @@ using Ryujinx.Common.GraphicsDriver.NVAPI;
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+// ReSharper disable InconsistentNaming
 
 namespace Ryujinx.Common.GraphicsDriver
 {

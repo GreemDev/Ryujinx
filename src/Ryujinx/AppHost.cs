@@ -367,12 +367,12 @@ namespace Ryujinx.Ava
                         }
 
                         var colorType = e.IsBgra ? SKColorType.Bgra8888 : SKColorType.Rgba8888;
-                        using SKBitmap bitmap = new SKBitmap(new SKImageInfo(e.Width, e.Height, colorType, SKAlphaType.Premul));
+                        using SKBitmap bitmap = new(new SKImageInfo(e.Width, e.Height, colorType, SKAlphaType.Premul));
 
                         Marshal.Copy(e.Data, 0, bitmap.GetPixels(), e.Data.Length);
 
-                        using SKBitmap bitmapToSave = new SKBitmap(bitmap.Width, bitmap.Height);
-                        using SKCanvas canvas = new SKCanvas(bitmapToSave);
+                        using SKBitmap bitmapToSave = new(bitmap.Width, bitmap.Height);
+                        using SKCanvas canvas = new(bitmapToSave);
 
                         canvas.Clear(SKColors.Black);
 

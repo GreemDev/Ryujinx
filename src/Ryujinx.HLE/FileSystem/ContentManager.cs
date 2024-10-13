@@ -588,21 +588,15 @@ namespace Ryujinx.HLE.FileSystem
             // LibHac.NcaHeader's DecryptHeader doesn't check if HeaderKey is empty and throws InvalidDataException instead
             // So, we check it early for a better user experience.
             if (_virtualFileSystem.KeySet.HeaderKey.IsZeros())
-            {
                 throw new MissingKeyException("HeaderKey is empty. Cannot decrypt NCA headers.");
-            }
-
+            
             Dictionary<ulong, List<(NcaContentType type, string path)>> updateNcas = new();
 
             if (Directory.Exists(firmwarePackage))
-            {
                 return VerifyAndGetVersionDirectory(firmwarePackage);
-            }
-
+            
             if (!File.Exists(firmwarePackage))
-            {
                 throw new FileNotFoundException("Firmware file does not exist.");
-            }
 
             FileInfo info = new(firmwarePackage);
 
@@ -612,30 +606,22 @@ namespace Ryujinx.HLE.FileSystem
             {
                 case ".zip":
                     using (ZipArchive archive = ZipFile.OpenRead(firmwarePackage))
-                    {
                         return VerifyAndGetVersionZip(archive);
-                    }
                 case ".xci":
                     Xci xci = new(_virtualFileSystem.KeySet, file.AsStorage());
 
-                    if (xci.HasPartition(XciPartitionType.Update))
-                    {
-                        XciPartition partition = xci.OpenPartition(XciPartitionType.Update);
-
-                        return VerifyAndGetVersion(partition);
-                    }
-                    else
-                    {
+                    if (!xci.HasPartition(XciPartitionType.Update))
                         throw new InvalidFirmwarePackageException("Update not found in xci file.");
-                    }
-                default:
-                    break;
+
+                    XciPartition partition = xci.OpenPartition(XciPartitionType.Update);
+
+                    return VerifyAndGetVersion(partition);
             }
 
-            SystemVersion VerifyAndGetVersionDirectory(string firmwareDirectory)
-            {
-                return VerifyAndGetVersion(new LocalFileSystem(firmwareDirectory));
-            }
+            return null;
+
+            SystemVersion VerifyAndGetVersionDirectory(string firmwareDirectory) 
+                => VerifyAndGetVersion(new LocalFileSystem(firmwareDirectory));
 
             SystemVersion VerifyAndGetVersionZip(ZipArchive archive)
             {
@@ -925,8 +911,6 @@ namespace Ryujinx.HLE.FileSystem
 
                 return systemVersion;
             }
-
-            return null;
         }
 
         public SystemVersion GetCurrentFirmwareVersion()

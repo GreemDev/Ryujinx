@@ -75,12 +75,11 @@ namespace Ryujinx.UI.Common.Helper
 
                             return true;
                         }
-                        catch (Exception) { }
+                        catch
+                        {
+                            // ignored
+                        }
                     }
-
-                    outError = error;
-
-                    return false;
                 }
             }
 
@@ -96,19 +95,15 @@ namespace Ryujinx.UI.Common.Helper
                 string baseApplicationExtension = Path.GetExtension(baseApplicationPath).ToLowerInvariant();
 
                 // NOTE: We don't force homebrew developers to install a system firmware.
-                if (baseApplicationExtension == ".nro" || baseApplicationExtension == ".nso")
-                {
-                    error = UserError.Success;
+                if (baseApplicationExtension is not (".nro" or ".nso"))
+                    return IsFirmwareValid(contentManager, out error);
 
-                    return true;
-                }
-
-                return IsFirmwareValid(contentManager, out error);
+                error = UserError.Success;
             }
 
             error = UserError.ApplicationNotFound;
 
-            return false;
+            return error is UserError.Success;
         }
     }
 }

@@ -87,10 +87,7 @@ namespace Ryujinx.UI.Common.Helper
 
             foreach (string path in titleUpdateMetadata.Paths)
             {
-                if (!File.Exists(path))
-                {
-                    continue;
-                }
+                if (!File.Exists(path)) continue;
 
                 try
                 {
@@ -99,22 +96,15 @@ namespace Ryujinx.UI.Common.Helper
                     Dictionary<ulong, ContentMetaData> updates =
                         pfs.GetContentData(ContentMetaType.Patch, vfs, checkLevel);
 
-                    Nca patchNca = null;
-                    Nca controlNca = null;
-
                     if (!updates.TryGetValue(applicationIdBase, out ContentMetaData content))
-                    {
                         continue;
-                    }
 
-                    patchNca = content.GetNcaByType(vfs.KeySet, ContentType.Program);
-                    controlNca = content.GetNcaByType(vfs.KeySet, ContentType.Control);
+                    Nca patchNca = content.GetNcaByType(vfs.KeySet, ContentType.Program);
+                    Nca controlNca = content.GetNcaByType(vfs.KeySet, ContentType.Control);
 
-                    if (controlNca == null || patchNca == null)
-                    {
+                    if (controlNca is null || patchNca is null)
                         continue;
-                    }
-
+                    
                     ApplicationControlProperty controlData = new();
 
                     using UniqueRef<IFile> nacpFile = new();
@@ -138,7 +128,7 @@ namespace Ryujinx.UI.Common.Helper
                 catch (InvalidDataException)
                 {
                     Logger.Warning?.Print(LogClass.Application,
-                        $"The header key is incorrect or missing and therefore the NCA header content type check has failed. Errored File: {path}");
+                        $"The header key is incorrect or missing and therefore the NCA header content type check has failed. Malformed File: {path}");
                 }
                 catch (IOException exception)
                 {
@@ -154,9 +144,7 @@ namespace Ryujinx.UI.Common.Helper
             return result;
         }
 
-        private static string PathToGameUpdatesJson(ulong applicationIdBase)
-        {
-            return Path.Combine(AppDataManager.GamesDirPath, applicationIdBase.ToString("x16"), "updates.json");
-        }
+        private static string PathToGameUpdatesJson(ulong applicationIdBase) 
+            => Path.Combine(AppDataManager.GamesDirPath, applicationIdBase.ToString("x16"), "updates.json");
     }
 }
