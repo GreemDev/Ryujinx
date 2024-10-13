@@ -63,7 +63,7 @@ namespace Ryujinx.HLE.HOS.Services.Mii
 
         public CreateId MakeCreateId()
         {
-            UInt128 value = UInt128Utils.CreateRandom();
+            UInt128 value = Random.Shared.NextUInt128();
 
             // Ensure the random ID generated is valid as a create id.
             value &= ~new UInt128(0xC0, 0);
