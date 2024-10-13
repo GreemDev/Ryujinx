@@ -7,6 +7,7 @@ using FluentAvalonia.UI.Controls;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Ava.UI.ViewModels;
+using Ryujinx.Common;
 using Ryujinx.UI.Common.Helper;
 using System.Threading.Tasks;
 using Button = Avalonia.Controls.Button;
@@ -20,6 +21,9 @@ namespace Ryujinx.Ava.UI.Windows
             DataContext = new AboutWindowViewModel();
 
             InitializeComponent();
+
+            GitHubRepoButton.Tag =
+                $"https://github.com/{ReleaseInformation.ReleaseChannelOwner}/{ReleaseInformation.ReleaseChannelRepo}";
         }
 
         public static async Task Show()
@@ -46,9 +50,9 @@ namespace Ryujinx.Ava.UI.Windows
 
         private void Button_OnClick(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button)
+            if (sender is Button { Tag: { } url })
             {
-                OpenHelper.OpenUrl(button.Tag.ToString());
+                OpenHelper.OpenUrl(url.ToString());
             }
         }
 

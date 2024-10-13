@@ -43,8 +43,7 @@ namespace Ryujinx.Ava.UI.Windows
         {
             if (ViewModel.AmiiboSelectedIndex > -1)
             {
-                AmiiboApi amiibo = ViewModel.AmiiboList[ViewModel.AmiiboSelectedIndex];
-                ScannedAmiibo = amiibo;
+                ScannedAmiibo = ViewModel.AmiiboList[ViewModel.AmiiboSelectedIndex];
                 IsScanned = true;
                 Close();
             }

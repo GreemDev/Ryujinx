@@ -118,7 +118,7 @@
                     HorizontalAlignment="Center"
                     Orientation="Horizontal"
                     Spacing="10">
-                    <Button
+                    <Button Name="GitHubRepoButton"
                         MinWidth="30"
                         MinHeight="30"
                         MaxWidth="30"
@@ -127,7 +127,6 @@
                         Background="Transparent"
                         Click="Button_OnClick"
                         CornerRadius="15"
-                        Tag="https://github.com/GreemDev/Ryujinx"
                         ToolTip.Tip="{locale:Locale AboutGithubUrlTooltipMessage}">
                         <Image Source="{Binding GithubLogo}" />
                     </Button>
@@ -140,7 +139,7 @@
                         Background="Transparent"
                         Click="Button_OnClick"
                         CornerRadius="15"
-                        Tag="https://discordapp.com/invite/N2FmfVc"
+                        Tag="https://discord.gg/dHPrkBkkyA"
                         ToolTip.Tip="{locale:Locale AboutDiscordUrlTooltipMessage}">
                         <Image Source="{Binding DiscordLogo}" />
                     </Button>

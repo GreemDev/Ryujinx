@@ -15,7 +15,7 @@ namespace Ryujinx.UI.Common
     {
         public static Timestamps StartedAt { get; set; }
         
-        private static readonly string _description = $"{ReleaseInformation.ReleaseChannelOwner}/{ReleaseInformation.ReleaseChannelRepo} {ReleaseInformation.Version}";
+        private static readonly string _description = $"v{ReleaseInformation.Version} {ReleaseInformation.ReleaseChannelOwner}/{ReleaseInformation.ReleaseChannelRepo}@{ReleaseInformation.BuildGitHash}";
         private const string ApplicationId = "1293250299716173864";
 
         private const int ApplicationByteLimit = 128;
@@ -70,7 +70,7 @@ namespace Ryujinx.UI.Common
             {
                 Assets = new Assets
                 {
-                    LargeImageKey = _discordGameAssets.Contains(procRes.ProgramIdText.ToLower()) ? procRes.ProgramIdText : "game",
+                    LargeImageKey = _discordGameAssetKeys.Contains(procRes.ProgramIdText.ToLower()) ? procRes.ProgramIdText : "game",
                     LargeImageText = TruncateToByteLength($"{appMeta.Title} | {procRes.DisplayVersion}"),
                     SmallImageKey = "ryujinx",
                     SmallImageText = TruncateToByteLength(_description)
@@ -115,11 +115,12 @@ namespace Ryujinx.UI.Common
             _discordClient?.Dispose();
         }
 
-        private static readonly string[] _discordGameAssets = [
+        private static readonly string[] _discordGameAssetKeys = [
             "01002da013484000", // The Legend of Zelda: Skyward Sword HD
             "01007ef00011e000", // The Legend of Zelda: Breath of the Wild
             "0100f2c0115b6000", // The Legend of Zelda: Tears of the Kingdom
             "01008cf01baac000", // The Legend of Zelda: Echoes of Wisdom
+            "01006bb00c6f0000", // The Legend of Zelda: Link's Awakening
 
             "0100000000010000", // SUPER MARIO ODYSSEY
             "010015100b514000", // Super Mario Bros. Wonder
@@ -127,6 +128,9 @@ namespace Ryujinx.UI.Common
             "010049900f546000", // Super Mario 3D All-Stars
             "010028600ebda000", // Super Mario 3D World + Bowser's Fury
             "0100ecd018ebe000", // Paper Mario: The Thousand-Year Door
+
+            "010048701995e000", // Luigi's Mansion 2 HD
+            "0100dca0064a6000", // Luigi's Mansion 3
 
             "01008f6008c5e000", // Pokémon Violet
             "0100abf008968000", // Pokémon Sword
@@ -137,10 +141,11 @@ namespace Ryujinx.UI.Common
             "0100aa80194b0000", // Pikmin 1
             "0100d680194b2000", // Pikmin 2
             "0100f4c009322000", // Pikmin 3 Deluxe
-            "0100b7c00933a000", // Pikmin
+            "0100b7c00933a000", // Pikmin 4
 
             "0100c2500fc20000", // Splatoon 3
             "0100ba0018500000", // Splatoon 3: Splatfest World Premiere
+            "01007820196a6000", // Red Dead Redemption
             "0100744001588000", // Cars 3: Driven to Win
             "01006f8002326000", // Animal Crossing: New Horizons
             "0100853015e86000", // No Man's Sky

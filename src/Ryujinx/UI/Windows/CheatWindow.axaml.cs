@@ -51,7 +51,7 @@ namespace Ryujinx.Ava.UI.Windows
 
             _enabledCheatsPath = Path.Combine(titleModsPath, "cheats", "enabled.txt");
 
-            string[] enabled = Array.Empty<string>();
+            string[] enabled = [];
 
             if (File.Exists(_enabledCheatsPath))
             {
@@ -101,24 +101,13 @@ namespace Ryujinx.Ava.UI.Windows
         public void Save()
         {
             if (NoCheatsFound)
-            {
                 return;
-            }
 
-            List<string> enabledCheats = new();
+            var enabledCheats = LoadedCheats.SelectMany(it => it.SubNodes)
+                .Where(it => it.IsEnabled)
+                .Select(it => it.BuildIdKey);
 
-            foreach (var cheats in LoadedCheats)
-            {
-                foreach (var cheat in cheats.SubNodes)
-                {
-                    if (cheat.IsEnabled)
-                    {
-                        enabledCheats.Add(cheat.BuildIdKey);
-                    }
-                }
-            }
-
-            Directory.CreateDirectory(Path.GetDirectoryName(_enabledCheatsPath));
+            Directory.CreateDirectory(Path.GetDirectoryName(_enabledCheatsPath)!);
 
             File.WriteAllLines(_enabledCheatsPath, enabledCheats);
 

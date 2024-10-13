@@ -27,7 +27,7 @@ namespace Ryujinx.HLE
         public TamperMachine TamperMachine { get; }
         public IHostUIHandler UIHandler { get; }
 
-        public bool EnableDeviceVsync { get; set; } = true;
+        public bool EnableDeviceVsync { get; set; }
 
         public bool IsFrameAvailable => Gpu.Window.IsFrameAvailable;
 
