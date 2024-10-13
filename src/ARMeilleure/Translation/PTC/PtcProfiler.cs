@@ -209,7 +209,7 @@ namespace ARMeilleure.Translation.PTC
 
                 Hash128 expectedHash = DeserializeStructure<Hash128>(stream);
 
-                Hash128 actualHash = XXHash128.ComputeHash(GetReadOnlySpan(stream));
+                Hash128 actualHash = Hash128.ComputeHash(GetReadOnlySpan(stream));
 
                 if (actualHash != expectedHash)
                 {
@@ -313,7 +313,7 @@ namespace ARMeilleure.Translation.PTC
                 Debug.Assert(stream.Position == stream.Length);
 
                 stream.Seek(Unsafe.SizeOf<Hash128>(), SeekOrigin.Begin);
-                Hash128 hash = XXHash128.ComputeHash(GetReadOnlySpan(stream));
+                Hash128 hash = Hash128.ComputeHash(GetReadOnlySpan(stream));
 
                 stream.Seek(0L, SeekOrigin.Begin);
                 SerializeStructure(stream, hash);
@@ -374,14 +374,14 @@ namespace ARMeilleure.Translation.PTC
             {
                 Span<OuterHeader> spanHeader = MemoryMarshal.CreateSpan(ref this, 1);
 
-                HeaderHash = XXHash128.ComputeHash(MemoryMarshal.AsBytes(spanHeader)[..(Unsafe.SizeOf<OuterHeader>() - Unsafe.SizeOf<Hash128>())]);
+                HeaderHash = Hash128.ComputeHash(MemoryMarshal.AsBytes(spanHeader)[..(Unsafe.SizeOf<OuterHeader>() - Unsafe.SizeOf<Hash128>())]);
             }
 
             public bool IsHeaderValid()
             {
                 Span<OuterHeader> spanHeader = MemoryMarshal.CreateSpan(ref this, 1);
 
-                return XXHash128.ComputeHash(MemoryMarshal.AsBytes(spanHeader)[..(Unsafe.SizeOf<OuterHeader>() - Unsafe.SizeOf<Hash128>())]) == HeaderHash;
+                return Hash128.ComputeHash(MemoryMarshal.AsBytes(spanHeader)[..(Unsafe.SizeOf<OuterHeader>() - Unsafe.SizeOf<Hash128>())]) == HeaderHash;
             }
         }
 

@@ -223,7 +223,7 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed.Blender
 
             foreach (var entry in Table)
             {
-                Hash128 hash = XXHash128.ComputeHash(MemoryMarshal.Cast<uint, byte>(entry.Code));
+                Hash128 hash = Hash128.ComputeHash(MemoryMarshal.Cast<uint, byte>(entry.Code));
 
                 string[] constants = new string[entry.Constants != null ? entry.Constants.Length : 0];
 
