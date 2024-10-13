@@ -102,9 +102,7 @@ jobs:
         if: matrix.platform.os == 'windows-latest'
         run: |
           pushd publish_ava
-          cp publish/Ryujinx.exe publish/Ryujinx.Ava.exe
           7z a ../release_output/ryujinx-${{ steps.version_info.outputs.build_version }}-${{ matrix.platform.zip_os_name }}.zip publish
-          7z a ../release_output/test-ava-ryujinx-${{ steps.version_info.outputs.build_version }}-${{ matrix.platform.zip_os_name }}.zip publish
           popd
 
           pushd publish_sdl2_headless
@@ -116,10 +114,8 @@ jobs:
         if: matrix.platform.os == 'ubuntu-latest'
         run: |
           pushd publish_ava
-          cp publish/Ryujinx publish/Ryujinx.Ava
-          chmod +x publish/Ryujinx.sh publish/Ryujinx.Ava publish/Ryujinx
+          chmod +x publish/Ryujinx.sh publish/Ryujinx
           tar -czvf ../release_output/ryujinx-${{ steps.version_info.outputs.build_version }}-${{ matrix.platform.zip_os_name }}.tar.gz publish
-          tar -czvf ../release_output/test-ava-ryujinx-${{ steps.version_info.outputs.build_version }}-${{ matrix.platform.zip_os_name }}.tar.gz publish
           popd
 
           pushd publish_sdl2_headless

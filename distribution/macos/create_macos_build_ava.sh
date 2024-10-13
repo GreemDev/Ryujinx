@@ -109,12 +109,6 @@ python3 "$BASE_DIR/distribution/misc/add_tar_exec.py" "$RELEASE_TAR_FILE_NAME" "
 gzip -9 < "$RELEASE_TAR_FILE_NAME" > "$RELEASE_TAR_FILE_NAME.gz"
 rm "$RELEASE_TAR_FILE_NAME"
 
-# Create legacy update package for Avalonia to not left behind old testers.
-if [ "$VERSION" != "1.1.0" ];
-then
-    cp $RELEASE_TAR_FILE_NAME.gz test-ava-ryujinx-$VERSION-macos_universal.app.tar.gz
-fi
-
 popd
 
 echo "Done"
