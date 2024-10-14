@@ -1705,7 +1705,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                Title = $"Ryujinx {Program.Version}";
+                Title = App.FormatTitle();
             });
         }
 

@@ -30,7 +30,7 @@ namespace Ryujinx.Ava.UI.Windows
 
             InitializeComponent();
 
-            Title = $"Ryujinx {Program.Version} - " + LocaleManager.Instance[LocaleKeys.CheatWindowTitle];
+            Title = App.FormatTitle(LocaleKeys.CheatWindowTitle);
         }
 
         public CheatWindow(VirtualFileSystem virtualFileSystem, string titleId, string titleName, string titlePath)
@@ -95,7 +95,7 @@ namespace Ryujinx.Ava.UI.Windows
 
             DataContext = this;
 
-            Title = $"Ryujinx {Program.Version} - " + LocaleManager.Instance[LocaleKeys.CheatWindowTitle];
+            Title = App.FormatTitle(LocaleKeys.CheatWindowTitle);
         }
 
         public void Save()

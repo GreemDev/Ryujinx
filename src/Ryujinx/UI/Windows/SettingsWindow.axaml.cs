@@ -14,7 +14,7 @@ namespace Ryujinx.Ava.UI.Windows
 
         public SettingsWindow(VirtualFileSystem virtualFileSystem, ContentManager contentManager)
         {
-            Title = $"Ryujinx {Program.Version} - {LocaleManager.Instance[LocaleKeys.Settings]}";
+            Title = App.FormatTitle(LocaleKeys.Settings);
 
             ViewModel = new SettingsViewModel(virtualFileSystem, contentManager);
             DataContext = ViewModel;
