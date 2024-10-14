@@ -31,7 +31,7 @@
             alt="">
     </a>
     <a href="https://discord.gg/dHPrkBkkyA">
-        <img src="https://img.shields.io/discord/410208534861447168?color=5865F2&label=Ryujinx&logo=discord&logoColor=white"
+        <img src="https://img.shields.io/discord/1294443224030511104?color=5865F2&label=Ryujinx&logo=discord&logoColor=white"
             alt="Discord">
     </a>
     <br>
