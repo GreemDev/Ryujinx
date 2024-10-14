@@ -1,6 +1,5 @@
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
-using Ryujinx.Input;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -8,9 +7,9 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using static SDL2.SDL;
 
-namespace Ryujinx.Headless.SDL2
+namespace Ryujinx.Input.SDL2
 {
-    class SDL2MouseDriver : IGamepadDriver
+    public class SDL2MouseDriver : IGamepadDriver
     {
         private const int CursorHideIdleTime = 5; // seconds
 
@@ -44,7 +43,7 @@ namespace Ryujinx.Headless.SDL2
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static MouseButton DriverButtonToMouseButton(uint rawButton)
         {
-            Debug.Assert(rawButton > 0 && rawButton <= (int)MouseButton.Count);
+            Debug.Assert(rawButton is > 0 and <= (int)MouseButton.Count);
 
             return (MouseButton)(rawButton - 1);
         }

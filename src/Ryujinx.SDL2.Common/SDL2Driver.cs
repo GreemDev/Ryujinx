@@ -143,7 +143,7 @@ namespace Ryujinx.SDL2.Common
 
                 OnJoystickDisconnected?.Invoke(evnt.cbutton.which);
             }
-            else if (evnt.type == SDL_EventType.SDL_WINDOWEVENT || evnt.type == SDL_EventType.SDL_MOUSEBUTTONDOWN || evnt.type == SDL_EventType.SDL_MOUSEBUTTONUP)
+            else if (evnt.type is SDL_EventType.SDL_WINDOWEVENT or SDL_EventType.SDL_MOUSEBUTTONDOWN or SDL_EventType.SDL_MOUSEBUTTONUP)
             {
                 if (_registeredWindowHandlers.TryGetValue(evnt.window.windowID, out Action<SDL_Event> handler))
                 {

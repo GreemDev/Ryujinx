@@ -10,6 +10,7 @@ using Ryujinx.HLE.HOS.Services.Am.AppletOE.ApplicationProxyService.ApplicationPr
 using Ryujinx.HLE.UI;
 using Ryujinx.Input;
 using Ryujinx.Input.HLE;
+using Ryujinx.Input.SDL2;
 using Ryujinx.SDL2.Common;
 using System;
 using System.Collections.Concurrent;

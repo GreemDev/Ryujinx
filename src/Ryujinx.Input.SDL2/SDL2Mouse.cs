@@ -1,12 +1,11 @@
 using Ryujinx.Common.Configuration.Hid;
-using Ryujinx.Input;
 using System;
 using System.Drawing;
 using System.Numerics;
 
-namespace Ryujinx.Headless.SDL2
+namespace Ryujinx.Input.SDL2
 {
-    class SDL2Mouse : IMouse
+    public class SDL2Mouse : IMouse
     {
         private SDL2MouseDriver _driver;
 
