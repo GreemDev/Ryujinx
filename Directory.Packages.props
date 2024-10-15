@@ -3,18 +3,18 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Avalonia" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Desktop" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Markup.Xaml.Loader" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Svg" Version="11.0.0.18" />
-    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.18" />
+    <PackageVersion Include="Avalonia" Version="11.1.4" />
+    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.1.4" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.1.4" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.1.4" />
+    <PackageVersion Include="Avalonia.Markup.Xaml.Loader" Version="11.1.4" />
+    <PackageVersion Include="Avalonia.Svg" Version="11.1.0.1" />
+    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.1.0.1" />
     <PackageVersion Include="CommandLineParser" Version="2.9.1" />
     <PackageVersion Include="Concentus" Version="2.2.0" />
     <PackageVersion Include="DiscordRichPresence" Version="1.2.1.24" />
     <PackageVersion Include="DynamicData" Version="9.0.4" />
-    <PackageVersion Include="FluentAvaloniaUI" Version="2.0.5" />
+    <PackageVersion Include="FluentAvaloniaUI" Version="2.1.0" />
     <PackageVersion Include="Humanizer" Version="2.14.1" />
     <PackageVersion Include="LibHac" Version="0.19.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
@@ -40,7 +40,7 @@
     <PackageVersion Include="Silk.NET.Vulkan" Version="2.21.0" />
     <PackageVersion Include="Silk.NET.Vulkan.Extensions.EXT" Version="2.21.0" />
     <PackageVersion Include="Silk.NET.Vulkan.Extensions.KHR" Version="2.21.0" />
-    <PackageVersion Include="SkiaSharp" Version="2.88.7" />
+    <PackageVersion Include="SkiaSharp" Version="2.88.8" />
     <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="2.88.7" />
     <PackageVersion Include="SPB" Version="0.0.4-build32" />
     <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
