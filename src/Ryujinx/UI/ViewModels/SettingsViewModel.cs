@@ -150,6 +150,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         public bool EnableMouse { get; set; }
         public bool EnableVsync { get; set; }
         public bool EnablePptc { get; set; }
+        public bool EnableLowPowerPptc { get; set; }
         public bool EnableInternetAccess { get; set; }
         public bool EnableFsIntegrityChecks { get; set; }
         public bool IgnoreMissingServices { get; set; }
@@ -448,6 +449,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
             // CPU
             EnablePptc = config.System.EnablePtc;
+            EnableLowPowerPptc = config.System.EnableLowPowerPtc;
             MemoryMode = (int)config.System.MemoryManagerMode.Value;
             UseHypervisor = config.System.UseHypervisor;
 
@@ -548,6 +550,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
             // CPU
             config.System.EnablePtc.Value = EnablePptc;
+            config.System.EnableLowPowerPtc.Value = EnableLowPowerPptc;
             config.System.MemoryManagerMode.Value = (MemoryManagerMode)MemoryMode;
             config.System.UseHypervisor.Value = UseHypervisor;
 

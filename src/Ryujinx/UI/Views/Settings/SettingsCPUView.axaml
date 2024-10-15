@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="Ryujinx.Ava.UI.Views.Settings.SettingsCPUView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -31,6 +31,10 @@
                     <CheckBox IsChecked="{Binding EnablePptc}">
                         <TextBlock Text="{locale:Locale SettingsTabSystemEnablePptc}"
                                    ToolTip.Tip="{locale:Locale PptcToggleTooltip}" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding EnableLowPowerPptc}">
+                        <TextBlock Text="Low-power PPTC cache"
+                                   ToolTip.Tip="Load the PPTC cache using a third of the amount of cores." />
                     </CheckBox>
                 </StackPanel>
                 <Separator Height="1" />

@@ -406,6 +406,8 @@ namespace Ryujinx.Ava
 
         public void Start()
         {
+            ARMeilleure.Optimizations.EcoFriendly = ConfigurationState.Instance.System.EnableLowPowerPtc;
+
             if (OperatingSystem.IsWindows())
             {
                 _windowsMultimediaTimerResolution = new WindowsMultimediaTimerResolution(1);

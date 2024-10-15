@@ -5,6 +5,9 @@ namespace ARMeilleure
 
     public static class Optimizations
     {
+        // low-core count PPTC
+        public static bool EcoFriendly { get; set; } = false;
+
         public static bool FastFP { get; set; } = true;
 
         public static bool AllowLcqInFunctionTable { get; set; } = true;

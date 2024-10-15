@@ -328,6 +328,11 @@ namespace Ryujinx.UI.Common.Configuration
             public ReactiveObject<bool> EnablePtc { get; private set; }
 
             /// <summary>
+            /// Enables or disables low-power profiled translation cache persistency loading
+            /// </summary>
+            public ReactiveObject<bool> EnableLowPowerPtc { get; private set; }
+
+            /// <summary>
             /// Enables or disables guest Internet access
             /// </summary>
             public ReactiveObject<bool> EnableInternetAccess { get; private set; }
@@ -382,6 +387,8 @@ namespace Ryujinx.UI.Common.Configuration
                 EnableDockedMode.Event += static (sender, e) => LogValueChange(e, nameof(EnableDockedMode));
                 EnablePtc = new ReactiveObject<bool>();
                 EnablePtc.Event += static (sender, e) => LogValueChange(e, nameof(EnablePtc));
+                EnableLowPowerPtc = new ReactiveObject<bool>();
+                EnableLowPowerPtc.Event += static (sender, e) => LogValueChange(e, nameof(EnableLowPowerPtc));
                 EnableInternetAccess = new ReactiveObject<bool>();
                 EnableInternetAccess.Event += static (sender, e) => LogValueChange(e, nameof(EnableInternetAccess));
                 EnableFsIntegrityChecks = new ReactiveObject<bool>();
@@ -706,6 +713,7 @@ namespace Ryujinx.UI.Common.Configuration
                 EnableMacroHLE = Graphics.EnableMacroHLE,
                 EnableColorSpacePassthrough = Graphics.EnableColorSpacePassthrough,
                 EnablePtc = System.EnablePtc,
+                EnableLowPowerPtc = System.EnableLowPowerPtc,
                 EnableInternetAccess = System.EnableInternetAccess,
                 EnableFsIntegrityChecks = System.EnableFsIntegrityChecks,
                 FsGlobalAccessLogMode = System.FsGlobalAccessLogMode,
@@ -1495,6 +1503,15 @@ namespace Ryujinx.UI.Common.Configuration
                 configurationFileUpdated = true;
             }
 
+            if (configurationFileFormat.Version < 53)
+            {
+                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 53.");
+
+                configurationFileFormat.EnableLowPowerPtc = false;
+
+                configurationFileUpdated = true;
+            }
+
             Logger.EnableFileLog.Value = configurationFileFormat.EnableFileLog;
             Graphics.ResScale.Value = configurationFileFormat.ResScale;
             Graphics.ResScaleCustom.Value = configurationFileFormat.ResScaleCustom;
@@ -1534,6 +1551,7 @@ namespace Ryujinx.UI.Common.Configuration
             Graphics.EnableMacroHLE.Value = configurationFileFormat.EnableMacroHLE;
             Graphics.EnableColorSpacePassthrough.Value = configurationFileFormat.EnableColorSpacePassthrough;
             System.EnablePtc.Value = configurationFileFormat.EnablePtc;
+            System.EnableLowPowerPtc.Value = configurationFileFormat.EnableLowPowerPtc;
             System.EnableInternetAccess.Value = configurationFileFormat.EnableInternetAccess;
             System.EnableFsIntegrityChecks.Value = configurationFileFormat.EnableFsIntegrityChecks;
             System.FsGlobalAccessLogMode.Value = configurationFileFormat.FsGlobalAccessLogMode;
