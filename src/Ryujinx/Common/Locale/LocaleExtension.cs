@@ -16,7 +16,7 @@ namespace Ryujinx.Ava.Common.Locale
 
             builder.Property(
                 new ClrPropertyInfo("Item", 
-                    _ => LocaleManager.Instance[Key], 
+                    _ => LocaleManager.Instance[Key],
                     null, 
                     typeof(string)
                     ),

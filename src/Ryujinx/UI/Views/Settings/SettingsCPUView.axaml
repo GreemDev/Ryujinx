@@ -33,8 +33,8 @@
                                    ToolTip.Tip="{locale:Locale PptcToggleTooltip}" />
                     </CheckBox>
                     <CheckBox IsChecked="{Binding EnableLowPowerPptc}">
-                        <TextBlock Text="Low-power PPTC cache"
-                                   ToolTip.Tip="Load the PPTC cache using a third of the amount of cores." />
+                        <TextBlock Text="{locale:Locale SettingsTabSystemEnableLowPowerPptc}"
+                                   ToolTip.Tip="{locale:Locale LowPowerPptcToggleTooltip}" />
                     </CheckBox>
                 </StackPanel>
                 <Separator Height="1" />
