@@ -6,7 +6,6 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using DynamicData;
-using DynamicData.Alias;
 using DynamicData.Binding;
 using FluentAvalonia.UI.Controls;
 using LibHac.Common;
@@ -115,12 +114,13 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public MainWindowViewModel()
         {
-            Applications = new ObservableCollectionExtended<ApplicationData>();
+            Applications = [];
 
             Applications.ToObservableChangeSet()
                 .Filter(Filter)
                 .Sort(GetComparer())
-                .Bind(out _appsObservableList).AsObservableList();
+                .Bind(out _appsObservableList)
+                .AsObservableList();
 
             _rendererWaitEvent = new AutoResetEvent(false);
 
@@ -1114,7 +1114,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         private void ProgressHandler<T>(T state, int current, int total) where T : Enum
         {
-            Dispatcher.UIThread.Post((() =>
+            Dispatcher.UIThread.Post(() =>
             {
                 ProgressMaximum = total;
                 ProgressValue = current;
@@ -1160,7 +1160,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                     default:
                         throw new ArgumentException($"Unknown Progress Handler type {typeof(T)}");
                 }
-            }));
+            });
         }
 
         private void PrepareLoadScreen()
@@ -1231,15 +1231,15 @@ namespace Ryujinx.Ava.UI.ViewModels
             {
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    Application.Current.Styles.TryGetResource(args.VSyncEnabled
+                    Application.Current!.Styles.TryGetResource(args.VSyncEnabled
                         ? "VsyncEnabled"
                         : "VsyncDisabled",
                         Application.Current.ActualThemeVariant,
                         out object color);
 
-                    if (color is not null)
+                    if (color is Color clr)
                     {
-                        VsyncColor = new SolidColorBrush((Color)color);
+                        VsyncColor = new SolidColorBrush(clr);
                     }
 
                     DockedStatusText = args.DockedMode;
@@ -1534,14 +1534,12 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public async Task LoadDlcFromFolder()
         {
-            await LoadContentFromFolder(LocaleKeys.AutoloadDlcAddedMessage,
-                dirs => ApplicationLibrary.AutoLoadDownloadableContents(dirs));
+            await LoadContentFromFolder(LocaleKeys.AutoloadDlcAddedMessage, ApplicationLibrary.AutoLoadDownloadableContents);
         }
 
         public async Task LoadTitleUpdatesFromFolder()
         {
-            await LoadContentFromFolder(LocaleKeys.AutoloadUpdateAddedMessage,
-                dirs => ApplicationLibrary.AutoLoadTitleUpdates(dirs));
+            await LoadContentFromFolder(LocaleKeys.AutoloadUpdateAddedMessage, ApplicationLibrary.AutoLoadTitleUpdates);
         }
 
         public async Task OpenFolder()
@@ -1655,7 +1653,10 @@ namespace Ryujinx.Ava.UI.ViewModels
             {
                 version = ContentManager.GetCurrentFirmwareVersion();
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+                // ignored
+            }
 
             bool hasApplet = false;
 
@@ -1752,12 +1753,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                 string mainMessage = LocaleManager.Instance[LocaleKeys.DialogPerformanceCheckLoggingEnabledMessage];
                 string secondaryMessage = LocaleManager.Instance[LocaleKeys.DialogPerformanceCheckLoggingEnabledConfirmMessage];
 
-                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(
-                    mainMessage,
-                    secondaryMessage,
-                    LocaleManager.Instance[LocaleKeys.InputDialogYes],
-                    LocaleManager.Instance[LocaleKeys.InputDialogNo],
-                    LocaleManager.Instance[LocaleKeys.RyujinxConfirm]);
+                UserResult result = await ContentDialogHelper.CreateLocalizedConfirmationDialog(mainMessage, secondaryMessage);
 
                 if (result == UserResult.Yes)
                 {
@@ -1772,12 +1768,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                 string mainMessage = LocaleManager.Instance[LocaleKeys.DialogPerformanceCheckShaderDumpEnabledMessage];
                 string secondaryMessage = LocaleManager.Instance[LocaleKeys.DialogPerformanceCheckShaderDumpEnabledConfirmMessage];
 
-                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(
-                    mainMessage,
-                    secondaryMessage,
-                    LocaleManager.Instance[LocaleKeys.InputDialogYes],
-                    LocaleManager.Instance[LocaleKeys.InputDialogNo],
-                    LocaleManager.Instance[LocaleKeys.RyujinxConfirm]);
+                UserResult result = await ContentDialogHelper.CreateLocalizedConfirmationDialog(mainMessage, secondaryMessage);
 
                 if (result == UserResult.Yes)
                 {

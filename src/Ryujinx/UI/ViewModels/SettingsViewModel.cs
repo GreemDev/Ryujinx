@@ -455,14 +455,14 @@ namespace Ryujinx.Ava.UI.ViewModels
 
             // Graphics
             GraphicsBackendIndex = (int)config.Graphics.GraphicsBackend.Value;
-            // Physical devices are queried asynchronously hence the prefered index config value is loaded in LoadAvailableGpus().
+            // Physical devices are queried asynchronously hence the preferred index config value is loaded in LoadAvailableGpus().
             EnableShaderCache = config.Graphics.EnableShaderCache;
             EnableTextureRecompression = config.Graphics.EnableTextureRecompression;
             EnableMacroHLE = config.Graphics.EnableMacroHLE;
             EnableColorSpacePassthrough = config.Graphics.EnableColorSpacePassthrough;
             ResolutionScale = config.Graphics.ResScale == -1 ? 4 : config.Graphics.ResScale - 1;
             CustomResolutionScale = config.Graphics.ResScaleCustom;
-            MaxAnisotropy = config.Graphics.MaxAnisotropy == -1 ? 0 : (int)(MathF.Log2(config.Graphics.MaxAnisotropy));
+            MaxAnisotropy = config.Graphics.MaxAnisotropy == -1 ? 0 : (int)MathF.Log2(config.Graphics.MaxAnisotropy);
             AspectRatio = (int)config.Graphics.AspectRatio.Value;
             GraphicsBackendMultithreadingIndex = (int)config.Graphics.BackendThreading.Value;
             ShaderDumpPath = config.Graphics.ShadersDumpPath;
