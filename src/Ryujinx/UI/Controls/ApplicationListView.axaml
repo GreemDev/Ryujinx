@@ -109,7 +109,7 @@
                                     Spacing="5">
                                     <TextBlock
                                         HorizontalAlignment="Stretch"
-                                        Text="{Binding Id, StringFormat=X16}"
+                                        Text="{Binding IdString}"
                                         TextAlignment="Start"
                                         TextWrapping="Wrap" />
                                     <TextBlock
@@ -131,7 +131,7 @@
                                         TextWrapping="Wrap" />
                                     <TextBlock
                                         HorizontalAlignment="Stretch"
-                                        Text="{Binding LastPlayedString, Converter={helpers:LocalizedNeverConverter}}"
+                                        Text="{Binding LastPlayedString}"
                                         TextAlignment="End"
                                         TextWrapping="Wrap" />
                                     <TextBlock

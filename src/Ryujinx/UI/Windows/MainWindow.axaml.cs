@@ -6,6 +6,7 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 using DynamicData;
 using FluentAvalonia.UI.Controls;
+using FluentAvalonia.UI.Windowing;
 using LibHac.Tools.FsSystem;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
@@ -36,7 +37,9 @@ namespace Ryujinx.Ava.UI.Windows
 {
     public partial class MainWindow : StyleableWindow
     {
-        internal static MainWindowViewModel MainWindowViewModel { get; private set; }
+        internal static MainWindowViewModel ViewModel { get; private set; }
+
+        internal readonly AvaHostUIHandler UiHandler;
 
         private bool _isLoading;
         private bool _applicationsLoadedOnce;
@@ -46,7 +49,6 @@ namespace Ryujinx.Ava.UI.Windows
         private static string _launchPath;
         private static string _launchApplicationId;
         private static bool _startFullscreen;
-        internal readonly AvaHostUIHandler UiHandler;
         private IDisposable _appLibraryAppsSubscription;
 
         public VirtualFileSystem VirtualFileSystem { get; private set; }
@@ -57,7 +59,6 @@ namespace Ryujinx.Ava.UI.Windows
 
         public InputManager InputManager { get; private set; }
 
-        internal MainWindowViewModel ViewModel { get; private set; }
         public SettingsWindow SettingsWindow { get; set; }
 
         public static bool ShowKeyErrorOnLoad { get; set; }
@@ -68,11 +69,7 @@ namespace Ryujinx.Ava.UI.Windows
 
         public MainWindow()
         {
-            ViewModel = new MainWindowViewModel();
-
-            MainWindowViewModel = ViewModel;
-
-            DataContext = ViewModel;
+            DataContext = ViewModel = new MainWindowViewModel();
 
             InitializeComponent();
             Load();
@@ -80,6 +77,10 @@ namespace Ryujinx.Ava.UI.Windows
             UiHandler = new AvaHostUIHandler(this);
 
             ViewModel.Title = App.FormatTitle();
+
+            TitleBar.ExtendsContentIntoTitleBar = true;
+            TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
+            
 
             // NOTE: Height of MenuBar and StatusBar is not usable here, since it would still be 0 at this point.
             StatusBarHeight = StatusBarView.StatusBar.MinHeight;
@@ -105,9 +106,7 @@ namespace Ryujinx.Ava.UI.Windows
         private void OnPlatformColorValuesChanged(object sender, PlatformColorValues e)
         {
             if (Application.Current is App app)
-            {
                 app.ApplyConfiguredTheme();
-            }
         }
 
         protected override void OnClosed(EventArgs e)

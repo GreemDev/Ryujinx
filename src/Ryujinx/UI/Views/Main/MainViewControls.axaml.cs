@@ -22,9 +22,9 @@ namespace Ryujinx.Ava.UI.Views.Main
         {
             base.OnAttachedToVisualTree(e);
 
-            if (VisualRoot is MainWindow window)
+            if (VisualRoot is MainWindow)
             {
-                ViewModel = window.ViewModel;
+                ViewModel = MainWindow.ViewModel;
             }
 
             DataContext = ViewModel;
@@ -32,18 +32,14 @@ namespace Ryujinx.Ava.UI.Views.Main
 
         public void Sort_Checked(object sender, RoutedEventArgs args)
         {
-            if (sender is RadioButton button)
-            {
-                ViewModel.Sort(Enum.Parse<ApplicationSort>(button.Tag.ToString()));
-            }
+            if (sender is RadioButton { Tag: string sortStrategy })
+                ViewModel.Sort(Enum.Parse<ApplicationSort>(sortStrategy));
         }
 
         public void Order_Checked(object sender, RoutedEventArgs args)
         {
-            if (sender is RadioButton button)
-            {
-                ViewModel.Sort(button.Tag.ToString() != "Descending");
-            }
+            if (sender is RadioButton { Tag: string sortOrder })
+                ViewModel.Sort(sortOrder is not "Descending");
         }
 
         private void SearchBox_OnKeyUp(object sender, KeyEventArgs e)

@@ -244,7 +244,7 @@ namespace Ryujinx.Ava.UI.ViewModels.Input
                 _mainWindow.InputManager.GamepadDriver.OnGamepadConnected += HandleOnGamepadConnected;
                 _mainWindow.InputManager.GamepadDriver.OnGamepadDisconnected += HandleOnGamepadDisconnected;
 
-                _mainWindow.ViewModel.AppHost?.NpadManager.BlockInputUpdates();
+                MainWindow.ViewModel.AppHost?.NpadManager.BlockInputUpdates();
 
                 _isLoaded = false;
 
@@ -847,7 +847,7 @@ namespace Ryujinx.Ava.UI.ViewModels.Input
                 }
             }
 
-            _mainWindow.ViewModel.AppHost?.NpadManager.ReloadConfiguration(newConfig, ConfigurationState.Instance.Hid.EnableKeyboard, ConfigurationState.Instance.Hid.EnableMouse);
+            MainWindow.ViewModel.AppHost?.NpadManager.ReloadConfiguration(newConfig, ConfigurationState.Instance.Hid.EnableKeyboard, ConfigurationState.Instance.Hid.EnableMouse);
 
             // Atomically replace and signal input change.
             // NOTE: Do not modify InputConfig.Value directly as other code depends on the on-change event.
@@ -879,7 +879,7 @@ namespace Ryujinx.Ava.UI.ViewModels.Input
             _mainWindow.InputManager.GamepadDriver.OnGamepadConnected -= HandleOnGamepadConnected;
             _mainWindow.InputManager.GamepadDriver.OnGamepadDisconnected -= HandleOnGamepadDisconnected;
 
-            _mainWindow.ViewModel.AppHost?.NpadManager.UnblockInputUpdates();
+            MainWindow.ViewModel.AppHost?.NpadManager.UnblockInputUpdates();
 
             SelectedGamepad?.Dispose();
 

@@ -28,14 +28,14 @@ namespace Ryujinx.Ava.UI.Views.Main
                 Window = window;
             }
 
-            DataContext = Window.ViewModel;
+            DataContext = MainWindow.ViewModel;
         }
 
         private void VsyncStatus_PointerReleased(object sender, PointerReleasedEventArgs e)
         {
-            Window.ViewModel.AppHost.ToggleVSync();
+            MainWindow.ViewModel.AppHost.ToggleVSync();
 
-            Logger.Info?.Print(LogClass.Application, $"VSync toggled to: {Window.ViewModel.AppHost.Device.EnableDeviceVsync}");
+            Logger.Info?.Print(LogClass.Application, $"VSync toggled to: {MainWindow.ViewModel.AppHost.Device.EnableDeviceVsync}");
         }
 
         private void DockedStatus_PointerReleased(object sender, PointerReleasedEventArgs e)
@@ -57,9 +57,9 @@ namespace Ryujinx.Ava.UI.Views.Main
         private void VolumeStatus_OnPointerWheelChanged(object sender, PointerWheelEventArgs e)
         {
             // Change the volume by 5% at a time
-            float newValue = Window.ViewModel.Volume + (float)e.Delta.Y * 0.05f;
+            float newValue = MainWindow.ViewModel.Volume + (float)e.Delta.Y * 0.05f;
 
-            Window.ViewModel.Volume = newValue switch
+            MainWindow.ViewModel.Volume = newValue switch
             {
                 < 0 => 0,
                 > 1 => 1,

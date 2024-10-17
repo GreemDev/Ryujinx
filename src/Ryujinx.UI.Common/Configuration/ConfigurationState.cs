@@ -1,3 +1,4 @@
+using ARMeilleure;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
@@ -1645,6 +1646,8 @@ namespace Ryujinx.UI.Common.Configuration
             }
 
             Instance = new ConfigurationState();
+
+            Instance.System.EnableLowPowerPtc.Event += (_, evnt) => Optimizations.LowPower = evnt.NewValue;
         }
     }
 }

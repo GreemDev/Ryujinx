@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using Gommon;
 using LibHac.Ncm;
 using LibHac.Tools.FsSystem.NcaUtils;
 using Ryujinx.Ava.Common.Locale;
@@ -77,11 +78,9 @@ namespace Ryujinx.Ava.UI.Views.Main
 
                 MenuItem menuItem = new()
                 {
-                    Header = languageName,
-                    Command = MiniCommand.Create(() =>
-                    {
-                        MainWindowViewModel.ChangeLanguage(languageCode);
-                    }),
+                    Padding = new Thickness(10, 0, 0, 0),
+                    Header = " " + languageName,
+                    Command = MiniCommand.Create(() => MainWindowViewModel.ChangeLanguage(languageCode)),
                 };
 
                 menuItems.Add(menuItem);
@@ -99,23 +98,23 @@ namespace Ryujinx.Ava.UI.Views.Main
                 Window = window;
             }
 
-            ViewModel = Window.ViewModel;
+            ViewModel = MainWindow.ViewModel;
             DataContext = ViewModel;
         }
 
         private async void StopEmulation_Click(object sender, RoutedEventArgs e)
         {
-            await Window.ViewModel.AppHost?.ShowExitPrompt();
+            await MainWindow.ViewModel.AppHost?.ShowExitPrompt().OrCompleted()!;
         }
 
         private void PauseEmulation_Click(object sender, RoutedEventArgs e)
         {
-            Window.ViewModel.AppHost?.Pause();
+            MainWindow.ViewModel.AppHost?.Pause();
         }
 
         private void ResumeEmulation_Click(object sender, RoutedEventArgs e)
         {
-            Window.ViewModel.AppHost?.Resume();
+            MainWindow.ViewModel.AppHost?.Resume();
         }
 
         public async void OpenSettings(object sender, RoutedEventArgs e)
@@ -149,9 +148,7 @@ namespace Ryujinx.Ava.UI.Views.Main
         public async void OpenAmiiboWindow(object sender, RoutedEventArgs e)
         {
             if (!ViewModel.IsAmiiboRequested)
-            {
                 return;
-            }
 
             if (ViewModel.AppHost.Device.System.SearchingForAmiibo(out int deviceId))
             {
@@ -173,17 +170,15 @@ namespace Ryujinx.Ava.UI.Views.Main
         public async void OpenCheatManagerForCurrentApp(object sender, RoutedEventArgs e)
         {
             if (!ViewModel.IsGameRunning)
-            {
                 return;
-            }
-
+            
             string name = ViewModel.AppHost.Device.Processes.ActiveApplication.ApplicationControlProperties.Title[(int)ViewModel.AppHost.Device.System.State.DesiredTitleLanguage].NameString.ToString();
 
             await new CheatWindow(
                 Window.VirtualFileSystem,
                 ViewModel.AppHost.Device.Processes.ActiveApplication.ProgramIdText,
                 name,
-                Window.ViewModel.SelectedApplication.Path).ShowDialog(Window);
+                MainWindow.ViewModel.SelectedApplication.Path).ShowDialog(Window);
 
             ViewModel.AppHost.Device.EnableCheats();
         }
@@ -191,85 +186,50 @@ namespace Ryujinx.Ava.UI.Views.Main
         private void ScanAmiiboMenuItem_AttachedToVisualTree(object sender, VisualTreeAttachmentEventArgs e)
         {
             if (sender is MenuItem)
-            {
-                ViewModel.IsAmiiboRequested = Window.ViewModel.AppHost.Device.System.SearchingForAmiibo(out _);
-            }
+                ViewModel.IsAmiiboRequested = MainWindow.ViewModel.AppHost.Device.System.SearchingForAmiibo(out _);
         }
 
         private async void InstallFileTypes_Click(object sender, RoutedEventArgs e)
         {
             if (FileAssociationHelper.Install())
-            {
                 await ContentDialogHelper.CreateInfoDialog(LocaleManager.Instance[LocaleKeys.DialogInstallFileTypesSuccessMessage], string.Empty, LocaleManager.Instance[LocaleKeys.InputDialogOk], string.Empty, string.Empty);
-            }
             else
-            {
                 await ContentDialogHelper.CreateErrorDialog(LocaleManager.Instance[LocaleKeys.DialogInstallFileTypesErrorMessage]);
-            }
         }
 
         private async void UninstallFileTypes_Click(object sender, RoutedEventArgs e)
         {
             if (FileAssociationHelper.Uninstall())
-            {
                 await ContentDialogHelper.CreateInfoDialog(LocaleManager.Instance[LocaleKeys.DialogUninstallFileTypesSuccessMessage], string.Empty, LocaleManager.Instance[LocaleKeys.InputDialogOk], string.Empty, string.Empty);
-            }
             else
-            {
                 await ContentDialogHelper.CreateErrorDialog(LocaleManager.Instance[LocaleKeys.DialogUninstallFileTypesErrorMessage]);
-            }
         }
 
         private async void ChangeWindowSize_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is MenuItem item)
+            if (sender is not MenuItem { Tag: string resolution }) return;
+
+            (int height, int width) = resolution.Split(' ')
+                .Into(parts => (int.Parse(parts[0]), int.Parse(parts[1])));
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                int height;
-                int width;
+                ViewModel.WindowState = WindowState.Normal;
 
-                switch (item.Tag)
-                {
-                    case "720":
-                        height = 720;
-                        width = 1280;
-                        break;
+                height += (int)Window.StatusBarHeight + (int)Window.MenuBarHeight;
 
-                    case "1080":
-                        height = 1080;
-                        width = 1920;
-                        break;
-
-                    default:
-                        throw new ArgumentNullException($"Invalid Tag for {item}");
-                }
-
-                await Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    ViewModel.WindowState = WindowState.Normal;
-
-                    height += (int)Window.StatusBarHeight + (int)Window.MenuBarHeight;
-
-                    Window.Arrange(new Rect(Window.Position.X, Window.Position.Y, width, height));
-                });
-            }
+                Window.Arrange(new Rect(Window.Position.X, Window.Position.Y, width, height));
+            });
         }
 
         public async void CheckForUpdates(object sender, RoutedEventArgs e)
         {
             if (Updater.CanUpdate(true))
-            {
                 await Updater.BeginParse(Window, true);
-            }
         }
 
-        public async void OpenAboutWindow(object sender, RoutedEventArgs e)
-        {
-            await AboutWindow.Show();
-        }
+        public async void OpenAboutWindow(object sender, RoutedEventArgs e) => await AboutWindow.Show();
 
-        public void CloseWindow(object sender, RoutedEventArgs e)
-        {
-            Window.Close();
-        }
+        public void CloseWindow(object sender, RoutedEventArgs e) => Window.Close();
     }
 }

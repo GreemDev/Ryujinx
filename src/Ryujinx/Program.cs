@@ -1,6 +1,11 @@
+using ARMeilleure;
 using Avalonia;
 using Avalonia.Threading;
 using DiscordRPC;
+using Projektanker.Icons.Avalonia;
+using Projektanker.Icons.Avalonia.FontAwesome;
+using Projektanker.Icons.Avalonia.MaterialDesign;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Ava.UI.Windows;
 using Ryujinx.Common;
@@ -11,6 +16,7 @@ using Ryujinx.Common.SystemInterop;
 using Ryujinx.Graphics.Vulkan.MoltenVK;
 using Ryujinx.Modules;
 using Ryujinx.SDL2.Common;
+using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common;
 using Ryujinx.UI.Common.Configuration;
 using Ryujinx.UI.Common.Helper;
@@ -51,31 +57,32 @@ namespace Ryujinx.Ava
 
             LoggerAdapter.Register();
 
+            IconProvider.Current
+                .Register<FontAwesomeIconProvider>()
+                .Register<MaterialDesignIconProvider>();
+
             return BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
 
-        public static AppBuilder BuildAvaloniaApp()
-        {
-            return AppBuilder.Configure<App>()
+        public static AppBuilder BuildAvaloniaApp() =>
+            AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .With(new X11PlatformOptions
                 {
                     EnableMultiTouch = true,
                     EnableIme = true,
                     EnableInputFocusProxy = Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP") == "gamescope",
-                    RenderingMode = UseHardwareAcceleration ?
-                        new[] { X11RenderingMode.Glx, X11RenderingMode.Software } :
-                        new[] { X11RenderingMode.Software },
+                    RenderingMode = UseHardwareAcceleration 
+                        ? [ X11RenderingMode.Glx, X11RenderingMode.Software ]
+                        : [ X11RenderingMode.Software ],
                 })
                 .With(new Win32PlatformOptions
                 {
                     WinUICompositionBackdropCornerRadius = 8.0f,
-                    RenderingMode = UseHardwareAcceleration ?
-                        new[] { Win32RenderingMode.AngleEgl, Win32RenderingMode.Software } :
-                        new[] { Win32RenderingMode.Software },
-                })
-                .UseSkia();
-        }
+                    RenderingMode = UseHardwareAcceleration 
+                        ? [ Win32RenderingMode.AngleEgl, Win32RenderingMode.Software ] 
+                        : [ Win32RenderingMode.Software ],
+                });
 
         private static void Initialize(string[] args)
         {
@@ -101,6 +108,9 @@ namespace Ryujinx.Ava
 
             // Setup base data directory.
             AppDataManager.Initialize(CommandLineState.BaseDirPathArg);
+
+            // Set the delegate for localizing the word "never" in the UI
+            ApplicationData.LocalizedNever = () => LocaleManager.Instance[LocaleKeys.Never];
 
             // Initialize the configuration.
             ConfigurationState.Initialize();
@@ -218,14 +228,10 @@ namespace Ryujinx.Ava
 
             Logger.Notice.Print(LogClass.Application, $"Logs Enabled: {(Logger.GetEnabledLevels().Count == 0 ? "<None>" : string.Join(", ", Logger.GetEnabledLevels()))}");
 
-            if (AppDataManager.Mode == AppDataManager.LaunchMode.Custom)
-            {
-                Logger.Notice.Print(LogClass.Application, $"Launch Mode: Custom Path {AppDataManager.BaseDirPath}");
-            }
-            else
-            {
-                Logger.Notice.Print(LogClass.Application, $"Launch Mode: {AppDataManager.Mode}");
-            }
+            Logger.Notice.Print(LogClass.Application,
+                AppDataManager.Mode == AppDataManager.LaunchMode.Custom
+                    ? $"Launch Mode: Custom Path {AppDataManager.BaseDirPath}"
+                    : $"Launch Mode: {AppDataManager.Mode}");
         }
 
         private static void ProcessUnhandledException(Exception ex, bool isTerminating)

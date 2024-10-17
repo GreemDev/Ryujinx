@@ -19,6 +19,8 @@ namespace Ryujinx.UI.App.Common
 {
     public class ApplicationData
     {
+        public static Func<string> LocalizedNever = () => "Never";
+
         public bool Favorite { get; set; }
         public byte[] Icon { get; set; }
         public string Name { get; set; } = "Unknown";
@@ -34,7 +36,7 @@ namespace Ryujinx.UI.App.Common
 
         public string TimePlayedString => ValueFormatUtils.FormatTimeSpan(TimePlayed);
 
-        public string LastPlayedString => ValueFormatUtils.FormatDateTime(LastPlayed);
+        public string LastPlayedString => ValueFormatUtils.FormatDateTime(LastPlayed) ?? LocalizedNever();
 
         public string FileSizeString => ValueFormatUtils.FormatFileSize(FileSize);
 
