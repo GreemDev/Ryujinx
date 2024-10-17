@@ -95,26 +95,23 @@ namespace Ryujinx.Ava.UI.Views.Main
 
             if (VisualRoot is MainWindow window)
             {
-                Window = window;
+                DataContext = ViewModel = window.ViewModel;
             }
-
-            ViewModel = MainWindow.ViewModel;
-            DataContext = ViewModel;
         }
 
         private async void StopEmulation_Click(object sender, RoutedEventArgs e)
         {
-            await MainWindow.ViewModel.AppHost?.ShowExitPrompt().OrCompleted()!;
+            await ViewModel.AppHost?.ShowExitPrompt().OrCompleted()!;
         }
 
         private void PauseEmulation_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.ViewModel.AppHost?.Pause();
+            ViewModel.AppHost?.Pause();
         }
 
         private void ResumeEmulation_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.ViewModel.AppHost?.Resume();
+            ViewModel.AppHost?.Resume();
         }
 
         public async void OpenSettings(object sender, RoutedEventArgs e)
@@ -178,7 +175,7 @@ namespace Ryujinx.Ava.UI.Views.Main
                 Window.VirtualFileSystem,
                 ViewModel.AppHost.Device.Processes.ActiveApplication.ProgramIdText,
                 name,
-                MainWindow.ViewModel.SelectedApplication.Path).ShowDialog(Window);
+                ViewModel.SelectedApplication.Path).ShowDialog(Window);
 
             ViewModel.AppHost.Device.EnableCheats();
         }
@@ -186,7 +183,7 @@ namespace Ryujinx.Ava.UI.Views.Main
         private void ScanAmiiboMenuItem_AttachedToVisualTree(object sender, VisualTreeAttachmentEventArgs e)
         {
             if (sender is MenuItem)
-                ViewModel.IsAmiiboRequested = MainWindow.ViewModel.AppHost.Device.System.SearchingForAmiibo(out _);
+                ViewModel.IsAmiiboRequested = ViewModel.AppHost.Device.System.SearchingForAmiibo(out _);
         }
 
         private async void InstallFileTypes_Click(object sender, RoutedEventArgs e)

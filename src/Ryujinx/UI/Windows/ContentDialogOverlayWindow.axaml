@@ -1,4 +1,4 @@
-<window:StyleableWindow
+<window:StyleableAppWindow
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -11,15 +11,15 @@
     x:Class="Ryujinx.Ava.UI.Windows.ContentDialogOverlayWindow"
     Title="ContentDialogOverlayWindow"
     Focusable="False">
-    <window:StyleableWindow.Styles>
+    <window:StyleableAppWindow.Styles>
         <Style Selector="ui|ContentDialog /template/ Panel#LayoutRoot">
             <Setter Property="Background"
                     Value="Transparent" />
         </Style>
-    </window:StyleableWindow.Styles>
+    </window:StyleableAppWindow.Styles>
     <ui:ContentDialog Name="ContentDialog"
                       IsPrimaryButtonEnabled="True"
                       IsSecondaryButtonEnabled="True"
                       IsVisible="False"
                       Focusable="True"/>
-</window:StyleableWindow>
+</window:StyleableAppWindow>

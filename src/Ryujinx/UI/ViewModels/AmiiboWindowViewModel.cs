@@ -33,7 +33,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         private readonly string _amiiboJsonPath;
         private readonly byte[] _amiiboLogoBytes;
         private readonly HttpClient _httpClient;
-        private readonly StyleableWindow _owner;
+        private readonly StyleableAppWindow _owner;
 
         private Bitmap _amiiboImage;
         private List<AmiiboApi> _amiiboList;
@@ -49,7 +49,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         private static readonly AmiiboJsonSerializerContext _serializerContext = new(JsonHelper.GetDefaultSerializerOptions());
 
-        public AmiiboWindowViewModel(StyleableWindow owner, string lastScannedAmiiboId, string titleId)
+        public AmiiboWindowViewModel(StyleableAppWindow owner, string lastScannedAmiiboId, string titleId)
         {
             _owner = owner;
 

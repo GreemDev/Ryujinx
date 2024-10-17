@@ -22,12 +22,11 @@ namespace Ryujinx.Ava.UI.Views.Main
         {
             base.OnAttachedToVisualTree(e);
 
-            if (VisualRoot is MainWindow)
+            if (VisualRoot is MainWindow window)
             {
-                ViewModel = MainWindow.ViewModel;
+                DataContext = ViewModel = window.ViewModel;
             }
 
-            DataContext = ViewModel;
         }
 
         public void Sort_Checked(object sender, RoutedEventArgs args)

@@ -5,7 +5,7 @@ using Ryujinx.UI.Common.Models.Amiibo;
 
 namespace Ryujinx.Ava.UI.Windows
 {
-    public partial class AmiiboWindow : StyleableWindow
+    public partial class AmiiboWindow : StyleableAppWindow
     {
         public AmiiboWindow(bool showAll, string lastScannedAmiiboId, string titleId)
         {

@@ -85,7 +85,7 @@ namespace Ryujinx.Ava.UI.Helpers
         }
 
         public static Task<UserResult> ShowDeferredContentDialog(
-            StyleableWindow window,
+            Window window,
             string title,
             string primaryText,
             string secondaryText,

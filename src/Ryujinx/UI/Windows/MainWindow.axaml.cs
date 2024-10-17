@@ -35,9 +35,11 @@ using System.Threading.Tasks;
 
 namespace Ryujinx.Ava.UI.Windows
 {
-    public partial class MainWindow : StyleableWindow
+    public partial class MainWindow : StyleableAppWindow
     {
-        internal static MainWindowViewModel ViewModel { get; private set; }
+        internal static MainWindowViewModel MainWindowViewModel { get; private set; }
+
+        public MainWindowViewModel ViewModel { get; }
 
         internal readonly AvaHostUIHandler UiHandler;
 
@@ -69,7 +71,7 @@ namespace Ryujinx.Ava.UI.Windows
 
         public MainWindow()
         {
-            DataContext = ViewModel = new MainWindowViewModel();
+            DataContext = ViewModel = MainWindowViewModel = new MainWindowViewModel();
 
             InitializeComponent();
             Load();
@@ -78,8 +80,8 @@ namespace Ryujinx.Ava.UI.Windows
 
             ViewModel.Title = App.FormatTitle();
 
-            TitleBar.ExtendsContentIntoTitleBar = true;
-            TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
+            //TitleBar.ExtendsContentIntoTitleBar = true;
+            //TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
             
 
             // NOTE: Height of MenuBar and StatusBar is not usable here, since it would still be 0 at this point.

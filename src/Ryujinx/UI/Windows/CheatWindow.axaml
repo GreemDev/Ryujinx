@@ -1,4 +1,4 @@
-﻿<window:StyleableWindow
+﻿<window:StyleableAppWindow
     x:Class="Ryujinx.Ava.UI.Windows.CheatWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -123,4 +123,4 @@
             </DockPanel>
         </DockPanel>
     </Grid>
-</window:StyleableWindow>
+</window:StyleableAppWindow>

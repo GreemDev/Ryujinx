@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace Ryujinx.Ava.UI.Windows
 {
-    public partial class CheatWindow : StyleableWindow
+    public partial class CheatWindow : StyleableAppWindow
     {
         private readonly string _enabledCheatsPath;
         public bool NoCheatsFound { get; }

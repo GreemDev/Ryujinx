@@ -11,7 +11,31 @@ using System.Reflection;
 
 namespace Ryujinx.Ava.UI.Windows
 {
-    public class StyleableWindow : AppWindow
+    public class StyleableAppWindow : AppWindow
+    {
+        public StyleableAppWindow()
+        {
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            TransparencyLevelHint = [WindowTransparencyLevel.None];
+
+            LocaleManager.Instance.LocaleChanged += LocaleChanged;
+            LocaleChanged();
+        }
+
+        private void LocaleChanged()
+        {
+            FlowDirection = LocaleManager.Instance.IsRTL() ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
+        }
+
+        protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+        {
+            base.OnApplyTemplate(e);
+
+            ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.SystemChrome | ExtendClientAreaChromeHints.OSXThickTitleBar;
+        }
+    }
+
+    public class StyleableWindow : Window
     {
         public StyleableWindow()
         {

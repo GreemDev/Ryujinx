@@ -122,7 +122,7 @@ namespace Ryujinx.Ava.UI.Applet
             {
                 try
                 {
-                    MainWindow.ViewModel.AppHost.NpadManager.BlockInputUpdates();
+                    _parent.ViewModel.AppHost.NpadManager.BlockInputUpdates();
                     var response = await SwkbdAppletDialog.ShowInputDialog(LocaleManager.Instance[LocaleKeys.SoftwareKeyboard], args);
 
                     if (response.Result == UserResult.Ok)
@@ -144,7 +144,7 @@ namespace Ryujinx.Ava.UI.Applet
             });
 
             dialogCloseEvent.WaitOne();
-            MainWindow.ViewModel.AppHost.NpadManager.UnblockInputUpdates();
+            _parent.ViewModel.AppHost.NpadManager.UnblockInputUpdates();
 
             userText = error ? null : inputText;
 
@@ -154,7 +154,7 @@ namespace Ryujinx.Ava.UI.Applet
         public void ExecuteProgram(Switch device, ProgramSpecifyKind kind, ulong value)
         {
             device.Configuration.UserChannelPersistence.ExecuteProgram(kind, value);
-            MainWindow.ViewModel.AppHost?.Stop();
+            _parent.ViewModel.AppHost?.Stop();
         }
 
         public bool DisplayErrorAppletDialog(string title, string message, string[] buttons)

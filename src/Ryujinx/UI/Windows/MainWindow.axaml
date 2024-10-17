@@ -1,4 +1,4 @@
-<window:StyleableWindow
+<window:StyleableAppWindow
     x:Class="Ryujinx.Ava.UI.Windows.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -200,4 +200,4 @@
                 Grid.Row="2" />
         </Grid>
     </Grid>
-</window:StyleableWindow>
+</window:StyleableAppWindow>

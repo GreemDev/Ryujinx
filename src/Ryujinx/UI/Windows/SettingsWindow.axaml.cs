@@ -8,7 +8,7 @@ using System;
 
 namespace Ryujinx.Ava.UI.Windows
 {
-    public partial class SettingsWindow : StyleableWindow
+    public partial class SettingsWindow : StyleableAppWindow
     {
         internal SettingsViewModel ViewModel { get; set; }
 
