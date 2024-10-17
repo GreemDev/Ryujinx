@@ -26,8 +26,7 @@ namespace Ryujinx.Graphics.Nvdec.FFmpeg.H264
         {
             Surface outSurf = (Surface)output;
 
-            if (outSurf.RequestedWidth != _oldOutputWidth ||
-                outSurf.RequestedHeight != _oldOutputHeight)
+            if (outSurf.RequestedWidth != _oldOutputWidth || outSurf.RequestedHeight != _oldOutputHeight)
             {
                 _context.Dispose();
                 _context = new FFmpegContext(AVCodecID.AV_CODEC_ID_H264);
@@ -38,7 +37,7 @@ namespace Ryujinx.Graphics.Nvdec.FFmpeg.H264
 
             Span<byte> bs = Prepend(bitstream, SpsAndPpsReconstruction.Reconstruct(ref pictureInfo, _workBuffer));
 
-            return _context.DecodeFrame(outSurf, bs) == 0;
+            return _context.DecodeFrame(outSurf, bs) is 0;
         }
 
         private static byte[] Prepend(ReadOnlySpan<byte> data, ReadOnlySpan<byte> prep)

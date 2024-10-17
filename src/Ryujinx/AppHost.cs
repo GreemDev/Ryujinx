@@ -396,7 +396,7 @@ namespace Ryujinx.Ava
             }
         }
 
-        private void SaveBitmapAsPng(SKBitmap bitmap, string path)
+        private static void SaveBitmapAsPng(SKBitmap bitmap, string path)
         {
             using var data = bitmap.Encode(SKEncodedImageFormat.Png, 100);
             using var stream = File.OpenWrite(path);
@@ -406,8 +406,6 @@ namespace Ryujinx.Ava
 
         public void Start()
         {
-            ARMeilleure.Optimizations.EcoFriendly = ConfigurationState.Instance.System.EnableLowPowerPtc;
-
             if (OperatingSystem.IsWindows())
             {
                 _windowsMultimediaTimerResolution = new WindowsMultimediaTimerResolution(1);
@@ -540,9 +538,8 @@ namespace Ryujinx.Ava
         private void Dispose()
         {
             if (Device.Processes != null)
-            {
                 MainWindowViewModel.UpdateGameMetadata(Device.Processes.ActiveApplication.ProgramIdText);
-            }
+            
 
             ConfigurationState.Instance.System.IgnoreMissingServices.Event -= UpdateIgnoreMissingServicesState;
             ConfigurationState.Instance.Graphics.AspectRatio.Event -= UpdateAspectRatioState;

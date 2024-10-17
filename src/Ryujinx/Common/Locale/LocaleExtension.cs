@@ -8,26 +8,20 @@ namespace Ryujinx.Ava.Common.Locale
 {
     internal class LocaleExtension(LocaleKeys key) : MarkupExtension
     {
-        public LocaleKeys Key { get; } = key;
+        private ClrPropertyInfo PropertyInfo
+            => new(
+                "Item",
+                _ => LocaleManager.Instance[key],
+                null,
+                typeof(string)
+            );
 
-        public override object ProvideValue(IServiceProvider serviceProvider)
-        {
-            var builder = new CompiledBindingPathBuilder();
-
-            builder.Property(
-                new ClrPropertyInfo("Item", 
-                    _ => LocaleManager.Instance[Key],
-                    null, 
-                    typeof(string)
-                    ),
-                PropertyInfoAccessorFactory.CreateInpcPropertyAccessor);
-
-            var binding = new CompiledBindingExtension(builder.Build())
-            {
-                Source = LocaleManager.Instance
-            };
-
-            return binding.ProvideValue(serviceProvider);
-        }
+        public override object ProvideValue(IServiceProvider serviceProvider) =>
+            new CompiledBindingExtension(
+                    new CompiledBindingPathBuilder()
+                        .Property(PropertyInfo, PropertyInfoAccessorFactory.CreateInpcPropertyAccessor)
+                        .Build()
+                ) { Source = LocaleManager.Instance }
+                .ProvideValue(serviceProvider);
     }
 }

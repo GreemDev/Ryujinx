@@ -68,36 +68,6 @@ namespace Ryujinx.HLE
 #pragma warning restore IDE0055
         }
 
-        public bool LoadCart(string exeFsDir, string romFsFile = null)
-        {
-            return Processes.LoadUnpackedNca(exeFsDir, romFsFile);
-        }
-
-        public bool LoadXci(string xciFile, ulong applicationId = 0)
-        {
-            return Processes.LoadXci(xciFile, applicationId);
-        }
-
-        public bool LoadNca(string ncaFile)
-        {
-            return Processes.LoadNca(ncaFile);
-        }
-
-        public bool LoadNsp(string nspFile, ulong applicationId = 0)
-        {
-            return Processes.LoadNsp(nspFile, applicationId);
-        }
-
-        public bool LoadProgram(string fileName)
-        {
-            return Processes.LoadNxo(fileName);
-        }
-
-        public bool WaitFifo()
-        {
-            return Gpu.GPFifo.WaitForCommands();
-        }
-
         public void ProcessFrame()
         {
             Gpu.ProcessShaderCacheQueue();
@@ -105,40 +75,22 @@ namespace Ryujinx.HLE
             Gpu.GPFifo.DispatchCalls();
         }
 
-        public bool ConsumeFrameAvailable()
-        {
-            return Gpu.Window.ConsumeFrameAvailable();
-        }
+        public bool LoadCart(string exeFsDir, string romFsFile = null) => Processes.LoadUnpackedNca(exeFsDir, romFsFile);
+        public bool LoadXci(string xciFile, ulong applicationId = 0) => Processes.LoadXci(xciFile, applicationId);
+        public bool LoadNca(string ncaFile) => Processes.LoadNca(ncaFile);
+        public bool LoadNsp(string nspFile, ulong applicationId = 0) => Processes.LoadNsp(nspFile, applicationId);
+        public bool LoadProgram(string fileName) => Processes.LoadNxo(fileName);
 
-        public void PresentFrame(Action swapBuffersCallback)
-        {
-            Gpu.Window.Present(swapBuffersCallback);
-        }
+        public void SetVolume(float volume) => AudioDeviceDriver.Volume = Math.Clamp(volume, 0f, 1f);
+        public float GetVolume() => AudioDeviceDriver.Volume;
+        public bool IsAudioMuted() => AudioDeviceDriver.Volume == 0;
 
-        public void SetVolume(float volume)
-        {
-            AudioDeviceDriver.Volume = Math.Clamp(volume, 0f, 1f);
-        }
+        public void EnableCheats() => ModLoader.EnableCheats(Processes.ActiveApplication.ProgramId, TamperMachine);
 
-        public float GetVolume()
-        {
-            return AudioDeviceDriver.Volume;
-        }
-
-        public void EnableCheats()
-        {
-            ModLoader.EnableCheats(Processes.ActiveApplication.ProgramId, TamperMachine);
-        }
-
-        public bool IsAudioMuted()
-        {
-            return AudioDeviceDriver.Volume == 0;
-        }
-
-        public void DisposeGpu()
-        {
-            Gpu.Dispose();
-        }
+        public bool WaitFifo() => Gpu.GPFifo.WaitForCommands();
+        public bool ConsumeFrameAvailable() => Gpu.Window.ConsumeFrameAvailable();
+        public void PresentFrame(Action swapBuffersCallback) => Gpu.Window.Present(swapBuffersCallback);
+        public void DisposeGpu() => Gpu.Dispose();
 
         public void Dispose()
         {

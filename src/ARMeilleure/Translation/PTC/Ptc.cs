@@ -799,11 +799,11 @@ namespace ARMeilleure.Translation.PTC
 
             int degreeOfParallelism = Environment.ProcessorCount;
 
-            if (Optimizations.EcoFriendly)
+            if (Optimizations.LowPower)
                 degreeOfParallelism /= 3;
 
             // If there are enough cores lying around, we leave one alone for other tasks.
-            if (degreeOfParallelism > 4 && !Optimizations.EcoFriendly)
+            if (degreeOfParallelism > 4 && !Optimizations.LowPower)
             {
                 degreeOfParallelism--;
             }

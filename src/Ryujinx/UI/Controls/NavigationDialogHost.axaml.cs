@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
+using Gommon;
 using LibHac;
 using LibHac.Common;
 using LibHac.Fs;
@@ -84,10 +85,7 @@ namespace Ryujinx.Ava.UI.Controls
                 Padding = new Thickness(0),
             };
 
-            contentDialog.Closed += (sender, args) =>
-            {
-                content.ViewModel.Dispose();
-            };
+            contentDialog.Closed += (_, _) => content.ViewModel.Dispose();
 
             Style footer = new(x => x.Name("DialogSpace").Child().OfType<Border>());
             footer.Setters.Add(new Setter(IsVisibleProperty, false));
@@ -109,12 +107,9 @@ namespace Ryujinx.Ava.UI.Controls
             ViewModel.Profiles.Clear();
             ViewModel.LostProfiles.Clear();
 
-            var profiles = AccountManager.GetAllUsers().OrderBy(x => x.Name);
-
-            foreach (var profile in profiles)
-            {
-                ViewModel.Profiles.Add(new UserProfile(profile, this));
-            }
+            AccountManager.GetAllUsers()
+                .OrderBy(x => x.Name)
+                .ForEach(profile => ViewModel.Profiles.Add(new UserProfile(profile, this)));
 
             var saveDataFilter = SaveDataFilter.Make(programId: default, saveType: SaveDataType.Account, default, saveDataId: default, index: default);
 
