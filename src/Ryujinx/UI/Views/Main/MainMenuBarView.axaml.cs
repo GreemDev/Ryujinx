@@ -95,6 +95,7 @@ namespace Ryujinx.Ava.UI.Views.Main
 
             if (VisualRoot is MainWindow window)
             {
+                Window = window;
                 DataContext = ViewModel = window.ViewModel;
             }
         }
