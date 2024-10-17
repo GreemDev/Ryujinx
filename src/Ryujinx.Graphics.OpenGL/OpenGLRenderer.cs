@@ -243,7 +243,7 @@ namespace Ryujinx.Graphics.OpenGL
             // This is required to disable [0, 1] clamping for SNorm outputs on compatibility profiles.
             // This call is expected to fail if we're running with a core profile,
             // as this clamp target was deprecated, but that's fine as a core profile
-            // should already have the desired behaviour were outputs are not clamped.
+            // should already have the desired behaviour where outputs are not clamped.
             GL.ClampColor(ClampColorTarget.ClampFragmentColor, ClampColorMode.False);
         }
 

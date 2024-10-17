@@ -19,20 +19,12 @@ namespace Ryujinx.Ava.UI.Windows
 
         private const int CutOffLuminosity = 64;
 
-        private readonly struct PaletteColor
+        private readonly struct PaletteColor(int qck, byte r, byte g, byte b)
         {
-            public int Qck { get; }
-            public byte R { get; }
-            public byte G { get; }
-            public byte B { get; }
-
-            public PaletteColor(int qck, byte r, byte g, byte b)
-            {
-                Qck = qck;
-                R = r;
-                G = g;
-                B = b;
-            }
+            public int Qck { get; } = qck;
+            public byte R { get; } = r;
+            public byte G { get; } = g;
+            public byte B { get; } = b;
         }
 
         public static SKColor GetFilteredColor(SKBitmap image)
@@ -164,16 +156,6 @@ namespace Ryujinx.Ava.UI.Windows
             return score;
         }
 
-        private static int BalanceHitCount(int hitCount, int maxHitCount)
-        {
-            return (hitCount << 8) / maxHitCount;
-        }
-
-        private static int GetColorApproximateLuminosity(byte r, byte g, byte b)
-        {
-            return (r + g + b) / 3;
-        }
-
         private static int GetColorSaturation(PaletteColor color)
         {
             int cMax = Math.Max(Math.Max(color.R, color.G), color.B);
@@ -188,10 +170,11 @@ namespace Ryujinx.Ava.UI.Windows
             return (delta << 8) / cMax;
         }
 
-        private static int GetColorValue(PaletteColor color)
-        {
-            return Math.Max(Math.Max(color.R, color.G), color.B);
-        }
+        private static int GetColorValue(PaletteColor color) => Math.Max(Math.Max(color.R, color.G), color.B);
+
+        private static int BalanceHitCount(int hitCount, int maxHitCount) => (hitCount << 8) / maxHitCount;
+
+        private static int GetColorApproximateLuminosity(byte r, byte g, byte b) => (r + g + b) / 3;
 
         private static int GetQuantizedColorKey(byte r, byte g, byte b)
         {

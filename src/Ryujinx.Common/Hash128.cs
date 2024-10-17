@@ -107,7 +107,7 @@ namespace Ryujinx.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ulong XorShift64(ulong v64, int shift)
         {
-            Debug.Assert(0 <= shift && shift < 64);
+            Debug.Assert(shift is >= 0 and < 64);
 
             return v64 ^ (v64 >> shift);
         }

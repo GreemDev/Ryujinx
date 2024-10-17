@@ -230,6 +230,16 @@ namespace Ryujinx.Ava.UI.Helpers
                 primaryButtonResult);
         }
 
+        internal static async Task<UserResult> CreateLocalizedConfirmationDialog(
+            string primaryText,
+            string secondaryText) =>
+            await CreateConfirmationDialog(
+                primaryText,
+                secondaryText,
+                LocaleManager.Instance[LocaleKeys.InputDialogYes],
+                LocaleManager.Instance[LocaleKeys.InputDialogNo],
+                LocaleManager.Instance[LocaleKeys.RyujinxConfirm]);
+
         internal static async Task CreateUpdaterInfoDialog(string primary, string secondaryText)
         {
             await ShowTextDialog(

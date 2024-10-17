@@ -25,7 +25,7 @@ namespace Ryujinx.HLE.Generators
                 var name = GetFullName(className, context).Replace("global::", "");
                 if (!name.StartsWith("Ryujinx.HLE.HOS.Services"))
                     continue;
-                var constructors = className.ChildNodes().Where(x => x.IsKind(SyntaxKind.ConstructorDeclaration)).Select(y => y as ConstructorDeclarationSyntax);
+                var constructors = className.ChildNodes().Where(x => x.IsKind(SyntaxKind.ConstructorDeclaration)).Select(y => y as ConstructorDeclarationSyntax).ToArray();
 
                 if (!constructors.Any(x => x.ParameterList.Parameters.Count >= 1))
                     continue;

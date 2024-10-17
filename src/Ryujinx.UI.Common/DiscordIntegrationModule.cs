@@ -15,7 +15,10 @@ namespace Ryujinx.UI.Common
     {
         public static Timestamps StartedAt { get; set; }
         
-        private static readonly string _description = $"v{ReleaseInformation.Version} {ReleaseInformation.ReleaseChannelOwner}/{ReleaseInformation.ReleaseChannelRepo}@{ReleaseInformation.BuildGitHash}";
+        private static readonly string _description = ReleaseInformation.IsValid 
+                ? $"v{ReleaseInformation.Version} {ReleaseInformation.ReleaseChannelOwner}/{ReleaseInformation.ReleaseChannelRepo}@{ReleaseInformation.BuildGitHash}"
+                : "dev build";
+
         private const string ApplicationId = "1293250299716173864";
 
         private const int ApplicationByteLimit = 128;
@@ -76,7 +79,7 @@ namespace Ryujinx.UI.Common
                     SmallImageText = TruncateToByteLength(_description)
                 },
                 Details = TruncateToByteLength($"Playing {appMeta.Title}"),
-                State = appMeta.LastPlayed.HasValue 
+                State = appMeta.LastPlayed.HasValue && appMeta.TimePlayed.TotalSeconds > 5
                     ? $"Total play time: {appMeta.TimePlayed.Humanize(2, false)}" 
                     : "Never played",
                 Timestamps = Timestamps.Now
@@ -115,7 +118,8 @@ namespace Ryujinx.UI.Common
             _discordClient?.Dispose();
         }
 
-        private static readonly string[] _discordGameAssetKeys = [
+        private static readonly string[] _discordGameAssetKeys = 
+        [
             "01002da013484000", // The Legend of Zelda: Skyward Sword HD
             "01007ef00011e000", // The Legend of Zelda: Breath of the Wild
             "0100f2c0115b6000", // The Legend of Zelda: Tears of the Kingdom
@@ -145,9 +149,12 @@ namespace Ryujinx.UI.Common
 
             "0100c2500fc20000", // Splatoon 3
             "0100ba0018500000", // Splatoon 3: Splatfest World Premiere
+            "01000a10041ea000", // The Elder Scrolls V: Skyrim
             "01007820196a6000", // Red Dead Redemption
             "0100744001588000", // Cars 3: Driven to Win
+            "01002b00111a2000", // Hyrule Warriors: Age of Calamity
             "01006f8002326000", // Animal Crossing: New Horizons
+            "01004d300c5ae000", // Kirby and the Forgotten Land
             "0100853015e86000", // No Man's Sky
             "01008d100d43e000", // Saints Row IV
             "0100de600beee000", // Saints Row: The Third - The Full Package

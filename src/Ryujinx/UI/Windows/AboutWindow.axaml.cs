@@ -50,10 +50,8 @@ namespace Ryujinx.Ava.UI.Windows
 
         private void Button_OnClick(object sender, RoutedEventArgs e)
         {
-            if (sender is Button { Tag: { } url })
-            {
-                OpenHelper.OpenUrl(url.ToString());
-            }
+            if (sender is Button { Tag: string url })
+                OpenHelper.OpenUrl(url);
         }
 
         private void AmiiboLabel_OnPointerPressed(object sender, PointerPressedEventArgs e)
