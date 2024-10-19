@@ -198,9 +198,6 @@ namespace Ryujinx.Ava.UI.Applet
             return showDetails;
         }
 
-        public IDynamicTextInputHandler CreateDynamicTextInputHandler()
-        {
-            return new AvaloniaDynamicTextInputHandler(_parent);
-        }
+        public IDynamicTextInputHandler CreateDynamicTextInputHandler() => new AvaloniaDynamicTextInputHandler(_parent);
     }
 }

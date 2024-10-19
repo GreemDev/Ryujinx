@@ -111,7 +111,7 @@ namespace Ryujinx.HLE.HOS.Services.Am.AppletAE.AllSystemAppletProxiesService.Lib
         {
             // NOTE: This call reset two internal fields to 0 and one internal field to "true".
             //       It seems to be used only with software keyboard inline.
-            //       Since we doesn't support applets for now, it's fine to stub it.
+            //       Since we don't support applets for now, it's fine to stub it.
 
             Logger.Stub?.PrintStub(LogClass.ServiceAm);
 

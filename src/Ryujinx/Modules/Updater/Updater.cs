@@ -466,7 +466,7 @@ namespace Ryujinx.Modules
             using Stream updateFileStream = File.Open(updateFile, FileMode.Create);
 
             long totalBytes = response.Content.Headers.ContentLength.Value;
-            long byteWritten = 0;
+            long bytesWritten = 0;
 
             byte[] buffer = new byte[32 * 1024];
 
@@ -479,9 +479,10 @@ namespace Ryujinx.Modules
                     break;
                 }
 
-                byteWritten += readSize;
+                bytesWritten += readSize;
 
-                taskDialog.SetProgressBarState(GetPercentage(byteWritten, totalBytes), TaskDialogProgressState.Normal);
+                taskDialog.SetProgressBarState(GetPercentage(bytesWritten, totalBytes), TaskDialogProgressState.Normal);
+                App.SetTaskbarProgressValue(bytesWritten, totalBytes);
 
                 updateFileStream.Write(buffer, 0, readSize);
             }

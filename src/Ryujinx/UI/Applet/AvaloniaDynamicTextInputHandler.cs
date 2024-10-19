@@ -102,14 +102,8 @@ namespace Ryujinx.Ava.UI.Applet
 
         public bool TextProcessingEnabled
         {
-            get
-            {
-                return Volatile.Read(ref _canProcessInput);
-            }
-            set
-            {
-                Volatile.Write(ref _canProcessInput, value);
-            }
+            get => Volatile.Read(ref _canProcessInput);
+            set => Volatile.Write(ref _canProcessInput, value);
         }
 
         public event DynamicTextChangedHandler TextChangedEvent;
@@ -135,23 +129,19 @@ namespace Ryujinx.Ava.UI.Applet
             });
         }
 
-        public void SetText(string text, int cursorBegin)
-        {
+        public void SetText(string text, int cursorBegin) =>
             Dispatcher.UIThread.Post(() =>
             {
                 _hiddenTextBox.Text = text;
                 _hiddenTextBox.CaretIndex = cursorBegin;
             });
-        }
 
-        public void SetText(string text, int cursorBegin, int cursorEnd)
-        {
+        public void SetText(string text, int cursorBegin, int cursorEnd) => 
             Dispatcher.UIThread.Post(() =>
             {
                 _hiddenTextBox.Text = text;
                 _hiddenTextBox.SelectionStart = cursorBegin;
                 _hiddenTextBox.SelectionEnd = cursorEnd;
             });
-        }
     }
 }

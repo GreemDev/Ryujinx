@@ -84,7 +84,7 @@ namespace Ryujinx.Ava.UI.Helpers
             return await ShowContentDialog(title, content, primaryButton, secondaryButton, closeButton, primaryButtonResult, deferResetEvent, deferCloseAction);
         }
 
-        public static Task<UserResult> ShowDeferredContentDialog(
+        public static async Task<UserResult> ShowDeferredContentDialog(
             Window window,
             string title,
             string primaryText,
@@ -98,7 +98,7 @@ namespace Ryujinx.Ava.UI.Helpers
         {
             bool startedDeferring = false;
 
-            return ShowTextDialog(
+            return await ShowTextDialog(
                 title,
                 primaryText,
                 secondaryText,
@@ -209,14 +209,14 @@ namespace Ryujinx.Ava.UI.Helpers
                 closeButton,
                 (int)Symbol.Important);
 
-        internal static Task<UserResult> CreateConfirmationDialog(
+        internal static async Task<UserResult> CreateConfirmationDialog(
             string primaryText,
             string secondaryText,
             string acceptButtonText,
             string cancelButtonText,
             string title,
             UserResult primaryButtonResult = UserResult.Yes) 
-            => ShowTextDialog(
+            => await ShowTextDialog(
                 string.IsNullOrWhiteSpace(title) ? LocaleManager.Instance[LocaleKeys.DialogConfirmationTitle] : title,
                 primaryText,
                 secondaryText,
@@ -226,16 +226,16 @@ namespace Ryujinx.Ava.UI.Helpers
                 (int)Symbol.Help,
                 primaryButtonResult);
 
-        internal static Task<UserResult> CreateLocalizedConfirmationDialog(string primaryText, string secondaryText) 
-            => CreateConfirmationDialog(
+        internal static async Task<UserResult> CreateLocalizedConfirmationDialog(string primaryText, string secondaryText) 
+            => await CreateConfirmationDialog(
                 primaryText,
                 secondaryText,
                 LocaleManager.Instance[LocaleKeys.InputDialogYes],
                 LocaleManager.Instance[LocaleKeys.InputDialogNo],
                 LocaleManager.Instance[LocaleKeys.RyujinxConfirm]);
 
-        internal static Task CreateUpdaterInfoDialog(string primary, string secondaryText) 
-            => ShowTextDialog(
+        internal static async Task CreateUpdaterInfoDialog(string primary, string secondaryText) 
+            => await ShowTextDialog(
                 LocaleManager.Instance[LocaleKeys.DialogUpdaterTitle],
                 primary,
                 secondaryText,
@@ -244,8 +244,8 @@ namespace Ryujinx.Ava.UI.Helpers
                 LocaleManager.Instance[LocaleKeys.InputDialogOk],
                 (int)Symbol.Important);
 
-        internal static Task CreateWarningDialog(string primary, string secondaryText) 
-            => ShowTextDialog(
+        internal static async Task CreateWarningDialog(string primary, string secondaryText) 
+            => await ShowTextDialog(
                 LocaleManager.Instance[LocaleKeys.DialogWarningTitle],
                 primary,
                 secondaryText,
@@ -254,11 +254,11 @@ namespace Ryujinx.Ava.UI.Helpers
                 LocaleManager.Instance[LocaleKeys.InputDialogOk],
                 (int)Symbol.Important);
 
-        internal static Task CreateErrorDialog(string errorMessage, string secondaryErrorMessage = "")
+        internal static async Task CreateErrorDialog(string errorMessage, string secondaryErrorMessage = "")
         {
             Logger.Error?.Print(LogClass.Application, errorMessage);
 
-            return ShowTextDialog(
+            await ShowTextDialog(
                 LocaleManager.Instance[LocaleKeys.DialogErrorTitle],
                 LocaleManager.Instance[LocaleKeys.DialogErrorMessage],
                 errorMessage,
@@ -399,11 +399,9 @@ namespace Ryujinx.Ava.UI.Helpers
             return result;
         }
 
-        public static Task ShowWindowAsync(Window dialogWindow, Window mainWindow = null)
+        public static async Task ShowWindowAsync(Window dialogWindow, Window mainWindow = null)
         {
-            mainWindow ??= GetMainWindow();
-
-            return dialogWindow.ShowDialog(_contentDialogOverlayWindow ?? mainWindow);
+            await dialogWindow.ShowDialog(_contentDialogOverlayWindow ?? mainWindow ?? GetMainWindow());
         }
 
         private static Window GetMainWindow()

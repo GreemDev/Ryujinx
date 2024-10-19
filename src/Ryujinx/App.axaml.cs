@@ -4,6 +4,8 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using Avalonia.Styling;
 using Avalonia.Threading;
+using FluentAvalonia.UI.Windowing;
+using Gommon;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Helpers;
@@ -23,6 +25,15 @@ namespace Ryujinx.Ava
             => windowTitleKey is null 
                 ? $"Ryujinx {Program.Version}" 
                 : $"Ryujinx {Program.Version} - {LocaleManager.Instance[windowTitleKey.Value]}";
+
+        public static MainWindow MainWindow => Current!
+            .ApplicationLifetime.Cast<IClassicDesktopStyleApplicationLifetime>()
+            .MainWindow.Cast<MainWindow>();
+
+        public static void SetTaskbarProgress(TaskBarProgressBarState state) => MainWindow.PlatformFeatures.SetTaskBarProgressBarState(state);
+        public static void SetTaskbarProgressValue(ulong current, ulong total) => MainWindow.PlatformFeatures.SetTaskBarProgressBarValue(current, total);
+        public static void SetTaskbarProgressValue(long current, long total) => SetTaskbarProgressValue(Convert.ToUInt64(current), Convert.ToUInt64(total));
+
 
         public override void Initialize()
         {
@@ -62,8 +73,7 @@ namespace Ryujinx.Ava
 
         private void ShowRestartDialog()
         {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            Dispatcher.UIThread.InvokeAsync(async () =>
+            _ = Dispatcher.UIThread.InvokeAsync(async () =>
             {
                 if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 {
@@ -82,7 +92,6 @@ namespace Ryujinx.Ava
                     }
                 }
             });
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         private void ThemeChanged_Event(object sender, ReactiveEventArgs<string> e)
@@ -134,16 +143,9 @@ namespace Ryujinx.Ava
                 _ => ThemeVariant.Default,
             };
 
-        public static ThemeVariant DetectSystemTheme()
-        {
-            if (Application.Current is App app)
-            {
-                var colorValues = app.PlatformSettings.GetColorValues();
-
-                return ConvertThemeVariant(colorValues.ThemeVariant);
-            }
-
-            return ThemeVariant.Default;
-        }
+        public static ThemeVariant DetectSystemTheme() =>
+            Current is App { PlatformSettings: not null } app
+                ? ConvertThemeVariant(app.PlatformSettings.GetColorValues().ThemeVariant)
+                : ThemeVariant.Default;
     }
 }
