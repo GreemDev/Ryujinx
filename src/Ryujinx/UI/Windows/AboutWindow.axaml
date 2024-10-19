@@ -18,32 +18,17 @@
     <Design.DataContext>
         <viewModel:AboutWindowViewModel />
     </Design.DataContext>
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ColumnDefinitions="Auto,Auto,*">
         <Grid
             Grid.Column="0"
             HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+            VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
             <StackPanel
                 Grid.Row="0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Spacing="10">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                <Grid ColumnDefinitions="Auto,*,Auto">
                     <StackPanel
                         Grid.Column="1"
                         Orientation="Horizontal"
@@ -84,7 +69,6 @@
                     Text="{Binding Version}"
                     TextAlignment="Center" />
                 <Border
-
                     Height="1"
                     Margin="0,20, 0, 20"
                     HorizontalAlignment="Stretch"
@@ -156,11 +140,7 @@
         <Grid
             Grid.Column="2"
             HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+            VerticalAlignment="Stretch" RowDefinitions="Auto,Auto">
             <StackPanel
                 Grid.Row="0"
                 Margin="0,10,0,0"

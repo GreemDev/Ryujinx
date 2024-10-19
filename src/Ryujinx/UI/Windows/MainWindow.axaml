@@ -21,6 +21,7 @@
     x:DataType="viewModels:MainWindowViewModel"
     mc:Ignorable="d"
     WindowStartupLocation="Manual"
+    Icon="resm:Ryujinx.UI.Common.Resources.Logo_Ryujinx.png?assembly=Ryujinx.UI.Common"
     Focusable="True">
     <Window.Styles>
         <Style Selector="TitleBar:fullscreen">
@@ -40,22 +41,11 @@
         <KeyBinding Gesture="F9" Command="{Binding ToggleDockMode}" />
         <KeyBinding Gesture="Escape" Command="{Binding ExitCurrentState}" />
     </Window.KeyBindings>
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RowDefinitions="*">
         <helpers:OffscreenTextBox IsEnabled="False" Opacity="0" Name="HiddenTextBox" IsHitTestVisible="False" IsTabStop="False" />
         <Grid
             HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+            VerticalAlignment="Stretch" ColumnDefinitions="*" RowDefinitions="Auto,*,Auto">
             <StackPanel
                 Name="MenuBar"
                 MinHeight="35"
@@ -78,11 +68,8 @@
                 BorderThickness="0,0,0,0"
                 DockPanel.Dock="Top"
                 IsVisible="{Binding ShowContent}">
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Name="GameLibrary">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Name="GameLibrary"
+                      RowDefinitions="Auto,*">
                     <main:MainViewControls
                         Name="ViewControls"
                         Grid.Row="0"/>
@@ -116,11 +103,7 @@
                     Margin="40"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    IsVisible="{Binding ShowLoadProgress}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
+                    IsVisible="{Binding ShowLoadProgress}" ColumnDefinitions="Auto,*">
                     <Border
                         Grid.RowSpan="2"
                         Grid.Column="0"
@@ -143,12 +126,7 @@
                         Grid.Column="1"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Center"
-                        IsVisible="{Binding ShowLoadProgress}">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                        IsVisible="{Binding ShowLoadProgress}" RowDefinitions="Auto,Auto,Auto">
                         <TextBlock
                             Grid.Row="0"
                             Margin="10"

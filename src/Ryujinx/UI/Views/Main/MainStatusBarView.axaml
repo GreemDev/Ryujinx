@@ -29,12 +29,7 @@
             Margin="5"
             VerticalAlignment="Center"
             IsVisible="{Binding EnableNonGameRunningControls}">
-            <Grid Margin="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+            <Grid Margin="0" ColumnDefinitions="Auto,Auto,*">
                 <Button
                     Width="25"
                     Height="25"

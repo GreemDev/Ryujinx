@@ -17,12 +17,7 @@
     <UserControl.Resources>
         <helpers:TitleUpdateLabelConverter x:Key="TitleUpdateLabel" />
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <Grid RowDefinitions="Auto,*,Auto">
         <StackPanel
             Grid.Row="0"
             Margin="0 0 0 10"

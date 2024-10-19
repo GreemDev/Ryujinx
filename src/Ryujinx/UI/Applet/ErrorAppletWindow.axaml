@@ -17,16 +17,7 @@
     <Grid
         Margin="20"
         HorizontalAlignment="Stretch"
-        VerticalAlignment="Stretch">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+        VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto" ColumnDefinitions="Auto,*">
         <Image
             Grid.Row="1"
             Grid.RowSpan="2"

@@ -14,21 +14,11 @@
     x:CompileBindings="True"
     x:DataType="viewModels:ModManagerViewModel"
     Focusable="True">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <Grid RowDefinitions="Auto,*,Auto">
         <Panel
             Margin="0 0 0 10"
             Grid.Row="0">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+            <Grid ColumnDefinitions="Auto,Auto,*">
                 <TextBlock
                     Grid.Column="0"
                     Text="{Binding ModCount}" />

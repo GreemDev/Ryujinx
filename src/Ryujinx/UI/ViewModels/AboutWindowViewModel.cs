@@ -1,15 +1,10 @@
 using Avalonia.Media.Imaging;
-using Avalonia.Platform;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
-using Ryujinx.Common.Utilities;
 using Ryujinx.UI.Common.Configuration;
 using System;
-using System.Net.Http;
-using System.Net.NetworkInformation;
-using System.Threading.Tasks;
 
 namespace Ryujinx.Ava.UI.ViewModels
 {
@@ -76,10 +71,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             DiscordLogo = LoadBitmap($"{basePath}Logo_Discord_{themeSuffix}?assembly=Ryujinx.UI.Common");
         }
 
-        private Bitmap LoadBitmap(string uri)
-        {
-            return new Bitmap(Avalonia.Platform.AssetLoader.Open(new Uri(uri)));
-        }
+        private static Bitmap LoadBitmap(string uri) => new(Avalonia.Platform.AssetLoader.Open(new Uri(uri)));
 
         public void Dispose()
         {

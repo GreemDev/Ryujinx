@@ -21,12 +21,7 @@
     <Design.DataContext>
         <viewModels:SettingsViewModel />
     </Design.DataContext>
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="600">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="600" RowDefinitions="Auto,*,Auto">
         <ContentPresenter
             x:Name="ContentPresenter"
             Grid.Row="1"

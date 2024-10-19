@@ -20,18 +20,7 @@
             <Setter Property="IsExpanded" Value="True" />
         </Style>
     </Window.Styles>
-    <Grid Name="CheatGrid" Margin="15">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <Grid Name="CheatGrid" Margin="15" RowDefinitions="Auto,Auto,Auto,*,Auto" ColumnDefinitions="*,*">
         <TextBlock
             Grid.Row="1"
             Grid.Column="0"

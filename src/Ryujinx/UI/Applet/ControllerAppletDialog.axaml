@@ -12,16 +12,7 @@
     x:DataType="applet:ControllerAppletDialog">
     <Grid
         HorizontalAlignment="Stretch"
-        VerticalAlignment="Stretch">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
+        VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto" ColumnDefinitions="*,Auto">
         <Border
             Grid.Column="0"
             Grid.Row="0"
