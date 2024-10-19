@@ -498,6 +498,7 @@ namespace Ryujinx.Ava
         public void Stop()
         {
             _isActive = false;
+            DiscordIntegrationModule.SwitchToMainState();
         }
 
         private void Exit()
@@ -511,6 +512,7 @@ namespace Ryujinx.Ava
 
             _isStopped = true;
             _isActive = false;
+            DiscordIntegrationModule.SwitchToMainState();
         }
 
         public void DisposeContext()
@@ -962,10 +964,10 @@ namespace Ryujinx.Ava
             {
                 if (_viewModel.StartGamesInFullscreen)
                 {
-                    _viewModel.WindowState = WindowState.FullScreen;
+                    _viewModel.WindowState = MainWindow.FullScreenWindowState;
                 }
 
-                if (_viewModel.WindowState == WindowState.FullScreen)
+                if (_viewModel.WindowState == MainWindow.FullScreenWindowState)
                 {
                     _viewModel.ShowMenuAndStatusBar = false;
                 }
@@ -1136,7 +1138,7 @@ namespace Ryujinx.Ava
 
                 Dispatcher.UIThread.Post(() =>
                 {
-                    if (_keyboardInterface.GetKeyboardStateSnapshot().IsPressed(Key.Delete) && _viewModel.WindowState != WindowState.FullScreen)
+                    if (_keyboardInterface.GetKeyboardStateSnapshot().IsPressed(Key.Delete) && _viewModel.WindowState != MainWindow.FullScreenWindowState)
                     {
                         Device.Processes.ActiveApplication.DiskCacheLoadState?.Cancel();
                     }

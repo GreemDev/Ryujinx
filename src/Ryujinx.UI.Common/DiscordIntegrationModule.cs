@@ -86,6 +86,8 @@ namespace Ryujinx.UI.Common
             });
         }
 
+        public static void SwitchToMainState() => _discordClient?.SetPresence(_discordPresenceMain);
+
         private static string TruncateToByteLength(string input)
         {
             if (Encoding.UTF8.GetByteCount(input) <= ApplicationByteLimit)
