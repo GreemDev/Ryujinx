@@ -443,7 +443,7 @@
   "DialogUpdaterNoInternetMessage": "인터넷에 연결되어 있지 않습니다!",
   "DialogUpdaterNoInternetSubMessage": "인터넷 연결이 작동하는지 확인하세요!",
   "DialogUpdaterDirtyBuildMessage": "Ryujinx의 나쁜 빌드는 업데이트할 수 없습니다!\n",
-  "DialogUpdaterDirtyBuildSubMessage": "지원되는 버전을 찾고 있다면 https://ryujinx.org/에서 Ryujinx를 다운로드하세요.",
+  "DialogUpdaterDirtyBuildSubMessage": "지원되는 버전을 찾고 있다면 https://https://github.com/GreemDev/Ryujinx/releases/에서 Ryujinx를 다운로드하세요.",
   "DialogRestartRequiredMessage": "재시작 필요",
   "DialogThemeRestartMessage": "테마가 저장되었습니다. 테마를 적용하려면 다시 시작해야 합니다.",
   "DialogThemeRestartSubMessage": "다시 시작하겠습니까?",

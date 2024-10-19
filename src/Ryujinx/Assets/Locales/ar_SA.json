@@ -443,7 +443,7 @@
   "DialogUpdaterNoInternetMessage": "أنت غير متصل بالإنترنت.",
   "DialogUpdaterNoInternetSubMessage": "يرجى التحقق من أن لديك اتصال إنترنت فعال!",
   "DialogUpdaterDirtyBuildMessage": "لا يمكنك تحديث نسخة القذرة من ريوجينكس!",
-  "DialogUpdaterDirtyBuildSubMessage": "الرجاء تحميل ريوجينكس من https://ryujinx.org إذا كنت تبحث عن إصدار مدعوم.",
+  "DialogUpdaterDirtyBuildSubMessage": "الرجاء تحميل ريوجينكس من https://https://github.com/GreemDev/Ryujinx/releases إذا كنت تبحث عن إصدار مدعوم.",
   "DialogRestartRequiredMessage": "يتطلب إعادة التشغيل",
   "DialogThemeRestartMessage": "تم حفظ السمة. إعادة التشغيل مطلوبة لتطبيق السمة.",
   "DialogThemeRestartSubMessage": "هل تريد إعادة التشغيل",
