@@ -8,6 +8,7 @@ on:
     paths-ignore:
       - '.github/**'
       - 'docs/**'
+      - 'assets/**'
       - '*.yml'
       - '*.json'
       - '*.config'
