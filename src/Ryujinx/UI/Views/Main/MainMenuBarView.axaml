@@ -240,6 +240,7 @@
                     Click="OpenAmiiboWindow"
                     Header="{locale:Locale MenuBarActionsScanAmiibo}"
                     Icon="{icon:Icon mdi-cube-scan}"
+                    InputGesture="Ctrl + A"
                     IsEnabled="{Binding IsAmiiboRequested}" />
                 <MenuItem
                     Command="{Binding TakeScreenshot}"

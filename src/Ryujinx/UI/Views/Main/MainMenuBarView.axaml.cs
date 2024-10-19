@@ -143,27 +143,8 @@ namespace Ryujinx.Ava.UI.Views.Main
             }
         }
 
-        public async void OpenAmiiboWindow(object sender, RoutedEventArgs e)
-        {
-            if (!ViewModel.IsAmiiboRequested)
-                return;
-
-            if (ViewModel.AppHost.Device.System.SearchingForAmiibo(out int deviceId))
-            {
-                string titleId = ViewModel.AppHost.Device.Processes.ActiveApplication.ProgramIdText.ToUpper();
-                AmiiboWindow window = new(ViewModel.ShowAll, ViewModel.LastScannedAmiiboId, titleId);
-
-                await window.ShowDialog(Window);
-
-                if (window.IsScanned)
-                {
-                    ViewModel.ShowAll = window.ViewModel.ShowAllAmiibo;
-                    ViewModel.LastScannedAmiiboId = window.ScannedAmiibo.GetId();
-
-                    ViewModel.AppHost.Device.System.ScanAmiibo(deviceId, ViewModel.LastScannedAmiiboId, window.ViewModel.UseRandomUuid);
-                }
-            }
-        }
+        public async void OpenAmiiboWindow(object sender, RoutedEventArgs e) 
+            => await ViewModel.OpenAmiiboWindow();
 
         public async void OpenCheatManagerForCurrentApp(object sender, RoutedEventArgs e)
         {

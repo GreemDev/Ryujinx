@@ -37,8 +37,6 @@ namespace Ryujinx.Ava.UI.Windows
 {
     public partial class MainWindow : StyleableAppWindow
     {
-        internal static MainWindowViewModel MainWindowViewModel { get; private set; }
-
         public MainWindowViewModel ViewModel { get; }
 
         internal readonly AvaHostUIHandler UiHandler;
@@ -69,9 +67,20 @@ namespace Ryujinx.Ava.UI.Windows
         public readonly double StatusBarHeight;
         public readonly double MenuBarHeight;
 
+        // The special window decoration from AppWindow in FluentAvalonia is only present on Windows;
+        // and as such optimizing for the fact that the menu bar and the title bar are the same is only needed on Windows.
+        // Maximized is considered superior to FullScreen on Windows in this case because you get the benefits of being in full screen,
+        // while still being able to use the standard 3 window controls in the top right to minimize, make the window smaller, or close the app.
+
+        public static readonly WindowState FullScreenWindowState =
+            OperatingSystem.IsWindows() ? WindowState.Maximized : WindowState.FullScreen;
+
         public MainWindow()
         {
-            DataContext = ViewModel = MainWindowViewModel = new MainWindowViewModel();
+            DataContext = ViewModel = new MainWindowViewModel
+            {
+                Window = this
+            };
 
             InitializeComponent();
             Load();
@@ -184,7 +193,7 @@ namespace Ryujinx.Ava.UI.Windows
             ViewModel.ShowContent = true;
             ViewModel.IsLoadingIndeterminate = false;
 
-            if (startFullscreen && ViewModel.WindowState != WindowState.FullScreen)
+            if (startFullscreen && ViewModel.WindowState != MainWindow.FullScreenWindowState)
             {
                 ViewModel.ToggleFullscreen();
             }
@@ -196,7 +205,7 @@ namespace Ryujinx.Ava.UI.Windows
             ViewModel.ShowLoadProgress = true;
             ViewModel.IsLoadingIndeterminate = true;
 
-            if (startFullscreen && ViewModel.WindowState != WindowState.FullScreen)
+            if (startFullscreen && ViewModel.WindowState != MainWindow.FullScreenWindowState)
             {
                 ViewModel.ToggleFullscreen();
             }

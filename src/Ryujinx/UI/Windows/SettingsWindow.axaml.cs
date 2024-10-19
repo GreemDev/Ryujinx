@@ -10,14 +10,13 @@ namespace Ryujinx.Ava.UI.Windows
 {
     public partial class SettingsWindow : StyleableAppWindow
     {
-        internal SettingsViewModel ViewModel { get; set; }
+        internal readonly SettingsViewModel ViewModel;
 
         public SettingsWindow(VirtualFileSystem virtualFileSystem, ContentManager contentManager)
         {
             Title = App.FormatTitle(LocaleKeys.Settings);
 
-            ViewModel = new SettingsViewModel(virtualFileSystem, contentManager);
-            DataContext = ViewModel;
+            DataContext = ViewModel = new SettingsViewModel(virtualFileSystem, contentManager);
 
             ViewModel.CloseWindow += Close;
             ViewModel.SaveSettingsEvent += SaveSettings;
@@ -28,8 +27,7 @@ namespace Ryujinx.Ava.UI.Windows
 
         public SettingsWindow()
         {
-            ViewModel = new SettingsViewModel();
-            DataContext = ViewModel;
+            DataContext = ViewModel = new SettingsViewModel();
 
             InitializeComponent();
             Load();

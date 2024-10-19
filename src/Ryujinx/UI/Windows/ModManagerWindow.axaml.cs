@@ -14,7 +14,7 @@ namespace Ryujinx.Ava.UI.Windows
 {
     public partial class ModManagerWindow : UserControl
     {
-        public ModManagerViewModel ViewModel;
+        public readonly ModManagerViewModel ViewModel;
 
         public ModManagerWindow()
         {

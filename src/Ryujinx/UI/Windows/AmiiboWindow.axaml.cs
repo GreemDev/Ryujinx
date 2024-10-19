@@ -9,12 +9,10 @@ namespace Ryujinx.Ava.UI.Windows
     {
         public AmiiboWindow(bool showAll, string lastScannedAmiiboId, string titleId)
         {
-            ViewModel = new AmiiboWindowViewModel(this, lastScannedAmiiboId, titleId)
+            DataContext = ViewModel = new AmiiboWindowViewModel(this, lastScannedAmiiboId, titleId)
             {
                 ShowAllAmiibo = showAll,
             };
-
-            DataContext = ViewModel;
 
             InitializeComponent();
 
@@ -23,9 +21,7 @@ namespace Ryujinx.Ava.UI.Windows
 
         public AmiiboWindow()
         {
-            ViewModel = new AmiiboWindowViewModel(this, string.Empty, string.Empty);
-
-            DataContext = ViewModel;
+            DataContext = ViewModel = new AmiiboWindowViewModel(this, string.Empty, string.Empty);
 
             InitializeComponent();
 
@@ -37,23 +33,10 @@ namespace Ryujinx.Ava.UI.Windows
 
         public bool IsScanned { get; set; }
         public AmiiboApi ScannedAmiibo { get; set; }
-        public AmiiboWindowViewModel ViewModel { get; set; }
+        public AmiiboWindowViewModel ViewModel;
 
-        private void ScanButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ViewModel.AmiiboSelectedIndex > -1)
-            {
-                ScannedAmiibo = ViewModel.AmiiboList[ViewModel.AmiiboSelectedIndex];
-                IsScanned = true;
-                Close();
-            }
-        }
+        private void ScanButton_Click(object sender, RoutedEventArgs e) => ViewModel.Scan();
 
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
-        {
-            IsScanned = false;
-
-            Close();
-        }
+        private void CancelButton_Click(object sender, RoutedEventArgs e) => ViewModel.Cancel();
     }
 }

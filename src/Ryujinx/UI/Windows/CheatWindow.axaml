@@ -1,4 +1,4 @@
-﻿<window:StyleableAppWindow
+<window:StyleableAppWindow
     x:Class="Ryujinx.Ava.UI.Windows.CheatWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -98,6 +98,7 @@
                     Name="SaveButton"
                     MinWidth="90"
                     Margin="5"
+                    HotKey="Ctrl+S"
                     Command="{Binding Save}"
                     IsVisible="{Binding !NoCheatsFound}">
                     <TextBlock Text="{locale:Locale SettingsButtonSave}" />
@@ -106,6 +107,7 @@
                     Name="CancelButton"
                     MinWidth="90"
                     Margin="5"
+                    HotKey="Escape"
                     Command="{Binding Close}">
                     <TextBlock Text="{locale:Locale InputDialogCancel}" />
                 </Button>

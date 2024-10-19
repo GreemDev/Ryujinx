@@ -45,16 +45,23 @@
             <CheckBox Margin="10" Grid.Column="0" VerticalContentAlignment="Center" 
                       IsChecked="{Binding ShowAllAmiibo}"
                       Content="{locale:Locale AmiiboOptionsShowAllLabel}" />
-            <CheckBox Margin="10" VerticalContentAlignment="Center" Grid.Column="1" IsChecked="{Binding UseRandomUuid}"
+            <CheckBox HotKey="H" 
+                      Margin="10" VerticalContentAlignment="Center" Grid.Column="1" 
+                      IsChecked="{Binding UseRandomUuid}"
                       Content="{locale:Locale AmiiboOptionsUsRandomTagLabel}" />
-
-            <Button Grid.Column="3" IsEnabled="{Binding EnableScanning}" Width="80"
-                    Content="{locale:Locale AmiiboScanButtonLabel}" Name="ScanButton"
+            <Button Grid.Column="3" 
+                    IsEnabled="{Binding EnableScanning}" 
+                    Width="80"
+                    Name="ScanButton"
+                    HotKey="Return"
+                    Content="{locale:Locale AmiiboScanButtonLabel}"
                     Click="ScanButton_Click" />
             <Button Grid.Column="4" 
                     Margin="10,0" 
                     Width="80"
                     Name="CancelButton"
+                    HotKey="Escape"
+                    Content="{locale:Locale InputDialogCancel}"
                     Click="CancelButton_Click" />
         </Grid>
     </Grid>
