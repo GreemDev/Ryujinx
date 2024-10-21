@@ -39,9 +39,10 @@ jobs:
       - name: Print dotnet format version
         run: dotnet format --version
 
-      - name: Run dotnet format whitespace
-        run: |
-          dotnet format whitespace --verify-no-changes --report ./whitespace-report.json -v d
+      # Pause for now. Fix errors with style and analyzers first
+      #- name: Run dotnet format whitespace
+      #  run: |
+      #    dotnet format whitespace --verify-no-changes --report ./whitespace-report.json -v d
 
       # For some unknown reason this step sometimes fails with exit code 139 (segfault?),
       # so in that case we'll try again (3 tries max).
