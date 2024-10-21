@@ -962,10 +962,10 @@ namespace Ryujinx.Ava
             {
                 if (_viewModel.StartGamesInFullscreen)
                 {
-                    _viewModel.WindowState = MainWindow.FullScreenWindowState;
+                    _viewModel.WindowState = WindowState.FullScreen;
                 }
 
-                if (_viewModel.WindowState == MainWindow.FullScreenWindowState)
+                if (_viewModel.WindowState is WindowState.FullScreen)
                 {
                     _viewModel.ShowMenuAndStatusBar = false;
                 }
@@ -1136,7 +1136,7 @@ namespace Ryujinx.Ava
 
                 Dispatcher.UIThread.Post(() =>
                 {
-                    if (_keyboardInterface.GetKeyboardStateSnapshot().IsPressed(Key.Delete) && _viewModel.WindowState != MainWindow.FullScreenWindowState)
+                    if (_keyboardInterface.GetKeyboardStateSnapshot().IsPressed(Key.Delete) && _viewModel.WindowState is not WindowState.FullScreen)
                     {
                         Device.Processes.ActiveApplication.DiskCacheLoadState?.Cancel();
                     }

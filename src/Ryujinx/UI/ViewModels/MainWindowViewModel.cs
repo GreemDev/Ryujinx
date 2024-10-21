@@ -1426,7 +1426,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public async Task ExitCurrentState()
         {
-            if (WindowState == MainWindow.FullScreenWindowState)
+            if (WindowState is WindowState.FullScreen)
             {
                 ToggleFullscreen();
             }
@@ -1754,7 +1754,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
             else
             {
-                WindowState = MainWindow.FullScreenWindowState;
+                WindowState = WindowState.FullScreen;
 
                 if (IsGameRunning)
                 {
@@ -1762,7 +1762,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                 }
             }
 
-            IsFullScreen = WindowState == MainWindow.FullScreenWindowState;
+            IsFullScreen = WindowState is WindowState.FullScreen;
         }
 
         public static void SaveConfig()

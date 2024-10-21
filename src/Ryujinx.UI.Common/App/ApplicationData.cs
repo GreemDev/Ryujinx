@@ -19,7 +19,7 @@ namespace Ryujinx.UI.App.Common
 {
     public class ApplicationData
     {
-        public static Func<string> LocalizedNever = () => "Never";
+        public static Func<string> LocalizedNever { get; set; } = () => "Never";
 
         public bool Favorite { get; set; }
         public byte[] Icon { get; set; }
