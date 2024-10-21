@@ -171,6 +171,7 @@ namespace Ryujinx.Input.SDL2
                 return;
             }
 
+            GC.SuppressFinalize(this);
             _isDisposed = true;
         }
     }
