@@ -986,6 +986,10 @@ namespace Ryujinx.UI.App.Common
                                 var shouldSelect = !currentlySelected.HasValue ||
                                                    currentlySelected.Value.TitleUpdate.Version < update.Version;
                                 _titleUpdates.AddOrUpdate((update, shouldSelect));
+
+                                if (currentlySelected.HasValue && shouldSelect)
+                                    _titleUpdates.AddOrUpdate((currentlySelected.Value.TitleUpdate, false));
+
                                 SaveTitleUpdatesForGame(update.TitleIdBase);
                                 numUpdatesLoaded++;
 
