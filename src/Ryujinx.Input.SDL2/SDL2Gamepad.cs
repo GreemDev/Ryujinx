@@ -260,7 +260,7 @@ namespace Ryujinx.Input.SDL2
             {
                 if (_buttonsUserMapping.Count == 0)
                     return rawState;
-                
+
 
                 // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
                 foreach (ButtonMappingEntry entry in _buttonsUserMapping)
@@ -291,11 +291,28 @@ namespace Ryujinx.Input.SDL2
             return value * ConvertRate;
         }
 
+        private JoyconConfigControllerStick<GamepadInputId, Common.Configuration.Hid.Controller.StickInputId> GetLogicalJoyStickConfig(StickInputId inputId)
+        {
+            switch (inputId)
+            {
+                case StickInputId.Left:
+                    if (_configuration.RightJoyconStick.Joystick == Common.Configuration.Hid.Controller.StickInputId.Left)
+                        return _configuration.RightJoyconStick;
+                    else
+                        return _configuration.LeftJoyconStick;
+                case StickInputId.Right:
+                    if (_configuration.LeftJoyconStick.Joystick == Common.Configuration.Hid.Controller.StickInputId.Right)
+                        return _configuration.LeftJoyconStick;
+                    else
+                        return _configuration.RightJoyconStick;
+            }
+            return null;
+        }
+
         public (float, float) GetStick(StickInputId inputId)
         {
             if (inputId == StickInputId.Unbound)
                 return (0.0f, 0.0f);
-            
 
             (short stickX, short stickY) = GetStickXY(inputId);
 
@@ -304,24 +321,22 @@ namespace Ryujinx.Input.SDL2
 
             if (HasConfiguration)
             {
-                if ((inputId == StickInputId.Left && _configuration.LeftJoyconStick.InvertStickX) ||
-                    (inputId == StickInputId.Right && _configuration.RightJoyconStick.InvertStickX))
-                {
-                    resultX = -resultX;
-                }
+                var joyconStickConfig = GetLogicalJoyStickConfig(inputId);
 
-                if ((inputId == StickInputId.Left && _configuration.LeftJoyconStick.InvertStickY) ||
-                    (inputId == StickInputId.Right && _configuration.RightJoyconStick.InvertStickY))
+                if (joyconStickConfig != null)
                 {
-                    resultY = -resultY;
-                }
+                    if (joyconStickConfig.InvertStickX)
+                        resultX = -resultX;
 
-                if ((inputId == StickInputId.Left && _configuration.LeftJoyconStick.Rotate90CW) ||
-                    (inputId == StickInputId.Right && _configuration.RightJoyconStick.Rotate90CW))
-                {
-                    float temp = resultX;
-                    resultX = resultY;
-                    resultY = -temp;
+                    if (joyconStickConfig.InvertStickY)
+                        resultY = -resultY;
+
+                    if (joyconStickConfig.Rotate90CW)
+                    {
+                        float temp = resultX;
+                        resultX = resultY;
+                        resultY = -temp;
+                    }
                 }
             }
 
