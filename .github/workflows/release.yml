@@ -143,6 +143,7 @@ jobs:
           # Setup appimagetool
           wget -q -O tools/appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
           chmod +x tools/appimagetool
+          chmod +x distribution/linux/appimage/build-appimage.sh
 
           # Explicitly set $ARCH for appimagetool ($ARCH_NAME is for the file name)
           if [ "$PLATFORM_NAME" = "linux-x64" ]; then
