@@ -73,6 +73,36 @@ jobs:
           chmod +x ./publish_sdl2_headless/Ryujinx.Headless.SDL2 ./publish_sdl2_headless/Ryujinx.sh
         if: github.event_name == 'pull_request' && matrix.platform.os == 'ubuntu-latest'
 
+      - name: Build AppImage
+        if: github.event_name == 'pull_request' && matrix.platform.os == 'ubuntu-latest'
+        run: |
+          PLATFORM_NAME="${{ matrix.platform.name }}"
+
+          sudo apt install -y zsync desktop-file-utils appstream
+
+          mkdir -p tools
+          export PATH="$PATH:$(readlink -f tools)"
+
+          # Setup appimagetool
+          wget -q -O tools/appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
+          chmod +x tools/appimagetool
+
+          # Explicitly set $ARCH for appimagetool ($ARCH_NAME is for the file name)
+          if [ "$PLATFORM_NAME" = "linux-x64" ]; then
+            ARCH_NAME=x64
+            export ARCH=x86_64
+          elif [ "$PLATFORM_NAME" = "linux-arm64" ]; then
+            ARCH_NAME=arm64
+            export ARCH=aarch64
+          else
+            echo "Unexpected PLATFORM_NAME "$PLATFORM_NAME""
+            exit 1
+          fi
+
+          export UFLAG="gh-releases-zsync|${{ github.repository_owner }}|${{ github.event.repository.name }}|latest|*-$ARCH_NAME.AppImage.zsync"
+          BUILDDIR=publish OUTDIR=publish_appimage distribution/linux/appimage/build-appimage.sh
+        shell: bash
+
       - name: Upload Ryujinx artifact
         uses: actions/upload-artifact@v4
         with:
