@@ -98,7 +98,6 @@ namespace Ryujinx.UI.Common.Helper
                 if (baseApplicationExtension is not (".nro" or ".nso"))
                     return IsFirmwareValid(contentManager, out error);
 
-                error = UserError.Success;
             }
 
             error = UserError.ApplicationNotFound;

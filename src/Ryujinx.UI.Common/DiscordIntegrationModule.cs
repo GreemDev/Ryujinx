@@ -14,8 +14,8 @@ namespace Ryujinx.UI.Common
     public static class DiscordIntegrationModule
     {
         public static Timestamps StartedAt { get; set; }
-        
-        private static readonly string _description = ReleaseInformation.IsValid 
+
+        private static readonly string _description = ReleaseInformation.IsValid
                 ? $"v{ReleaseInformation.Version} {ReleaseInformation.ReleaseChannelOwner}/{ReleaseInformation.ReleaseChannelRepo}@{ReleaseInformation.BuildGitHash}"
                 : "dev build";
 
@@ -80,7 +80,7 @@ namespace Ryujinx.UI.Common
                 },
                 Details = TruncateToByteLength($"Playing {appMeta.Title}"),
                 State = appMeta.LastPlayed.HasValue && appMeta.TimePlayed.TotalSeconds > 5
-                    ? $"Total play time: {appMeta.TimePlayed.Humanize(2, false)}" 
+                    ? $"Total play time: {appMeta.TimePlayed.Humanize(2, false)}"
                     : "Never played",
                 Timestamps = Timestamps.Now
             });
@@ -120,7 +120,7 @@ namespace Ryujinx.UI.Common
             _discordClient?.Dispose();
         }
 
-        private static readonly string[] _discordGameAssetKeys = 
+        private static readonly string[] _discordGameAssetKeys =
         [
             "01002da013484000", // The Legend of Zelda: Skyward Sword HD
             "01007ef00011e000", // The Legend of Zelda: Breath of the Wild

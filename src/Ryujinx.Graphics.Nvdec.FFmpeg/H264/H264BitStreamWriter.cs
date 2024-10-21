@@ -72,7 +72,7 @@ namespace Ryujinx.Graphics.Nvdec.FFmpeg.H264
             Flush();
         }
 
-        public readonly Span<byte> AsSpan() 
+        public readonly Span<byte> AsSpan()
             => new Span<byte>(workBuffer)[.._offset];
 
         public void WriteU(uint value, int valueSize) => WriteBits((int)value, valueSize);

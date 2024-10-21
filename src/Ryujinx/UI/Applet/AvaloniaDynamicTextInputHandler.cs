@@ -136,7 +136,7 @@ namespace Ryujinx.Ava.UI.Applet
                 _hiddenTextBox.CaretIndex = cursorBegin;
             });
 
-        public void SetText(string text, int cursorBegin, int cursorEnd) => 
+        public void SetText(string text, int cursorBegin, int cursorEnd) =>
             Dispatcher.UIThread.Post(() =>
             {
                 _hiddenTextBox.Text = text;

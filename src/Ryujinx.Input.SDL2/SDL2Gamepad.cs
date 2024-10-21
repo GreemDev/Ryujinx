@@ -147,7 +147,8 @@ namespace Ryujinx.Input.SDL2
 
         public void Rumble(float lowFrequency, float highFrequency, uint durationMs)
         {
-            if (!Features.HasFlag(GamepadFeaturesFlag.Rumble)) return;
+            if (!Features.HasFlag(GamepadFeaturesFlag.Rumble))
+                return;
 
             ushort lowFrequencyRaw = (ushort)(lowFrequency * ushort.MaxValue);
             ushort highFrequencyRaw = (ushort)(highFrequency * ushort.MaxValue);
@@ -260,12 +261,13 @@ namespace Ryujinx.Input.SDL2
             {
                 if (_buttonsUserMapping.Count == 0)
                     return rawState;
-                
+
 
                 // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
                 foreach (ButtonMappingEntry entry in _buttonsUserMapping)
                 {
-                    if (!entry.IsValid) continue;
+                    if (!entry.IsValid)
+                        continue;
 
                     // Do not touch state of button already pressed
                     if (!result.IsPressed(entry.To))
@@ -295,7 +297,7 @@ namespace Ryujinx.Input.SDL2
         {
             if (inputId == StickInputId.Unbound)
                 return (0.0f, 0.0f);
-            
+
 
             (short stickX, short stickY) = GetStickXY(inputId);
 

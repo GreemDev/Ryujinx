@@ -492,7 +492,7 @@ namespace Ryujinx.Common.Collections
             Start = start;
             End = end;
             Max = end;
-            Values = [ new RangeNode<TKey, TValue>(start, end, value) ];
+            Values = [new RangeNode<TKey, TValue>(start, end, value)];
             Parent = parent;
         }
     }

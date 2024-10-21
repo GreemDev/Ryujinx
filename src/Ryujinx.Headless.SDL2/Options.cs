@@ -1,5 +1,6 @@
 using CommandLine;
 using Ryujinx.Common.Configuration;
+using Ryujinx.HLE;
 using Ryujinx.HLE.HOS.SystemState;
 
 namespace Ryujinx.Headless.SDL2
@@ -219,8 +220,8 @@ namespace Ryujinx.Headless.SDL2
 
         // Hacks
 
-        [Option("expand-ram", Required = false, Default = false, HelpText = "Expands the RAM amount on the emulated system from 4GiB to 8GiB.")]
-        public bool ExpandRAM { get; set; }
+        [Option("dram-size", Required = false, Default = MemoryConfiguration.MemoryConfiguration4GiB, HelpText = "Set the RAM amount on the emulated system.")]
+        public MemoryConfiguration DramSize { get; set; }
 
         [Option("ignore-missing-services", Required = false, Default = false, HelpText = "Enable ignoring missing services.")]
         public bool IgnoreMissingServices { get; set; }

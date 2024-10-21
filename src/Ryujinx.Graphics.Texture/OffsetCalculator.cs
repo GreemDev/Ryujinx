@@ -114,7 +114,7 @@ namespace Ryujinx.Graphics.Texture
                        _height == other._height &&
                        _stride == other._stride &&
                        _bytesPerPixel == other._bytesPerPixel;
-            
+
 
             return !other._isLinear && _layoutConverter.LayoutMatches(other._layoutConverter);
         }

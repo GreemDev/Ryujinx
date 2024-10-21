@@ -80,8 +80,8 @@ namespace Ryujinx.Ava.Common.Locale
                 }
 
                 // If the locale doesn't contain the key return the default one.
-                return _localeDefaultStrings.TryGetValue(key, out string defaultValue) 
-                    ? defaultValue 
+                return _localeDefaultStrings.TryGetValue(key, out string defaultValue)
+                    ? defaultValue
                     : key.ToString(); // If the locale text doesn't exist return the key.
             }
             set

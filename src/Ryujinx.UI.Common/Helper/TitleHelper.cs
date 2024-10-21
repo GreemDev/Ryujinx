@@ -9,7 +9,7 @@ namespace Ryujinx.UI.Common.Helper
         {
             if (activeProcess == null)
                 return string.Empty;
-            
+
             string titleNameSection = string.IsNullOrWhiteSpace(activeProcess.Name) ? string.Empty : $" {activeProcess.Name}";
             string titleVersionSection = string.IsNullOrWhiteSpace(activeProcess.DisplayVersion) ? string.Empty : $" v{activeProcess.DisplayVersion}";
             string titleIdSection = $" ({activeProcess.ProgramIdText.ToUpper()})";

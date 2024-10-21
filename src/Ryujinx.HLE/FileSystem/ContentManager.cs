@@ -589,12 +589,12 @@ namespace Ryujinx.HLE.FileSystem
             // So, we check it early for a better user experience.
             if (_virtualFileSystem.KeySet.HeaderKey.IsZeros())
                 throw new MissingKeyException("HeaderKey is empty. Cannot decrypt NCA headers.");
-            
+
             Dictionary<ulong, List<(NcaContentType type, string path)>> updateNcas = new();
 
             if (Directory.Exists(firmwarePackage))
                 return VerifyAndGetVersionDirectory(firmwarePackage);
-            
+
             if (!File.Exists(firmwarePackage))
                 throw new FileNotFoundException("Firmware file does not exist.");
 
@@ -620,7 +620,7 @@ namespace Ryujinx.HLE.FileSystem
 
             return null;
 
-            SystemVersion VerifyAndGetVersionDirectory(string firmwareDirectory) 
+            SystemVersion VerifyAndGetVersionDirectory(string firmwareDirectory)
                 => VerifyAndGetVersion(new LocalFileSystem(firmwareDirectory));
 
             SystemVersion VerifyAndGetVersionZip(ZipArchive archive)

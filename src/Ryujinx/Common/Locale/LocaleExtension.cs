@@ -21,7 +21,8 @@ namespace Ryujinx.Ava.Common.Locale
                     new CompiledBindingPathBuilder()
                         .Property(PropertyInfo, PropertyInfoAccessorFactory.CreateInpcPropertyAccessor)
                         .Build()
-                ) { Source = LocaleManager.Instance }
+                )
+            { Source = LocaleManager.Instance }
                 .ProvideValue(serviceProvider);
     }
 }

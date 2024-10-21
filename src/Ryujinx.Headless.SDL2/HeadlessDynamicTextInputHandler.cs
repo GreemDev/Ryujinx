@@ -18,7 +18,7 @@ namespace Ryujinx.Headless.SDL2
         public bool TextProcessingEnabled
         {
             get => Volatile.Read(ref _canProcessInput);
-            
+
             set
             {
                 Volatile.Write(ref _canProcessInput, value);

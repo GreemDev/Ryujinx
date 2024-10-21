@@ -199,7 +199,7 @@ namespace Ryujinx.Ava.UI.Helpers
             string secondaryText,
             string acceptButton,
             string closeButton,
-            string title) 
+            string title)
             => ShowTextDialog(
                 title,
                 primary,
@@ -215,7 +215,7 @@ namespace Ryujinx.Ava.UI.Helpers
             string acceptButtonText,
             string cancelButtonText,
             string title,
-            UserResult primaryButtonResult = UserResult.Yes) 
+            UserResult primaryButtonResult = UserResult.Yes)
             => await ShowTextDialog(
                 string.IsNullOrWhiteSpace(title) ? LocaleManager.Instance[LocaleKeys.DialogConfirmationTitle] : title,
                 primaryText,
@@ -226,7 +226,7 @@ namespace Ryujinx.Ava.UI.Helpers
                 (int)Symbol.Help,
                 primaryButtonResult);
 
-        internal static async Task<UserResult> CreateLocalizedConfirmationDialog(string primaryText, string secondaryText) 
+        internal static async Task<UserResult> CreateLocalizedConfirmationDialog(string primaryText, string secondaryText)
             => await CreateConfirmationDialog(
                 primaryText,
                 secondaryText,
@@ -234,7 +234,7 @@ namespace Ryujinx.Ava.UI.Helpers
                 LocaleManager.Instance[LocaleKeys.InputDialogNo],
                 LocaleManager.Instance[LocaleKeys.RyujinxConfirm]);
 
-        internal static async Task CreateUpdaterInfoDialog(string primary, string secondaryText) 
+        internal static async Task CreateUpdaterInfoDialog(string primary, string secondaryText)
             => await ShowTextDialog(
                 LocaleManager.Instance[LocaleKeys.DialogUpdaterTitle],
                 primary,
@@ -244,7 +244,7 @@ namespace Ryujinx.Ava.UI.Helpers
                 LocaleManager.Instance[LocaleKeys.InputDialogOk],
                 (int)Symbol.Important);
 
-        internal static async Task CreateWarningDialog(string primary, string secondaryText) 
+        internal static async Task CreateWarningDialog(string primary, string secondaryText)
             => await ShowTextDialog(
                 LocaleManager.Instance[LocaleKeys.DialogWarningTitle],
                 primary,

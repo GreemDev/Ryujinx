@@ -87,7 +87,8 @@ namespace Ryujinx.UI.Common.Helper
 
             foreach (string path in titleUpdateMetadata.Paths)
             {
-                if (!File.Exists(path)) continue;
+                if (!File.Exists(path))
+                    continue;
 
                 try
                 {
@@ -104,7 +105,7 @@ namespace Ryujinx.UI.Common.Helper
 
                     if (controlNca is null || patchNca is null)
                         continue;
-                    
+
                     ApplicationControlProperty controlData = new();
 
                     using UniqueRef<IFile> nacpFile = new();
@@ -144,7 +145,7 @@ namespace Ryujinx.UI.Common.Helper
             return result;
         }
 
-        private static string PathToGameUpdatesJson(ulong applicationIdBase) 
+        private static string PathToGameUpdatesJson(ulong applicationIdBase)
             => Path.Combine(AppDataManager.GamesDirPath, applicationIdBase.ToString("x16"), "updates.json");
     }
 }
