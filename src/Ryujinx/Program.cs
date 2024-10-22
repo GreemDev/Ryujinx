@@ -164,7 +164,7 @@ namespace Ryujinx.Ava
                 ConfigurationPath = appDataConfigurationPath;
             }
 
-            if(!string.IsNullOrEmpty(CommandLineState.OverrideConfigFile) && File.Exists(CommandLineState.OverrideConfigFile))
+            if (!string.IsNullOrEmpty(CommandLineState.OverrideConfigFile) && File.Exists(CommandLineState.OverrideConfigFile))
             {
                 ConfigurationPath = CommandLineState.OverrideConfigFile;
             }
