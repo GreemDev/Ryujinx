@@ -96,6 +96,7 @@
   "SettingsTabGeneralEnableDiscordRichPresence": "Włącz Bogatą Obecność Discord",
   "SettingsTabGeneralCheckUpdatesOnLaunch": "Sprawdzaj aktualizacje przy uruchomieniu",
   "SettingsTabGeneralShowConfirmExitDialog": "Pokazuj okno dialogowe \"Potwierdź wyjście\"",
+  "SettingsTabGeneralIgnoreApplet": "Ignoruj ​​aplet",
   "SettingsTabGeneralRememberWindowState": "Remember Window Size/Position",
   "SettingsTabGeneralHideCursor": "Ukryj kursor:",
   "SettingsTabGeneralHideCursorNever": "Nigdy",

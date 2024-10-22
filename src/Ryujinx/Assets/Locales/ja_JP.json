@@ -96,6 +96,7 @@
   "SettingsTabGeneralEnableDiscordRichPresence": "Discord リッチプレゼンスを有効にする",
   "SettingsTabGeneralCheckUpdatesOnLaunch": "起動時にアップデートを確認する",
   "SettingsTabGeneralShowConfirmExitDialog": "\"終了を確認\" ダイアログを表示する",
+  "SettingsTabGeneralIgnoreApplet": "アプレットを無視する",
   "SettingsTabGeneralRememberWindowState": "Remember Window Size/Position",
   "SettingsTabGeneralHideCursor": "マウスカーソルを非表示",
   "SettingsTabGeneralHideCursorNever": "決して",

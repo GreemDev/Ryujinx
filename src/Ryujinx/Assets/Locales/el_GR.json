@@ -96,6 +96,7 @@
   "SettingsTabGeneralEnableDiscordRichPresence": "Ενεργοποίηση Εμπλουτισμένης Παρουσίας Discord",
   "SettingsTabGeneralCheckUpdatesOnLaunch": "Έλεγχος για Ενημερώσεις στην Εκκίνηση",
   "SettingsTabGeneralShowConfirmExitDialog": "Εμφάνιση διαλόγου \"Επιβεβαίωση Εξόδου\".",
+  "SettingsTabGeneralIgnoreApplet": "Αγνοήστε το Applet",
   "SettingsTabGeneralRememberWindowState": "Remember Window Size/Position",
   "SettingsTabGeneralHideCursor": "Απόκρυψη Κέρσορα:",
   "SettingsTabGeneralHideCursorNever": "Ποτέ",

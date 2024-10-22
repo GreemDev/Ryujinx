@@ -99,6 +99,7 @@
   "SettingsTabGeneralEnableDiscordRichPresence": "Enable Discord Rich Presence",
   "SettingsTabGeneralCheckUpdatesOnLaunch": "Check for Updates on Launch",
   "SettingsTabGeneralShowConfirmExitDialog": "Show \"Confirm Exit\" Dialog",
+  "SettingsTabGeneralIgnoreApplet": "Ignore Applet",
   "SettingsTabGeneralRememberWindowState": "Remember Window Size/Position",
   "SettingsTabGeneralHideCursor": "Hide Cursor:",
   "SettingsTabGeneralHideCursorNever": "Never",

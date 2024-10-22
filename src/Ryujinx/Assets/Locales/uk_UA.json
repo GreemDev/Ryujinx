@@ -96,6 +96,7 @@
   "SettingsTabGeneralEnableDiscordRichPresence": "Увімкнути розширену присутність Discord",
   "SettingsTabGeneralCheckUpdatesOnLaunch": "Перевіряти наявність оновлень під час запуску",
   "SettingsTabGeneralShowConfirmExitDialog": "Показати діалогове вікно «Підтвердити вихід».",
+  "SettingsTabGeneralIgnoreApplet": "Ігнорувати Аплет",
   "SettingsTabGeneralRememberWindowState": "Remember Window Size/Position",
   "SettingsTabGeneralHideCursor": "Сховати вказівник:",
   "SettingsTabGeneralHideCursorNever": "Ніколи",

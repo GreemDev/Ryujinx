@@ -96,6 +96,7 @@
   "SettingsTabGeneralEnableDiscordRichPresence": "เปิดใช้งาน Discord Rich Presence",
   "SettingsTabGeneralCheckUpdatesOnLaunch": "ตรวจหาการอัปเดตเมื่อเปิดโปรแกรม",
   "SettingsTabGeneralShowConfirmExitDialog": "แสดง \"ยืนยันการออก\" กล่องข้อความโต้ตอบ",
+  "SettingsTabGeneralIgnoreApplet": "Ignore Applet",
   "SettingsTabGeneralRememberWindowState": "Remember Window Size/Position",
   "SettingsTabGeneralHideCursor": "ซ่อน เคอร์เซอร์:",
   "SettingsTabGeneralHideCursorNever": "ไม่มี",

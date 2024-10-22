@@ -96,6 +96,7 @@
   "SettingsTabGeneralEnableDiscordRichPresence": "Статус активности в Discord",
   "SettingsTabGeneralCheckUpdatesOnLaunch": "Проверять наличие обновлений при запуске",
   "SettingsTabGeneralShowConfirmExitDialog": "Подтверждать выход из приложения",
+  "SettingsTabGeneralIgnoreApplet": "Игнорировать Апплет",
   "SettingsTabGeneralRememberWindowState": "Запомнить размер/положение окна",
   "SettingsTabGeneralHideCursor": "Скрывать курсор",
   "SettingsTabGeneralHideCursorNever": "Никогда",

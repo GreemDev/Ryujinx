@@ -96,6 +96,7 @@
   "SettingsTabGeneralEnableDiscordRichPresence": "הפעלת תצוגה עשירה בדיסקורד",
   "SettingsTabGeneralCheckUpdatesOnLaunch": "בדוק אם קיימים עדכונים בהפעלה",
   "SettingsTabGeneralShowConfirmExitDialog": "הראה דיאלוג \"אשר יציאה\"",
+  "SettingsTabGeneralIgnoreApplet": "Ignore Applet",
   "SettingsTabGeneralRememberWindowState": "Remember Window Size/Position",
   "SettingsTabGeneralHideCursor": "הסתר את הסמן",
   "SettingsTabGeneralHideCursorNever": "אף פעם",

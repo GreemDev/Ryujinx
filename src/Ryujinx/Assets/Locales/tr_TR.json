@@ -96,6 +96,7 @@
   "SettingsTabGeneralEnableDiscordRichPresence": "Discord Zengin İçerik'i Etkinleştir",
   "SettingsTabGeneralCheckUpdatesOnLaunch": "Her Açılışta Güncellemeleri Denetle",
   "SettingsTabGeneralShowConfirmExitDialog": "\"Çıkışı Onayla\" Diyaloğunu Göster",
+  "SettingsTabGeneralIgnoreApplet": "Ignore Applet",
   "SettingsTabGeneralRememberWindowState": "Remember Window Size/Position",
   "SettingsTabGeneralHideCursor": "İşaretçiyi Gizle:",
   "SettingsTabGeneralHideCursorNever": "Hiçbir Zaman",

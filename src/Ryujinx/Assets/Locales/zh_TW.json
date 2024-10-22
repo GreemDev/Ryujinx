@@ -96,6 +96,7 @@
   "SettingsTabGeneralEnableDiscordRichPresence": "啟用 Discord 動態狀態展示",
   "SettingsTabGeneralCheckUpdatesOnLaunch": "啟動時檢查更新",
   "SettingsTabGeneralShowConfirmExitDialog": "顯示「確認結束」對話方塊",
+  "SettingsTabGeneralIgnoreApplet": "忽略小程式",
   "SettingsTabGeneralRememberWindowState": "記住視窗大小/位置",
   "SettingsTabGeneralHideCursor": "隱藏滑鼠游標:",
   "SettingsTabGeneralHideCursorNever": "從不",
