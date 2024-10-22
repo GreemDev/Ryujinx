@@ -7,6 +7,7 @@ using Ryujinx.Common.Configuration.Hid.Keyboard;
 using Ryujinx.Common.Configuration.Multiplayer;
 using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.Vulkan;
+using Ryujinx.HLE;
 using Ryujinx.UI.Common.Configuration.System;
 using Ryujinx.UI.Common.Configuration.UI;
 using Ryujinx.UI.Common.Helper;
@@ -366,7 +367,7 @@ namespace Ryujinx.UI.Common.Configuration
             /// <summary>
             /// Defines the amount of RAM available on the emulated system, and how it is distributed
             /// </summary>
-            public ReactiveObject<bool> ExpandRam { get; private set; }
+            public ReactiveObject<MemoryConfiguration> DramSize { get; private set; }
 
             /// <summary>
             /// Enable or disable ignoring missing services
@@ -400,8 +401,8 @@ namespace Ryujinx.UI.Common.Configuration
                 AudioBackend.Event += static (sender, e) => LogValueChange(e, nameof(AudioBackend));
                 MemoryManagerMode = new ReactiveObject<MemoryManagerMode>();
                 MemoryManagerMode.Event += static (sender, e) => LogValueChange(e, nameof(MemoryManagerMode));
-                ExpandRam = new ReactiveObject<bool>();
-                ExpandRam.Event += static (sender, e) => LogValueChange(e, nameof(ExpandRam));
+                DramSize = new ReactiveObject<MemoryConfiguration>();
+                DramSize.Event += static (sender, e) => LogValueChange(e, nameof(DramSize));
                 IgnoreMissingServices = new ReactiveObject<bool>();
                 IgnoreMissingServices.Event += static (sender, e) => LogValueChange(e, nameof(IgnoreMissingServices));
                 AudioVolume = new ReactiveObject<float>();
@@ -721,7 +722,7 @@ namespace Ryujinx.UI.Common.Configuration
                 AudioBackend = System.AudioBackend,
                 AudioVolume = System.AudioVolume,
                 MemoryManagerMode = System.MemoryManagerMode,
-                ExpandRam = System.ExpandRam,
+                DramSize = System.DramSize,
                 IgnoreMissingServices = System.IgnoreMissingServices,
                 UseHypervisor = System.UseHypervisor,
                 GuiColumns = new GuiColumns
@@ -834,7 +835,7 @@ namespace Ryujinx.UI.Common.Configuration
             System.AudioBackend.Value = AudioBackend.SDL2;
             System.AudioVolume.Value = 1;
             System.MemoryManagerMode.Value = MemoryManagerMode.HostMappedUnsafe;
-            System.ExpandRam.Value = false;
+            System.DramSize.Value = MemoryConfiguration.MemoryConfiguration4GiB;
             System.IgnoreMissingServices.Value = false;
             System.UseHypervisor.Value = true;
             Multiplayer.LanInterfaceId.Value = "0";
@@ -1513,6 +1514,15 @@ namespace Ryujinx.UI.Common.Configuration
                 configurationFileUpdated = true;
             }
 
+            if (configurationFileFormat.Version < 54)
+            {
+                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 54.");
+
+                configurationFileFormat.DramSize = MemoryConfiguration.MemoryConfiguration4GiB;
+
+                configurationFileUpdated = true;
+            }
+
             Logger.EnableFileLog.Value = configurationFileFormat.EnableFileLog;
             Graphics.ResScale.Value = configurationFileFormat.ResScale;
             Graphics.ResScaleCustom.Value = configurationFileFormat.ResScaleCustom;
@@ -1559,7 +1569,7 @@ namespace Ryujinx.UI.Common.Configuration
             System.AudioBackend.Value = configurationFileFormat.AudioBackend;
             System.AudioVolume.Value = configurationFileFormat.AudioVolume;
             System.MemoryManagerMode.Value = configurationFileFormat.MemoryManagerMode;
-            System.ExpandRam.Value = configurationFileFormat.ExpandRam;
+            System.DramSize.Value = configurationFileFormat.DramSize;
             System.IgnoreMissingServices.Value = configurationFileFormat.IgnoreMissingServices;
             System.UseHypervisor.Value = configurationFileFormat.UseHypervisor;
             UI.GuiColumns.FavColumn.Value = configurationFileFormat.GuiColumns.FavColumn;

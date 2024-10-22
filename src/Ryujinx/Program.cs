@@ -72,23 +72,23 @@ namespace Ryujinx.Ava
                     EnableMultiTouch = true,
                     EnableIme = true,
                     EnableInputFocusProxy = Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP") == "gamescope",
-                    RenderingMode = UseHardwareAcceleration 
-                        ? [ X11RenderingMode.Glx, X11RenderingMode.Software ]
-                        : [ X11RenderingMode.Software ],
+                    RenderingMode = UseHardwareAcceleration
+                        ? [X11RenderingMode.Glx, X11RenderingMode.Software]
+                        : [X11RenderingMode.Software],
                 })
                 .With(new Win32PlatformOptions
                 {
                     WinUICompositionBackdropCornerRadius = 8.0f,
-                    RenderingMode = UseHardwareAcceleration 
-                        ? [ Win32RenderingMode.AngleEgl, Win32RenderingMode.Software ] 
-                        : [ Win32RenderingMode.Software ],
+                    RenderingMode = UseHardwareAcceleration
+                        ? [Win32RenderingMode.AngleEgl, Win32RenderingMode.Software]
+                        : [Win32RenderingMode.Software],
                 });
 
         private static void Initialize(string[] args)
         {
             // Ensure Discord presence timestamp begins at the absolute start of when Ryujinx is launched
             DiscordIntegrationModule.StartedAt = Timestamps.Now;
-            
+
             // Parse arguments
             CommandLineState.ParseArguments(args);
 
@@ -203,7 +203,7 @@ namespace Ryujinx.Ava
             // Check if docked mode was overriden.
             if (CommandLineState.OverrideDockedMode.HasValue)
                 ConfigurationState.Instance.System.EnableDockedMode.Value = CommandLineState.OverrideDockedMode.Value;
-            
+
 
             // Check if HideCursor was overridden.
             if (CommandLineState.OverrideHideCursor is not null)
@@ -214,7 +214,7 @@ namespace Ryujinx.Ava
                     "always" => HideCursorMode.Always,
                     _ => ConfigurationState.Instance.HideCursor,
                 };
-            
+
 
             // Check if hardware-acceleration was overridden.
             if (CommandLineState.OverrideHardwareAcceleration != null)

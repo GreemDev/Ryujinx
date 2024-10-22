@@ -143,14 +143,14 @@ namespace Ryujinx.Ava.UI.Views.Main
             }
         }
 
-        public async void OpenAmiiboWindow(object sender, RoutedEventArgs e) 
+        public async void OpenAmiiboWindow(object sender, RoutedEventArgs e)
             => await ViewModel.OpenAmiiboWindow();
 
         public async void OpenCheatManagerForCurrentApp(object sender, RoutedEventArgs e)
         {
             if (!ViewModel.IsGameRunning)
                 return;
-            
+
             string name = ViewModel.AppHost.Device.Processes.ActiveApplication.ApplicationControlProperties.Title[(int)ViewModel.AppHost.Device.System.State.DesiredTitleLanguage].NameString.ToString();
 
             await new CheatWindow(
@@ -186,7 +186,8 @@ namespace Ryujinx.Ava.UI.Views.Main
 
         private async void ChangeWindowSize_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is not MenuItem { Tag: string resolution }) return;
+            if (sender is not MenuItem { Tag: string resolution })
+                return;
 
             (int height, int width) = resolution.Split(' ')
                 .Into(parts => (int.Parse(parts[0]), int.Parse(parts[1])));
