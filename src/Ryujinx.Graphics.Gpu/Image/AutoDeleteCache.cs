@@ -104,7 +104,7 @@ namespace Ryujinx.Graphics.Gpu.Image
 
             _maxCacheMemoryUsage = Math.Clamp(cacheMemory, MinTextureSizeCapacity, MaxTextureSizeCapacity);
 
-            Logger.Info?.Print(LogClass.ServiceNv, $"AutoDelete Cache Allocated VRAM : {_maxCacheMemoryUsage / GiB} GiB");
+            Logger.Info?.Print(LogClass.Gpu, $"AutoDelete Cache Allocated VRAM : {_maxCacheMemoryUsage / GiB} GiB");
         }
 
         /// <summary>
