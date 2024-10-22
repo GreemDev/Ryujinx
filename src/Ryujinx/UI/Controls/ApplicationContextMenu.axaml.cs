@@ -224,7 +224,7 @@ namespace Ryujinx.Ava.UI.Controls
         {
             if (sender is not MenuItem { DataContext: MainWindowViewModel { SelectedApplication: not null } viewModel })
                 return;
-            
+
             string ptcDir = Path.Combine(AppDataManager.GamesDirPath, viewModel.SelectedApplication.IdString, "cache", "cpu");
             string mainDir = Path.Combine(ptcDir, "0");
             string backupDir = Path.Combine(ptcDir, "1");

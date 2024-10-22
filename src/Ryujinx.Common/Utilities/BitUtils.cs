@@ -7,10 +7,10 @@ namespace Ryujinx.Common
         public static T AlignUp<T>(T value, T size) where T : IBinaryInteger<T>
             => (value + (size - T.One)) & -size;
 
-        public static T AlignDown<T>(T value, T size) where T : IBinaryInteger<T> 
+        public static T AlignDown<T>(T value, T size) where T : IBinaryInteger<T>
             => value & -size;
 
-        public static T DivRoundUp<T>(T value, T dividend) where T : IBinaryInteger<T> 
+        public static T DivRoundUp<T>(T value, T dividend) where T : IBinaryInteger<T>
             => (value + (dividend - T.One)) / dividend;
 
         public static int Pow2RoundDown(int value) => BitOperations.IsPow2(value) ? value : Pow2RoundUp(value) >> 1;
