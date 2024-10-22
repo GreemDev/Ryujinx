@@ -898,7 +898,7 @@ namespace Ryujinx.UI.Common.Configuration
                     Backend = InputBackendType.WindowKeyboard,
                     Id = "0",
                     PlayerIndex = PlayerIndex.Player1,
-                    ControllerType = ControllerType.JoyconPair,
+                    ControllerType = ControllerType.ProController,
                     LeftJoycon = new LeftJoyconCommonConfig<Key>
                     {
                         DpadUp = Key.Up,
