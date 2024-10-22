@@ -83,7 +83,7 @@ namespace Ryujinx.Ava.UI.Windows
 
             TitleBar.ExtendsContentIntoTitleBar = true;
             TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
-            
+
 
             // NOTE: Height of MenuBar and StatusBar is not usable here, since it would still be 0 at this point.
             StatusBarHeight = StatusBarView.StatusBar.MinHeight;
@@ -665,8 +665,9 @@ namespace Ryujinx.Ava.UI.Windows
                         ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadUpdateAddedMessage], numUpdatesAdded)
                         : null;
 
-            if (msg is null) return;
-            
+            if (msg is null)
+                return;
+
 
             Dispatcher.UIThread.InvokeAsync(async () =>
             {

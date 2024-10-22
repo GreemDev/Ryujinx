@@ -34,10 +34,10 @@ namespace Ryujinx.UI.Common.SystemInfo
         {
             if (OperatingSystem.IsWindows())
                 return new WindowsSystemInfo();
-            
+
             if (OperatingSystem.IsLinux())
                 return new LinuxSystemInfo();
-            
+
             if (OperatingSystem.IsMacOS())
                 return new MacOSSystemInfo();
 

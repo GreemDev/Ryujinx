@@ -22,8 +22,8 @@ namespace Ryujinx.Ava
     public class App : Application
     {
         internal static string FormatTitle(LocaleKeys? windowTitleKey = null)
-            => windowTitleKey is null 
-                ? $"Ryujinx {Program.Version}" 
+            => windowTitleKey is null
+                ? $"Ryujinx {Program.Version}"
                 : $"Ryujinx {Program.Version} - {LocaleManager.Instance[windowTitleKey.Value]}";
 
         public static MainWindow MainWindow => Current!
