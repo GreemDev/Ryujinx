@@ -238,6 +238,9 @@
                         ToolTip.Tip="{locale:Locale IgnoreMissingServicesTooltip}">
                         <TextBlock Text="{locale:Locale SettingsTabSystemIgnoreMissingServices}" />
                     </CheckBox>
+                    <CheckBox IsChecked="{Binding IgnoreApplet}">
+                        <TextBlock Text="{locale:Locale SettingsTabGeneralIgnoreApplet}" />
+                    </CheckBox>
                 </StackPanel>
             </StackPanel>
         </Border>

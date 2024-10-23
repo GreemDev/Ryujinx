@@ -36,9 +36,6 @@
                     <CheckBox IsChecked="{Binding ShowConfirmExit}">
                         <TextBlock Text="{locale:Locale SettingsTabGeneralShowConfirmExitDialog}" />
                     </CheckBox>
-                    <CheckBox IsChecked="{Binding IgnoreApplet}">
-                        <TextBlock Text="{locale:Locale SettingsTabGeneralIgnoreApplet}" />
-                    </CheckBox>
                     <CheckBox IsChecked="{Binding RememberWindowState}">
                         <TextBlock Text="{locale:Locale SettingsTabGeneralRememberWindowState}" />
                     </CheckBox>
