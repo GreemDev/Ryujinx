@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="Ryujinx.Ava.UI.Views.Settings.SettingsSystemView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -205,13 +205,34 @@
                 </StackPanel>
                 <StackPanel
                     Margin="10,0,0,0"
+                    Orientation="Horizontal">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Text="{locale:Locale SettingsTabSystemDramSize}"
+                        Width="250" />
+                    <ComboBox
+                        SelectedIndex="{Binding DramSize}"
+                        ToolTip.Tip="{locale:Locale DRamTooltip}"
+                        HorizontalContentAlignment="Left"
+                        Width="350">
+                        <ComboBoxItem>
+                            <TextBlock Text="{locale:Locale SettingsTabSystemDramSize4GiB}" />
+                        </ComboBoxItem>
+                        <ComboBoxItem>
+                            <TextBlock Text="{locale:Locale SettingsTabSystemDramSize6GiB}" />
+                        </ComboBoxItem>
+                        <ComboBoxItem>
+                            <TextBlock Text="{locale:Locale SettingsTabSystemDramSize8GiB}" />
+                        </ComboBoxItem>
+                        <ComboBoxItem>
+                            <TextBlock Text="{locale:Locale SettingsTabSystemDramSize12GiB}" />
+                        </ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel
+                    Margin="10,0,0,0"
                     HorizontalAlignment="Stretch"
                     Orientation="Vertical">
-                    <CheckBox
-                        IsChecked="{Binding ExpandDramSize}"
-                        ToolTip.Tip="{locale:Locale DRamTooltip}">
-                        <TextBlock Text="{locale:Locale SettingsTabSystemExpandDramSize}" />
-                    </CheckBox>
                     <CheckBox
                         IsChecked="{Binding IgnoreMissingServices}"
                         ToolTip.Tip="{locale:Locale IgnoreMissingServicesTooltip}">

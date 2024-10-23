@@ -913,7 +913,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public KeyGesture PauseKey
         {
-            get => KeyGesture.Parse(_pauseKey); 
+            get => KeyGesture.Parse(_pauseKey);
             set
             {
                 _pauseKey = value.ToString();
