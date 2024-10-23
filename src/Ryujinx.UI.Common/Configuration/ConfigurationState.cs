@@ -1533,7 +1533,7 @@ namespace Ryujinx.UI.Common.Configuration
 
             if (configurationFileFormat.Version < 55)
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 52.");
+                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 55.");
 
                 configurationFileFormat.IgnoreApplet = true;
 
