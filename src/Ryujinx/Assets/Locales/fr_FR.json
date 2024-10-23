@@ -731,6 +731,7 @@
   "DlcWindowBundledContentNotice": "Les DLC inclus avec le jeu ne peuvent pas être supprimés mais peuvent être désactivés.",
   "DlcWindowHeading": "{0} Contenu(s) téléchargeable(s)",
   "DlcWindowDlcAddedMessage": "{0} nouveau(x) contenu(s) téléchargeable(s) ajouté(s)",
+  "AutoloadDlcAddedMessage": "{0} nouveau(x) contenu(s) téléchargeable(s) ajouté(s)",
   "AutoloadDlcRemovedMessage": "{0} contenu(s) téléchargeable(s) manquant(s) supprimé(s)",
   "AutoloadUpdateAddedMessage": "{0} nouvelle(s) mise(s) à jour ajoutée(s)",
   "AutoloadUpdateRemovedMessage": "{0} mises à jour manquantes supprimées",
