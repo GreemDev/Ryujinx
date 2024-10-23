@@ -906,7 +906,7 @@ namespace Ryujinx.UI.Common.Configuration
                     Backend = InputBackendType.WindowKeyboard,
                     Id = "0",
                     PlayerIndex = PlayerIndex.Player1,
-                    ControllerType = ControllerType.JoyconPair,
+                    ControllerType = ControllerType.ProController,
                     LeftJoycon = new LeftJoyconCommonConfig<Key>
                     {
                         DpadUp = Key.Up,
@@ -1136,7 +1136,7 @@ namespace Ryujinx.UI.Common.Configuration
                         Backend = InputBackendType.WindowKeyboard,
                         Id = "0",
                         PlayerIndex = PlayerIndex.Player1,
-                        ControllerType = ControllerType.JoyconPair,
+                        ControllerType = ControllerType.ProController,
                         LeftJoycon = new LeftJoyconCommonConfig<Key>
                         {
                             DpadUp = Key.Up,
@@ -1508,7 +1508,7 @@ namespace Ryujinx.UI.Common.Configuration
             {
                 Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 52.");
 
-                configurationFileFormat.AutoloadDirs = new();
+                configurationFileFormat.AutoloadDirs = [];
 
                 configurationFileUpdated = true;
             }
@@ -1603,7 +1603,7 @@ namespace Ryujinx.UI.Common.Configuration
             UI.ColumnSort.SortColumnId.Value = configurationFileFormat.ColumnSort.SortColumnId;
             UI.ColumnSort.SortAscending.Value = configurationFileFormat.ColumnSort.SortAscending;
             UI.GameDirs.Value = configurationFileFormat.GameDirs;
-            UI.AutoloadDirs.Value = configurationFileFormat.AutoloadDirs;
+            UI.AutoloadDirs.Value = configurationFileFormat.AutoloadDirs ?? [];
             UI.ShownFileTypes.NSP.Value = configurationFileFormat.ShownFileTypes.NSP;
             UI.ShownFileTypes.PFS0.Value = configurationFileFormat.ShownFileTypes.PFS0;
             UI.ShownFileTypes.XCI.Value = configurationFileFormat.ShownFileTypes.XCI;
@@ -1629,12 +1629,7 @@ namespace Ryujinx.UI.Common.Configuration
             Hid.EnableKeyboard.Value = configurationFileFormat.EnableKeyboard;
             Hid.EnableMouse.Value = configurationFileFormat.EnableMouse;
             Hid.Hotkeys.Value = configurationFileFormat.Hotkeys;
-            Hid.InputConfig.Value = configurationFileFormat.InputConfig;
-
-            if (Hid.InputConfig.Value == null)
-            {
-                Hid.InputConfig.Value = new List<InputConfig>();
-            }
+            Hid.InputConfig.Value = configurationFileFormat.InputConfig ?? [];
 
             Multiplayer.LanInterfaceId.Value = configurationFileFormat.MultiplayerLanInterfaceId;
             Multiplayer.Mode.Value = configurationFileFormat.MultiplayerMode;
