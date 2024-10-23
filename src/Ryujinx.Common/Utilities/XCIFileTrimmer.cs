@@ -1,4 +1,4 @@
-using Ryujinx.Common.Logging;
+using Gommon;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,26 +7,6 @@ using System.Linq;
 
 namespace Ryujinx.Common.Utilities
 {
-    internal static class Performance
-    {
-        internal static TimeSpan Measure(Action action)
-        {
-            var sw = new Stopwatch();
-            sw.Start();
-
-            try
-            {
-                action();
-            }
-            finally
-            {
-                sw.Stop();
-            }
-
-            return sw.Elapsed;
-        }
-    }
-
     public sealed class XCIFileTrimmer
     {
         private const long BytesInAMegabyte = 1024 * 1024;
@@ -178,14 +158,14 @@ namespace Ryujinx.Common.Utilities
                         bool freeSpaceValid = true;
                         long readSizeB = FileSizeB - TrimmedFileSizeB;
 
-                        TimeSpan time = Performance.Measure(() =>
+                        Stopwatch timedSw = Lambda.Timed(() =>
                         {
                             freeSpaceValid = CheckPadding(readSizeB);
                         });
 
-                        if (time.TotalSeconds > 0)
+                        if (timedSw.Elapsed.TotalSeconds > 0)
                         {
-                            Log?.Write(LogType.Info, $"Checked at {readSizeB / (double)XCIFileTrimmer.BytesInAMegabyte / time.TotalSeconds:N} Mb/sec");
+                            Log?.Write(LogType.Info, $"Checked at {readSizeB / (double)XCIFileTrimmer.BytesInAMegabyte / timedSw.Elapsed.TotalSeconds:N} Mb/sec");
                         }
 
                         if (freeSpaceValid)
@@ -352,14 +332,14 @@ namespace Ryujinx.Common.Utilities
 
                 try
                 {
-                    TimeSpan time = Performance.Measure(() =>
+                    Stopwatch timedSw = Lambda.Timed(() =>
                     {
                         WritePadding(outfileStream, bytesToWriteB);
                     });
 
-                    if (time.TotalSeconds > 0)
+                    if (timedSw.Elapsed.TotalSeconds > 0)
                     {
-                        Log?.Write(LogType.Info, $"Wrote at {bytesToWriteB / (double)XCIFileTrimmer.BytesInAMegabyte / time.TotalSeconds:N} Mb/sec");
+                        Log?.Write(LogType.Info, $"Wrote at {bytesToWriteB / (double)XCIFileTrimmer.BytesInAMegabyte / timedSw.Elapsed.TotalSeconds:N} Mb/sec");
                     }
 
                     return OperationOutcome.Successful;
