@@ -19,9 +19,9 @@ updates:
     commit-message:
       prefix: nuget
     groups:
-      Avalonia:
-        patterns:
-          - "*Avalonia*"
+      #Avalonia:
+        #patterns:
+          #- "*Avalonia*"
       Silk.NET:
         patterns:
           - "Silk.NET*"
