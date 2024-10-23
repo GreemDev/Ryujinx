@@ -6,8 +6,6 @@ updates:
       interval: weekly
     labels:
       - "infra"
-    reviewers:
-      - TSRBerry
     commit-message:
       prefix: "ci"
 
@@ -18,8 +16,6 @@ updates:
       interval: daily
     labels:
       - "infra"
-    reviewers:
-      - TSRBerry
     commit-message:
       prefix: nuget
     groups:
