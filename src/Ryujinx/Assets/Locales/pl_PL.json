@@ -151,6 +151,7 @@
   "SettingsTabSystemDramSize8GiB": "8GiB",
   "SettingsTabSystemDramSize12GiB": "12GiB",
   "SettingsTabSystemIgnoreMissingServices": "Ignoruj Brakujące Usługi",
+  "SettingsTabSystemIgnoreApplet": "Ignoruj ​​aplet",
   "SettingsTabGraphics": "Grafika",
   "SettingsTabGraphicsAPI": "Graficzne API",
   "SettingsTabGraphicsEnableShaderCache": "Włącz pamięć podręczną cieni",

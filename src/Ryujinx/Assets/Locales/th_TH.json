@@ -151,6 +151,7 @@
   "SettingsTabSystemDramSize8GiB": "8GiB",
   "SettingsTabSystemDramSize12GiB": "12GiB",
   "SettingsTabSystemIgnoreMissingServices": "ไม่สนใจบริการที่ขาดหายไป",
+  "SettingsTabSystemIgnoreApplet": "Ignore Applet",
   "SettingsTabGraphics": "กราฟิก",
   "SettingsTabGraphicsAPI": "กราฟฟิก API",
   "SettingsTabGraphicsEnableShaderCache": "เปิดใช้งาน แคชพื้นผิวและแสงเงา",

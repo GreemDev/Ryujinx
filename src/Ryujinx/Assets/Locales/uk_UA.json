@@ -151,6 +151,7 @@
   "SettingsTabSystemDramSize8GiB": "8GiB",
   "SettingsTabSystemDramSize12GiB": "12GiB",
   "SettingsTabSystemIgnoreMissingServices": "Ігнорувати відсутні служби",
+  "SettingsTabSystemIgnoreApplet": "Ігнорувати Аплет",
   "SettingsTabGraphics": "Графіка",
   "SettingsTabGraphicsAPI": "Графічний API",
   "SettingsTabGraphicsEnableShaderCache": "Увімкнути кеш шейдерів",

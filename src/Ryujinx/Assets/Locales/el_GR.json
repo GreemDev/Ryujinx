@@ -151,6 +151,7 @@
   "SettingsTabSystemDramSize8GiB": "8GiB",
   "SettingsTabSystemDramSize12GiB": "12GiB",
   "SettingsTabSystemIgnoreMissingServices": "Αγνόηση υπηρεσιών που λείπουν",
+  "SettingsTabSystemIgnoreApplet": "Αγνοήστε το Applet",
   "SettingsTabGraphics": "Γραφικά",
   "SettingsTabGraphicsAPI": "API Γραφικά",
   "SettingsTabGraphicsEnableShaderCache": "Ενεργοποίηση Προσωρινής Μνήμης Shader",

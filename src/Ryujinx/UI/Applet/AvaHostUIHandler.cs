@@ -9,6 +9,7 @@ using Ryujinx.HLE;
 using Ryujinx.HLE.HOS.Applets;
 using Ryujinx.HLE.HOS.Services.Am.AppletOE.ApplicationProxyService.ApplicationProxy.Types;
 using Ryujinx.HLE.UI;
+using Ryujinx.UI.Common.Configuration;
 using System;
 using System.Threading;
 
@@ -31,7 +32,14 @@ namespace Ryujinx.Ava.UI.Applet
         {
             ManualResetEvent dialogCloseEvent = new(false);
 
+            bool ignoreApplet = ConfigurationState.Instance.IgnoreApplet;
             bool okPressed = false;
+
+            if (ignoreApplet)
+            {
+
+                return false;
+            }
 
             Dispatcher.UIThread.InvokeAsync(async () =>
             {

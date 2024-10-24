@@ -151,6 +151,7 @@
   "SettingsTabSystemDramSize8GiB": "8GiB",
   "SettingsTabSystemDramSize12GiB": "12GiB",
   "SettingsTabSystemIgnoreMissingServices": "누락된 서비스 무시",
+  "SettingsTabSystemIgnoreApplet": "애플릿 무시",
   "SettingsTabGraphics": "그래픽",
   "SettingsTabGraphicsAPI": "그래픽 API",
   "SettingsTabGraphicsEnableShaderCache": "셰이더 캐시 활성화",

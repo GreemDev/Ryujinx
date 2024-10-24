@@ -151,6 +151,7 @@
   "SettingsTabSystemDramSize8GiB": "8GiB",
   "SettingsTabSystemDramSize12GiB": "12GiB",
   "SettingsTabSystemIgnoreMissingServices": "忽略缺少的模擬器功能",
+  "SettingsTabSystemIgnoreApplet": "忽略小程式",
   "SettingsTabGraphics": "圖形",
   "SettingsTabGraphicsAPI": "圖形 API",
   "SettingsTabGraphicsEnableShaderCache": "啟用著色器快取",

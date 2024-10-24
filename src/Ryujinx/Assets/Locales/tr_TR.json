@@ -151,6 +151,7 @@
   "SettingsTabSystemDramSize8GiB": "8GiB",
   "SettingsTabSystemDramSize12GiB": "12GiB",
   "SettingsTabSystemIgnoreMissingServices": "Eksik Servisleri Görmezden Gel",
+  "SettingsTabSystemIgnoreApplet": "Ignore Applet",
   "SettingsTabGraphics": "Grafikler",
   "SettingsTabGraphicsAPI": "Grafikler API",
   "SettingsTabGraphicsEnableShaderCache": "Shader Önbelleğini Etkinleştir",
