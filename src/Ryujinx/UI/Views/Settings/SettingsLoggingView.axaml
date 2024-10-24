@@ -52,7 +52,7 @@
                     </CheckBox>
                 </StackPanel>
                 <Separator Height="1" />
-                <StackPanel Orientation="Vertical" Spacing="2">
+                <StackPanel Orientation="Vertical" Spacing="5">
                     <TextBlock Classes="h1" Text="{locale:Locale SettingsTabLoggingDeveloperOptions}" />
                     <TextBlock Foreground="{DynamicResource SecondaryTextColor}" Text="{locale:Locale SettingsTabLoggingDeveloperOptionsNote}" />
                 </StackPanel>
