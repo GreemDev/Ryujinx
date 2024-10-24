@@ -1535,7 +1535,7 @@ namespace Ryujinx.UI.Common.Configuration
             {
                 Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 55.");
 
-                configurationFileFormat.IgnoreApplet = true;
+                configurationFileFormat.IgnoreApplet = false;
 
                 configurationFileUpdated = true;
             }
