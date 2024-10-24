@@ -71,6 +71,12 @@
         Icon="{icon:Icon mdi-folder-file}"
         ToolTip.Tip="{locale:Locale GameListContextMenuOpenSdModsDirectoryToolTip}" />
     <Separator />
+	<MenuItem
+		Click="TrimXCI_Click"
+		Header="{locale:Locale GameListContextMenuTrimXCI}"
+        IsEnabled="{Binding TrimXCIEnabled}"
+		ToolTip.Tip="{locale:Locale GameListContextMenuTrimXCIToolTip}" />
+    <Separator />
     <MenuItem Header="{locale:Locale GameListContextMenuCacheManagement}" Icon="{icon:Icon mdi-cached}">
         <MenuItem
             Click="PurgePtcCache_Click"
