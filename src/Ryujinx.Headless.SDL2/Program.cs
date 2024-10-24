@@ -119,11 +119,9 @@ namespace Ryujinx.Headless.SDL2
                 }
             }
 
-            IGamepad gamepad;
+            IGamepad gamepad = _inputManager.KeyboardDriver.GetGamepad(inputId);
 
             bool isKeyboard = true;
-
-            gamepad = _inputManager.KeyboardDriver.GetGamepad(inputId);
 
             if (gamepad == null)
             {

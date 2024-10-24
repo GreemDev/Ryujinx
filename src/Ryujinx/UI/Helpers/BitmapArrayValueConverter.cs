@@ -13,19 +13,19 @@ namespace Ryujinx.Ava.UI.Helpers
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null)
+            switch (value)
             {
-                return null;
+                case null:
+                    return null;
+                case byte[] buffer when targetType == typeof(IImage):
+                    {
+                        MemoryStream mem = new(buffer);
+
+                        return new Bitmap(mem);
+                    }
+                default:
+                    throw new NotSupportedException();
             }
-
-            if (value is byte[] buffer && targetType == typeof(IImage))
-            {
-                MemoryStream mem = new(buffer);
-
-                return new Bitmap(mem);
-            }
-
-            throw new NotSupportedException();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

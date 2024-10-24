@@ -325,12 +325,12 @@ namespace Ryujinx.UI.Common.Configuration
             public ReactiveObject<bool> EnableDockedMode { get; private set; }
 
             /// <summary>
-            /// Enables or disables profiled translation cache persistency
+            /// Enables or disables persistent profiled translation cache
             /// </summary>
             public ReactiveObject<bool> EnablePtc { get; private set; }
 
             /// <summary>
-            /// Enables or disables low-power profiled translation cache persistency loading
+            /// Enables or disables low-power persistent profiled translation cache loading
             /// </summary>
             public ReactiveObject<bool> EnableLowPowerPtc { get; private set; }
 

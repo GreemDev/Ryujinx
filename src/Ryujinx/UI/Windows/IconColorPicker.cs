@@ -139,7 +139,7 @@ namespace Ryujinx.Ava.UI.Windows
             var value = GetColorValue(color);
 
             // If the color is rarely used on the image,
-            // then chances are that theres a better candidate, even if the saturation value
+            // then chances are that there's a better candidate, even if the saturation value
             // is high. By multiplying the saturation value with a weight, we can lower
             // it if the color is almost never used (hit count is low).
             var satWeighted = quantSat;
