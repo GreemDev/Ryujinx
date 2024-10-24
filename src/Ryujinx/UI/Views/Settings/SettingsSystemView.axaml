@@ -239,7 +239,7 @@
                         <TextBlock Text="{locale:Locale SettingsTabSystemIgnoreMissingServices}" />
                     </CheckBox>
                     <CheckBox IsChecked="{Binding IgnoreApplet}">
-                        <TextBlock Text="{locale:Locale SettingsTabGeneralIgnoreApplet}" />
+                        <TextBlock Text="{locale:Locale SettingsTabSystemIgnoreApplet}" />
                     </CheckBox>
                 </StackPanel>
             </StackPanel>
