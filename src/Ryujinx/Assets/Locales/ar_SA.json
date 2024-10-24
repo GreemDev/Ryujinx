@@ -151,6 +151,7 @@
   "SettingsTabSystemDramSize8GiB": "8GiB",
   "SettingsTabSystemDramSize12GiB": "12GiB",
   "SettingsTabSystemIgnoreMissingServices": "تجاهل الخدمات المفقودة",
+  "SettingsTabSystemIgnoreApplet": "Ignore Applet",
   "SettingsTabGraphics": "الرسومات",
   "SettingsTabGraphicsAPI": "API الرسومات ",
   "SettingsTabGraphicsEnableShaderCache": "تفعيل ذاكرة المظللات المؤقتة",

@@ -20,6 +20,9 @@
   This fork is intended to be a direct continuation for existing Ryujinx users.
   Guides and documentation will not be provided at this time, though you can find the old ones on the Internet Archive.
 </p>
+<p align="center">
+  If you would like a version more true to original Ryujinx, check out <a href="https://github.com/ryujinx-mirror/ryujinx">ryujinx-mirror</a>.
+</p>
 
 <p align="center">
     <a href="https://github.com/GreemDev/Ryujinx/actions/workflows/release.yml">

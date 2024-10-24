@@ -155,6 +155,7 @@
   "SettingsTabSystemDramSize8GiB": "8GiO",
   "SettingsTabSystemDramSize12GiB": "12GiO",
   "SettingsTabSystemIgnoreMissingServices": "Ignorer les services manquants",
+  "SettingsTabSystemIgnoreApplet": "Ignorer l'applet",
   "SettingsTabGraphics": "Graphismes",
   "SettingsTabGraphicsAPI": "API Graphique",
   "SettingsTabGraphicsEnableShaderCache": "Activer le cache des shaders",
