@@ -71,9 +71,10 @@ namespace Ryujinx.Graphics.Gpu.Image
         /// <summary>
         /// Initializes the cache, setting the maximum texture capacity for the specified GPU context.
         /// </summary>
-        public void Initialize()
+        /// <param name="cpuMemorySize">The amount of physical CPU Memory Avaiable on the device.</param>
+        public void Initialize(ulong cpuMemorySize)
         {
-            _cache.Initialize(_context);
+            _cache.Initialize(_context, cpuMemorySize);
         }
 
         /// <summary>
