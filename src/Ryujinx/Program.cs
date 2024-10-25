@@ -1,7 +1,7 @@
-using ARMeilleure;
 using Avalonia;
 using Avalonia.Threading;
 using DiscordRPC;
+using Gommon;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.FontAwesome;
 using Projektanker.Icons.Avalonia.MaterialDesign;
@@ -23,6 +23,7 @@ using Ryujinx.UI.Common.Helper;
 using Ryujinx.UI.Common.SystemInfo;
 using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -103,8 +104,9 @@ namespace Ryujinx.Ava
             Console.Title = $"Ryujinx Console {Version}";
 
             // Hook unhandled exception and process exit events.
-            AppDomain.CurrentDomain.UnhandledException += (sender, e) => ProcessUnhandledException(e.ExceptionObject as Exception, e.IsTerminating);
-            AppDomain.CurrentDomain.ProcessExit += (sender, e) => Exit();
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) 
+                => ProcessUnhandledException(sender, e.ExceptionObject as Exception, e.IsTerminating);
+            AppDomain.CurrentDomain.ProcessExit += (_, _) => Exit();
 
             // Setup base data directory.
             AppDataManager.Initialize(CommandLineState.BaseDirPathArg);
@@ -189,7 +191,7 @@ namespace Ryujinx.Ava
                 }
             }
 
-            UseHardwareAcceleration = ConfigurationState.Instance.EnableHardwareAcceleration.Value;
+            UseHardwareAcceleration = ConfigurationState.Instance.EnableHardwareAcceleration;
 
             // Check if graphics backend was overridden
             if (CommandLineState.OverrideGraphicsBackend is not null)
@@ -226,7 +228,13 @@ namespace Ryujinx.Ava
             Logger.Notice.Print(LogClass.Application, $"Ryujinx Version: {Version}");
             SystemInfo.Gather().Print();
 
-            Logger.Notice.Print(LogClass.Application, $"Logs Enabled: {(Logger.GetEnabledLevels().Count == 0 ? "<None>" : string.Join(", ", Logger.GetEnabledLevels()))}");
+            var enabledLogLevels = Logger.GetEnabledLevels().ToArray();
+
+            Logger.Notice.Print(LogClass.Application, $"Logs Enabled: {
+                (enabledLogLevels.Length is 0
+                    ? "<None>" 
+                    : enabledLogLevels.JoinToString(", "))
+            }");
 
             Logger.Notice.Print(LogClass.Application,
                 AppDataManager.Mode == AppDataManager.LaunchMode.Custom
@@ -234,21 +242,19 @@ namespace Ryujinx.Ava
                     : $"Launch Mode: {AppDataManager.Mode}");
         }
 
-        private static void ProcessUnhandledException(Exception ex, bool isTerminating)
+        private static void ProcessUnhandledException(object sender, Exception ex, bool isTerminating)
         {
+            Logger.Log log = Logger.Error ?? Logger.Notice;
             string message = $"Unhandled exception caught: {ex}";
-
-            Logger.Error?.PrintMsg(LogClass.Application, message);
-
-            if (Logger.Error == null)
-            {
-                Logger.Notice.PrintMsg(LogClass.Application, message);
-            }
-
+            
+            // ReSharper disable once ConstantConditionalAccessQualifier
+            if (sender?.GetType()?.AsPrettyString() is {} senderName)
+                log.Print(LogClass.Application, message, senderName);
+            else
+                log.PrintMsg(LogClass.Application, message);
+            
             if (isTerminating)
-            {
                 Exit();
-            }
         }
 
         public static void Exit()

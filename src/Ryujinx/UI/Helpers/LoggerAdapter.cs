@@ -1,5 +1,6 @@
 using Avalonia.Logging;
 using Avalonia.Utilities;
+using Gommon;
 using Ryujinx.Common.Logging;
 using System;
 using System.Text;
@@ -90,7 +91,7 @@ namespace Ryujinx.Ava.UI.Helpers
             if (source != null)
             {
                 result.Append(" (");
-                result.Append(source.GetType().Name);
+                result.Append(source.GetType().AsFullNamePrettyString());
                 result.Append(" #");
                 result.Append(source.GetHashCode());
                 result.Append(')');

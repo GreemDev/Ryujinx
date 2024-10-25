@@ -24,10 +24,13 @@ namespace Ryujinx.Ava.UI.Applet
         public AvaloniaDynamicTextInputHandler(MainWindow parent)
         {
             _parent = parent;
-
-            (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyPressed += AvaloniaDynamicTextInputHandler_KeyPressed;
-            (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyRelease += AvaloniaDynamicTextInputHandler_KeyRelease;
-            (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).TextInput += AvaloniaDynamicTextInputHandler_TextInput;
+            
+            if (_parent.InputManager.KeyboardDriver is AvaloniaKeyboardDriver avaloniaKeyboardDriver)
+            {
+                avaloniaKeyboardDriver.KeyPressed += AvaloniaDynamicTextInputHandler_KeyPressed;
+                avaloniaKeyboardDriver.KeyRelease += AvaloniaDynamicTextInputHandler_KeyRelease;
+                avaloniaKeyboardDriver.TextInput += AvaloniaDynamicTextInputHandler_TextInput;
+            }
 
             _hiddenTextBox = _parent.HiddenTextBox;
 
@@ -44,7 +47,7 @@ namespace Ryujinx.Ava.UI.Applet
             TextChangedEvent?.Invoke(text ?? string.Empty, _hiddenTextBox.SelectionStart, _hiddenTextBox.SelectionEnd, false);
         }
 
-        private void SelectionChanged(int selection)
+        private void SelectionChanged(int _)
         {
             TextChangedEvent?.Invoke(_hiddenTextBox.Text ?? string.Empty, _hiddenTextBox.SelectionStart, _hiddenTextBox.SelectionEnd, false);
         }
@@ -112,10 +115,13 @@ namespace Ryujinx.Ava.UI.Applet
 
         public void Dispose()
         {
-            (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyPressed -= AvaloniaDynamicTextInputHandler_KeyPressed;
-            (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyRelease -= AvaloniaDynamicTextInputHandler_KeyRelease;
-            (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).TextInput -= AvaloniaDynamicTextInputHandler_TextInput;
-
+            if (_parent.InputManager.KeyboardDriver is AvaloniaKeyboardDriver avaloniaKeyboardDriver)
+            {
+                avaloniaKeyboardDriver.KeyPressed -= AvaloniaDynamicTextInputHandler_KeyPressed;
+                avaloniaKeyboardDriver.KeyRelease -= AvaloniaDynamicTextInputHandler_KeyRelease;
+                avaloniaKeyboardDriver.TextInput -= AvaloniaDynamicTextInputHandler_TextInput;
+            }
+            
             _textChangedSubscription?.Dispose();
             _selectionStartChangedSubscription?.Dispose();
             _selectionEndtextChangedSubscription?.Dispose();

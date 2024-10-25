@@ -42,7 +42,7 @@ namespace Ryujinx.Ava.UI.Helpers
                 PrimaryButtonCommand = MiniCommand.Create(() =>
                 {
                     result = primaryButtonResult;
-                }),
+                })
             };
 
             contentDialog.SecondaryButtonCommand = MiniCommand.Create(() =>

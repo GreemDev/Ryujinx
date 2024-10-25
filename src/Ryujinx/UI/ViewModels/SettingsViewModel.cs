@@ -287,11 +287,11 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public SettingsViewModel()
         {
-            GameDirectories = new AvaloniaList<string>();
-            AutoloadDirectories = new AvaloniaList<string>();
-            TimeZones = new AvaloniaList<TimeZone>();
-            AvailableGpus = new ObservableCollection<ComboBoxItem>();
-            _validTzRegions = new List<string>();
+            GameDirectories = [];
+            AutoloadDirectories = [];
+            TimeZones = [];
+            AvailableGpus = [];
+            _validTzRegions = [];
             _networkInterfaces = new Dictionary<string, string>();
 
             Task.Run(CheckSoundBackends);

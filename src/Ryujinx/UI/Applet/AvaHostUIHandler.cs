@@ -31,15 +31,11 @@ namespace Ryujinx.Ava.UI.Applet
         public bool DisplayMessageDialog(ControllerAppletUIArgs args)
         {
             ManualResetEvent dialogCloseEvent = new(false);
-
-            bool ignoreApplet = ConfigurationState.Instance.IgnoreApplet;
+            
             bool okPressed = false;
 
-            if (ignoreApplet)
-            {
-
+            if (ConfigurationState.Instance.IgnoreApplet)
                 return false;
-            }
 
             Dispatcher.UIThread.InvokeAsync(async () =>
             {
@@ -74,9 +70,9 @@ namespace Ryujinx.Ava.UI.Applet
                     UserResult response = await ContentDialogHelper.ShowDeferredContentDialog(_parent,
                        title,
                        message,
-                       "",
+                       string.Empty,
                        LocaleManager.Instance[LocaleKeys.DialogOpenSettingsWindowLabel],
-                       "",
+                       string.Empty,
                        LocaleManager.Instance[LocaleKeys.SettingsButtonClose],
                        (int)Symbol.Important,
                        deferEvent,
@@ -179,12 +175,12 @@ namespace Ryujinx.Ava.UI.Applet
                     {
                         Title = title,
                         WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                        Width = 400,
+                        Width = 400
                     };
 
                     object response = await msgDialog.Run();
 
-                    if (response != null && buttons != null && buttons.Length > 1 && (int)response != buttons.Length - 1)
+                    if (response != null && buttons is { Length: > 1 } && (int)response != buttons.Length - 1)
                     {
                         showDetails = true;
                     }

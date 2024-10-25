@@ -3,12 +3,12 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
 using FluentAvalonia.UI.Controls;
-using Gommon;
 using LibHac.Common;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
@@ -41,6 +41,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Key = Ryujinx.Input.Key;
@@ -113,6 +114,9 @@ namespace Ryujinx.Ava.UI.ViewModels
         public ApplicationData ListSelectedApplication;
         public ApplicationData GridSelectedApplication;
 
+        public static readonly Bitmap IconBitmap =
+            new(Assembly.GetAssembly(typeof(ConfigurationState))!.GetManifestResourceStream("Ryujinx.UI.Common.Resources.Logo_Ryujinx.png")!);
+
         public MainWindow Window { get; init; }
 
         internal AppHost AppHost { get; set; }
@@ -179,16 +183,14 @@ namespace Ryujinx.Ava.UI.ViewModels
 
                 _searchTimer?.Dispose();
 
-                _searchTimer = new Timer(TimerCallback, null, 1000, 0);
+                _searchTimer = new Timer(_ =>
+                {
+                    RefreshView();
+
+                    _searchTimer.Dispose();
+                    _searchTimer = null;
+                }, null, 1000, 0);
             }
-        }
-
-        private void TimerCallback(object obj)
-        {
-            RefreshView();
-
-            _searchTimer.Dispose();
-            _searchTimer = null;
         }
 
         public bool CanUpdate
@@ -978,29 +980,26 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         #region PrivateMethods
 
-        private IComparer<ApplicationData> GetComparer()
-        {
-            return SortMode switch
+        private static IComparer<ApplicationData> CreateComparer(bool ascending, Func<ApplicationData, IComparable> selector) =>
+            ascending
+                ? SortExpressionComparer<ApplicationData>.Ascending(selector)
+                : SortExpressionComparer<ApplicationData>.Descending(selector);
+
+        private IComparer<ApplicationData> GetComparer() 
+            => SortMode switch
             {
 #pragma warning disable IDE0055 // Disable formatting
-                ApplicationSort.Title           => IsAscending ? SortExpressionComparer<ApplicationData>.Ascending(app => app.Name)
-                                                               : SortExpressionComparer<ApplicationData>.Descending(app => app.Name),
-                ApplicationSort.Developer       => IsAscending ? SortExpressionComparer<ApplicationData>.Ascending(app => app.Developer)
-                                                               : SortExpressionComparer<ApplicationData>.Descending(app => app.Developer),
+                ApplicationSort.Title           => CreateComparer(IsAscending, app => app.Name),
+                ApplicationSort.Developer       => CreateComparer(IsAscending, app => app.Developer),
                 ApplicationSort.LastPlayed      => new LastPlayedSortComparer(IsAscending),
                 ApplicationSort.TotalTimePlayed => new TimePlayedSortComparer(IsAscending),
-                ApplicationSort.FileType        => IsAscending ? SortExpressionComparer<ApplicationData>.Ascending(app => app.FileExtension)
-                                                               : SortExpressionComparer<ApplicationData>.Descending(app => app.FileExtension),
-                ApplicationSort.FileSize        => IsAscending ? SortExpressionComparer<ApplicationData>.Ascending(app => app.FileSize)
-                                                               : SortExpressionComparer<ApplicationData>.Descending(app => app.FileSize),
-                ApplicationSort.Path            => IsAscending ? SortExpressionComparer<ApplicationData>.Ascending(app => app.Path)
-                                                               : SortExpressionComparer<ApplicationData>.Descending(app => app.Path),
-                ApplicationSort.Favorite        => IsAscending ? SortExpressionComparer<ApplicationData>.Ascending(app => new AppListFavoriteComparable(app))
-                                                                : SortExpressionComparer<ApplicationData>.Descending(app => new AppListFavoriteComparable(app)),
+                ApplicationSort.FileType        => CreateComparer(IsAscending, app => app.FileExtension),
+                ApplicationSort.FileSize        => CreateComparer(IsAscending, app => app.FileSize),
+                ApplicationSort.Path            => CreateComparer(IsAscending, app => app.Path),
+                ApplicationSort.Favorite        => CreateComparer(IsAscending, app => new AppListFavoriteComparable(app)),
                 _ => null,
 #pragma warning restore IDE0055
             };
-        }
 
         public void RefreshView()
         {
@@ -1125,7 +1124,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
             catch (MissingKeyException ex)
             {
-                if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime)
                 {
                     Logger.Error?.Print(LogClass.Application, ex.ToString());
 
@@ -1260,8 +1259,10 @@ namespace Ryujinx.Ava.UI.ViewModels
                     GameStatusText = args.GameStatus;
                     VolumeStatusText = args.VolumeStatus;
                     FifoStatusText = args.FifoStatus;
-                    ShaderCountText = args.ShaderCount > 0 ? $"Compiling shaders: {args.ShaderCount}" : string.Empty;
-                    ShowRightmostSeparator = !ShaderCountText.IsNullOrEmpty();
+                    
+                    ShaderCountText = (ShowRightmostSeparator = args.ShaderCount > 0) 
+                        ? $"{LocaleManager.Instance[LocaleKeys.CompilingShaders]}: {args.ShaderCount}" 
+                        : string.Empty;
 
                     ShowStatusSeparator = true;
                 });
@@ -1641,8 +1642,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             gameThread.Start();
         }
 
-        public void SwitchToRenderer(bool startFullscreen)
-        {
+        public void SwitchToRenderer(bool startFullscreen) =>
             Dispatcher.UIThread.Post(() =>
             {
                 SwitchToGameControl(startFullscreen);
@@ -1651,15 +1651,9 @@ namespace Ryujinx.Ava.UI.ViewModels
 
                 RendererHostControl.Focus();
             });
-        }
 
-        public static void UpdateGameMetadata(string titleId)
-        {
-            ApplicationLibrary.LoadAndSaveMetaData(titleId, appMetadata =>
-            {
-                appMetadata.UpdatePostGame();
-            });
-        }
+        public static void UpdateGameMetadata(string titleId) 
+            => ApplicationLibrary.LoadAndSaveMetaData(titleId, appMetadata => appMetadata.UpdatePostGame());
 
         public void RefreshFirmwareStatus()
         {

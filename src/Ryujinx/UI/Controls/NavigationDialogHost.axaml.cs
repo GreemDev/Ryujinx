@@ -47,42 +47,37 @@ namespace Ryujinx.Ava.UI.Controls
             LoadProfiles();
 
             if (contentManager.GetCurrentFirmwareVersion() != null)
-            {
-                Task.Run(() =>
-                {
-                    UserFirmwareAvatarSelectorViewModel.PreloadAvatars(contentManager, virtualFileSystem);
-                });
-            }
+                Task.Run(() => UserFirmwareAvatarSelectorViewModel.PreloadAvatars(contentManager, virtualFileSystem));
+            
             InitializeComponent();
         }
 
         public void GoBack()
         {
             if (ContentFrame.BackStack.Count > 0)
-            {
                 ContentFrame.GoBack();
-            }
 
             LoadProfiles();
         }
 
-        public void Navigate(Type sourcePageType, object parameter)
-        {
-            ContentFrame.Navigate(sourcePageType, parameter);
-        }
+        public void Navigate(Type sourcePageType, object parameter) 
+            => ContentFrame.Navigate(sourcePageType, parameter);
 
-        public static async Task Show(AccountManager ownerAccountManager, ContentManager ownerContentManager,
-            VirtualFileSystem ownerVirtualFileSystem, HorizonClient ownerHorizonClient)
+        public static async Task Show(
+            AccountManager ownerAccountManager, 
+            ContentManager ownerContentManager,
+            VirtualFileSystem ownerVirtualFileSystem, 
+            HorizonClient ownerHorizonClient)
         {
             var content = new NavigationDialogHost(ownerAccountManager, ownerContentManager, ownerVirtualFileSystem, ownerHorizonClient);
             ContentDialog contentDialog = new()
             {
                 Title = LocaleManager.Instance[LocaleKeys.UserProfileWindowTitle],
-                PrimaryButtonText = "",
-                SecondaryButtonText = "",
-                CloseButtonText = "",
+                PrimaryButtonText = string.Empty,
+                SecondaryButtonText = string.Empty,
+                CloseButtonText = string.Empty,
                 Content = content,
-                Padding = new Thickness(0),
+                Padding = new Thickness(0)
             };
 
             contentDialog.Closed += (_, _) => content.ViewModel.Dispose();
@@ -160,14 +155,14 @@ namespace Ryujinx.Ava.UI.Controls
 
                 if (profile == null)
                 {
+                    Dispatcher.UIThread.Post(Action);
+                    
+                    return;
+                    
                     static async void Action()
                     {
                         await ContentDialogHelper.CreateErrorDialog(LocaleManager.Instance[LocaleKeys.DialogUserProfileDeletionWarningMessage]);
                     }
-
-                    Dispatcher.UIThread.Post(Action);
-
-                    return;
                 }
 
                 AccountManager.OpenUser(profile.UserId);

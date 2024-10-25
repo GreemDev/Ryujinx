@@ -57,7 +57,6 @@ using Key = Ryujinx.Input.Key;
 using MouseButton = Ryujinx.Input.MouseButton;
 using ScalingFilter = Ryujinx.Common.Configuration.ScalingFilter;
 using Size = Avalonia.Size;
-using Switch = Ryujinx.HLE.Switch;
 
 namespace Ryujinx.Ava
 {
@@ -130,7 +129,7 @@ namespace Ryujinx.Ava
         public ContentManager ContentManager { get; }
         public NpadManager NpadManager { get; }
         public TouchScreenManager TouchScreenManager { get; }
-        public Switch Device { get; set; }
+        public HLE.Switch Device { get; set; }
 
         public int Width { get; private set; }
         public int Height { get; private set; }
@@ -849,7 +848,7 @@ namespace Ryujinx.Ava
             // Initialize Configuration.
             var memoryConfiguration = ConfigurationState.Instance.System.DramSize.Value;
 
-            Device = new Switch(new HLEConfiguration(
+            Device = new HLE.Switch(new HLEConfiguration(
                 VirtualFileSystem,
                 _viewModel.LibHacHorizonManager,
                 ContentManager,
