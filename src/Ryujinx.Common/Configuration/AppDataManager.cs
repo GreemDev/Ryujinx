@@ -98,7 +98,7 @@ namespace Ryujinx.Common.Configuration
 
             if (IsPathSymlink(BaseDirPath))
             {
-                Logger.Warning?.Print(LogClass.Application, $"Application data directory is a symlink. This may be unintended.");
+                Logger.Warning?.Print(LogClass.Application, "Application data directory is a symlink. This may be unintended.");
             }
 
             SetupBasePaths();

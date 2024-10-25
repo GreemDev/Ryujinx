@@ -12,6 +12,6 @@
     </Application.Resources>
     <Application.Styles>
         <sty:FluentAvaloniaTheme PreferSystemTheme="False" />
-        <StyleInclude Source="/Assets/Styles/Styles.xaml"/>
+        <StyleInclude Source="/Assets/Styles/Styles.xaml" />
     </Application.Styles>
 </Application>

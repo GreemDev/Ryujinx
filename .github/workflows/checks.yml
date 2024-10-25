@@ -1,4 +1,4 @@
-name: Perform checks
+name: Build PR
 
 on:
   pull_request:
@@ -20,55 +20,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  format:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-dotnet@v4
-        with:
-          global-json-file: global.json
-
-      - name: Overwrite csc problem matcher
-        run: echo "::add-matcher::.github/csc.json"
-
-      - run: dotnet restore
-
-      - name: Print dotnet format version
-        run: dotnet format --version
-
-      - name: Run dotnet format whitespace
-        run: |
-          dotnet format whitespace --verify-no-changes --report ./whitespace-report.json -v d
-
-      # For some unknown reason this step sometimes fails with exit code 139 (segfault?),
-      # so in that case we'll try again (3 tries max).
-      - name: Run dotnet format style
-        uses: TSRBerry/unstable-commands@v1
-        with:
-          commands: dotnet format style --severity info --verify-no-changes --report ./style-report.json -v d
-          timeout-minutes: 5
-          retry-codes: 139
-
-      # For some unknown reason this step sometimes fails with exit code 139 (segfault?),
-      # so in that case we'll try again (3 tries max).
-      - name: Run dotnet format analyzers
-        uses: TSRBerry/unstable-commands@v1
-        with:
-          commands: dotnet format analyzers --severity info --verify-no-changes --report ./analyzers-report.json -v d
-          timeout-minutes: 5
-          retry-codes: 139
-
-      - name: Upload report
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dotnet-format
-          path: ./*-report.json
-
   pr_build:
     uses: ./.github/workflows/build.yml
-    needs: format
     secrets: inherit

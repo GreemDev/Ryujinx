@@ -17,13 +17,7 @@
     <UserControl.Resources>
         <helpers:DownloadableContentLabelConverter x:Key="DownloadableContentLabel" />
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
         <StackPanel
             Grid.Row="0"
             Margin="0 0 0 10"
@@ -44,12 +38,7 @@
         <Panel
             Margin="0 0 0 10"
             Grid.Row="1">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+            <Grid ColumnDefinitions="Auto,Auto,*">
                 <TextBlock
                     Grid.Column="0"
                     Text="{Binding UpdateCount}" />
@@ -101,17 +90,9 @@
                     <DataTemplate
                         DataType="models:DownloadableContentModel">
                         <Panel Margin="10">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
+                            <Grid ColumnDefinitions="*,Auto">
                                 <Grid
-                                    Grid.Column="0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
+                                    Grid.Column="0" ColumnDefinitions="*,Auto">
                                     <TextBlock
                                         Grid.Column="0"
                                         HorizontalAlignment="Left"

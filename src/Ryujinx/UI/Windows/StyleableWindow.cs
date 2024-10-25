@@ -4,6 +4,7 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using FluentAvalonia.UI.Windowing;
 using Ryujinx.Ava.Common.Locale;
+using Ryujinx.Ava.UI.ViewModels;
 
 namespace Ryujinx.Ava.UI.Windows
 {
@@ -16,6 +17,8 @@ namespace Ryujinx.Ava.UI.Windows
 
             LocaleManager.Instance.LocaleChanged += LocaleChanged;
             LocaleChanged();
+            
+            Icon = MainWindowViewModel.IconBitmap;
         }
 
         private void LocaleChanged()
@@ -40,6 +43,8 @@ namespace Ryujinx.Ava.UI.Windows
 
             LocaleManager.Instance.LocaleChanged += LocaleChanged;
             LocaleChanged();
+
+            Icon = new WindowIcon(MainWindowViewModel.IconBitmap);
         }
 
         private void LocaleChanged()

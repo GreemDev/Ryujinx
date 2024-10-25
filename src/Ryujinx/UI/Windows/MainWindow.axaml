@@ -21,7 +21,6 @@
     x:DataType="viewModels:MainWindowViewModel"
     mc:Ignorable="d"
     WindowStartupLocation="Manual"
-    Icon="resm:Ryujinx.UI.Common.Resources.Logo_Ryujinx.png?assembly=Ryujinx.UI.Common"
     Focusable="True">
     <Window.Styles>
         <Style Selector="TitleBar:fullscreen">

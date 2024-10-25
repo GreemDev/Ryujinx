@@ -9,20 +9,12 @@ namespace Ryujinx.Ava.UI.Helpers
     {
         public static TimeZoneConverter Instance = new();
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value == null)
-            {
-                return null;
-            }
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) 
+            => value is TimeZone timeZone 
+                ? $"{timeZone.UtcDifference}  {timeZone.Location}   {timeZone.Abbreviation}" 
+                : null;
 
-            var timeZone = (TimeZone)value;
-            return string.Format("{0}  {1}   {2}", timeZone.UtcDifference, timeZone.Location, timeZone.Abbreviation);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) 
+            => throw new NotImplementedException();
     }
 }

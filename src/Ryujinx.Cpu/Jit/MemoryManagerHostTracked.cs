@@ -469,7 +469,7 @@ namespace Ryujinx.Cpu.Jit
         {
             if (size == 0)
             {
-                return Enumerable.Empty<MemoryRange>();
+                return [];
             }
 
             return GetPhysicalRegionsImpl(va, size);
