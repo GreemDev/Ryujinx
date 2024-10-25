@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using DynamicData;
+using Gommon;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Ava.UI.Models;
@@ -313,11 +314,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public void DeleteAll()
         {
-            foreach (var mod in Mods)
-            {
-                Delete(mod);
-            }
-
+            Mods.ForEach(Delete);
             Mods.Clear();
             OnPropertyChanged(nameof(ModCount));
             Sort();
