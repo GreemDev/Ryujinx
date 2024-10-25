@@ -88,7 +88,7 @@ namespace Ryujinx.Ava
                 }
             });
         }
-        
+
         private void CustomThemeChanged_Event(object _, ReactiveEventArgs<bool> __) => ApplyConfiguredTheme();
 
         private void ThemeChanged_Event(object _, ReactiveEventArgs<string> __) => ApplyConfiguredTheme();

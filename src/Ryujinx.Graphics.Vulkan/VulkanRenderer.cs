@@ -547,7 +547,7 @@ namespace Ryujinx.Graphics.Vulkan
         public IProgram CreateProgram(ShaderSource[] sources, ShaderInfo info)
         {
             ProgramCount++;
-            
+
             bool isCompute = sources.Length == 1 && sources[0].Stage == ShaderStage.Compute;
 
             if (info.State.HasValue || isCompute)

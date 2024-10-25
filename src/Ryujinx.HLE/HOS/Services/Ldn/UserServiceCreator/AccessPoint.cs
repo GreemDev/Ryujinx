@@ -15,6 +15,8 @@ namespace Ryujinx.HLE.HOS.Services.Ldn.UserServiceCreator
         public Array8<NodeLatestUpdate> LatestUpdates = new();
         public bool Connected { get; private set; }
 
+        public ProxyConfig Config => _parent.NetworkClient.Config;
+
         public AccessPoint(IUserLocalCommunicationService parent)
         {
             _parent = parent;

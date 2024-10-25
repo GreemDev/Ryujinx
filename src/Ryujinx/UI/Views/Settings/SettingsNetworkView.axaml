@@ -37,10 +37,56 @@
                             <TextBlock Text="{locale:Locale MultiplayerModeDisabled}" />
                         </ComboBoxItem>
                         <ComboBoxItem>
+                            <TextBlock Text="{locale:Locale MultiplayerModeLdnRyu}" />
+                        </ComboBoxItem>
+                        <ComboBoxItem>
                             <TextBlock Text="{locale:Locale MultiplayerModeLdnMitm}" />
                         </ComboBoxItem>
                     </ComboBox>
+                    <CheckBox Margin="10,0,0,0" IsChecked="{Binding DisableP2P}">
+                        <TextBlock Text="{locale:Locale MultiplayerDisableP2P}"
+                            ToolTip.Tip="{locale:Locale MultiplayerDisableP2PTooltip}" />
+                    </CheckBox>
                 </StackPanel>
+                <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center"
+                        Text="{locale:Locale LdnPassphrase}"
+                        ToolTip.Tip="{locale:Locale LdnPassphraseTooltip}"
+                        Width="200" />
+                    <TextBox Name="LdnPassphrase"
+                        Text="{Binding LdnPassphrase}"
+                        Width="250"
+                        MaxLength="16"
+                        ToolTip.Tip="{locale:Locale LdnPassphraseInputTooltip}"
+                        Watermark="{locale:Locale LdnPassphraseInputPublic}" />
+                    <Button
+                        Name="GenLdnPassButton"
+                        Grid.Column="1"
+                        MinWidth="90"
+                        Margin="10,0,0,0"
+                        ToolTip.Tip="{locale:Locale GenLdnPassTooltip}"
+                        Click="GenLdnPassButton_OnClick">
+                        <TextBlock HorizontalAlignment="Center"
+                                    Text="{locale:Locale GenLdnPass}" />
+                    </Button>
+                    <Button
+                        Name="ClearLdnPassButton"
+                        Grid.Column="1"
+                        MinWidth="90"
+                        Margin="10,0,0,0"
+                        ToolTip.Tip="{locale:Locale ClearLdnPassTooltip}"
+                        Click="ClearLdnPassButton_OnClick">
+                        <TextBlock HorizontalAlignment="Center"
+                                    Text="{locale:Locale ClearLdnPass}" />
+                    </Button>
+                </StackPanel>
+                <TextBlock  Margin="10,0,0,0"
+                    VerticalAlignment="Center"
+                    Name="InvalidLdnPassphraseBlock"
+                    FontStyle="Italic"
+                    IsVisible="{Binding IsInvalidLdnPassphraseVisible}"
+                    Focusable="False"
+                    Text="{locale:Locale InvalidLdnPassphrase}" />
                 <Separator Height="1" />
                 <TextBlock Classes="h1" Text="{locale:Locale SettingsTabNetworkConnection}" />
                 <CheckBox Margin="10,0,0,0" IsChecked="{Binding EnableInternetAccess}">

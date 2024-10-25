@@ -105,7 +105,7 @@ namespace Ryujinx.Ava
             Console.Title = $"Ryujinx Console {Version}";
 
             // Hook unhandled exception and process exit events.
-            AppDomain.CurrentDomain.UnhandledException += (sender, e) 
+            AppDomain.CurrentDomain.UnhandledException += (sender, e)
                 => ProcessUnhandledException(sender, e.ExceptionObject as Exception, e.IsTerminating);
             AppDomain.CurrentDomain.ProcessExit += (_, _) => Exit();
 
@@ -231,11 +231,9 @@ namespace Ryujinx.Ava
 
             var enabledLogLevels = Logger.GetEnabledLevels().ToArray();
 
-            Logger.Notice.Print(LogClass.Application, $"Logs Enabled: {
-                (enabledLogLevels.Length is 0
+            Logger.Notice.Print(LogClass.Application, $"Logs Enabled: {(enabledLogLevels.Length is 0
                     ? "<None>"
-                    : enabledLogLevels.JoinToString(", "))
-            }");
+                    : enabledLogLevels.JoinToString(", "))}");
 
             Logger.Notice.Print(LogClass.Application,
                 AppDataManager.Mode == AppDataManager.LaunchMode.Custom
@@ -247,13 +245,13 @@ namespace Ryujinx.Ava
         {
             Logger.Log log = Logger.Error ?? Logger.Notice;
             string message = $"Unhandled exception caught: {ex}";
-            
+
             // ReSharper disable once ConstantConditionalAccessQualifier
-            if (sender?.GetType()?.AsPrettyString() is {} senderName)
+            if (sender?.GetType()?.AsPrettyString() is { } senderName)
                 log.Print(LogClass.Application, message, senderName);
             else
                 log.PrintMsg(LogClass.Application, message);
-            
+
             if (isTerminating)
                 Exit();
         }

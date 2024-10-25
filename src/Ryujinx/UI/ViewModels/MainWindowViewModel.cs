@@ -115,6 +115,8 @@ namespace Ryujinx.Ava.UI.ViewModels
         public ApplicationData ListSelectedApplication;
         public ApplicationData GridSelectedApplication;
 
+        public IEnumerable<LdnGameData> LastLdnGameData;
+
         public static readonly Bitmap IconBitmap =
             new(Assembly.GetAssembly(typeof(ConfigurationState))!.GetManifestResourceStream("Ryujinx.UI.Common.Resources.Logo_Ryujinx.png")!);
 
@@ -266,7 +268,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public bool ShowFirmwareStatus => !ShowLoadProgress;
 
-        public bool ShowRightmostSeparator 
+        public bool ShowRightmostSeparator
         {
             get => _showRightmostSeparator;
             set
@@ -527,7 +529,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                 OnPropertyChanged();
             }
         }
-        
+
         public string ShaderCountText
         {
             get => _shaderCountText;
@@ -990,7 +992,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                 ? SortExpressionComparer<ApplicationData>.Ascending(selector)
                 : SortExpressionComparer<ApplicationData>.Descending(selector);
 
-        private IComparer<ApplicationData> GetComparer() 
+        private IComparer<ApplicationData> GetComparer()
             => SortMode switch
             {
 #pragma warning disable IDE0055 // Disable formatting
@@ -1215,7 +1217,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         private void InitializeGame()
         {
             RendererHostControl.WindowCreated += RendererHost_Created;
-            
+
             AppHost.StatusUpdatedEvent += Update_StatusBar;
             AppHost.AppExit += AppHost_AppExit;
 
@@ -1264,9 +1266,9 @@ namespace Ryujinx.Ava.UI.ViewModels
                     GameStatusText = args.GameStatus;
                     VolumeStatusText = args.VolumeStatus;
                     FifoStatusText = args.FifoStatus;
-                    
-                    ShaderCountText = (ShowRightmostSeparator = args.ShaderCount > 0) 
-                        ? $"{LocaleManager.Instance[LocaleKeys.CompilingShaders]}: {args.ShaderCount}" 
+
+                    ShaderCountText = (ShowRightmostSeparator = args.ShaderCount > 0)
+                        ? $"{LocaleManager.Instance[LocaleKeys.CompilingShaders]}: {args.ShaderCount}"
                         : string.Empty;
 
                     ShowStatusSeparator = true;
@@ -1666,7 +1668,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                 RendererHostControl.Focus();
             });
 
-        public static void UpdateGameMetadata(string titleId) 
+        public static void UpdateGameMetadata(string titleId)
             => ApplicationLibrary.LoadAndSaveMetaData(titleId, appMetadata => appMetadata.UpdatePostGame());
 
         public void RefreshFirmwareStatus()

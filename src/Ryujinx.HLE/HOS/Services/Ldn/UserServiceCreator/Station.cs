@@ -14,6 +14,8 @@ namespace Ryujinx.HLE.HOS.Services.Ldn.UserServiceCreator
 
         public bool Connected { get; private set; }
 
+        public ProxyConfig Config => _parent.NetworkClient.Config;
+
         public Station(IUserLocalCommunicationService parent)
         {
             _parent = parent;

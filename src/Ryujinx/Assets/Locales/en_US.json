@@ -807,5 +807,17 @@
   "MultiplayerMode": "Mode:",
   "MultiplayerModeTooltip": "Change LDN multiplayer mode.\n\nLdnMitm will modify local wireless/local play functionality in games to function as if it were LAN, allowing for local, same-network connections with other Ryujinx instances and hacked Nintendo Switch consoles that have the ldn_mitm module installed.\n\nMultiplayer requires all players to be on the same game version (i.e. Super Smash Bros. Ultimate v13.0.1 can't connect to v13.0.0).\n\nLeave DISABLED if unsure.",
   "MultiplayerModeDisabled": "Disabled",
-  "MultiplayerModeLdnMitm": "ldn_mitm"
+  "MultiplayerModeLdnMitm": "ldn_mitm",
+  "MultiplayerModeLdnRyu": "RyuLDN",
+  "MultiplayerDisableP2P": "Disable P2P Network Hosting (may increase latency)",
+  "MultiplayerDisableP2PTooltip": "Disable P2P network hosting, peers will proxy through the master server instead of connecting to you directly.",
+  "LdnPassphrase": "Network Passphrase:",
+  "LdnPassphraseTooltip": "You will only be able to see hosted games with the same passphrase as you.",
+  "LdnPassphraseInputTooltip": "Enter a passphrase in the format Ryujinx-<8 hex chars>. You will only be able to see hosted games with the same passphrase as you.",
+  "LdnPassphraseInputPublic": "(public)",
+  "GenLdnPass": "Generate Random",
+  "GenLdnPassTooltip": "Generates a new passphrase, which can be shared with other players.",
+  "ClearLdnPass": "Clear",
+  "ClearLdnPassTooltip": "Clears the current passphrase, returning to the public network.",
+  "InvalidLdnPassphrase": "Invalid Passphrase! Must be in the format \"Ryujinx-<8 hex chars>\""
 }

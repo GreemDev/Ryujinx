@@ -154,11 +154,11 @@ namespace Ryujinx.UI.Common
             "0100d680194b2000", // Pikmin 2
             "0100f4c009322000", // Pikmin 3 Deluxe
             "0100b7c00933a000", // Pikmin 4
-            
+
             "01004ad014bf0000", // Sonic Frontiers
             "01005ea01c0fc000", // SONIC X SHADOW GENERATIONS
             "01005ea01c0fc001", // ^
-            
+
             "01004d300c5ae000", // Kirby and the Forgotten Land
             "01006b601380e000", // Kirby's Return to Dreamland Deluxe
             "01007e3006dda000", // Kirby Star Allies 
