@@ -84,7 +84,6 @@ namespace Ryujinx.Ava.UI.Windows
             TitleBar.ExtendsContentIntoTitleBar = true;
             TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
 
-
             // NOTE: Height of MenuBar and StatusBar is not usable here, since it would still be 0 at this point.
             StatusBarHeight = StatusBarView.StatusBar.MinHeight;
             MenuBarHeight = MenuBar.MinHeight;
@@ -98,7 +97,7 @@ namespace Ryujinx.Ava.UI.Windows
             {
                 InputManager = new InputManager(new AvaloniaKeyboardDriver(this), new SDL2GamepadDriver());
 
-                this.GetObservable(IsActiveProperty).Subscribe(IsActiveChanged);
+                _ = this.GetObservable(IsActiveProperty).Subscribe(it => ViewModel.IsActive = it);
                 this.ScalingChanged += OnScalingChanged;
             }
         }
@@ -106,7 +105,7 @@ namespace Ryujinx.Ava.UI.Windows
         /// <summary>
         /// Event handler for detecting OS theme change when using "Follow OS theme" option
         /// </summary>
-        private void OnPlatformColorValuesChanged(object sender, PlatformColorValues e)
+        private static void OnPlatformColorValuesChanged(object sender, PlatformColorValues e)
         {
             if (Application.Current is App app)
                 app.ApplyConfiguredTheme();
@@ -126,11 +125,6 @@ namespace Ryujinx.Ava.UI.Windows
             base.OnApplyTemplate(e);
 
             NotificationHelper.SetNotificationManager(this);
-        }
-
-        private void IsActiveChanged(bool obj)
-        {
-            ViewModel.IsActive = obj;
         }
 
         private void OnScalingChanged(object sender, EventArgs e)
@@ -355,7 +349,7 @@ namespace Ryujinx.Ava.UI.Windows
                 await Dispatcher.UIThread.InvokeAsync(async () => await UserErrorDialog.ShowUserErrorDialog(UserError.NoKeys));
             }
 
-            if (ConfigurationState.Instance.CheckUpdatesOnStart.Value && Updater.CanUpdate(false))
+            if (ConfigurationState.Instance.CheckUpdatesOnStart && Updater.CanUpdate(false))
             {
                 await Updater.BeginParse(this, false).ContinueWith(task =>
                 {
