@@ -121,8 +121,8 @@ namespace Ryujinx.UI.Common
         }
 
         private static readonly string[] _discordGameAssetKeys =
-[
-    "01002da013484000", // The Legend of Zelda: Skyward Sword HD
+        [
+            "01002da013484000", // The Legend of Zelda: Skyward Sword HD
             "01007ef00011e000", // The Legend of Zelda: Breath of the Wild
             "0100f2c0115b6000", // The Legend of Zelda: Tears of the Kingdom
             "01008cf01baac000", // The Legend of Zelda: Echoes of Wisdom
@@ -156,6 +156,8 @@ namespace Ryujinx.UI.Common
             "0100b7c00933a000", // Pikmin 4
             
             "01004ad014bf0000", // Sonic Frontiers
+            "01005ea01c0fc000", // SONIC X SHADOW GENERATIONS
+            "01005ea01c0fc001", // ^
             
             "01004d300c5ae000", // Kirby and the Forgotten Land
             "01006b601380e000", // Kirby's Return to Dreamland Deluxe
