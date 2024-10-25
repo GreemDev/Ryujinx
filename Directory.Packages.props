@@ -3,13 +3,13 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Avalonia" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Desktop" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Markup.Xaml.Loader" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Svg" Version="11.0.0.18" />
-    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.18" />
+    <PackageVersion Include="Avalonia" Version="11.0.13" />
+    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.0.13" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.0.13" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.13" />
+    <PackageVersion Include="Avalonia.Markup.Xaml.Loader" Version="11.0.13" />
+    <PackageVersion Include="Avalonia.Svg" Version="11.0.0.19" />
+    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.19" />
     <PackageVersion Include="Projektanker.Icons.Avalonia" Version="9.4.0" />
     <PackageVersion Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.4.0"/>
     <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.4.0"/>
