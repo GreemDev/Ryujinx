@@ -489,6 +489,41 @@ namespace Ryujinx.HLE.HOS.Services.Ldn.UserServiceCreator.LdnRyu
 
             SendAsync(_protocol.Encode(PacketId.CreateAccessPoint, request, advertiseData));
 
+            // Send a network change event with dummy data immediately. Necessary to avoid crashes in some games
+            var networkChangeEvent = new NetworkChangeEventArgs(new NetworkInfo()
+            {
+                Common = new CommonNetworkInfo()
+                {
+                    MacAddress = InitializeMemory.MacAddress,
+                    Channel = request.NetworkConfig.Channel,
+                    LinkLevel = 3,
+                    NetworkType = 2,
+                    Ssid = new Ssid()
+                    {
+                        Length = 32
+                    }
+                },
+                Ldn = new LdnNetworkInfo()
+                {
+                    AdvertiseDataSize = (ushort)advertiseData.Length,
+                    AuthenticationId = 0,
+                    NodeCount = 1,
+                    NodeCountMax = request.NetworkConfig.NodeCountMax,
+                    SecurityMode = (ushort)request.SecurityConfig.SecurityMode
+                }
+            }, true);
+            networkChangeEvent.Info.Ldn.Nodes[0] = new NodeInfo()
+            {
+                Ipv4Address = 175243265,
+                IsConnected = 1,
+                LocalCommunicationVersion = request.NetworkConfig.LocalCommunicationVersion,
+                MacAddress = InitializeMemory.MacAddress,
+                NodeId = 0,
+                UserName = request.UserConfig.UserName
+            };
+            "12345678123456781234567812345678"u8.ToArray().CopyTo(networkChangeEvent.Info.Common.Ssid.Name.AsSpan());
+            NetworkChange?.Invoke(this, networkChangeEvent);
+
             return CreateNetworkCommon();
         }
 
@@ -574,6 +609,14 @@ namespace Ryujinx.HLE.HOS.Services.Ldn.UserServiceCreator.LdnRyu
             }
 
             SendAsync(_protocol.Encode(PacketId.Connect, request));
+
+            var networkChangeEvent = new NetworkChangeEventArgs(new NetworkInfo()
+            {
+                Common = request.NetworkInfo.Common,
+                Ldn = request.NetworkInfo.Ldn
+            }, true);
+
+            NetworkChange?.Invoke(this, networkChangeEvent);
 
             return ConnectCommon();
         }
