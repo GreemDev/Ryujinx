@@ -511,7 +511,7 @@ namespace Ryujinx.Ava.UI.Windows
             {
                 LoadApplications();
             }
-            
+
             _ = CheckLaunchState();
         }
 
@@ -641,13 +641,26 @@ namespace Ryujinx.Ava.UI.Windows
         {
             switch (fileType)
             {
-                case "NSP": ConfigurationState.Instance.UI.ShownFileTypes.NSP.Toggle(); break;
-                case "PFS0": ConfigurationState.Instance.UI.ShownFileTypes.PFS0.Toggle(); break;
-                case "XCI": ConfigurationState.Instance.UI.ShownFileTypes.XCI.Toggle(); break;
-                case "NCA": ConfigurationState.Instance.UI.ShownFileTypes.NCA.Toggle(); break;
-                case "NRO": ConfigurationState.Instance.UI.ShownFileTypes.NRO.Toggle(); break;
-                case "NSO": ConfigurationState.Instance.UI.ShownFileTypes.NSO.Toggle(); break;
-                default: throw new ArgumentOutOfRangeException(fileType);
+                case "NSP":
+                    ConfigurationState.Instance.UI.ShownFileTypes.NSP.Toggle();
+                    break;
+                case "PFS0":
+                    ConfigurationState.Instance.UI.ShownFileTypes.PFS0.Toggle();
+                    break;
+                case "XCI":
+                    ConfigurationState.Instance.UI.ShownFileTypes.XCI.Toggle();
+                    break;
+                case "NCA":
+                    ConfigurationState.Instance.UI.ShownFileTypes.NCA.Toggle();
+                    break;
+                case "NRO":
+                    ConfigurationState.Instance.UI.ShownFileTypes.NRO.Toggle();
+                    break;
+                case "NSO":
+                    ConfigurationState.Instance.UI.ShownFileTypes.NSO.Toggle();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(fileType);
             }
 
             ConfigurationState.Instance.ToFileFormat().SaveConfig(Program.ConfigurationPath);
