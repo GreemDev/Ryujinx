@@ -46,7 +46,7 @@ namespace Ryujinx.Headless.SDL2.Vulkan
             action();
         }
 
-        public IntPtr CreateWindowSurface(IntPtr instance)
+        public nint CreateWindowSurface(nint instance)
         {
             ulong surfaceHandle = 0;
 
@@ -71,19 +71,19 @@ namespace Ryujinx.Headless.SDL2.Vulkan
                 CreateSurface();
             }
 
-            return (IntPtr)surfaceHandle;
+            return (nint)surfaceHandle;
         }
 
         public unsafe string[] GetRequiredInstanceExtensions()
         {
-            if (SDL_Vulkan_GetInstanceExtensions(WindowHandle, out uint extensionsCount, IntPtr.Zero) == SDL_bool.SDL_TRUE)
+            if (SDL_Vulkan_GetInstanceExtensions(WindowHandle, out uint extensionsCount, nint.Zero) == SDL_bool.SDL_TRUE)
             {
-                IntPtr[] rawExtensions = new IntPtr[(int)extensionsCount];
+                nint[] rawExtensions = new nint[(int)extensionsCount];
                 string[] extensions = new string[(int)extensionsCount];
 
-                fixed (IntPtr* rawExtensionsPtr = rawExtensions)
+                fixed (nint* rawExtensionsPtr = rawExtensions)
                 {
-                    if (SDL_Vulkan_GetInstanceExtensions(WindowHandle, out extensionsCount, (IntPtr)rawExtensionsPtr) == SDL_bool.SDL_TRUE)
+                    if (SDL_Vulkan_GetInstanceExtensions(WindowHandle, out extensionsCount, (nint)rawExtensionsPtr) == SDL_bool.SDL_TRUE)
                     {
                         for (int i = 0; i < extensions.Length; i++)
                         {

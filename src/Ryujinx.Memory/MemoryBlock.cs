@@ -13,13 +13,13 @@ namespace Ryujinx.Memory
         private readonly bool _isMirror;
         private readonly bool _viewCompatible;
         private readonly bool _forJit;
-        private IntPtr _sharedMemory;
-        private IntPtr _pointer;
+        private nint _sharedMemory;
+        private nint _pointer;
 
         /// <summary>
         /// Pointer to the memory block data.
         /// </summary>
-        public IntPtr Pointer => _pointer;
+        public nint Pointer => _pointer;
 
         /// <summary>
         /// Size of the memory block.
@@ -68,7 +68,7 @@ namespace Ryujinx.Memory
         /// <param name="sharedMemory">Shared memory to use as backing storage for this block</param>
         /// <exception cref="SystemException">Throw when there's an error while mapping the shared memory</exception>
         /// <exception cref="PlatformNotSupportedException">Throw when the current platform is not supported</exception>
-        private MemoryBlock(ulong size, IntPtr sharedMemory)
+        private MemoryBlock(ulong size, nint sharedMemory)
         {
             _pointer = MemoryManagement.MapSharedMemory(sharedMemory, size);
             Size = size;
@@ -86,7 +86,7 @@ namespace Ryujinx.Memory
         /// <exception cref="PlatformNotSupportedException">Throw when the current platform is not supported</exception>
         public MemoryBlock CreateMirror()
         {
-            if (_sharedMemory == IntPtr.Zero)
+            if (_sharedMemory == nint.Zero)
             {
                 throw new NotSupportedException("Mirroring is not supported on the memory block because the Mirrorable flag was not set.");
             }
@@ -134,7 +134,7 @@ namespace Ryujinx.Memory
         /// <exception cref="InvalidMemoryRegionException">Throw when either <paramref name="offset"/> or <paramref name="size"/> are out of range</exception>
         public void MapView(MemoryBlock srcBlock, ulong srcOffset, ulong dstOffset, ulong size)
         {
-            if (srcBlock._sharedMemory == IntPtr.Zero)
+            if (srcBlock._sharedMemory == nint.Zero)
             {
                 throw new ArgumentException("The source memory block is not mirrorable, and thus cannot be mapped on the current block.");
             }
@@ -273,9 +273,9 @@ namespace Ryujinx.Memory
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe ref T GetRef<T>(ulong offset) where T : unmanaged
         {
-            IntPtr ptr = _pointer;
+            nint ptr = _pointer;
 
-            ObjectDisposedException.ThrowIf(ptr == IntPtr.Zero, this);
+            ObjectDisposedException.ThrowIf(ptr == nint.Zero, this);
 
             int size = Unsafe.SizeOf<T>();
 
@@ -298,14 +298,14 @@ namespace Ryujinx.Memory
         /// <exception cref="ObjectDisposedException">Throw when the memory block has already been disposed</exception>
         /// <exception cref="InvalidMemoryRegionException">Throw when either <paramref name="offset"/> or <paramref name="size"/> are out of range</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IntPtr GetPointer(ulong offset, ulong size) => GetPointerInternal(offset, size);
+        public nint GetPointer(ulong offset, ulong size) => GetPointerInternal(offset, size);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IntPtr GetPointerInternal(ulong offset, ulong size)
+        private nint GetPointerInternal(ulong offset, ulong size)
         {
-            IntPtr ptr = _pointer;
+            nint ptr = _pointer;
 
-            ObjectDisposedException.ThrowIf(ptr == IntPtr.Zero, this);
+            ObjectDisposedException.ThrowIf(ptr == nint.Zero, this);
 
             ulong endOffset = offset + size;
 
@@ -364,9 +364,9 @@ namespace Ryujinx.Memory
         /// <param name="pointer">Native pointer</param>
         /// <param name="offset">Offset to add</param>
         /// <returns>Native pointer with the added offset</returns>
-        private static IntPtr PtrAddr(IntPtr pointer, ulong offset)
+        private static nint PtrAddr(nint pointer, ulong offset)
         {
-            return new IntPtr(pointer.ToInt64() + (long)offset);
+            return new nint(pointer.ToInt64() + (long)offset);
         }
 
         /// <summary>
@@ -386,10 +386,10 @@ namespace Ryujinx.Memory
 
         private void FreeMemory()
         {
-            IntPtr ptr = Interlocked.Exchange(ref _pointer, IntPtr.Zero);
+            nint ptr = Interlocked.Exchange(ref _pointer, nint.Zero);
 
             // If pointer is null, the memory was already freed or never allocated.
-            if (ptr != IntPtr.Zero)
+            if (ptr != nint.Zero)
             {
                 if (_usesSharedMemory)
                 {
@@ -403,9 +403,9 @@ namespace Ryujinx.Memory
 
             if (!_isMirror)
             {
-                IntPtr sharedMemory = Interlocked.Exchange(ref _sharedMemory, IntPtr.Zero);
+                nint sharedMemory = Interlocked.Exchange(ref _sharedMemory, nint.Zero);
 
-                if (sharedMemory != IntPtr.Zero)
+                if (sharedMemory != nint.Zero)
                 {
                     MemoryManagement.DestroySharedMemory(sharedMemory);
                 }

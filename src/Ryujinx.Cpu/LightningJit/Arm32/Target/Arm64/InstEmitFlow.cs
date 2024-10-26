@@ -133,7 +133,7 @@ namespace Ryujinx.Cpu.LightningJit.Arm32.Target.Arm64
             TailMerger tailMerger,
             Action writeEpilogue,
             AddressTable<ulong> funcTable,
-            IntPtr funcPtr,
+            nint funcPtr,
             int spillBaseOffset,
             uint nextAddress,
             Operand guestAddress,

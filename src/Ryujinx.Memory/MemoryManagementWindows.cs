@@ -12,16 +12,16 @@ namespace Ryujinx.Memory
 
         private static readonly PlaceholderManager _placeholders = new();
 
-        public static IntPtr Allocate(IntPtr size)
+        public static nint Allocate(nint size)
         {
             return AllocateInternal(size, AllocationType.Reserve | AllocationType.Commit);
         }
 
-        public static IntPtr Reserve(IntPtr size, bool viewCompatible)
+        public static nint Reserve(nint size, bool viewCompatible)
         {
             if (viewCompatible)
             {
-                IntPtr baseAddress = AllocateInternal2(size, AllocationType.Reserve | AllocationType.ReservePlaceholder);
+                nint baseAddress = AllocateInternal2(size, AllocationType.Reserve | AllocationType.ReservePlaceholder);
 
                 _placeholders.ReserveRange((ulong)baseAddress, (ulong)size);
 
@@ -31,11 +31,11 @@ namespace Ryujinx.Memory
             return AllocateInternal(size, AllocationType.Reserve);
         }
 
-        private static IntPtr AllocateInternal(IntPtr size, AllocationType flags = 0)
+        private static nint AllocateInternal(nint size, AllocationType flags = 0)
         {
-            IntPtr ptr = WindowsApi.VirtualAlloc(IntPtr.Zero, size, flags, MemoryProtection.ReadWrite);
+            nint ptr = WindowsApi.VirtualAlloc(nint.Zero, size, flags, MemoryProtection.ReadWrite);
 
-            if (ptr == IntPtr.Zero)
+            if (ptr == nint.Zero)
             {
                 throw new SystemException(Marshal.GetLastPInvokeErrorMessage());
             }
@@ -43,11 +43,11 @@ namespace Ryujinx.Memory
             return ptr;
         }
 
-        private static IntPtr AllocateInternal2(IntPtr size, AllocationType flags = 0)
+        private static nint AllocateInternal2(nint size, AllocationType flags = 0)
         {
-            IntPtr ptr = WindowsApi.VirtualAlloc2(WindowsApi.CurrentProcessHandle, IntPtr.Zero, size, flags, MemoryProtection.NoAccess, IntPtr.Zero, 0);
+            nint ptr = WindowsApi.VirtualAlloc2(WindowsApi.CurrentProcessHandle, nint.Zero, size, flags, MemoryProtection.NoAccess, nint.Zero, 0);
 
-            if (ptr == IntPtr.Zero)
+            if (ptr == nint.Zero)
             {
                 throw new SystemException(Marshal.GetLastPInvokeErrorMessage());
             }
@@ -55,15 +55,15 @@ namespace Ryujinx.Memory
             return ptr;
         }
 
-        public static void Commit(IntPtr location, IntPtr size)
+        public static void Commit(nint location, nint size)
         {
-            if (WindowsApi.VirtualAlloc(location, size, AllocationType.Commit, MemoryProtection.ReadWrite) == IntPtr.Zero)
+            if (WindowsApi.VirtualAlloc(location, size, AllocationType.Commit, MemoryProtection.ReadWrite) == nint.Zero)
             {
                 throw new SystemException(Marshal.GetLastPInvokeErrorMessage());
             }
         }
 
-        public static void Decommit(IntPtr location, IntPtr size)
+        public static void Decommit(nint location, nint size)
         {
             if (!WindowsApi.VirtualFree(location, size, AllocationType.Decommit))
             {
@@ -71,17 +71,17 @@ namespace Ryujinx.Memory
             }
         }
 
-        public static void MapView(IntPtr sharedMemory, ulong srcOffset, IntPtr location, IntPtr size, MemoryBlock owner)
+        public static void MapView(nint sharedMemory, ulong srcOffset, nint location, nint size, MemoryBlock owner)
         {
             _placeholders.MapView(sharedMemory, srcOffset, location, size, owner);
         }
 
-        public static void UnmapView(IntPtr sharedMemory, IntPtr location, IntPtr size, MemoryBlock owner)
+        public static void UnmapView(nint sharedMemory, nint location, nint size, MemoryBlock owner)
         {
             _placeholders.UnmapView(sharedMemory, location, size, owner);
         }
 
-        public static bool Reprotect(IntPtr address, IntPtr size, MemoryPermission permission, bool forView)
+        public static bool Reprotect(nint address, nint size, MemoryPermission permission, bool forView)
         {
             if (forView)
             {
@@ -93,26 +93,26 @@ namespace Ryujinx.Memory
             }
         }
 
-        public static bool Free(IntPtr address, IntPtr size)
+        public static bool Free(nint address, nint size)
         {
             _placeholders.UnreserveRange((ulong)address, (ulong)size);
 
-            return WindowsApi.VirtualFree(address, IntPtr.Zero, AllocationType.Release);
+            return WindowsApi.VirtualFree(address, nint.Zero, AllocationType.Release);
         }
 
-        public static IntPtr CreateSharedMemory(IntPtr size, bool reserve)
+        public static nint CreateSharedMemory(nint size, bool reserve)
         {
             var prot = reserve ? FileMapProtection.SectionReserve : FileMapProtection.SectionCommit;
 
-            IntPtr handle = WindowsApi.CreateFileMapping(
+            nint handle = WindowsApi.CreateFileMapping(
                 WindowsApi.InvalidHandleValue,
-                IntPtr.Zero,
+                nint.Zero,
                 FileMapProtection.PageReadWrite | prot,
                 (uint)(size.ToInt64() >> 32),
                 (uint)size.ToInt64(),
                 null);
 
-            if (handle == IntPtr.Zero)
+            if (handle == nint.Zero)
             {
                 throw new SystemException(Marshal.GetLastPInvokeErrorMessage());
             }
@@ -120,7 +120,7 @@ namespace Ryujinx.Memory
             return handle;
         }
 
-        public static void DestroySharedMemory(IntPtr handle)
+        public static void DestroySharedMemory(nint handle)
         {
             if (!WindowsApi.CloseHandle(handle))
             {
@@ -128,11 +128,11 @@ namespace Ryujinx.Memory
             }
         }
 
-        public static IntPtr MapSharedMemory(IntPtr handle)
+        public static nint MapSharedMemory(nint handle)
         {
-            IntPtr ptr = WindowsApi.MapViewOfFile(handle, 4 | 2, 0, 0, IntPtr.Zero);
+            nint ptr = WindowsApi.MapViewOfFile(handle, 4 | 2, 0, 0, nint.Zero);
 
-            if (ptr == IntPtr.Zero)
+            if (ptr == nint.Zero)
             {
                 throw new SystemException(Marshal.GetLastPInvokeErrorMessage());
             }
@@ -140,7 +140,7 @@ namespace Ryujinx.Memory
             return ptr;
         }
 
-        public static void UnmapSharedMemory(IntPtr address)
+        public static void UnmapSharedMemory(nint address)
         {
             if (!WindowsApi.UnmapViewOfFile(address))
             {

@@ -11,17 +11,17 @@ namespace Ryujinx.Common.Memory
     /// <typeparam name="T">Array element type</typeparam>
     public unsafe struct ArrayPtr<T> : IEquatable<ArrayPtr<T>>, IArray<T> where T : unmanaged
     {
-        private IntPtr _ptr;
+        private nint _ptr;
 
         /// <summary>
         /// Null pointer.
         /// </summary>
-        public static ArrayPtr<T> Null => new() { _ptr = IntPtr.Zero };
+        public static ArrayPtr<T> Null => new() { _ptr = nint.Zero };
 
         /// <summary>
         /// True if the pointer is null, false otherwise.
         /// </summary>
-        public readonly bool IsNull => _ptr == IntPtr.Zero;
+        public readonly bool IsNull => _ptr == nint.Zero;
 
         /// <summary>
         /// Number of elements on the array.
@@ -50,7 +50,7 @@ namespace Ryujinx.Common.Memory
         /// <param name="length">Number of elements on the array</param>
         public ArrayPtr(ref T value, int length)
         {
-            _ptr = (IntPtr)Unsafe.AsPointer(ref value);
+            _ptr = (nint)Unsafe.AsPointer(ref value);
             Length = length;
         }
 
@@ -61,7 +61,7 @@ namespace Ryujinx.Common.Memory
         /// <param name="length">Number of elements on the array</param>
         public ArrayPtr(T* ptr, int length)
         {
-            _ptr = (IntPtr)ptr;
+            _ptr = (nint)ptr;
             Length = length;
         }
 
@@ -70,7 +70,7 @@ namespace Ryujinx.Common.Memory
         /// </summary>
         /// <param name="ptr">Array base pointer</param>
         /// <param name="length">Number of elements on the array</param>
-        public ArrayPtr(IntPtr ptr, int length)
+        public ArrayPtr(nint ptr, int length)
         {
             _ptr = ptr;
             Length = length;

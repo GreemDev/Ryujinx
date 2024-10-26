@@ -12,13 +12,13 @@ namespace Ryujinx.Graphics.Nvdec.FFmpeg.Native
         public int Capabilities;
         public byte MaxLowRes;
         public unsafe AVRational* SupportedFramerates;
-        public IntPtr PixFmts;
-        public IntPtr SupportedSamplerates;
-        public IntPtr SampleFmts;
+        public nint PixFmts;
+        public nint SupportedSamplerates;
+        public nint SampleFmts;
         // Deprecated
         public unsafe ulong* ChannelLayouts;
-        public unsafe IntPtr PrivClass;
-        public IntPtr Profiles;
+        public unsafe nint PrivClass;
+        public nint Profiles;
         public unsafe byte* WrapperName;
 #pragma warning restore CS0649
     }

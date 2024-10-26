@@ -225,7 +225,7 @@ namespace Ryujinx.Input.SDL2
 
             unsafe
             {
-                IntPtr statePtr = SDL_GetKeyboardState(out int numKeys);
+                nint statePtr = SDL_GetKeyboardState(out int numKeys);
 
                 rawKeyboardState = new ReadOnlySpan<byte>((byte*)statePtr, numKeys);
             }

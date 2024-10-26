@@ -22,7 +22,7 @@ namespace Ryujinx.Graphics.Vulkan
             _api = api;
             Instance = instance;
 
-            if (api.GetInstanceProcAddr(instance, "vkEnumerateInstanceVersion") == IntPtr.Zero)
+            if (api.GetInstanceProcAddr(instance, "vkEnumerateInstanceVersion") == nint.Zero)
             {
                 InstanceVersion = Vk.Version10;
             }
@@ -94,7 +94,7 @@ namespace Ryujinx.Graphics.Vulkan
 
             unsafe
             {
-                return extensionProperties.Select(x => Marshal.PtrToStringAnsi((IntPtr)x.ExtensionName)).ToImmutableHashSet();
+                return extensionProperties.Select(x => Marshal.PtrToStringAnsi((nint)x.ExtensionName)).ToImmutableHashSet();
             }
         }
 
@@ -110,7 +110,7 @@ namespace Ryujinx.Graphics.Vulkan
 
             unsafe
             {
-                return layerProperties.Select(x => Marshal.PtrToStringAnsi((IntPtr)x.LayerName)).ToImmutableHashSet();
+                return layerProperties.Select(x => Marshal.PtrToStringAnsi((nint)x.LayerName)).ToImmutableHashSet();
             }
         }
 

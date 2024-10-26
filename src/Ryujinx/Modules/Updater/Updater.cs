@@ -762,10 +762,8 @@ namespace Ryujinx.Modules
             }
         }
 
-        public static void CleanupUpdate()
-        {
+        public static void CleanupUpdate() =>
             Directory.GetFiles(_homeDir, "*.ryuold", SearchOption.AllDirectories)
                 .ForEach(File.Delete);
-        }
     }
 }

@@ -9,7 +9,7 @@ namespace ARMeilleure.Common
 
         public override void* Allocate(ulong size)
         {
-            void* result = (void*)Marshal.AllocHGlobal((IntPtr)size);
+            void* result = (void*)Marshal.AllocHGlobal((nint)size);
 
             if (result == null)
             {
@@ -21,7 +21,7 @@ namespace ARMeilleure.Common
 
         public override void Free(void* block)
         {
-            Marshal.FreeHGlobal((IntPtr)block);
+            Marshal.FreeHGlobal((nint)block);
         }
     }
 }

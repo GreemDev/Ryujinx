@@ -8,9 +8,9 @@ using Ryujinx.Ava.UI.ViewModels;
 
 namespace Ryujinx.Ava.UI.Windows
 {
-    public class StyleableAppWindow : AppWindow
+    public abstract class StyleableAppWindow : AppWindow
     {
-        public StyleableAppWindow()
+        protected StyleableAppWindow()
         {
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             TransparencyLevelHint = [WindowTransparencyLevel.None];
@@ -34,9 +34,9 @@ namespace Ryujinx.Ava.UI.Windows
         }
     }
 
-    public class StyleableWindow : Window
+    public abstract class StyleableWindow : Window
     {
-        public StyleableWindow()
+        protected StyleableWindow()
         {
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             TransparencyLevelHint = [WindowTransparencyLevel.None];

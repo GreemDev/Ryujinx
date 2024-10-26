@@ -35,23 +35,23 @@ namespace Ryujinx.Ava.UI.Helpers
         }
 
         [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-        internal delegate IntPtr WindowProc(IntPtr hWnd, WindowsMessages msg, IntPtr wParam, IntPtr lParam);
+        internal delegate nint WindowProc(nint hWnd, WindowsMessages msg, nint wParam, nint lParam);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct WndClassEx
         {
             public int cbSize;
             public ClassStyles style;
-            public IntPtr lpfnWndProc; // not WndProc
+            public nint lpfnWndProc; // not WndProc
             public int cbClsExtra;
             public int cbWndExtra;
-            public IntPtr hInstance;
-            public IntPtr hIcon;
-            public IntPtr hCursor;
-            public IntPtr hbrBackground;
-            public IntPtr lpszMenuName;
-            public IntPtr lpszClassName;
-            public IntPtr hIconSm;
+            public nint hInstance;
+            public nint hIcon;
+            public nint hCursor;
+            public nint hbrBackground;
+            public nint lpszMenuName;
+            public nint lpszClassName;
+            public nint hIconSm;
 
             public WndClassEx()
             {
@@ -59,43 +59,43 @@ namespace Ryujinx.Ava.UI.Helpers
             }
         }
 
-        public static IntPtr CreateEmptyCursor()
+        public static nint CreateEmptyCursor()
         {
-            return CreateCursor(IntPtr.Zero, 0, 0, 1, 1, new byte[] { 0xFF }, new byte[] { 0x00 });
+            return CreateCursor(nint.Zero, 0, 0, 1, 1, [0xFF], [0x00]);
         }
 
-        public static IntPtr CreateArrowCursor()
+        public static nint CreateArrowCursor()
         {
-            return LoadCursor(IntPtr.Zero, (IntPtr)Cursors.IdcArrow);
+            return LoadCursor(nint.Zero, (nint)Cursors.IdcArrow);
         }
 
         [LibraryImport("user32.dll")]
-        public static partial IntPtr SetCursor(IntPtr handle);
+        public static partial nint SetCursor(nint handle);
 
         [LibraryImport("user32.dll")]
-        public static partial IntPtr CreateCursor(IntPtr hInst, int xHotSpot, int yHotSpot, int nWidth, int nHeight, [In] byte[] pvAndPlane, [In] byte[] pvXorPlane);
+        public static partial nint CreateCursor(nint hInst, int xHotSpot, int yHotSpot, int nWidth, int nHeight, [In] byte[] pvAndPlane, [In] byte[] pvXorPlane);
 
         [LibraryImport("user32.dll", SetLastError = true, EntryPoint = "RegisterClassExW")]
         public static partial ushort RegisterClassEx(ref WndClassEx param);
 
         [LibraryImport("user32.dll", SetLastError = true, EntryPoint = "UnregisterClassW")]
-        public static partial short UnregisterClass([MarshalAs(UnmanagedType.LPWStr)] string lpClassName, IntPtr instance);
+        public static partial short UnregisterClass([MarshalAs(UnmanagedType.LPWStr)] string lpClassName, nint instance);
 
         [LibraryImport("user32.dll", EntryPoint = "DefWindowProcW")]
-        public static partial IntPtr DefWindowProc(IntPtr hWnd, WindowsMessages msg, IntPtr wParam, IntPtr lParam);
+        public static partial nint DefWindowProc(nint hWnd, WindowsMessages msg, nint wParam, nint lParam);
 
         [LibraryImport("kernel32.dll", EntryPoint = "GetModuleHandleA")]
-        public static partial IntPtr GetModuleHandle([MarshalAs(UnmanagedType.LPStr)] string lpModuleName);
+        public static partial nint GetModuleHandle([MarshalAs(UnmanagedType.LPStr)] string lpModuleName);
 
         [LibraryImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static partial bool DestroyWindow(IntPtr hwnd);
+        public static partial bool DestroyWindow(nint hwnd);
 
         [LibraryImport("user32.dll", SetLastError = true, EntryPoint = "LoadCursorA")]
-        public static partial IntPtr LoadCursor(IntPtr hInstance, IntPtr lpCursorName);
+        public static partial nint LoadCursor(nint hInstance, nint lpCursorName);
 
         [LibraryImport("user32.dll", SetLastError = true, EntryPoint = "CreateWindowExW")]
-        public static partial IntPtr CreateWindowEx(
+        public static partial nint CreateWindowEx(
            uint dwExStyle,
            [MarshalAs(UnmanagedType.LPWStr)] string lpClassName,
            [MarshalAs(UnmanagedType.LPWStr)] string lpWindowName,
@@ -104,12 +104,12 @@ namespace Ryujinx.Ava.UI.Helpers
            int y,
            int nWidth,
            int nHeight,
-           IntPtr hWndParent,
-           IntPtr hMenu,
-           IntPtr hInstance,
-           IntPtr lpParam);
+           nint hWndParent,
+           nint hMenu,
+           nint hInstance,
+           nint lpParam);
 
         [LibraryImport("user32.dll", SetLastError = true)]
-        public static partial IntPtr SetWindowLongPtrW(IntPtr hWnd, int nIndex, IntPtr value);
+        public static partial nint SetWindowLongPtrW(nint hWnd, int nIndex, nint value);
     }
 }

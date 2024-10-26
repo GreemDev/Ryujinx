@@ -8,19 +8,19 @@ namespace Ryujinx.Audio.Backends.SoundIo.Native
     public class SoundIoOutStreamContext : IDisposable
     {
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate void WriteCallbackDelegate(IntPtr ctx, int frameCountMin, int frameCountMax);
+        private unsafe delegate void WriteCallbackDelegate(nint ctx, int frameCountMin, int frameCountMax);
 
-        private IntPtr _context;
-        private IntPtr _nameStored;
+        private nint _context;
+        private nint _nameStored;
         private Action<int, int> _writeCallback;
         private WriteCallbackDelegate _writeCallbackNative;
 
-        public IntPtr Context => _context;
+        public nint Context => _context;
 
-        internal SoundIoOutStreamContext(IntPtr context)
+        internal SoundIoOutStreamContext(nint context)
         {
             _context = context;
-            _nameStored = IntPtr.Zero;
+            _nameStored = nint.Zero;
             _writeCallback = null;
             _writeCallbackNative = null;
         }
@@ -40,7 +40,7 @@ namespace Ryujinx.Audio.Backends.SoundIo.Native
             {
                 var context = GetOutContext();
 
-                if (_nameStored != IntPtr.Zero && context.Name == _nameStored)
+                if (_nameStored != nint.Zero && context.Name == _nameStored)
                 {
                     Marshal.FreeHGlobal(_nameStored);
                 }
@@ -124,14 +124,14 @@ namespace Ryujinx.Audio.Backends.SoundIo.Native
 
         public Span<SoundIoChannelArea> BeginWrite(ref int frameCount)
         {
-            IntPtr arenas = default;
+            nint arenas = default;
             int nativeFrameCount = frameCount;
 
             unsafe
             {
                 var frameCountPtr = &nativeFrameCount;
                 var arenasPtr = &arenas;
-                CheckError(soundio_outstream_begin_write(_context, (IntPtr)arenasPtr, (IntPtr)frameCountPtr));
+                CheckError(soundio_outstream_begin_write(_context, (nint)arenasPtr, (nint)frameCountPtr));
 
                 frameCount = *frameCountPtr;
 
@@ -143,10 +143,10 @@ namespace Ryujinx.Audio.Backends.SoundIo.Native
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_context != IntPtr.Zero)
+            if (_context != nint.Zero)
             {
                 soundio_outstream_destroy(_context);
-                _context = IntPtr.Zero;
+                _context = nint.Zero;
             }
         }
 

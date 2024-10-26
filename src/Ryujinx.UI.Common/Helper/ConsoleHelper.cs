@@ -27,9 +27,9 @@ namespace Ryujinx.UI.Common.Helper
             const int SW_HIDE = 0;
             const int SW_SHOW = 5;
 
-            IntPtr hWnd = GetConsoleWindow();
+            nint hWnd = GetConsoleWindow();
 
-            if (hWnd == IntPtr.Zero)
+            if (hWnd == nint.Zero)
             {
                 Logger.Warning?.Print(LogClass.Application, "Attempted to show/hide console window but console window does not exist");
                 return;
@@ -40,11 +40,11 @@ namespace Ryujinx.UI.Common.Helper
 
         [SupportedOSPlatform("windows")]
         [LibraryImport("kernel32")]
-        private static partial IntPtr GetConsoleWindow();
+        private static partial nint GetConsoleWindow();
 
         [SupportedOSPlatform("windows")]
         [LibraryImport("user32")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static partial bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        private static partial bool ShowWindow(nint hWnd, int nCmdShow);
     }
 }

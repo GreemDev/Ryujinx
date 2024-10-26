@@ -10,6 +10,6 @@ namespace Ryujinx.Graphics.OpenGL.Helper
         private const string LibraryName = "OPENGL32.DLL";
 
         [LibraryImport(LibraryName, EntryPoint = "wglGetCurrentContext")]
-        public static partial IntPtr GetCurrentContext();
+        public static partial nint GetCurrentContext();
     }
 }

@@ -14,10 +14,10 @@ namespace Ryujinx.Cpu.Signal
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct SigAction
         {
-            public IntPtr sa_handler;
+            public nint sa_handler;
             public SigSet sa_mask;
             public int sa_flags;
-            public IntPtr sa_restorer;
+            public nint sa_restorer;
         }
 
         private const int SIGSEGV = 11;
@@ -28,14 +28,14 @@ namespace Ryujinx.Cpu.Signal
         private static partial int sigaction(int signum, ref SigAction sigAction, out SigAction oldAction);
 
         [LibraryImport("libc", SetLastError = true)]
-        private static partial int sigaction(int signum, IntPtr sigAction, out SigAction oldAction);
+        private static partial int sigaction(int signum, nint sigAction, out SigAction oldAction);
 
         [LibraryImport("libc", SetLastError = true)]
         private static partial int sigemptyset(ref SigSet set);
 
         public static SigAction GetSegfaultExceptionHandler()
         {
-            int result = sigaction(SIGSEGV, IntPtr.Zero, out SigAction old);
+            int result = sigaction(SIGSEGV, nint.Zero, out SigAction old);
 
             if (result != 0)
             {
@@ -45,7 +45,7 @@ namespace Ryujinx.Cpu.Signal
             return old;
         }
 
-        public static SigAction RegisterExceptionHandler(IntPtr action)
+        public static SigAction RegisterExceptionHandler(nint action)
         {
             SigAction sig = new()
             {

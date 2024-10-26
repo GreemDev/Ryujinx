@@ -6,7 +6,7 @@ namespace ARMeilleure.Memory
     {
         int AddressSpaceBits { get; }
 
-        IntPtr PageTablePointer { get; }
+        nint PageTablePointer { get; }
 
         MemoryManagerType Type { get; }
 

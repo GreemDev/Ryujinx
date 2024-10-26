@@ -677,19 +677,18 @@ namespace Ryujinx.UI.App.Common
                         EnumerationOptions options = new()
                         {
                             RecurseSubdirectories = true,
-                            IgnoreInaccessible = false,
+                            IgnoreInaccessible = false
                         };
 
-                        IEnumerable<string> files = Directory.EnumerateFiles(appDir, "*", options).Where(file =>
-                        {
-                            return
-                                (Path.GetExtension(file).ToLower() is ".nsp" && ConfigurationState.Instance.UI.ShownFileTypes.NSP.Value) ||
-                                (Path.GetExtension(file).ToLower() is ".pfs0" && ConfigurationState.Instance.UI.ShownFileTypes.PFS0.Value) ||
-                                (Path.GetExtension(file).ToLower() is ".xci" && ConfigurationState.Instance.UI.ShownFileTypes.XCI.Value) ||
-                                (Path.GetExtension(file).ToLower() is ".nca" && ConfigurationState.Instance.UI.ShownFileTypes.NCA.Value) ||
-                                (Path.GetExtension(file).ToLower() is ".nro" && ConfigurationState.Instance.UI.ShownFileTypes.NRO.Value) ||
-                                (Path.GetExtension(file).ToLower() is ".nso" && ConfigurationState.Instance.UI.ShownFileTypes.NSO.Value);
-                        });
+                        IEnumerable<string> files = Directory.EnumerateFiles(appDir, "*", options)
+                            .Where(file =>
+                                (Path.GetExtension(file).ToLower() is ".nsp" && ConfigurationState.Instance.UI.ShownFileTypes.NSP) ||
+                                (Path.GetExtension(file).ToLower() is ".pfs0" && ConfigurationState.Instance.UI.ShownFileTypes.PFS0) ||
+                                (Path.GetExtension(file).ToLower() is ".xci" && ConfigurationState.Instance.UI.ShownFileTypes.XCI) ||
+                                (Path.GetExtension(file).ToLower() is ".nca" && ConfigurationState.Instance.UI.ShownFileTypes.NCA) ||
+                                (Path.GetExtension(file).ToLower() is ".nro" && ConfigurationState.Instance.UI.ShownFileTypes.NRO) || 
+                                (Path.GetExtension(file).ToLower() is ".nso" && ConfigurationState.Instance.UI.ShownFileTypes.NSO)
+                            );
 
                         foreach (string app in files)
                         {

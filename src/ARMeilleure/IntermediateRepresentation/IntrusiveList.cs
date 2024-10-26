@@ -32,7 +32,7 @@ namespace ARMeilleure.IntermediateRepresentation
         /// <exception cref="ArgumentException"><typeparamref name="T"/> is not pointer sized.</exception>
         public IntrusiveList()
         {
-            if (Unsafe.SizeOf<T>() != IntPtr.Size)
+            if (Unsafe.SizeOf<T>() != nint.Size)
             {
                 throw new ArgumentException("T must be a reference type or a pointer sized struct.");
             }

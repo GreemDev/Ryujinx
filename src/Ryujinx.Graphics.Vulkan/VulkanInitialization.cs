@@ -94,8 +94,8 @@ namespace Ryujinx.Graphics.Vulkan
                 ApiVersion = _maximumVulkanVersion,
             };
 
-            IntPtr* ppEnabledExtensions = stackalloc IntPtr[enabledExtensions.Length];
-            IntPtr* ppEnabledLayers = stackalloc IntPtr[enabledLayers.Count];
+            nint* ppEnabledExtensions = stackalloc nint[enabledExtensions.Length];
+            nint* ppEnabledLayers = stackalloc nint[enabledLayers.Count];
 
             for (int i = 0; i < enabledExtensions.Length; i++)
             {
@@ -587,7 +587,7 @@ namespace Ryujinx.Graphics.Vulkan
 
             var enabledExtensions = _requiredExtensions.Union(_desirableExtensions.Intersect(physicalDevice.DeviceExtensions)).ToArray();
 
-            IntPtr* ppEnabledExtensions = stackalloc IntPtr[enabledExtensions.Length];
+            nint* ppEnabledExtensions = stackalloc nint[enabledExtensions.Length];
 
             for (int i = 0; i < enabledExtensions.Length; i++)
             {

@@ -106,13 +106,11 @@ namespace Ryujinx.Ava
                     baseStyle = ConfigurationState.Instance.UI.BaseStyle;
                 }
 
-                ThemeVariant systemTheme = DetectSystemTheme();
-
                 ThemeManager.OnThemeChanged();
 
                 RequestedThemeVariant = baseStyle switch
                 {
-                    "Auto" => systemTheme,
+                    "Auto" => DetectSystemTheme(),
                     "Light" => ThemeVariant.Light,
                     "Dark" => ThemeVariant.Dark,
                     _ => ThemeVariant.Default,

@@ -9,7 +9,7 @@ namespace Ryujinx.Common.SystemInterop
     {
         private const string LibraryName = "gdiplus.dll";
 
-        private static readonly IntPtr _initToken;
+        private static readonly nint _initToken;
 
         static GdiPlusHelper()
         {
@@ -29,7 +29,7 @@ namespace Ryujinx.Common.SystemInterop
             public int GdiplusVersion;
 
 #pragma warning disable CS0649 // Field is never assigned to
-            public IntPtr DebugEventCallback;
+            public nint DebugEventCallback;
             public int SuppressBackgroundThread;
             public int SuppressExternalCodecs;
             public int StartupParameters;
@@ -39,7 +39,7 @@ namespace Ryujinx.Common.SystemInterop
             {
                 // We assume Windows 8 and upper
                 GdiplusVersion = 2,
-                DebugEventCallback = IntPtr.Zero,
+                DebugEventCallback = nint.Zero,
                 SuppressBackgroundThread = 0,
                 SuppressExternalCodecs = 0,
                 StartupParameters = 0,
@@ -48,25 +48,25 @@ namespace Ryujinx.Common.SystemInterop
 
         private struct StartupOutput
         {
-            public IntPtr NotificationHook;
-            public IntPtr NotificationUnhook;
+            public nint NotificationHook;
+            public nint NotificationUnhook;
         }
 
         [LibraryImport(LibraryName)]
-        private static partial int GdiplusStartup(out IntPtr token, in StartupInputEx input, out StartupOutput output);
+        private static partial int GdiplusStartup(out nint token, in StartupInputEx input, out StartupOutput output);
 
         [LibraryImport(LibraryName)]
-        private static partial int GdipCreateFromHWND(IntPtr hwnd, out IntPtr graphics);
+        private static partial int GdipCreateFromHWND(nint hwnd, out nint graphics);
 
         [LibraryImport(LibraryName)]
-        private static partial int GdipDeleteGraphics(IntPtr graphics);
+        private static partial int GdipDeleteGraphics(nint graphics);
 
         [LibraryImport(LibraryName)]
-        private static partial int GdipGetDpiX(IntPtr graphics, out float dpi);
+        private static partial int GdipGetDpiX(nint graphics, out float dpi);
 
-        public static float GetDpiX(IntPtr hwnd)
+        public static float GetDpiX(nint hwnd)
         {
-            CheckStatus(GdipCreateFromHWND(hwnd, out IntPtr graphicsHandle));
+            CheckStatus(GdipCreateFromHWND(hwnd, out nint graphicsHandle));
             CheckStatus(GdipGetDpiX(graphicsHandle, out float result));
             CheckStatus(GdipDeleteGraphics(graphicsHandle));
 

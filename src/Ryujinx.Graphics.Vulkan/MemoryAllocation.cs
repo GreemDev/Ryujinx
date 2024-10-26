@@ -10,7 +10,7 @@ namespace Ryujinx.Graphics.Vulkan
         private readonly HostMemoryAllocator _hostMemory;
 
         public DeviceMemory Memory { get; }
-        public IntPtr HostPointer { get; }
+        public nint HostPointer { get; }
         public ulong Offset { get; }
         public ulong Size { get; }
 
@@ -18,7 +18,7 @@ namespace Ryujinx.Graphics.Vulkan
             MemoryAllocatorBlockList owner,
             MemoryAllocatorBlockList.Block block,
             DeviceMemory memory,
-            IntPtr hostPointer,
+            nint hostPointer,
             ulong offset,
             ulong size)
         {
@@ -33,7 +33,7 @@ namespace Ryujinx.Graphics.Vulkan
         public MemoryAllocation(
             HostMemoryAllocator hostMemory,
             DeviceMemory memory,
-            IntPtr hostPointer,
+            nint hostPointer,
             ulong offset,
             ulong size)
         {

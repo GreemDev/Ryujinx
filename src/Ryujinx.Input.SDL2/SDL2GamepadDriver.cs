@@ -160,9 +160,9 @@ namespace Ryujinx.Input.SDL2
                 return null;
             }
 
-            IntPtr gamepadHandle = SDL_GameControllerOpen(joystickIndex);
+            nint gamepadHandle = SDL_GameControllerOpen(joystickIndex);
 
-            if (gamepadHandle == IntPtr.Zero)
+            if (gamepadHandle == nint.Zero)
             {
                 return null;
             }

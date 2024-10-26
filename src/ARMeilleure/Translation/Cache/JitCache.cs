@@ -31,7 +31,7 @@ namespace ARMeilleure.Translation.Cache
 
         [SupportedOSPlatform("windows")]
         [LibraryImport("kernel32.dll", SetLastError = true)]
-        public static partial IntPtr FlushInstructionCache(IntPtr hProcess, IntPtr lpAddress, UIntPtr dwSize);
+        public static partial nint FlushInstructionCache(nint hProcess, nint lpAddress, nuint dwSize);
 
         public static void Initialize(IJitMemoryAllocator allocator)
         {
@@ -65,7 +65,7 @@ namespace ARMeilleure.Translation.Cache
             }
         }
 
-        public static IntPtr Map(CompiledFunction func)
+        public static nint Map(CompiledFunction func)
         {
             byte[] code = func.Code;
 
@@ -75,7 +75,7 @@ namespace ARMeilleure.Translation.Cache
 
                 int funcOffset = Allocate(code.Length);
 
-                IntPtr funcPtr = _jitRegion.Pointer + funcOffset;
+                nint funcPtr = _jitRegion.Pointer + funcOffset;
 
                 if (OperatingSystem.IsMacOS() && RuntimeInformation.ProcessArchitecture == Architecture.Arm64)
                 {
@@ -83,7 +83,7 @@ namespace ARMeilleure.Translation.Cache
                     {
                         fixed (byte* codePtr = code)
                         {
-                            JitSupportDarwin.Copy(funcPtr, (IntPtr)codePtr, (ulong)code.Length);
+                            JitSupportDarwin.Copy(funcPtr, (nint)codePtr, (ulong)code.Length);
                         }
                     }
                 }
@@ -95,7 +95,7 @@ namespace ARMeilleure.Translation.Cache
 
                     if (OperatingSystem.IsWindows() && RuntimeInformation.ProcessArchitecture == Architecture.Arm64)
                     {
-                        FlushInstructionCache(Process.GetCurrentProcess().Handle, funcPtr, (UIntPtr)code.Length);
+                        FlushInstructionCache(Process.GetCurrentProcess().Handle, funcPtr, (nuint)code.Length);
                     }
                     else
                     {
@@ -109,7 +109,7 @@ namespace ARMeilleure.Translation.Cache
             }
         }
 
-        public static void Unmap(IntPtr pointer)
+        public static void Unmap(nint pointer)
         {
             lock (_lock)
             {

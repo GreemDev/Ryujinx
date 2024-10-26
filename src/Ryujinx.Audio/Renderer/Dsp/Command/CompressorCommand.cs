@@ -82,8 +82,8 @@ namespace Ryujinx.Audio.Renderer.Dsp.Command
                     statistics.Reset(_parameter.ChannelCount);
                 }
 
-                Span<IntPtr> inputBuffers = stackalloc IntPtr[_parameter.ChannelCount];
-                Span<IntPtr> outputBuffers = stackalloc IntPtr[_parameter.ChannelCount];
+                Span<nint> inputBuffers = stackalloc nint[_parameter.ChannelCount];
+                Span<nint> outputBuffers = stackalloc nint[_parameter.ChannelCount];
                 Span<float> channelInput = stackalloc float[_parameter.ChannelCount];
                 ExponentialMovingAverage inputMovingAverage = state.InputMovingAverage;
                 float unknown4 = state.Unknown4;

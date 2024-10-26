@@ -47,7 +47,7 @@ namespace Ryujinx.Cpu.Jit.HostTracked
             _baseMemory.Reprotect(offset, size, permission, throwOnFail);
         }
 
-        public IntPtr GetPointer(ulong offset, ulong size)
+        public nint GetPointer(ulong offset, ulong size)
         {
             return _baseMemory.GetPointer(offset, size);
         }
@@ -68,7 +68,7 @@ namespace Ryujinx.Cpu.Jit.HostTracked
             return false;
         }
 
-        public IntPtr GetPointerForProtection(ulong offset, ulong size, MemoryPermission permission)
+        public nint GetPointerForProtection(ulong offset, ulong size, MemoryPermission permission)
         {
             AddressSpacePartitionAllocation allocation = permission switch
             {

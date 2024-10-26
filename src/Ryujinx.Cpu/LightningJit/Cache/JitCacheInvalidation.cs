@@ -68,7 +68,7 @@ namespace Ryujinx.Cpu.LightningJit.Cache
             }
         }
 
-        public void Invalidate(IntPtr basePointer, ulong size)
+        public void Invalidate(nint basePointer, ulong size)
         {
             if (_needsInvalidation)
             {

@@ -68,8 +68,8 @@ namespace Ryujinx.Ava
         private const float VolumeDelta = 0.05f;
 
         private static readonly Cursor _invisibleCursor = new(StandardCursorType.None);
-        private readonly IntPtr _invisibleCursorWin;
-        private readonly IntPtr _defaultCursorWin;
+        private readonly nint _invisibleCursorWin;
+        private readonly nint _defaultCursorWin;
 
         private readonly long _ticksPerFrame;
         private readonly Stopwatch _chrono;

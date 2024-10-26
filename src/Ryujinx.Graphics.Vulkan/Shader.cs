@@ -15,7 +15,7 @@ namespace Ryujinx.Graphics.Vulkan
         // Take this lock when using them.
         private static readonly object _shaderOptionsLock = new();
 
-        private static readonly IntPtr _ptrMainEntryPointName = Marshal.StringToHGlobalAnsi("main");
+        private static readonly nint _ptrMainEntryPointName = Marshal.StringToHGlobalAnsi("main");
 
         private readonly Vk _api;
         private readonly Device _device;

@@ -6,13 +6,13 @@ namespace Ryujinx.Cpu.LightningJit.CodeGen.Arm64
 {
     class StackWalker : IStackWalker
     {
-        public IEnumerable<ulong> GetCallStack(IntPtr framePointer, IntPtr codeRegionStart, int codeRegionSize, IntPtr codeRegion2Start, int codeRegion2Size)
+        public IEnumerable<ulong> GetCallStack(nint framePointer, nint codeRegionStart, int codeRegionSize, nint codeRegion2Start, int codeRegion2Size)
         {
             List<ulong> functionPointers = new();
 
             while (true)
             {
-                IntPtr functionPointer = Marshal.ReadIntPtr(framePointer, IntPtr.Size);
+                nint functionPointer = Marshal.ReadIntPtr(framePointer, nint.Size);
 
                 if ((functionPointer < codeRegionStart || functionPointer >= codeRegionStart + codeRegionSize) &&
                     (functionPointer < codeRegion2Start || functionPointer >= codeRegion2Start + codeRegion2Size))
