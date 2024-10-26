@@ -166,6 +166,8 @@ jobs:
           mv Ryujinx.AppImage.zsync ../release_output/ryujinx-$BUILD_VERSION-$ARCH_NAME.AppImage.zsync
           popd
         shell: bash
+        env:
+          RELEASE=1
 
       - name: Pushing new release
         uses: ncipollo/release-action@v1

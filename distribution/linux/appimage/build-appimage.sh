@@ -15,6 +15,7 @@ cp distribution/linux/Ryujinx.desktop AppDir/Ryujinx.desktop
 cp distribution/linux/appimage/AppRun AppDir/AppRun
 cp src/Ryujinx.UI.Common/Resources/Logo_Ryujinx.png AppDir/Ryujinx.svg
 
+
 cp -r "$BUILDDIR"/* AppDir/usr/bin/
 
 # Ensure necessary bins are set as executable
@@ -27,4 +28,6 @@ appimagetool --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 2
     AppDir "$OUTDIR"/Ryujinx.AppImage
 
 # Move zsync file needed for delta updates
-mv ./*.AppImage.zsync "$OUTDIR"
+if [ "$RELEASE" = "1" ]; then
+    mv ./*.AppImage.zsync "$OUTDIR"
+fi
