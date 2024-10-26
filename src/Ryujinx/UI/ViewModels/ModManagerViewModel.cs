@@ -183,7 +183,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             JsonHelper.SerializeToFile(_modJsonPath, modData, _serializerContext.ModMetadata);
         }
 
-        public void Delete(ModModel model)
+        public void Delete(ModModel model, bool removeFromList = true)
         {
             var isSubdir = true;
             var pathToDelete = model.Path;
@@ -223,8 +223,11 @@ namespace Ryujinx.Ava.UI.ViewModels
             Logger.Info?.Print(LogClass.Application, $"Deleting mod at \"{pathToDelete}\"");
             Directory.Delete(pathToDelete, true);
 
-            Mods.Remove(model);
-            OnPropertyChanged(nameof(ModCount));
+            if (removeFromList)
+            {
+                Mods.Remove(model);
+                OnPropertyChanged(nameof(ModCount));
+            }
             Sort();
         }
 
@@ -314,7 +317,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public void DeleteAll()
         {
-            Mods.ForEach(Delete);
+            Mods.ForEach(it => Delete(it, false));
             Mods.Clear();
             OnPropertyChanged(nameof(ModCount));
             Sort();
