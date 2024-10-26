@@ -7,6 +7,7 @@ env:
   POWERSHELL_TELEMETRY_OPTOUT: 1
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   RYUJINX_BASE_VERSION: "1.2.0"
+  RELEASE: 0
 
 jobs:
   build:
@@ -103,8 +104,6 @@ jobs:
           export UFLAG="gh-releases-zsync|${{ github.repository_owner }}|${{ github.event.repository.name }}|latest|*-$ARCH_NAME.AppImage.zsync"
           BUILDDIR=publish OUTDIR=publish_appimage distribution/linux/appimage/build-appimage.sh
         shell: bash
-        env:
-          RELEASE=0
 
       - name: Upload Ryujinx artifact
         uses: actions/upload-artifact@v4
