@@ -40,7 +40,7 @@ namespace Ryujinx.Headless.SDL2.OpenGL
 
         private class OpenToolkitBindingsContext : IBindingsContext
         {
-            public IntPtr GetProcAddress(string procName)
+            public nint GetProcAddress(string procName)
             {
                 return SDL_GL_GetProcAddress(procName);
             }
@@ -48,11 +48,11 @@ namespace Ryujinx.Headless.SDL2.OpenGL
 
         private class SDL2OpenGLContext : IOpenGLContext
         {
-            private readonly IntPtr _context;
-            private readonly IntPtr _window;
+            private readonly nint _context;
+            private readonly nint _window;
             private readonly bool _shouldDisposeWindow;
 
-            public SDL2OpenGLContext(IntPtr context, IntPtr window, bool shouldDisposeWindow = true)
+            public SDL2OpenGLContext(nint context, nint window, bool shouldDisposeWindow = true)
             {
                 _context = context;
                 _window = window;
@@ -65,14 +65,14 @@ namespace Ryujinx.Headless.SDL2.OpenGL
 
                 // Ensure we share our contexts.
                 SetupOpenGLAttributes(true, GraphicsDebugLevel.None);
-                IntPtr windowHandle = SDL_CreateWindow("Ryujinx background context window", 0, 0, 1, 1, SDL_WindowFlags.SDL_WINDOW_OPENGL | SDL_WindowFlags.SDL_WINDOW_HIDDEN);
-                IntPtr context = SDL_GL_CreateContext(windowHandle);
+                nint windowHandle = SDL_CreateWindow("Ryujinx background context window", 0, 0, 1, 1, SDL_WindowFlags.SDL_WINDOW_OPENGL | SDL_WindowFlags.SDL_WINDOW_HIDDEN);
+                nint context = SDL_GL_CreateContext(windowHandle);
 
                 GL.LoadBindings(new OpenToolkitBindingsContext());
 
                 CheckResult(SDL_GL_SetAttribute(SDL_GLattr.SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 0));
 
-                CheckResult(SDL_GL_MakeCurrent(windowHandle, IntPtr.Zero));
+                CheckResult(SDL_GL_MakeCurrent(windowHandle, nint.Zero));
 
                 return new SDL2OpenGLContext(context, windowHandle);
             }
@@ -96,7 +96,7 @@ namespace Ryujinx.Headless.SDL2.OpenGL
                 }
             }
 
-            public bool HasContext() => SDL_GL_GetCurrentContext() != IntPtr.Zero;
+            public bool HasContext() => SDL_GL_GetCurrentContext() != nint.Zero;
 
             public void Dispose()
             {
@@ -129,10 +129,10 @@ namespace Ryujinx.Headless.SDL2.OpenGL
         {
             // Ensure to not share this context with other contexts before this point.
             SetupOpenGLAttributes(false, _glLogLevel);
-            IntPtr context = SDL_GL_CreateContext(WindowHandle);
+            nint context = SDL_GL_CreateContext(WindowHandle);
             CheckResult(SDL_GL_SetSwapInterval(1));
 
-            if (context == IntPtr.Zero)
+            if (context == nint.Zero)
             {
                 string errorMessage = $"SDL_GL_CreateContext failed with error \"{SDL_GetError()}\"";
 
@@ -190,7 +190,7 @@ namespace Ryujinx.Headless.SDL2.OpenGL
             Device.DisposeGpu();
 
             // Unbind context and destroy everything
-            CheckResult(SDL_GL_MakeCurrent(WindowHandle, IntPtr.Zero));
+            CheckResult(SDL_GL_MakeCurrent(WindowHandle, nint.Zero));
             _openGLContext.Dispose();
         }
 

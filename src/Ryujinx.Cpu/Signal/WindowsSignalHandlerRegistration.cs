@@ -6,17 +6,17 @@ namespace Ryujinx.Cpu.Signal
     static partial class WindowsSignalHandlerRegistration
     {
         [LibraryImport("kernel32.dll")]
-        private static partial IntPtr AddVectoredExceptionHandler(uint first, IntPtr handler);
+        private static partial nint AddVectoredExceptionHandler(uint first, nint handler);
 
         [LibraryImport("kernel32.dll")]
-        private static partial ulong RemoveVectoredExceptionHandler(IntPtr handle);
+        private static partial ulong RemoveVectoredExceptionHandler(nint handle);
 
-        public static IntPtr RegisterExceptionHandler(IntPtr action)
+        public static nint RegisterExceptionHandler(nint action)
         {
             return AddVectoredExceptionHandler(1, action);
         }
 
-        public static bool RemoveExceptionHandler(IntPtr handle)
+        public static bool RemoveExceptionHandler(nint handle)
         {
             return RemoveVectoredExceptionHandler(handle) != 0;
         }

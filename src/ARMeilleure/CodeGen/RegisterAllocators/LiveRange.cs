@@ -63,7 +63,7 @@ namespace ARMeilleure.CodeGen.RegisterAllocators
 
         public override int GetHashCode()
         {
-            return HashCode.Combine((IntPtr)_data);
+            return HashCode.Combine((nint)_data);
         }
 
         public override string ToString()

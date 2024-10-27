@@ -14,6 +14,7 @@ using Ryujinx.Ava.Input;
 using Ryujinx.Ava.UI.Applet;
 using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Ava.UI.ViewModels;
+using Ryujinx.Common;
 using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.Gpu;
 using Ryujinx.HLE.FileSystem;
@@ -471,10 +472,8 @@ namespace Ryujinx.Ava.UI.Windows
             {
                 LoadApplications();
             }
-
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            CheckLaunchState();
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            
+            _ = CheckLaunchState();
         }
 
         private void SetMainContent(Control content = null)
@@ -496,7 +495,9 @@ namespace Ryujinx.Ava.UI.Windows
         public static void UpdateGraphicsConfig()
         {
 #pragma warning disable IDE0055 // Disable formatting
-            GraphicsConfig.ResScale                   = ConfigurationState.Instance.Graphics.ResScale == -1 ? ConfigurationState.Instance.Graphics.ResScaleCustom : ConfigurationState.Instance.Graphics.ResScale;
+            GraphicsConfig.ResScale                   = ConfigurationState.Instance.Graphics.ResScale == -1 
+                ? ConfigurationState.Instance.Graphics.ResScaleCustom 
+                : ConfigurationState.Instance.Graphics.ResScale;
             GraphicsConfig.MaxAnisotropy              = ConfigurationState.Instance.Graphics.MaxAnisotropy;
             GraphicsConfig.ShadersDumpPath            = ConfigurationState.Instance.Graphics.ShadersDumpPath;
             GraphicsConfig.EnableShaderCache          = ConfigurationState.Instance.Graphics.EnableShaderCache;
@@ -540,7 +541,7 @@ namespace Ryujinx.Ava.UI.Windows
             if (ViewModel.AppHost != null)
             {
                 ViewModel.AppHost.AppExit -= ViewModel.AppHost_AppExit;
-                ViewModel.AppHost.AppExit += (sender, e) =>
+                ViewModel.AppHost.AppExit += (_, _) =>
                 {
                     ViewModel.AppHost = null;
 
@@ -599,18 +600,16 @@ namespace Ryujinx.Ava.UI.Windows
 
         public void ToggleFileType(string fileType)
         {
-            _ = fileType switch
+            switch (fileType)
             {
-#pragma warning disable IDE0055 // Disable formatting
-                "NSP"  => ConfigurationState.Instance.UI.ShownFileTypes.NSP.Value  = !ConfigurationState.Instance.UI.ShownFileTypes.NSP,
-                "PFS0" => ConfigurationState.Instance.UI.ShownFileTypes.PFS0.Value = !ConfigurationState.Instance.UI.ShownFileTypes.PFS0,
-                "XCI"  => ConfigurationState.Instance.UI.ShownFileTypes.XCI.Value  = !ConfigurationState.Instance.UI.ShownFileTypes.XCI,
-                "NCA"  => ConfigurationState.Instance.UI.ShownFileTypes.NCA.Value  = !ConfigurationState.Instance.UI.ShownFileTypes.NCA,
-                "NRO"  => ConfigurationState.Instance.UI.ShownFileTypes.NRO.Value  = !ConfigurationState.Instance.UI.ShownFileTypes.NRO,
-                "NSO"  => ConfigurationState.Instance.UI.ShownFileTypes.NSO.Value  = !ConfigurationState.Instance.UI.ShownFileTypes.NSO,
-                _  => throw new ArgumentOutOfRangeException(fileType),
-#pragma warning restore IDE0055
-            };
+                case "NSP": ConfigurationState.Instance.UI.ShownFileTypes.NSP.Toggle(); break;
+                case "PFS0": ConfigurationState.Instance.UI.ShownFileTypes.PFS0.Toggle(); break;
+                case "XCI": ConfigurationState.Instance.UI.ShownFileTypes.XCI.Toggle(); break;
+                case "NCA": ConfigurationState.Instance.UI.ShownFileTypes.NCA.Toggle(); break;
+                case "NRO": ConfigurationState.Instance.UI.ShownFileTypes.NRO.Toggle(); break;
+                case "NSO": ConfigurationState.Instance.UI.ShownFileTypes.NSO.Toggle(); break;
+                default: throw new ArgumentOutOfRangeException(fileType);
+            }
 
             ConfigurationState.Instance.ToFileFormat().SaveConfig(Program.ConfigurationPath);
             LoadApplications();
@@ -634,10 +633,10 @@ namespace Ryujinx.Ava.UI.Windows
                 var autoloadDirs = ConfigurationState.Instance.UI.AutoloadDirs.Value;
                 if (autoloadDirs.Count > 0)
                 {
-                    var updatesLoaded = ApplicationLibrary.AutoLoadTitleUpdates(autoloadDirs);
-                    var dlcLoaded = ApplicationLibrary.AutoLoadDownloadableContents(autoloadDirs);
+                    var updatesLoaded = ApplicationLibrary.AutoLoadTitleUpdates(autoloadDirs, out int updatesRemoved);
+                    var dlcLoaded = ApplicationLibrary.AutoLoadDownloadableContents(autoloadDirs, out int dlcRemoved);
 
-                    ShowNewContentAddedDialog(dlcLoaded, updatesLoaded);
+                    ShowNewContentAddedDialog(dlcLoaded, dlcRemoved, updatesLoaded, updatesRemoved);
                 }
 
                 _isLoading = false;
@@ -649,19 +648,19 @@ namespace Ryujinx.Ava.UI.Windows
             applicationLibraryThread.Start();
         }
 
-        private void ShowNewContentAddedDialog(int numDlcAdded, int numUpdatesAdded)
+        private void ShowNewContentAddedDialog(int numDlcAdded, int numDlcRemoved, int numUpdatesAdded, int numUpdatesRemoved)
         {
-            string msg = numDlcAdded > 0 && numUpdatesAdded > 0
-                ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadDlcAndUpdateAddedMessage], numDlcAdded, numUpdatesAdded)
-                : numDlcAdded > 0
-                    ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadDlcAddedMessage], numDlcAdded)
-                    : numUpdatesAdded > 0
-                        ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadUpdateAddedMessage], numUpdatesAdded)
-                        : null;
+            string[] messages = {
+                numDlcRemoved > 0 ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadDlcRemovedMessage], numDlcRemoved): null,
+                numDlcAdded > 0 ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadDlcAddedMessage], numDlcAdded): null,
+                numUpdatesRemoved > 0 ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadUpdateRemovedMessage], numUpdatesRemoved): null,
+                numUpdatesAdded > 0 ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadUpdateAddedMessage], numUpdatesAdded) : null
+            };
 
-            if (msg is null)
+            string msg = String.Join("\r\n", messages);
+
+            if (String.IsNullOrWhiteSpace(msg))
                 return;
-
 
             Dispatcher.UIThread.InvokeAsync(async () =>
             {

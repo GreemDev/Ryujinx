@@ -53,6 +53,7 @@ namespace Ryujinx.Ava.UI.ViewModels
     public class MainWindowViewModel : BaseModel
     {
         private const int HotKeyPressDelayMs = 500;
+        private delegate int LoadContentFromFolderDelegate(List<string> dirs, out int numRemoved);
 
         private ObservableCollectionExtended<ApplicationData> _applications;
         private string _aspectStatusText;
@@ -170,6 +171,10 @@ namespace Ryujinx.Ava.UI.ViewModels
             SwitchToGameControl = switchToGameControl;
             SetMainContent = setMainContent;
             TopLevel = topLevel;
+            
+#if DEBUG
+            topLevel.AttachDevTools(new KeyGesture(Avalonia.Input.Key.F12, KeyModifiers.Control));
+#endif
         }
 
         #region Properties
@@ -1276,7 +1281,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             _rendererWaitEvent.Set();
         }
 
-        private async Task LoadContentFromFolder(LocaleKeys localeMessageKey, Func<List<string>, int> onDirsSelected)
+        private async Task LoadContentFromFolder(LocaleKeys localeMessageAddedKey, LocaleKeys localeMessageRemovedKey, LoadContentFromFolderDelegate onDirsSelected)
         {
             var result = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
             {
@@ -1287,14 +1292,17 @@ namespace Ryujinx.Ava.UI.ViewModels
             if (result.Count > 0)
             {
                 var dirs = result.Select(it => it.Path.LocalPath).ToList();
-                var numAdded = onDirsSelected(dirs);
+                var numAdded = onDirsSelected(dirs, out int numRemoved);
 
-                var msg = string.Format(LocaleManager.Instance[localeMessageKey], numAdded);
+                var msg = String.Join("\r\n", new string[] {
+                    string.Format(LocaleManager.Instance[localeMessageRemovedKey], numRemoved),
+                    string.Format(LocaleManager.Instance[localeMessageAddedKey], numAdded)
+                });
 
                 await Dispatcher.UIThread.InvokeAsync(async () =>
                 {
                     await ContentDialogHelper.ShowTextDialog(
-                        LocaleManager.Instance[numAdded > 0 ? LocaleKeys.RyujinxConfirm : LocaleKeys.RyujinxInfo],
+                        LocaleManager.Instance[numAdded > 0 || numRemoved > 0 ? LocaleKeys.RyujinxConfirm : LocaleKeys.RyujinxInfo],
                         msg, "", "", "", LocaleManager.Instance[LocaleKeys.InputDialogOk], (int)Symbol.Checkmark);
                 });
             }
@@ -1434,7 +1442,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         {
             if (IsGameRunning)
             {
-                ConfigurationState.Instance.System.EnableDockedMode.Value = !ConfigurationState.Instance.System.EnableDockedMode.Value;
+                ConfigurationState.Instance.System.EnableDockedMode.Toggle();
             }
         }
 
@@ -1550,12 +1558,18 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public async Task LoadDlcFromFolder()
         {
-            await LoadContentFromFolder(LocaleKeys.AutoloadDlcAddedMessage, ApplicationLibrary.AutoLoadDownloadableContents);
+            await LoadContentFromFolder(
+                LocaleKeys.AutoloadDlcAddedMessage,
+                LocaleKeys.AutoloadDlcRemovedMessage,
+                ApplicationLibrary.AutoLoadDownloadableContents);
         }
 
         public async Task LoadTitleUpdatesFromFolder()
         {
-            await LoadContentFromFolder(LocaleKeys.AutoloadUpdateAddedMessage, ApplicationLibrary.AutoLoadTitleUpdates);
+            await LoadContentFromFolder(
+                LocaleKeys.AutoloadUpdateAddedMessage,
+                LocaleKeys.AutoloadUpdateRemovedMessage,
+                ApplicationLibrary.AutoLoadTitleUpdates);
         }
 
         public async Task OpenFolder()

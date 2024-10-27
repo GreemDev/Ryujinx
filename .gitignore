@@ -16,6 +16,8 @@ x64/
 build/
 [Bb]in/
 [Oo]bj/
+AppDir/
+publish_appimage/
 
 # Enable "build/" folder in the NuGet Packages folder since NuGet packages use it for MSBuild targets
 !packages/*/build/

@@ -5,14 +5,14 @@ namespace Ryujinx.Ava.UI.Renderer
 {
     internal class OpenTKBindingsContext : IBindingsContext
     {
-        private readonly Func<string, IntPtr> _getProcAddress;
+        private readonly Func<string, nint> _getProcAddress;
 
-        public OpenTKBindingsContext(Func<string, IntPtr> getProcAddress)
+        public OpenTKBindingsContext(Func<string, nint> getProcAddress)
         {
             _getProcAddress = getProcAddress;
         }
 
-        public IntPtr GetProcAddress(string procName)
+        public nint GetProcAddress(string procName)
         {
             return _getProcAddress(procName);
         }

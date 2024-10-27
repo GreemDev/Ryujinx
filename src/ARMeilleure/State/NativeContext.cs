@@ -27,7 +27,7 @@ namespace ARMeilleure.State
 
         private readonly IJitMemoryBlock _block;
 
-        public IntPtr BasePtr => _block.Pointer;
+        public nint BasePtr => _block.Pointer;
 
         public NativeContext(IJitMemoryAllocator allocator)
         {

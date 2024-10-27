@@ -21,7 +21,7 @@ namespace ARMeilleure.Signal
 
         private const uint EXCEPTION_ACCESS_VIOLATION = 0xc0000005;
 
-        private static Operand EmitGenericRegionCheck(EmitterContext context, IntPtr signalStructPtr, Operand faultAddress, Operand isWrite, int rangeStructSize)
+        private static Operand EmitGenericRegionCheck(EmitterContext context, nint signalStructPtr, Operand faultAddress, Operand isWrite, int rangeStructSize)
         {
             Operand inRegionLocal = context.AllocateLocal(OperandType.I32);
             context.Copy(inRegionLocal, Const(0));
@@ -155,7 +155,7 @@ namespace ARMeilleure.Signal
             throw new PlatformNotSupportedException();
         }
 
-        public static byte[] GenerateUnixSignalHandler(IntPtr signalStructPtr, int rangeStructSize)
+        public static byte[] GenerateUnixSignalHandler(nint signalStructPtr, int rangeStructSize)
         {
             EmitterContext context = new();
 
@@ -203,7 +203,7 @@ namespace ARMeilleure.Signal
             return Compiler.Compile(cfg, argTypes, OperandType.None, CompilerOptions.HighCq, RuntimeInformation.ProcessArchitecture).Code;
         }
 
-        public static byte[] GenerateWindowsSignalHandler(IntPtr signalStructPtr, int rangeStructSize)
+        public static byte[] GenerateWindowsSignalHandler(nint signalStructPtr, int rangeStructSize)
         {
             EmitterContext context = new();
 

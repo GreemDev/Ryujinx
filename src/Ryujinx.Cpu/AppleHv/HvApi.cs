@@ -273,7 +273,7 @@ namespace Ryujinx.Cpu.AppleHv
         public static partial HvResult hv_vm_get_max_vcpu_count(out uint max_vcpu_count);
 
         [LibraryImport(LibraryName, SetLastError = true)]
-        public static partial HvResult hv_vm_create(IntPtr config);
+        public static partial HvResult hv_vm_create(nint config);
 
         [LibraryImport(LibraryName, SetLastError = true)]
         public static partial HvResult hv_vm_destroy();
@@ -288,7 +288,7 @@ namespace Ryujinx.Cpu.AppleHv
         public static partial HvResult hv_vm_protect(ulong ipa, ulong size, HvMemoryFlags flags);
 
         [LibraryImport(LibraryName, SetLastError = true)]
-        public unsafe static partial HvResult hv_vcpu_create(out ulong vcpu, ref HvVcpuExit* exit, IntPtr config);
+        public unsafe static partial HvResult hv_vcpu_create(out ulong vcpu, ref HvVcpuExit* exit, nint config);
 
         [LibraryImport(LibraryName, SetLastError = true)]
         public unsafe static partial HvResult hv_vcpu_destroy(ulong vcpu);

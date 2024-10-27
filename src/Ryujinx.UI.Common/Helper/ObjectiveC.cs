@@ -10,44 +10,44 @@ namespace Ryujinx.UI.Common.Helper
         private const string ObjCRuntime = "/usr/lib/libobjc.A.dylib";
 
         [LibraryImport(ObjCRuntime, StringMarshalling = StringMarshalling.Utf8)]
-        private static partial IntPtr sel_getUid(string name);
+        private static partial nint sel_getUid(string name);
 
         [LibraryImport(ObjCRuntime, StringMarshalling = StringMarshalling.Utf8)]
-        private static partial IntPtr objc_getClass(string name);
+        private static partial nint objc_getClass(string name);
 
         [LibraryImport(ObjCRuntime)]
-        private static partial void objc_msgSend(IntPtr receiver, Selector selector);
+        private static partial void objc_msgSend(nint receiver, Selector selector);
 
         [LibraryImport(ObjCRuntime)]
-        private static partial void objc_msgSend(IntPtr receiver, Selector selector, byte value);
+        private static partial void objc_msgSend(nint receiver, Selector selector, byte value);
 
         [LibraryImport(ObjCRuntime)]
-        private static partial void objc_msgSend(IntPtr receiver, Selector selector, IntPtr value);
+        private static partial void objc_msgSend(nint receiver, Selector selector, nint value);
 
         [LibraryImport(ObjCRuntime)]
-        private static partial void objc_msgSend(IntPtr receiver, Selector selector, NSRect point);
+        private static partial void objc_msgSend(nint receiver, Selector selector, NSRect point);
 
         [LibraryImport(ObjCRuntime)]
-        private static partial void objc_msgSend(IntPtr receiver, Selector selector, double value);
+        private static partial void objc_msgSend(nint receiver, Selector selector, double value);
 
         [LibraryImport(ObjCRuntime, EntryPoint = "objc_msgSend")]
-        private static partial IntPtr IntPtr_objc_msgSend(IntPtr receiver, Selector selector);
+        private static partial nint nint_objc_msgSend(nint receiver, Selector selector);
 
         [LibraryImport(ObjCRuntime, EntryPoint = "objc_msgSend")]
-        private static partial IntPtr IntPtr_objc_msgSend(IntPtr receiver, Selector selector, IntPtr param);
+        private static partial nint nint_objc_msgSend(nint receiver, Selector selector, nint param);
 
         [LibraryImport(ObjCRuntime, EntryPoint = "objc_msgSend", StringMarshalling = StringMarshalling.Utf8)]
-        private static partial IntPtr IntPtr_objc_msgSend(IntPtr receiver, Selector selector, string param);
+        private static partial nint nint_objc_msgSend(nint receiver, Selector selector, string param);
 
         [LibraryImport(ObjCRuntime, EntryPoint = "objc_msgSend")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static partial bool bool_objc_msgSend(IntPtr receiver, Selector selector, IntPtr param);
+        private static partial bool bool_objc_msgSend(nint receiver, Selector selector, nint param);
 
         public readonly struct Object
         {
-            public readonly IntPtr ObjPtr;
+            public readonly nint ObjPtr;
 
-            private Object(IntPtr pointer)
+            private Object(nint pointer)
             {
                 ObjPtr = pointer;
             }
@@ -84,22 +84,22 @@ namespace Ryujinx.UI.Common.Helper
 
             public Object GetFromMessage(Selector selector)
             {
-                return new Object(IntPtr_objc_msgSend(ObjPtr, selector));
+                return new Object(nint_objc_msgSend(ObjPtr, selector));
             }
 
             public Object GetFromMessage(Selector selector, Object obj)
             {
-                return new Object(IntPtr_objc_msgSend(ObjPtr, selector, obj.ObjPtr));
+                return new Object(nint_objc_msgSend(ObjPtr, selector, obj.ObjPtr));
             }
 
             public Object GetFromMessage(Selector selector, NSString nsString)
             {
-                return new Object(IntPtr_objc_msgSend(ObjPtr, selector, nsString.StrPtr));
+                return new Object(nint_objc_msgSend(ObjPtr, selector, nsString.StrPtr));
             }
 
             public Object GetFromMessage(Selector selector, string param)
             {
-                return new Object(IntPtr_objc_msgSend(ObjPtr, selector, param));
+                return new Object(nint_objc_msgSend(ObjPtr, selector, param));
             }
 
             public bool GetBoolFromMessage(Selector selector, Object obj)
@@ -110,7 +110,7 @@ namespace Ryujinx.UI.Common.Helper
 
         public readonly struct Selector
         {
-            public readonly IntPtr SelPtr;
+            public readonly nint SelPtr;
 
             private Selector(string name)
             {
@@ -122,15 +122,15 @@ namespace Ryujinx.UI.Common.Helper
 
         public readonly struct NSString
         {
-            public readonly IntPtr StrPtr;
+            public readonly nint StrPtr;
 
             public NSString(string aString)
             {
-                IntPtr nsString = objc_getClass("NSString");
-                StrPtr = IntPtr_objc_msgSend(nsString, "stringWithUTF8String:", aString);
+                nint nsString = objc_getClass("NSString");
+                StrPtr = nint_objc_msgSend(nsString, "stringWithUTF8String:", aString);
             }
 
-            public static implicit operator IntPtr(NSString nsString) => nsString.StrPtr;
+            public static implicit operator nint(NSString nsString) => nsString.StrPtr;
         }
 
         public readonly struct NSPoint

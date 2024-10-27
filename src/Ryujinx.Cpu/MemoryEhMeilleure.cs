@@ -46,7 +46,7 @@ namespace Ryujinx.Cpu
                 _mirrorAddress = (ulong)addressSpaceMirror.Pointer;
                 ulong endAddressMirror = _mirrorAddress + addressSpace.Size;
 
-                bool addedMirror = NativeSignalHandler.AddTrackedRegion((nuint)_mirrorAddress, (nuint)endAddressMirror, IntPtr.Zero);
+                bool addedMirror = NativeSignalHandler.AddTrackedRegion((nuint)_mirrorAddress, (nuint)endAddressMirror, nint.Zero);
 
                 if (!addedMirror)
                 {

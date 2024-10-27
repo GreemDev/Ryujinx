@@ -9,13 +9,13 @@ namespace Ryujinx.UI.Common.Helper
     public static partial class OpenHelper
     {
         [LibraryImport("shell32.dll", SetLastError = true)]
-        private static partial int SHOpenFolderAndSelectItems(IntPtr pidlFolder, uint cidl, IntPtr apidl, uint dwFlags);
+        private static partial int SHOpenFolderAndSelectItems(nint pidlFolder, uint cidl, nint apidl, uint dwFlags);
 
         [LibraryImport("shell32.dll", SetLastError = true)]
-        private static partial void ILFree(IntPtr pidlList);
+        private static partial void ILFree(nint pidlList);
 
         [LibraryImport("shell32.dll", SetLastError = true)]
-        private static partial IntPtr ILCreateFromPathW([MarshalAs(UnmanagedType.LPWStr)] string pszPath);
+        private static partial nint ILCreateFromPathW([MarshalAs(UnmanagedType.LPWStr)] string pszPath);
 
         public static void OpenFolder(string path)
         {
@@ -40,12 +40,12 @@ namespace Ryujinx.UI.Common.Helper
             {
                 if (OperatingSystem.IsWindows())
                 {
-                    IntPtr pidlList = ILCreateFromPathW(path);
-                    if (pidlList != IntPtr.Zero)
+                    nint pidlList = ILCreateFromPathW(path);
+                    if (pidlList != nint.Zero)
                     {
                         try
                         {
-                            Marshal.ThrowExceptionForHR(SHOpenFolderAndSelectItems(pidlList, 0, IntPtr.Zero, 0));
+                            Marshal.ThrowExceptionForHR(SHOpenFolderAndSelectItems(pidlList, 0, nint.Zero, 0));
                         }
                         finally
                         {

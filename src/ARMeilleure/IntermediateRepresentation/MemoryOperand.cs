@@ -24,7 +24,7 @@ namespace ARMeilleure.IntermediateRepresentation
         {
             Debug.Assert(operand.Kind == OperandKind.Memory);
 
-            _data = (Data*)Unsafe.As<Operand, IntPtr>(ref operand);
+            _data = (Data*)Unsafe.As<Operand, nint>(ref operand);
         }
 
         public Operand BaseAddress

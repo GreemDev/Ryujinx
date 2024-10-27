@@ -20,11 +20,11 @@ namespace Ryujinx.Cpu.LightningJit.Arm64.Target.Arm64
             public readonly RegisterAllocator RegisterAllocator;
             public readonly TailMerger TailMerger;
             public readonly AddressTable<ulong> FuncTable;
-            public readonly IntPtr DispatchStubPointer;
+            public readonly nint DispatchStubPointer;
 
             private readonly MultiBlock _multiBlock;
             private readonly RegisterSaveRestore _registerSaveRestore;
-            private readonly IntPtr _pageTablePointer;
+            private readonly nint _pageTablePointer;
 
             public Context(
                 CodeWriter writer,
@@ -33,8 +33,8 @@ namespace Ryujinx.Cpu.LightningJit.Arm64.Target.Arm64
                 RegisterSaveRestore registerSaveRestore,
                 MultiBlock multiBlock,
                 AddressTable<ulong> funcTable,
-                IntPtr dispatchStubPointer,
-                IntPtr pageTablePointer)
+                nint dispatchStubPointer,
+                nint pageTablePointer)
             {
                 Writer = writer;
                 RegisterAllocator = registerAllocator;
@@ -304,7 +304,7 @@ namespace Ryujinx.Cpu.LightningJit.Arm64.Target.Arm64
             }
         }
 
-        public static CompiledFunction Compile(CpuPreset cpuPreset, IMemoryManager memoryManager, ulong address, AddressTable<ulong> funcTable, IntPtr dispatchStubPtr)
+        public static CompiledFunction Compile(CpuPreset cpuPreset, IMemoryManager memoryManager, ulong address, AddressTable<ulong> funcTable, nint dispatchStubPtr)
         {
             MultiBlock multiBlock = Decoder.DecodeMulti(cpuPreset, memoryManager, address);
 

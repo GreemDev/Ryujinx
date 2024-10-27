@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Windows;
+using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.UI.Common.Configuration;
@@ -46,7 +47,7 @@ namespace Ryujinx.Ava.UI.Views.Main
 
         private void DockedStatus_PointerReleased(object sender, PointerReleasedEventArgs e)
         {
-            ConfigurationState.Instance.System.EnableDockedMode.Value = !ConfigurationState.Instance.System.EnableDockedMode.Value;
+            ConfigurationState.Instance.System.EnableDockedMode.Toggle();
         }
 
         private void AspectRatioStatus_OnClick(object sender, RoutedEventArgs e)

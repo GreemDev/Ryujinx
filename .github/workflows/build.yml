@@ -7,6 +7,7 @@ env:
   POWERSHELL_TELEMETRY_OPTOUT: 1
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   RYUJINX_BASE_VERSION: "1.2.0"
+  RELEASE: 0
 
 jobs:
   build:
@@ -73,12 +74,50 @@ jobs:
           chmod +x ./publish_sdl2_headless/Ryujinx.Headless.SDL2 ./publish_sdl2_headless/Ryujinx.sh
         if: github.event_name == 'pull_request' && matrix.platform.os == 'ubuntu-latest'
 
+      #- name: Build AppImage
+      #  if: github.event_name == 'pull_request' && matrix.platform.os == 'ubuntu-latest'
+      #  run: |
+      #    PLATFORM_NAME="${{ matrix.platform.name }}"
+
+      #    sudo apt install -y zsync desktop-file-utils appstream
+
+      #    mkdir -p tools
+      #    export PATH="$PATH:$(readlink -f tools)"
+
+      #    # Setup appimagetool
+      #    wget -q -O tools/appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
+      #    chmod +x tools/appimagetool
+      #    chmod +x distribution/linux/appimage/build-appimage.sh
+
+          # Explicitly set $ARCH for appimagetool ($ARCH_NAME is for the file name)
+      #    if [ "$PLATFORM_NAME" = "linux-x64" ]; then
+      #      ARCH_NAME=x64
+      #      export ARCH=x86_64
+      #    elif [ "$PLATFORM_NAME" = "linux-arm64" ]; then
+      #      ARCH_NAME=arm64
+      #      export ARCH=aarch64
+      #    else
+      #      echo "Unexpected PLATFORM_NAME "$PLATFORM_NAME""
+      #      exit 1
+      #    fi
+
+      #    export UFLAG="gh-releases-zsync|${{ github.repository_owner }}|${{ github.event.repository.name }}|latest|*-$ARCH_NAME.AppImage.zsync"
+      #    BUILDDIR=publish OUTDIR=publish_appimage distribution/linux/appimage/build-appimage.sh
+      #  shell: bash
+
       - name: Upload Ryujinx artifact
         uses: actions/upload-artifact@v4
         with:
           name: ryujinx-${{ matrix.configuration }}-${{ env.RYUJINX_BASE_VERSION }}+${{ steps.git_short_hash.outputs.result }}-${{ matrix.platform.zip_os_name }}
           path: publish
         if: github.event_name == 'pull_request' && matrix.platform.os != 'macos-13'
+
+      #- name: Upload Ryujinx (AppImage) artifact
+      #  uses: actions/upload-artifact@v4
+      #  if: github.event_name == 'pull_request' && matrix.platform.os == 'ubuntu-latest'
+      #  with:
+      #    name: ryujinx-${{ matrix.configuration }}-${{ env.RYUJINX_BASE_VERSION }}+${{ steps.git_short_hash.outputs.result }}-${{ matrix.platform.zip_os_name }}-AppImage
+      #    path: publish_appimage
 
       - name: Upload Ryujinx.Headless.SDL2 artifact
         uses: actions/upload-artifact@v4

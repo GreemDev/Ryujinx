@@ -92,7 +92,7 @@ namespace ARMeilleure.Translation
             else
             {
                 int index = Delegates.GetDelegateIndex(info);
-                IntPtr funcPtr = Delegates.GetDelegateFuncPtrByIndex(index);
+                nint funcPtr = Delegates.GetDelegateFuncPtrByIndex(index);
 
                 OperandType returnType = GetOperandType(info.ReturnType);
 

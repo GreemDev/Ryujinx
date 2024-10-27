@@ -15,7 +15,7 @@ namespace Ryujinx.Graphics.OpenGL.Queries
         public int Query { get; }
 
         private readonly int _buffer;
-        private readonly IntPtr _bufferMap;
+        private readonly nint _bufferMap;
         private readonly QueryTarget _type;
 
         public BufferedQuery(QueryTarget type)
@@ -29,9 +29,9 @@ namespace Ryujinx.Graphics.OpenGL.Queries
             unsafe
             {
                 long defaultValue = DefaultValue;
-                GL.BufferStorage(BufferTarget.QueryBuffer, sizeof(long), (IntPtr)(&defaultValue), BufferStorageFlags.MapReadBit | BufferStorageFlags.MapWriteBit | BufferStorageFlags.MapPersistentBit);
+                GL.BufferStorage(BufferTarget.QueryBuffer, sizeof(long), (nint)(&defaultValue), BufferStorageFlags.MapReadBit | BufferStorageFlags.MapWriteBit | BufferStorageFlags.MapPersistentBit);
             }
-            _bufferMap = GL.MapBufferRange(BufferTarget.QueryBuffer, IntPtr.Zero, sizeof(long), BufferAccessMask.MapReadBit | BufferAccessMask.MapWriteBit | BufferAccessMask.MapPersistentBit);
+            _bufferMap = GL.MapBufferRange(BufferTarget.QueryBuffer, nint.Zero, sizeof(long), BufferAccessMask.MapReadBit | BufferAccessMask.MapWriteBit | BufferAccessMask.MapPersistentBit);
         }
 
         public void Reset()

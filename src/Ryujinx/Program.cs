@@ -39,7 +39,7 @@ namespace Ryujinx.Ava
         public static bool UseHardwareAcceleration { get; private set; }
 
         [LibraryImport("user32.dll", SetLastError = true)]
-        public static partial int MessageBoxA(IntPtr hWnd, [MarshalAs(UnmanagedType.LPStr)] string text, [MarshalAs(UnmanagedType.LPStr)] string caption, uint type);
+        public static partial int MessageBoxA(nint hWnd, [MarshalAs(UnmanagedType.LPStr)] string text, [MarshalAs(UnmanagedType.LPStr)] string caption, uint type);
 
         private const uint MbIconwarning = 0x30;
 
@@ -47,9 +47,10 @@ namespace Ryujinx.Ava
         {
             Version = ReleaseInformation.Version;
 
+
             if (OperatingSystem.IsWindows() && !OperatingSystem.IsWindowsVersionAtLeast(10, 0, 17134))
             {
-                _ = MessageBoxA(IntPtr.Zero, "You are running an outdated version of Windows.\n\nRyujinx supports Windows 10 version 1803 and newer.\n", $"Ryujinx {Version}", MbIconwarning);
+                _ = MessageBoxA(nint.Zero, "You are running an outdated version of Windows.\n\nRyujinx supports Windows 10 version 1803 and newer.\n", $"Ryujinx {Version}", MbIconwarning);
             }
 
             PreviewerDetached = true;
@@ -75,14 +76,14 @@ namespace Ryujinx.Ava
                     EnableInputFocusProxy = Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP") == "gamescope",
                     RenderingMode = UseHardwareAcceleration
                         ? [X11RenderingMode.Glx, X11RenderingMode.Software]
-                        : [X11RenderingMode.Software],
+                        : [X11RenderingMode.Software]
                 })
                 .With(new Win32PlatformOptions
                 {
                     WinUICompositionBackdropCornerRadius = 8.0f,
                     RenderingMode = UseHardwareAcceleration
                         ? [Win32RenderingMode.AngleEgl, Win32RenderingMode.Software]
-                        : [Win32RenderingMode.Software],
+                        : [Win32RenderingMode.Software]
                 });
 
         private static void Initialize(string[] args)
@@ -232,7 +233,7 @@ namespace Ryujinx.Ava
 
             Logger.Notice.Print(LogClass.Application, $"Logs Enabled: {
                 (enabledLogLevels.Length is 0
-                    ? "<None>" 
+                    ? "<None>"
                     : enabledLogLevels.JoinToString(", "))
             }");
 
