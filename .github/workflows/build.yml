@@ -102,7 +102,7 @@ jobs:
           fi
 
           export UFLAG="gh-releases-zsync|${{ github.repository_owner }}|${{ github.event.repository.name }}|latest|*-$ARCH_NAME.AppImage.zsync"
-          BUILDDIR=publish_ava OUTDIR=publish_appimage distribution/linux/appimage/build-appimage.sh
+          BUILDDIR=publish OUTDIR=publish_appimage distribution/linux/appimage/build-appimage.sh
         shell: bash
 
       - name: Upload Ryujinx artifact
