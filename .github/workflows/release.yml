@@ -145,10 +145,12 @@ jobs:
           mkdir -p tools
           export PATH="$PATH:$(readlink -f tools)"
 
+          # Setup appimagetool
           wget -q -O tools/appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
           chmod +x tools/appimagetool
           chmod +x distribution/linux/appimage/build-appimage.sh
 
+          # Explicitly set $ARCH for appimagetool ($ARCH_NAME is for the file name)
           if [ "$PLATFORM_NAME" = "linux-x64" ]; then
             ARCH_NAME=x64
             export ARCH=x86_64
@@ -161,9 +163,9 @@ jobs:
           fi
 
           export UFLAG="gh-releases-zsync|${{ github.repository_owner }}|${{ github.event.repository.name }}|latest|*-$ARCH_NAME.AppImage.zsync"
-          BUILDDIR=publish_ava OUTDIR=publish_ava_appimage distribution/linux/appimage/build-appimage.sh
+          BUILDDIR=publish OUTDIR=publish_appimage distribution/linux/appimage/build-appimage.sh
 
-          pushd publish_ava_appimage
+          pushd publish_appimage
           mv Ryujinx.AppImage ../release_output/ryujinx-$BUILD_VERSION-$ARCH_NAME.AppImage
           mv Ryujinx.AppImage.zsync ../release_output/ryujinx-$BUILD_VERSION-$ARCH_NAME.AppImage.zsync
           popd
@@ -172,7 +174,7 @@ jobs:
       - name: Packing Linux builds
         if: matrix.platform.os == 'ubuntu-latest'
         run: |
-          pushd publish_ava
+          pushd publish
           chmod +x publish/Ryujinx.sh publish/Ryujinx
           tar -czvf ../release_output/ryujinx-${{ steps.version_info.outputs.build_version }}-${{ matrix.platform.zip_os_name }}.tar.gz publish
           popd
@@ -243,7 +245,7 @@ jobs:
 
       - name: Publish macOS Ryujinx
         run: |
-          ./distribution/macos/create_macos_build_ava.sh . publish_tmp_ava publish_ava ./distribution/macos/entitlements.xml "${{ steps.version_info.outputs.build_version }}" "${{ steps.version_info.outputs.git_short_hash }}" Release
+          ./distribution/macos/create_macos_build_ava.sh . publish_tmp_ava publish ./distribution/macos/entitlements.xml "${{ steps.version_info.outputs.build_version }}" "${{ steps.version_info.outputs.git_short_hash }}" Release
 
       - name: Publish macOS Ryujinx.Headless.SDL2
         run: |
@@ -253,7 +255,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           name: ${{ steps.version_info.outputs.build_version }}
-          artifacts: "publish_ava/*.tar.gz, publish_headless/*.tar.gz"
+          artifacts: "publish/*.tar.gz, publish_headless/*.tar.gz"
           tag: ${{ steps.version_info.outputs.build_version }}
           body: "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.version_info.outputs.prev_build_version }}...${{ steps.version_info.outputs.build_version }}"
           omitBodyDuringUpdate: true
