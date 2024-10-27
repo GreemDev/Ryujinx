@@ -104,8 +104,6 @@ jobs:
           export UFLAG="gh-releases-zsync|${{ github.repository_owner }}|${{ github.event.repository.name }}|latest|*-$ARCH_NAME.AppImage.zsync"
           BUILDDIR=publish_ava OUTDIR=publish_appimage distribution/linux/appimage/build-appimage.sh
         shell: bash
-        env:
-          RELEASE=0
 
       - name: Upload Ryujinx artifact
         uses: actions/upload-artifact@v4
