@@ -24,11 +24,11 @@ namespace Ryujinx.Cpu.LightningJit
         private bool _disposed;
 
         internal TranslatorCache<TranslatedFunction> Functions { get; }
-        internal IAddressTable<ulong> FunctionTable { get; }
+        internal AddressTable<ulong> FunctionTable { get; }
         internal TranslatorStubs Stubs { get; }
         internal IMemoryManager Memory { get; }
 
-        public Translator(IMemoryManager memory, IAddressTable<ulong> functionTable)
+        public Translator(IMemoryManager memory, AddressTable<ulong> functionTable)
         {
             Memory = memory;
 
