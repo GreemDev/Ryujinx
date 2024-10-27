@@ -134,40 +134,40 @@ jobs:
           popd
         shell: bash
       
-     - name: Build AppImage (Linux)
-       if: matrix.platform.os == 'ubuntu-latest'
-       run: |
-         BUILD_VERSION="${{ steps.version_info.outputs.build_version }}"
-         PLATFORM_NAME="${{ matrix.platform.name }}"
+      - name: Build AppImage (Linux)
+        if: matrix.platform.os == 'ubuntu-latest'
+        run: |
+          BUILD_VERSION="${{ steps.version_info.outputs.build_version }}"
+          PLATFORM_NAME="${{ matrix.platform.name }}"
 
-         sudo apt install -y zsync desktop-file-utils appstream
+          sudo apt install -y zsync desktop-file-utils appstream
 
-         mkdir -p tools
-         export PATH="$PATH:$(readlink -f tools)"
+          mkdir -p tools
+          export PATH="$PATH:$(readlink -f tools)"
 
-         wget -q -O tools/appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
-         chmod +x tools/appimagetool
-         chmod +x distribution/linux/appimage/build-appimage.sh
+          wget -q -O tools/appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
+          chmod +x tools/appimagetool
+          chmod +x distribution/linux/appimage/build-appimage.sh
 
-         if [ "$PLATFORM_NAME" = "linux-x64" ]; then
-           ARCH_NAME=x64
-           export ARCH=x86_64
-         elif [ "$PLATFORM_NAME" = "linux-arm64" ]; then
-           ARCH_NAME=arm64
-           export ARCH=aarch64
-         else
-           echo "Unexpected PLATFORM_NAME "$PLATFORM_NAME""
-           exit 1
-         fi
+          if [ "$PLATFORM_NAME" = "linux-x64" ]; then
+            ARCH_NAME=x64
+            export ARCH=x86_64
+          elif [ "$PLATFORM_NAME" = "linux-arm64" ]; then
+            ARCH_NAME=arm64
+            export ARCH=aarch64
+          else
+            echo "Unexpected PLATFORM_NAME "$PLATFORM_NAME""
+            exit 1
+          fi
 
-         export UFLAG="gh-releases-zsync|${{ github.repository_owner }}|${{ github.event.repository.name }}|latest|*-$ARCH_NAME.AppImage.zsync"
-         BUILDDIR=publish_ava OUTDIR=publish_ava_appimage distribution/linux/appimage/build-appimage.sh
+          export UFLAG="gh-releases-zsync|${{ github.repository_owner }}|${{ github.event.repository.name }}|latest|*-$ARCH_NAME.AppImage.zsync"
+          BUILDDIR=publish_ava OUTDIR=publish_ava_appimage distribution/linux/appimage/build-appimage.sh
 
-         pushd publish_ava_appimage
-         mv Ryujinx.AppImage ../release_output/ryujinx-$BUILD_VERSION-$ARCH_NAME.AppImage
-         mv Ryujinx.AppImage.zsync ../release_output/ryujinx-$BUILD_VERSION-$ARCH_NAME.AppImage.zsync
-         popd
-       shell: bash
+          pushd publish_ava_appimage
+          mv Ryujinx.AppImage ../release_output/ryujinx-$BUILD_VERSION-$ARCH_NAME.AppImage
+          mv Ryujinx.AppImage.zsync ../release_output/ryujinx-$BUILD_VERSION-$ARCH_NAME.AppImage.zsync
+          popd
+        shell: bash
 
       - name: Pushing new release
         uses: ncipollo/release-action@v1
