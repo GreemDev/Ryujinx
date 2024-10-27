@@ -4,10 +4,10 @@ namespace Ryujinx.Cpu.LightningJit
 {
     class TranslatedFunction
     {
-        public IntPtr FuncPointer { get; }
+        public nint FuncPointer { get; }
         public ulong GuestSize { get; }
 
-        public TranslatedFunction(IntPtr funcPointer, ulong guestSize)
+        public TranslatedFunction(nint funcPointer, ulong guestSize)
         {
             FuncPointer = funcPointer;
             GuestSize = guestSize;

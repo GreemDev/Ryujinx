@@ -31,7 +31,7 @@ namespace Ryujinx.Cpu.Jit
 
         public int AddressSpaceBits { get; }
 
-        public IntPtr PageTablePointer => _addressSpace.Base.Pointer;
+        public nint PageTablePointer => _addressSpace.Base.Pointer;
 
         public MemoryManagerType Type => _unsafeMode ? MemoryManagerType.HostMappedUnsafe : MemoryManagerType.HostMapped;
 

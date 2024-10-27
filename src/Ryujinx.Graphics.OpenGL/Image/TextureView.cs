@@ -282,7 +282,7 @@ namespace Ryujinx.Graphics.OpenGL.Image
             }
             else
             {
-                IntPtr target = _renderer.PersistentBuffers.Default.GetHostArray(size);
+                nint target = _renderer.PersistentBuffers.Default.GetHostArray(size);
 
                 WriteTo(target);
 
@@ -307,7 +307,7 @@ namespace Ryujinx.Graphics.OpenGL.Image
             }
             else
             {
-                IntPtr target = _renderer.PersistentBuffers.Default.GetHostArray(size);
+                nint target = _renderer.PersistentBuffers.Default.GetHostArray(size);
 
                 int offset = WriteTo2D(target, layer, level);
 
@@ -339,15 +339,15 @@ namespace Ryujinx.Graphics.OpenGL.Image
 
         public void WriteToPbo(int offset, bool forceBgra)
         {
-            WriteTo(IntPtr.Zero + offset, forceBgra);
+            WriteTo(nint.Zero + offset, forceBgra);
         }
 
         public int WriteToPbo2D(int offset, int layer, int level)
         {
-            return WriteTo2D(IntPtr.Zero + offset, layer, level);
+            return WriteTo2D(nint.Zero + offset, layer, level);
         }
 
-        private int WriteTo2D(IntPtr data, int layer, int level)
+        private int WriteTo2D(nint data, int layer, int level)
         {
             TextureTarget target = Target.Convert();
 
@@ -390,7 +390,7 @@ namespace Ryujinx.Graphics.OpenGL.Image
             return 0;
         }
 
-        private void WriteTo(IntPtr data, bool forceBgra = false)
+        private void WriteTo(nint data, bool forceBgra = false)
         {
             TextureTarget target = Target.Convert();
 
@@ -457,7 +457,7 @@ namespace Ryujinx.Graphics.OpenGL.Image
                     var dataSpan = data.Span;
                     fixed (byte* ptr = dataSpan)
                     {
-                        ReadFrom((IntPtr)ptr, dataSpan.Length);
+                        ReadFrom((nint)ptr, dataSpan.Length);
                     }
                 }
             }
@@ -474,7 +474,7 @@ namespace Ryujinx.Graphics.OpenGL.Image
                         int width = Math.Max(Info.Width >> level, 1);
                         int height = Math.Max(Info.Height >> level, 1);
 
-                        ReadFrom2D((IntPtr)ptr, layer, level, 0, 0, width, height);
+                        ReadFrom2D((nint)ptr, layer, level, 0, 0, width, height);
                     }
                 }
             }
@@ -492,7 +492,7 @@ namespace Ryujinx.Graphics.OpenGL.Image
                     fixed (byte* ptr = data.Span)
                     {
                         ReadFrom2D(
-                            (IntPtr)ptr,
+                            (nint)ptr,
                             layer,
                             level,
                             region.X,
@@ -507,15 +507,15 @@ namespace Ryujinx.Graphics.OpenGL.Image
 
         public void ReadFromPbo(int offset, int size)
         {
-            ReadFrom(IntPtr.Zero + offset, size);
+            ReadFrom(nint.Zero + offset, size);
         }
 
         public void ReadFromPbo2D(int offset, int layer, int level, int width, int height)
         {
-            ReadFrom2D(IntPtr.Zero + offset, layer, level, 0, 0, width, height);
+            ReadFrom2D(nint.Zero + offset, layer, level, 0, 0, width, height);
         }
 
-        private void ReadFrom2D(IntPtr data, int layer, int level, int x, int y, int width, int height)
+        private void ReadFrom2D(nint data, int layer, int level, int x, int y, int width, int height)
         {
             int mipSize = Info.GetMipSize2D(level);
 
@@ -535,7 +535,7 @@ namespace Ryujinx.Graphics.OpenGL.Image
             return data;
         }
 
-        private void ReadFrom2D(IntPtr data, int layer, int level, int x, int y, int width, int height, int mipSize)
+        private void ReadFrom2D(nint data, int layer, int level, int x, int y, int width, int height, int mipSize)
         {
             TextureTarget target = Target.Convert();
 
@@ -694,7 +694,7 @@ namespace Ryujinx.Graphics.OpenGL.Image
             }
         }
 
-        private void ReadFrom(IntPtr data, int size)
+        private void ReadFrom(nint data, int size)
         {
             TextureTarget target = Target.Convert();
             int baseLevel = 0;

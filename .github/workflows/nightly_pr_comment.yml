@@ -2,7 +2,7 @@ name: Comment PR artifacts links
 
 on:
   workflow_run:
-    workflows: ['Perform checks']
+    workflows: ['Build PR']
     types: [completed]
 
 jobs:

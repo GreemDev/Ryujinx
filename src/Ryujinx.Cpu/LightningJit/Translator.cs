@@ -98,7 +98,7 @@ namespace Ryujinx.Cpu.LightningJit
             _noWxCache?.ClearEntireThreadLocalCache();
         }
 
-        internal IntPtr GetOrTranslatePointer(IntPtr framePointer, ulong address, ExecutionMode mode)
+        internal nint GetOrTranslatePointer(nint framePointer, ulong address, ExecutionMode mode)
         {
             if (_noWxCache != null)
             {
@@ -141,7 +141,7 @@ namespace Ryujinx.Cpu.LightningJit
         private TranslatedFunction Translate(ulong address, ExecutionMode mode)
         {
             CompiledFunction func = Compile(address, mode);
-            IntPtr funcPointer = JitCache.Map(func.Code);
+            nint funcPointer = JitCache.Map(func.Code);
 
             return new TranslatedFunction(funcPointer, (ulong)func.GuestCodeLength);
         }

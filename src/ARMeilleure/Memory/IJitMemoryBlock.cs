@@ -4,7 +4,7 @@ namespace ARMeilleure.Memory
 {
     public interface IJitMemoryBlock : IDisposable
     {
-        IntPtr Pointer { get; }
+        nint Pointer { get; }
 
         void Commit(ulong offset, ulong size);
 

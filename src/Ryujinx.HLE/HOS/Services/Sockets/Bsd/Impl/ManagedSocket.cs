@@ -21,7 +21,7 @@ namespace Ryujinx.HLE.HOS.Services.Sockets.Bsd.Impl
 
         public bool Blocking { get => Socket.Blocking; set => Socket.Blocking = value; }
 
-        public IntPtr Handle => Socket.Handle;
+        public nint Handle => Socket.Handle;
 
         public IPEndPoint RemoteEndPoint => Socket.RemoteEndPoint as IPEndPoint;
 

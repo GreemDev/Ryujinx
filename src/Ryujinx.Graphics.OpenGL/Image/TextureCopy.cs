@@ -464,7 +464,7 @@ namespace Ryujinx.Graphics.OpenGL.Image
                 _copyPboSize = requiredSize;
 
                 GL.BindBuffer(BufferTarget.PixelPackBuffer, _copyPboHandle);
-                GL.BufferData(BufferTarget.PixelPackBuffer, requiredSize, IntPtr.Zero, BufferUsageHint.DynamicCopy);
+                GL.BufferData(BufferTarget.PixelPackBuffer, requiredSize, nint.Zero, BufferUsageHint.DynamicCopy);
             }
         }
 

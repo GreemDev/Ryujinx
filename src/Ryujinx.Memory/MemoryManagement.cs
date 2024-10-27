@@ -4,11 +4,11 @@ namespace Ryujinx.Memory
 {
     public static class MemoryManagement
     {
-        public static IntPtr Allocate(ulong size, bool forJit)
+        public static nint Allocate(ulong size, bool forJit)
         {
             if (OperatingSystem.IsWindows())
             {
-                return MemoryManagementWindows.Allocate((IntPtr)size);
+                return MemoryManagementWindows.Allocate((nint)size);
             }
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
@@ -20,11 +20,11 @@ namespace Ryujinx.Memory
             }
         }
 
-        public static IntPtr Reserve(ulong size, bool forJit, bool viewCompatible)
+        public static nint Reserve(ulong size, bool forJit, bool viewCompatible)
         {
             if (OperatingSystem.IsWindows())
             {
-                return MemoryManagementWindows.Reserve((IntPtr)size, viewCompatible);
+                return MemoryManagementWindows.Reserve((nint)size, viewCompatible);
             }
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
@@ -36,11 +36,11 @@ namespace Ryujinx.Memory
             }
         }
 
-        public static void Commit(IntPtr address, ulong size, bool forJit)
+        public static void Commit(nint address, ulong size, bool forJit)
         {
             if (OperatingSystem.IsWindows())
             {
-                MemoryManagementWindows.Commit(address, (IntPtr)size);
+                MemoryManagementWindows.Commit(address, (nint)size);
             }
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
@@ -52,11 +52,11 @@ namespace Ryujinx.Memory
             }
         }
 
-        public static void Decommit(IntPtr address, ulong size)
+        public static void Decommit(nint address, ulong size)
         {
             if (OperatingSystem.IsWindows())
             {
-                MemoryManagementWindows.Decommit(address, (IntPtr)size);
+                MemoryManagementWindows.Decommit(address, (nint)size);
             }
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
@@ -68,11 +68,11 @@ namespace Ryujinx.Memory
             }
         }
 
-        public static void MapView(IntPtr sharedMemory, ulong srcOffset, IntPtr address, ulong size, MemoryBlock owner)
+        public static void MapView(nint sharedMemory, ulong srcOffset, nint address, ulong size, MemoryBlock owner)
         {
             if (OperatingSystem.IsWindows())
             {
-                MemoryManagementWindows.MapView(sharedMemory, srcOffset, address, (IntPtr)size, owner);
+                MemoryManagementWindows.MapView(sharedMemory, srcOffset, address, (nint)size, owner);
             }
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
@@ -84,11 +84,11 @@ namespace Ryujinx.Memory
             }
         }
 
-        public static void UnmapView(IntPtr sharedMemory, IntPtr address, ulong size, MemoryBlock owner)
+        public static void UnmapView(nint sharedMemory, nint address, ulong size, MemoryBlock owner)
         {
             if (OperatingSystem.IsWindows())
             {
-                MemoryManagementWindows.UnmapView(sharedMemory, address, (IntPtr)size, owner);
+                MemoryManagementWindows.UnmapView(sharedMemory, address, (nint)size, owner);
             }
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
@@ -100,13 +100,13 @@ namespace Ryujinx.Memory
             }
         }
 
-        public static void Reprotect(IntPtr address, ulong size, MemoryPermission permission, bool forView, bool throwOnFail)
+        public static void Reprotect(nint address, ulong size, MemoryPermission permission, bool forView, bool throwOnFail)
         {
             bool result;
 
             if (OperatingSystem.IsWindows())
             {
-                result = MemoryManagementWindows.Reprotect(address, (IntPtr)size, permission, forView);
+                result = MemoryManagementWindows.Reprotect(address, (nint)size, permission, forView);
             }
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
@@ -123,11 +123,11 @@ namespace Ryujinx.Memory
             }
         }
 
-        public static bool Free(IntPtr address, ulong size)
+        public static bool Free(nint address, ulong size)
         {
             if (OperatingSystem.IsWindows())
             {
-                return MemoryManagementWindows.Free(address, (IntPtr)size);
+                return MemoryManagementWindows.Free(address, (nint)size);
             }
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
@@ -139,11 +139,11 @@ namespace Ryujinx.Memory
             }
         }
 
-        public static IntPtr CreateSharedMemory(ulong size, bool reserve)
+        public static nint CreateSharedMemory(ulong size, bool reserve)
         {
             if (OperatingSystem.IsWindows())
             {
-                return MemoryManagementWindows.CreateSharedMemory((IntPtr)size, reserve);
+                return MemoryManagementWindows.CreateSharedMemory((nint)size, reserve);
             }
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
@@ -155,7 +155,7 @@ namespace Ryujinx.Memory
             }
         }
 
-        public static void DestroySharedMemory(IntPtr handle)
+        public static void DestroySharedMemory(nint handle)
         {
             if (OperatingSystem.IsWindows())
             {
@@ -171,7 +171,7 @@ namespace Ryujinx.Memory
             }
         }
 
-        public static IntPtr MapSharedMemory(IntPtr handle, ulong size)
+        public static nint MapSharedMemory(nint handle, ulong size)
         {
             if (OperatingSystem.IsWindows())
             {
@@ -187,7 +187,7 @@ namespace Ryujinx.Memory
             }
         }
 
-        public static void UnmapSharedMemory(IntPtr address, ulong size)
+        public static void UnmapSharedMemory(nint address, ulong size)
         {
             if (OperatingSystem.IsWindows())
             {

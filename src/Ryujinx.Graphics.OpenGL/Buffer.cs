@@ -19,11 +19,11 @@ namespace Ryujinx.Graphics.OpenGL
                 GL.ClearBufferSubData(
                     BufferTarget.CopyWriteBuffer,
                     PixelInternalFormat.Rgba8ui,
-                    (IntPtr)offset,
-                    (IntPtr)size,
+                    (nint)offset,
+                    (nint)size,
                     PixelFormat.RgbaInteger,
                     PixelType.UnsignedByte,
-                    (IntPtr)valueArr);
+                    (nint)valueArr);
             }
         }
 
@@ -37,7 +37,7 @@ namespace Ryujinx.Graphics.OpenGL
             int handle = GL.GenBuffer();
 
             GL.BindBuffer(BufferTarget.CopyWriteBuffer, handle);
-            GL.BufferData(BufferTarget.CopyWriteBuffer, size, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+            GL.BufferData(BufferTarget.CopyWriteBuffer, size, nint.Zero, BufferUsageHint.DynamicDraw);
 
             return Handle.FromInt32<BufferHandle>(handle);
         }
@@ -47,7 +47,7 @@ namespace Ryujinx.Graphics.OpenGL
             int handle = GL.GenBuffer();
 
             GL.BindBuffer(BufferTarget.CopyWriteBuffer, handle);
-            GL.BufferStorage(BufferTarget.CopyWriteBuffer, size, IntPtr.Zero,
+            GL.BufferStorage(BufferTarget.CopyWriteBuffer, size, nint.Zero,
                 BufferStorageFlags.MapPersistentBit |
                 BufferStorageFlags.MapCoherentBit |
                 BufferStorageFlags.ClientStorageBit |
@@ -64,9 +64,9 @@ namespace Ryujinx.Graphics.OpenGL
             GL.CopyBufferSubData(
                 BufferTarget.CopyReadBuffer,
                 BufferTarget.CopyWriteBuffer,
-                (IntPtr)srcOffset,
-                (IntPtr)dstOffset,
-                (IntPtr)size);
+                (nint)srcOffset,
+                (nint)dstOffset,
+                (nint)size);
         }
 
         public static unsafe PinnedSpan<byte> GetData(OpenGLRenderer renderer, BufferHandle buffer, int offset, int size)
@@ -74,9 +74,9 @@ namespace Ryujinx.Graphics.OpenGL
             // Data in the persistent buffer and host array is guaranteed to be available
             // until the next time the host thread requests data.
 
-            if (renderer.PersistentBuffers.TryGet(buffer, out IntPtr ptr))
+            if (renderer.PersistentBuffers.TryGet(buffer, out nint ptr))
             {
-                return new PinnedSpan<byte>(IntPtr.Add(ptr, offset).ToPointer(), size);
+                return new PinnedSpan<byte>(nint.Add(ptr, offset).ToPointer(), size);
             }
             else if (HwCapabilities.UsePersistentBufferForFlush)
             {
@@ -84,11 +84,11 @@ namespace Ryujinx.Graphics.OpenGL
             }
             else
             {
-                IntPtr target = renderer.PersistentBuffers.Default.GetHostArray(size);
+                nint target = renderer.PersistentBuffers.Default.GetHostArray(size);
 
                 GL.BindBuffer(BufferTarget.CopyReadBuffer, buffer.ToInt32());
 
-                GL.GetBufferSubData(BufferTarget.CopyReadBuffer, (IntPtr)offset, size, target);
+                GL.GetBufferSubData(BufferTarget.CopyReadBuffer, (nint)offset, size, target);
 
                 return new PinnedSpan<byte>(target.ToPointer(), size);
             }
@@ -97,7 +97,7 @@ namespace Ryujinx.Graphics.OpenGL
         public static void Resize(BufferHandle handle, int size)
         {
             GL.BindBuffer(BufferTarget.CopyWriteBuffer, handle.ToInt32());
-            GL.BufferData(BufferTarget.CopyWriteBuffer, size, IntPtr.Zero, BufferUsageHint.StreamCopy);
+            GL.BufferData(BufferTarget.CopyWriteBuffer, size, nint.Zero, BufferUsageHint.StreamCopy);
         }
 
         public static void SetData(BufferHandle buffer, int offset, ReadOnlySpan<byte> data)
@@ -108,7 +108,7 @@ namespace Ryujinx.Graphics.OpenGL
             {
                 fixed (byte* ptr = data)
                 {
-                    GL.BufferSubData(BufferTarget.CopyWriteBuffer, (IntPtr)offset, data.Length, (IntPtr)ptr);
+                    GL.BufferSubData(BufferTarget.CopyWriteBuffer, (nint)offset, data.Length, (nint)ptr);
                 }
             }
         }

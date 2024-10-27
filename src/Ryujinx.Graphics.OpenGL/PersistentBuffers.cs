@@ -14,7 +14,7 @@ namespace Ryujinx.Graphics.OpenGL
         private readonly PersistentBuffer _main = new();
         private readonly PersistentBuffer _background = new();
 
-        private readonly Dictionary<BufferHandle, IntPtr> _maps = new();
+        private readonly Dictionary<BufferHandle, nint> _maps = new();
 
         public PersistentBuffer Default => BackgroundContextWorker.InBackground ? _background : _main;
 
@@ -27,7 +27,7 @@ namespace Ryujinx.Graphics.OpenGL
         public void Map(BufferHandle handle, int size)
         {
             GL.BindBuffer(BufferTarget.CopyWriteBuffer, handle.ToInt32());
-            IntPtr ptr = GL.MapBufferRange(BufferTarget.CopyWriteBuffer, IntPtr.Zero, size, BufferAccessMask.MapReadBit | BufferAccessMask.MapPersistentBit);
+            nint ptr = GL.MapBufferRange(BufferTarget.CopyWriteBuffer, nint.Zero, size, BufferAccessMask.MapReadBit | BufferAccessMask.MapPersistentBit);
 
             _maps[handle] = ptr;
         }
@@ -43,7 +43,7 @@ namespace Ryujinx.Graphics.OpenGL
             }
         }
 
-        public bool TryGet(BufferHandle handle, out IntPtr ptr)
+        public bool TryGet(BufferHandle handle, out nint ptr)
         {
             return _maps.TryGetValue(handle, out ptr);
         }
@@ -51,12 +51,12 @@ namespace Ryujinx.Graphics.OpenGL
 
     class PersistentBuffer : IDisposable
     {
-        private IntPtr _bufferMap;
+        private nint _bufferMap;
         private int _copyBufferHandle;
         private int _copyBufferSize;
 
         private byte[] _data;
-        private IntPtr _dataMap;
+        private nint _dataMap;
 
         private void EnsureBuffer(int requiredSize)
         {
@@ -73,19 +73,19 @@ namespace Ryujinx.Graphics.OpenGL
                 _copyBufferSize = requiredSize;
 
                 GL.BindBuffer(BufferTarget.CopyWriteBuffer, _copyBufferHandle);
-                GL.BufferStorage(BufferTarget.CopyWriteBuffer, requiredSize, IntPtr.Zero, BufferStorageFlags.MapReadBit | BufferStorageFlags.MapPersistentBit);
+                GL.BufferStorage(BufferTarget.CopyWriteBuffer, requiredSize, nint.Zero, BufferStorageFlags.MapReadBit | BufferStorageFlags.MapPersistentBit);
 
-                _bufferMap = GL.MapBufferRange(BufferTarget.CopyWriteBuffer, IntPtr.Zero, requiredSize, BufferAccessMask.MapReadBit | BufferAccessMask.MapPersistentBit);
+                _bufferMap = GL.MapBufferRange(BufferTarget.CopyWriteBuffer, nint.Zero, requiredSize, BufferAccessMask.MapReadBit | BufferAccessMask.MapPersistentBit);
             }
         }
 
-        public unsafe IntPtr GetHostArray(int requiredSize)
+        public unsafe nint GetHostArray(int requiredSize)
         {
             if (_data == null || _data.Length < requiredSize)
             {
                 _data = GC.AllocateUninitializedArray<byte>(requiredSize, true);
 
-                _dataMap = (IntPtr)Unsafe.AsPointer(ref MemoryMarshal.GetArrayDataReference(_data));
+                _dataMap = (nint)Unsafe.AsPointer(ref MemoryMarshal.GetArrayDataReference(_data));
             }
 
             return _dataMap;
@@ -95,7 +95,7 @@ namespace Ryujinx.Graphics.OpenGL
         {
             GL.MemoryBarrier(MemoryBarrierFlags.ClientMappedBufferBarrierBit);
 
-            IntPtr sync = GL.FenceSync(SyncCondition.SyncGpuCommandsComplete, WaitSyncFlags.None);
+            nint sync = GL.FenceSync(SyncCondition.SyncGpuCommandsComplete, WaitSyncFlags.None);
             WaitSyncStatus syncResult = GL.ClientWaitSync(sync, ClientWaitSyncFlags.SyncFlushCommandsBit, 1000000000);
 
             if (syncResult == WaitSyncStatus.TimeoutExpired)
@@ -143,7 +143,7 @@ namespace Ryujinx.Graphics.OpenGL
             GL.BindBuffer(BufferTarget.CopyReadBuffer, buffer.ToInt32());
             GL.BindBuffer(BufferTarget.CopyWriteBuffer, _copyBufferHandle);
 
-            GL.CopyBufferSubData(BufferTarget.CopyReadBuffer, BufferTarget.CopyWriteBuffer, (IntPtr)offset, IntPtr.Zero, size);
+            GL.CopyBufferSubData(BufferTarget.CopyReadBuffer, BufferTarget.CopyWriteBuffer, (nint)offset, nint.Zero, size);
 
             GL.BindBuffer(BufferTarget.CopyWriteBuffer, 0);
 

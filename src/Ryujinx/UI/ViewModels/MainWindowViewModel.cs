@@ -170,6 +170,10 @@ namespace Ryujinx.Ava.UI.ViewModels
             SwitchToGameControl = switchToGameControl;
             SetMainContent = setMainContent;
             TopLevel = topLevel;
+            
+#if DEBUG
+            topLevel.AttachDevTools(new KeyGesture(Avalonia.Input.Key.F12, KeyModifiers.Control));
+#endif
         }
 
         #region Properties
@@ -1434,7 +1438,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         {
             if (IsGameRunning)
             {
-                ConfigurationState.Instance.System.EnableDockedMode.Value = !ConfigurationState.Instance.System.EnableDockedMode.Value;
+                ConfigurationState.Instance.System.EnableDockedMode.Toggle();
             }
         }
 

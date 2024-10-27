@@ -15,14 +15,14 @@ namespace Ryujinx.Graphics.OpenGL.Helper
             {
                 if (name != LibraryName)
                 {
-                    return IntPtr.Zero;
+                    return nint.Zero;
                 }
 
-                if (!NativeLibrary.TryLoad("libGL.so.1", assembly, path, out IntPtr result))
+                if (!NativeLibrary.TryLoad("libGL.so.1", assembly, path, out nint result))
                 {
                     if (!NativeLibrary.TryLoad("libGL.so", assembly, path, out result))
                     {
-                        return IntPtr.Zero;
+                        return nint.Zero;
                     }
                 }
 
@@ -31,6 +31,6 @@ namespace Ryujinx.Graphics.OpenGL.Helper
         }
 
         [LibraryImport(LibraryName, EntryPoint = "glXGetCurrentContext")]
-        public static partial IntPtr GetCurrentContext();
+        public static partial nint GetCurrentContext();
     }
 }

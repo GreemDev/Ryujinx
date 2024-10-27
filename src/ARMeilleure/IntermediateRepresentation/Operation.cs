@@ -228,7 +228,7 @@ namespace ARMeilleure.IntermediateRepresentation
 
         public readonly override int GetHashCode()
         {
-            return HashCode.Combine((IntPtr)_data);
+            return HashCode.Combine((nint)_data);
         }
 
         public static bool operator ==(Operation a, Operation b)

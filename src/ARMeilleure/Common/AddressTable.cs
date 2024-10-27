@@ -55,7 +55,7 @@ namespace ARMeilleure.Common
 
         private bool _disposed;
         private TEntry** _table;
-        private readonly List<IntPtr> _pages;
+        private readonly List<nint> _pages;
 
         /// <summary>
         /// Gets the bits used by the <see cref="Levels"/> of the <see cref="AddressTable{TEntry}"/> instance.
@@ -76,7 +76,7 @@ namespace ARMeilleure.Common
         /// Gets the base address of the <see cref="EntryTable{TEntry}"/>.
         /// </summary>
         /// <exception cref="ObjectDisposedException"><see cref="EntryTable{TEntry}"/> instance was disposed</exception>
-        public IntPtr Base
+        public nint Base
         {
             get
             {
@@ -84,7 +84,7 @@ namespace ARMeilleure.Common
 
                 lock (_pages)
                 {
-                    return (IntPtr)GetRootPage();
+                    return (nint)GetRootPage();
                 }
             }
         }
@@ -104,7 +104,7 @@ namespace ARMeilleure.Common
                 throw new ArgumentException("Table must be at least 2 levels deep.", nameof(levels));
             }
 
-            _pages = new List<IntPtr>(capacity: 16);
+            _pages = new List<nint>(capacity: 16);
 
             Levels = levels;
             Mask = 0;
@@ -168,7 +168,7 @@ namespace ARMeilleure.Common
 
                     nextPage = i == Levels.Length - 2 ?
                         (TEntry*)Allocate(1 << nextLevel.Length, Fill, leaf: true) :
-                        (TEntry*)Allocate(1 << nextLevel.Length, IntPtr.Zero, leaf: false);
+                        (TEntry*)Allocate(1 << nextLevel.Length, nint.Zero, leaf: false);
                 }
 
                 page = (TEntry**)nextPage;
@@ -185,7 +185,7 @@ namespace ARMeilleure.Common
         {
             if (_table == null)
             {
-                _table = (TEntry**)Allocate(1 << Levels[0].Length, fill: IntPtr.Zero, leaf: false);
+                _table = (TEntry**)Allocate(1 << Levels[0].Length, fill: nint.Zero, leaf: false);
             }
 
             return _table;
@@ -199,10 +199,10 @@ namespace ARMeilleure.Common
         /// <param name="fill">Fill value</param>
         /// <param name="leaf"><see langword="true"/> if leaf; otherwise <see langword="false"/></param>
         /// <returns>Allocated block</returns>
-        private IntPtr Allocate<T>(int length, T fill, bool leaf) where T : unmanaged
+        private nint Allocate<T>(int length, T fill, bool leaf) where T : unmanaged
         {
             var size = sizeof(T) * length;
-            var page = (IntPtr)NativeAllocator.Instance.Allocate((uint)size);
+            var page = (nint)NativeAllocator.Instance.Allocate((uint)size);
             var span = new Span<T>((void*)page, length);
 
             span.Fill(fill);

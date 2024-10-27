@@ -365,7 +365,7 @@ namespace Ryujinx.Graphics.Vulkan
 
             fixed (byte* deviceName = properties.DeviceName)
             {
-                GpuRenderer = Marshal.PtrToStringAnsi((IntPtr)deviceName);
+                GpuRenderer = Marshal.PtrToStringAnsi((nint)deviceName);
             }
 
             GpuVersion = $"Vulkan v{ParseStandardVulkanVersion(properties.ApiVersion)}, Driver v{ParseDriverVersion(ref properties)}";

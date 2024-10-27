@@ -21,7 +21,7 @@ namespace Ryujinx.Graphics.Vulkan.Queries
         private QueryPool _queryPool;
 
         private readonly BufferHolder _buffer;
-        private readonly IntPtr _bufferMap;
+        private readonly nint _bufferMap;
         private readonly CounterType _type;
         private readonly bool _result32Bit;
         private readonly bool _isSupported;

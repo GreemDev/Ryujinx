@@ -21,7 +21,7 @@ namespace Ryujinx.Graphics.OpenGL
             if (logLevel == GraphicsDebugLevel.None)
             {
                 GL.Disable(EnableCap.DebugOutputSynchronous);
-                GL.DebugMessageCallback(null, IntPtr.Zero);
+                GL.DebugMessageCallback(null, nint.Zero);
 
                 return;
             }
@@ -45,7 +45,7 @@ namespace Ryujinx.Graphics.OpenGL
             _counter = 0;
             _debugCallback = GLDebugHandler;
 
-            GL.DebugMessageCallback(_debugCallback, IntPtr.Zero);
+            GL.DebugMessageCallback(_debugCallback, nint.Zero);
 
             Logger.Warning?.Print(LogClass.Gpu, "OpenGL Debugging is enabled. Performance will be negatively impacted.");
         }
@@ -56,8 +56,8 @@ namespace Ryujinx.Graphics.OpenGL
             int id,
             DebugSeverity severity,
             int length,
-            IntPtr message,
-            IntPtr userParam)
+            nint message,
+            nint userParam)
         {
             string msg = Marshal.PtrToStringUTF8(message).Replace('\n', ' ');
 

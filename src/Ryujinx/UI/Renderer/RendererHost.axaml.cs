@@ -60,7 +60,7 @@ namespace Ryujinx.Ava.UI.Renderer
             BoundsChanged?.Invoke(sender, e);
         }
 
-        private void CurrentWindow_WindowCreated(object sender, IntPtr e)
+        private void CurrentWindow_WindowCreated(object sender, nint e)
         {
             WindowCreated?.Invoke(this, EventArgs.Empty);
         }

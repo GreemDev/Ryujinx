@@ -144,27 +144,27 @@ namespace Ryujinx.Cpu.LightningJit.Arm64.Target.Arm64
             return name == InstName.Svc;
         }
 
-        private static IntPtr GetBrkHandlerPtr()
+        private static nint GetBrkHandlerPtr()
         {
             return Marshal.GetFunctionPointerForDelegate<SoftwareInterruptHandler>(NativeInterface.Break);
         }
 
-        private static IntPtr GetSvcHandlerPtr()
+        private static nint GetSvcHandlerPtr()
         {
             return Marshal.GetFunctionPointerForDelegate<SoftwareInterruptHandler>(NativeInterface.SupervisorCall);
         }
 
-        private static IntPtr GetUdfHandlerPtr()
+        private static nint GetUdfHandlerPtr()
         {
             return Marshal.GetFunctionPointerForDelegate<SoftwareInterruptHandler>(NativeInterface.Undefined);
         }
 
-        private static IntPtr GetCntpctEl0Ptr()
+        private static nint GetCntpctEl0Ptr()
         {
             return Marshal.GetFunctionPointerForDelegate<Get64>(NativeInterface.GetCntpctEl0);
         }
 
-        private static IntPtr CheckSynchronizationPtr()
+        private static nint CheckSynchronizationPtr()
         {
             return Marshal.GetFunctionPointerForDelegate<GetBool>(NativeInterface.CheckSynchronization);
         }
@@ -215,7 +215,7 @@ namespace Ryujinx.Cpu.LightningJit.Arm64.Target.Arm64
             TailMerger tailMerger,
             Action writeEpilogue,
             AddressTable<ulong> funcTable,
-            IntPtr dispatchStubPtr,
+            nint dispatchStubPtr,
             InstName name,
             ulong pc,
             uint encoding,
@@ -298,7 +298,7 @@ namespace Ryujinx.Cpu.LightningJit.Arm64.Target.Arm64
             TailMerger tailMerger,
             Action writeEpilogue,
             AddressTable<ulong> funcTable,
-            IntPtr funcPtr,
+            nint funcPtr,
             int spillBaseOffset,
             ulong pc,
             Operand guestAddress,
@@ -369,7 +369,7 @@ namespace Ryujinx.Cpu.LightningJit.Arm64.Target.Arm64
         private static void WriteCall(
             ref Assembler asm,
             RegisterAllocator regAlloc,
-            IntPtr funcPtr,
+            nint funcPtr,
             int spillBaseOffset,
             int? resultRegister,
             params ulong[] callArgs)

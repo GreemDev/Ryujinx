@@ -8,7 +8,7 @@ namespace Ryujinx.Cpu.Jit
     {
         private readonly MemoryBlock _impl;
 
-        public IntPtr Pointer => _impl.Pointer;
+        public nint Pointer => _impl.Pointer;
 
         public JitMemoryBlock(ulong size, MemoryAllocationFlags flags)
         {

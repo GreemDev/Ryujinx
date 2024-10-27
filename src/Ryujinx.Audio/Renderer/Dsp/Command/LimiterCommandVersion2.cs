@@ -88,8 +88,8 @@ namespace Ryujinx.Audio.Renderer.Dsp.Command
                     statistics.Reset();
                 }
 
-                Span<IntPtr> inputBuffers = stackalloc IntPtr[_parameter.ChannelCount];
-                Span<IntPtr> outputBuffers = stackalloc IntPtr[_parameter.ChannelCount];
+                Span<nint> inputBuffers = stackalloc nint[_parameter.ChannelCount];
+                Span<nint> outputBuffers = stackalloc nint[_parameter.ChannelCount];
 
                 for (int i = 0; i < _parameter.ChannelCount; i++)
                 {

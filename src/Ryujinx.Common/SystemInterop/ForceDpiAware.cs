@@ -14,19 +14,19 @@ namespace Ryujinx.Common.SystemInterop
         private const string X11LibraryName = "libX11.so.6";
 
         [LibraryImport(X11LibraryName)]
-        private static partial IntPtr XOpenDisplay([MarshalAs(UnmanagedType.LPStr)] string display);
+        private static partial nint XOpenDisplay([MarshalAs(UnmanagedType.LPStr)] string display);
 
         [LibraryImport(X11LibraryName)]
-        private static partial IntPtr XGetDefault(IntPtr display, [MarshalAs(UnmanagedType.LPStr)] string program, [MarshalAs(UnmanagedType.LPStr)] string option);
+        private static partial nint XGetDefault(nint display, [MarshalAs(UnmanagedType.LPStr)] string program, [MarshalAs(UnmanagedType.LPStr)] string option);
 
         [LibraryImport(X11LibraryName)]
-        private static partial int XDisplayWidth(IntPtr display, int screenNumber);
+        private static partial int XDisplayWidth(nint display, int screenNumber);
 
         [LibraryImport(X11LibraryName)]
-        private static partial int XDisplayWidthMM(IntPtr display, int screenNumber);
+        private static partial int XDisplayWidthMM(nint display, int screenNumber);
 
         [LibraryImport(X11LibraryName)]
-        private static partial int XCloseDisplay(IntPtr display);
+        private static partial int XCloseDisplay(nint display);
 
         private const double StandardDpiScale = 96.0;
         private const double MaxScaleFactor = 1.25;
@@ -51,7 +51,7 @@ namespace Ryujinx.Common.SystemInterop
             {
                 if (OperatingSystem.IsWindows())
                 {
-                    userDpiScale = GdiPlusHelper.GetDpiX(IntPtr.Zero);
+                    userDpiScale = GdiPlusHelper.GetDpiX(nint.Zero);
                 }
                 else if (OperatingSystem.IsLinux())
                 {
@@ -59,7 +59,7 @@ namespace Ryujinx.Common.SystemInterop
 
                     if (xdgSessionType == null || xdgSessionType == "x11")
                     {
-                        IntPtr display = XOpenDisplay(null);
+                        nint display = XOpenDisplay(null);
                         string dpiString = Marshal.PtrToStringAnsi(XGetDefault(display, "Xft", "dpi"));
                         if (dpiString == null || !double.TryParse(dpiString, NumberStyles.Any, CultureInfo.InvariantCulture, out userDpiScale))
                         {

@@ -8,13 +8,13 @@ namespace Ryujinx.Audio.Backends.SoundIo.Native
 {
     public class SoundIoContext : IDisposable
     {
-        private IntPtr _context;
+        private nint _context;
         private Action<SoundIoError> _onBackendDisconnect;
         private OnBackendDisconnectedDelegate _onBackendDisconnectNative;
 
-        public IntPtr Context => _context;
+        public nint Context => _context;
 
-        internal SoundIoContext(IntPtr context)
+        internal SoundIoContext(nint context)
         {
             _context = context;
             _onBackendDisconnect = null;
@@ -60,9 +60,9 @@ namespace Ryujinx.Audio.Backends.SoundIo.Native
 
         public SoundIoDeviceContext GetOutputDevice(int index)
         {
-            IntPtr deviceContext = soundio_get_output_device(_context, index);
+            nint deviceContext = soundio_get_output_device(_context, index);
 
-            if (deviceContext == IntPtr.Zero)
+            if (deviceContext == nint.Zero)
             {
                 return null;
             }
@@ -72,9 +72,9 @@ namespace Ryujinx.Audio.Backends.SoundIo.Native
 
         public static SoundIoContext Create()
         {
-            IntPtr context = soundio_create();
+            nint context = soundio_create();
 
-            if (context == IntPtr.Zero)
+            if (context == nint.Zero)
             {
                 return null;
             }
@@ -84,9 +84,9 @@ namespace Ryujinx.Audio.Backends.SoundIo.Native
 
         protected virtual void Dispose(bool disposing)
         {
-            IntPtr currentContext = Interlocked.Exchange(ref _context, IntPtr.Zero);
+            nint currentContext = Interlocked.Exchange(ref _context, nint.Zero);
 
-            if (currentContext != IntPtr.Zero)
+            if (currentContext != nint.Zero)
             {
                 soundio_destroy(currentContext);
             }

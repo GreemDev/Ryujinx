@@ -11,7 +11,7 @@ namespace Ryujinx.Graphics.Nvdec.Vp9.Common
 
         private struct PoolItem
         {
-            public IntPtr Pointer;
+            public nint Pointer;
             public int Length;
             public bool InUse;
         }
@@ -22,7 +22,7 @@ namespace Ryujinx.Graphics.Nvdec.Vp9.Common
         {
             int lengthInBytes = Unsafe.SizeOf<T>() * length;
 
-            IntPtr ptr = IntPtr.Zero;
+            nint ptr = nint.Zero;
 
             for (int i = 0; i < PoolEntries; i++)
             {
@@ -36,7 +36,7 @@ namespace Ryujinx.Graphics.Nvdec.Vp9.Common
                 }
             }
 
-            if (ptr == IntPtr.Zero)
+            if (ptr == nint.Zero)
             {
                 ptr = Marshal.AllocHGlobal(lengthInBytes);
 
@@ -47,7 +47,7 @@ namespace Ryujinx.Graphics.Nvdec.Vp9.Common
                     if (!item.InUse)
                     {
                         item.InUse = true;
-                        if (item.Pointer != IntPtr.Zero)
+                        if (item.Pointer != nint.Zero)
                         {
                             Marshal.FreeHGlobal(item.Pointer);
                         }
@@ -63,7 +63,7 @@ namespace Ryujinx.Graphics.Nvdec.Vp9.Common
 
         public unsafe void Free<T>(ArrayPtr<T> arr) where T : unmanaged
         {
-            IntPtr ptr = (IntPtr)arr.ToPointer();
+            nint ptr = (nint)arr.ToPointer();
 
             for (int i = 0; i < PoolEntries; i++)
             {
@@ -83,10 +83,10 @@ namespace Ryujinx.Graphics.Nvdec.Vp9.Common
             {
                 ref PoolItem item = ref _pool[i];
 
-                if (item.Pointer != IntPtr.Zero)
+                if (item.Pointer != nint.Zero)
                 {
                     Marshal.FreeHGlobal(item.Pointer);
-                    item.Pointer = IntPtr.Zero;
+                    item.Pointer = nint.Zero;
                 }
             }
         }

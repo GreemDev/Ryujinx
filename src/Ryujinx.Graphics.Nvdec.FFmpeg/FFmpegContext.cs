@@ -91,7 +91,7 @@ namespace Ryujinx.Graphics.Nvdec.FFmpeg
 
             FFmpegApi.av_log_format_line(ptr, level, format, vl, lineBuffer, lineSize, &printPrefix);
 
-            string line = Marshal.PtrToStringAnsi((IntPtr)lineBuffer).Trim();
+            string line = Marshal.PtrToStringAnsi((nint)lineBuffer).Trim();
 
             switch (level)
             {

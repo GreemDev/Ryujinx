@@ -307,7 +307,7 @@ namespace Ryujinx.Cpu.Jit.HostTracked
             ulong size,
             MemoryPermission protection,
             AddressSpacePartitioned addressSpace,
-            Action<ulong, IntPtr, ulong> updatePtCallback)
+            Action<ulong, nint, ulong> updatePtCallback)
         {
             if (_baseMemory.LazyInitMirrorForProtection(addressSpace, Address, Size, protection))
             {
@@ -317,7 +317,7 @@ namespace Ryujinx.Cpu.Jit.HostTracked
             updatePtCallback(va, _baseMemory.GetPointerForProtection(va - Address, size, protection), size);
         }
 
-        public IntPtr GetPointer(ulong va, ulong size)
+        public nint GetPointer(ulong va, ulong size)
         {
             Debug.Assert(va >= Address);
             Debug.Assert(va + size <= EndAddress);

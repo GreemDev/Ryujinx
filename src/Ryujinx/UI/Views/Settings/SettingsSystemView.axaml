@@ -201,6 +201,7 @@
                         Text="{locale:Locale SettingsTabSystemHacks}" />
                     <TextBlock
                         Foreground="{DynamicResource SecondaryTextColor}"
+                        TextDecorations="Underline"
                         Text="{locale:Locale SettingsTabSystemHacksNote}" />
                 </StackPanel>
                 <StackPanel
