@@ -195,7 +195,7 @@
                 <Separator Height="1" />
                 <StackPanel
                     Orientation="Vertical"
-                    Spacing="2">
+                    Spacing="5">
                     <TextBlock
                         Classes="h1"
                         Text="{locale:Locale SettingsTabSystemHacks}" />

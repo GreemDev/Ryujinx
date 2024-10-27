@@ -633,10 +633,10 @@ namespace Ryujinx.Ava.UI.Windows
                 var autoloadDirs = ConfigurationState.Instance.UI.AutoloadDirs.Value;
                 if (autoloadDirs.Count > 0)
                 {
-                    var updatesLoaded = ApplicationLibrary.AutoLoadTitleUpdates(autoloadDirs);
-                    var dlcLoaded = ApplicationLibrary.AutoLoadDownloadableContents(autoloadDirs);
+                    var updatesLoaded = ApplicationLibrary.AutoLoadTitleUpdates(autoloadDirs, out int updatesRemoved);
+                    var dlcLoaded = ApplicationLibrary.AutoLoadDownloadableContents(autoloadDirs, out int dlcRemoved);
 
-                    ShowNewContentAddedDialog(dlcLoaded, updatesLoaded);
+                    ShowNewContentAddedDialog(dlcLoaded, dlcRemoved, updatesLoaded, updatesRemoved);
                 }
 
                 _isLoading = false;
@@ -648,19 +648,19 @@ namespace Ryujinx.Ava.UI.Windows
             applicationLibraryThread.Start();
         }
 
-        private void ShowNewContentAddedDialog(int numDlcAdded, int numUpdatesAdded)
+        private void ShowNewContentAddedDialog(int numDlcAdded, int numDlcRemoved, int numUpdatesAdded, int numUpdatesRemoved)
         {
-            string msg = numDlcAdded > 0 && numUpdatesAdded > 0
-                ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadDlcAndUpdateAddedMessage], numDlcAdded, numUpdatesAdded)
-                : numDlcAdded > 0
-                    ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadDlcAddedMessage], numDlcAdded)
-                    : numUpdatesAdded > 0
-                        ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadUpdateAddedMessage], numUpdatesAdded)
-                        : null;
+            string[] messages = {
+                numDlcRemoved > 0 ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadDlcRemovedMessage], numDlcRemoved): null,
+                numDlcAdded > 0 ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadDlcAddedMessage], numDlcAdded): null,
+                numUpdatesRemoved > 0 ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadUpdateRemovedMessage], numUpdatesRemoved): null,
+                numUpdatesAdded > 0 ? string.Format(LocaleManager.Instance[LocaleKeys.AutoloadUpdateAddedMessage], numUpdatesAdded) : null
+            };
 
-            if (msg is null)
+            string msg = String.Join("\r\n", messages);
+
+            if (String.IsNullOrWhiteSpace(msg))
                 return;
-
 
             Dispatcher.UIThread.InvokeAsync(async () =>
             {
