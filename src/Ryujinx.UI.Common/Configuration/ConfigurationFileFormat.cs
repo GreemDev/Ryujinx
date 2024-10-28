@@ -16,7 +16,7 @@ namespace Ryujinx.UI.Common.Configuration
         /// <summary>
         /// The current version of the file format
         /// </summary>
-        public const int CurrentVersion = 55;
+        public const int CurrentVersion = 56;
 
         /// <summary>
         /// Version of the configuration file format
@@ -172,6 +172,11 @@ namespace Ryujinx.UI.Common.Configuration
         /// Enables or disables save window size, position and state on close.
         /// </summary>
         public bool RememberWindowState { get; set; }
+
+        /// <summary>
+        /// Enables or disables the redesigned title bar
+        /// </summary>
+        public bool ShowTitleBar { get; set; }
 
         /// <summary>
         /// Enables hardware-accelerated rendering for Avalonia
