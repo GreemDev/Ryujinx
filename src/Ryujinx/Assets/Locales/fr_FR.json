@@ -603,7 +603,7 @@
   "FileLogTooltip": "Sauvegarde le journal de la console dans un fichier journal sur le disque. Cela n'affecte pas les performances.",
   "StubLogTooltip": "Affiche les messages de journaux dans la console. N'affecte pas les performances.",
   "InfoLogTooltip": "Affiche les messages de journaux d'informations dans la console. N'affecte pas les performances.",
-  "WarnLogTooltip": "Affiche les messages d'avertissement dans la console. N'affecte pas la performancs.",
+  "WarnLogTooltip": "Affiche les messages d'avertissement dans la console. N'affecte pas les performances.",
   "ErrorLogTooltip": "Affiche les messages de journaux d'erreur dans la console. N'affecte pas les performances.",
   "TraceLogTooltip": "Affiche la trace des messages de journaux dans la console. N'affecte pas les performances.",
   "GuestLogTooltip": "Affiche les messages de journaux des invités dans la console. N'affecte pas les performances.",
