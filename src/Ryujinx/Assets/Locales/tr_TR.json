@@ -97,6 +97,7 @@
   "SettingsTabGeneralCheckUpdatesOnLaunch": "Her Açılışta Güncellemeleri Denetle",
   "SettingsTabGeneralShowConfirmExitDialog": "\"Çıkışı Onayla\" Diyaloğunu Göster",
   "SettingsTabGeneralRememberWindowState": "Remember Window Size/Position",
+  "SettingsTabGeneralShowTitleBar": "Show Title Bar (Requires restart)",
   "SettingsTabGeneralHideCursor": "İşaretçiyi Gizle:",
   "SettingsTabGeneralHideCursorNever": "Hiçbir Zaman",
   "SettingsTabGeneralHideCursorOnIdle": "Hareketsiz Durumda",

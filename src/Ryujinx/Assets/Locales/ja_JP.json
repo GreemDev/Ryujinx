@@ -97,6 +97,7 @@
   "SettingsTabGeneralCheckUpdatesOnLaunch": "起動時にアップデートを確認する",
   "SettingsTabGeneralShowConfirmExitDialog": "\"終了を確認\" ダイアログを表示する",
   "SettingsTabGeneralRememberWindowState": "Remember Window Size/Position",
+  "SettingsTabGeneralShowTitleBar": "Show Title Bar (Requires restart)",
   "SettingsTabGeneralHideCursor": "マウスカーソルを非表示",
   "SettingsTabGeneralHideCursorNever": "決して",
   "SettingsTabGeneralHideCursorOnIdle": "アイドル時",

@@ -97,6 +97,7 @@
   "SettingsTabGeneralCheckUpdatesOnLaunch": "시작 시, 업데이트 확인",
   "SettingsTabGeneralShowConfirmExitDialog": "\"종료 확인\" 대화 상자 표시",
   "SettingsTabGeneralRememberWindowState": "창 크기/위치 기억",
+  "SettingsTabGeneralShowTitleBar": "Show Title Bar (Requires restart)",
   "SettingsTabGeneralHideCursor": "마우스 커서 숨기기",
   "SettingsTabGeneralHideCursorNever": "절대 안 함",
   "SettingsTabGeneralHideCursorOnIdle": "유휴 상태",

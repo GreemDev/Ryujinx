@@ -97,6 +97,7 @@
   "SettingsTabGeneralCheckUpdatesOnLaunch": "Проверять наличие обновлений при запуске",
   "SettingsTabGeneralShowConfirmExitDialog": "Подтверждать выход из приложения",
   "SettingsTabGeneralRememberWindowState": "Запомнить размер/положение окна",
+  "SettingsTabGeneralShowTitleBar": "Show Title Bar (Requires restart)",
   "SettingsTabGeneralHideCursor": "Скрывать курсор",
   "SettingsTabGeneralHideCursorNever": "Никогда",
   "SettingsTabGeneralHideCursorOnIdle": "В простое",
