@@ -833,7 +833,7 @@ namespace Ryujinx.UI.Common.Configuration
             ShowConfirmExit.Value = true;
             IgnoreApplet.Value = false;
             RememberWindowState.Value = true;
-            ShowTitleBar.Value = (OperatingSystem.IsWindows()) ? false : true;
+            ShowTitleBar.Value = !OperatingSystem.IsWindows();
             EnableHardwareAcceleration.Value = true;
             HideCursor.Value = HideCursorMode.OnIdle;
             Graphics.EnableVsync.Value = true;
