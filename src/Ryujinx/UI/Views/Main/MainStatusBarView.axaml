@@ -53,6 +53,7 @@
                 <TextBlock
                     Name="StatusBarProgressStatus"
                     Grid.Column="2"
+                    MinWidth="200"
                     Margin="10,0,5,0"
                     VerticalAlignment="Center"
                     IsVisible="{Binding StatusBarProgressStatusVisible}"
@@ -60,6 +61,7 @@
                 <ProgressBar
                     Name="LoadProgressBar"
                     Grid.Column="3"
+                    MinWidth="200"
                     Height="6"
                     VerticalAlignment="Center"
                     Foreground="{DynamicResource SystemAccentColorLight2}"

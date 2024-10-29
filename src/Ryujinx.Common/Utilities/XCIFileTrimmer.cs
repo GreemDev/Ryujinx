@@ -1,9 +1,13 @@
+// Uncomment the line below to ensure XCIFileTrimmer does not modify files
+//#define XCI_TRIMMER_READ_ONLY_MODE
+
 using Gommon;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace Ryujinx.Common.Utilities
 {
@@ -71,6 +75,7 @@ namespace Ryujinx.Common.Utilities
 
         public enum OperationOutcome
         {
+            Undetermined,
             InvalidXCIFile,
             NoTrimNecessary,
             NoUntrimPossible,
@@ -78,7 +83,8 @@ namespace Ryujinx.Common.Utilities
             FileIOWriteError,
             ReadOnlyFileCannotFix,
             FileSizeChanged,
-            Successful
+            Successful,
+            Cancelled
         }
 
         public enum LogType
@@ -139,7 +145,7 @@ namespace Ryujinx.Common.Utilities
             ReadHeader();
         }
 
-        public void CheckFreeSpace()
+        public void CheckFreeSpace(CancellationToken? cancelToken = null)
         {
             if (FreeSpaceChecked)
                 return;
@@ -160,7 +166,7 @@ namespace Ryujinx.Common.Utilities
 
                         Stopwatch timedSw = Lambda.Timed(() =>
                         {
-                            freeSpaceValid = CheckPadding(readSizeB);
+                            freeSpaceValid = CheckPadding(readSizeB, cancelToken);
                         });
 
                         if (timedSw.Elapsed.TotalSeconds > 0)
@@ -191,7 +197,7 @@ namespace Ryujinx.Common.Utilities
             }
         }
 
-        private bool CheckPadding(long readSizeB)
+        private bool CheckPadding(long readSizeB, CancellationToken? cancelToken = null)
         {
             long maxReads = readSizeB / XCIFileTrimmer.BufferSize;
             long read = 0;
@@ -199,6 +205,11 @@ namespace Ryujinx.Common.Utilities
 
             while (true)
             {
+                if (cancelToken.HasValue && cancelToken.Value.IsCancellationRequested) 
+                {
+                    return false;
+                }
+
                 int bytes = _fileStream.Read(buffer, 0, XCIFileTrimmer.BufferSize);
                 if (bytes == 0)
                     break;
@@ -223,7 +234,7 @@ namespace Ryujinx.Common.Utilities
             ReadHeader();
         }
 
-        public OperationOutcome Trim()
+        public OperationOutcome Trim(CancellationToken? cancelToken = null)
         {
             if (!FileOK)
             {
@@ -237,12 +248,19 @@ namespace Ryujinx.Common.Utilities
 
             if (!FreeSpaceChecked)
             {
-                CheckFreeSpace();
+                CheckFreeSpace(cancelToken);
             }
 
             if (!FreeSpaceValid)
             {
-                return OperationOutcome.FreeSpaceCheckFailed;
+                if (cancelToken.HasValue && cancelToken.Value.IsCancellationRequested)
+                {
+                    return OperationOutcome.Cancelled;
+                }
+                else 
+                {
+                    return OperationOutcome.FreeSpaceCheckFailed;
+                }
             }
 
             Log?.Write(LogType.Info, "Trimming...");
@@ -274,7 +292,10 @@ namespace Ryujinx.Common.Utilities
 
                 try
                 {
-                    outfileStream.SetLength(TrimmedFileSizeB);
+
+#if !XCI_TRIMMER_READ_ONLY_MODE
+                        outfileStream.SetLength(TrimmedFileSizeB);
+#endif
                     return OperationOutcome.Successful;
                 }
                 finally
@@ -290,7 +311,7 @@ namespace Ryujinx.Common.Utilities
             }
         }
 
-        public OperationOutcome Untrim()
+        public OperationOutcome Untrim(CancellationToken? cancelToken = null)
         {
             if (!FileOK)
             {
@@ -334,7 +355,7 @@ namespace Ryujinx.Common.Utilities
                 {
                     Stopwatch timedSw = Lambda.Timed(() =>
                     {
-                        WritePadding(outfileStream, bytesToWriteB);
+                        WritePadding(outfileStream, bytesToWriteB, cancelToken);
                     });
 
                     if (timedSw.Elapsed.TotalSeconds > 0)
@@ -342,7 +363,14 @@ namespace Ryujinx.Common.Utilities
                         Log?.Write(LogType.Info, $"Wrote at {bytesToWriteB / (double)XCIFileTrimmer.BytesInAMegabyte / timedSw.Elapsed.TotalSeconds:N} Mb/sec");
                     }
 
-                    return OperationOutcome.Successful;
+                    if (cancelToken.HasValue && cancelToken.Value.IsCancellationRequested)
+                    {
+                        return OperationOutcome.Cancelled;
+                    }
+                    else 
+                    {
+                        return OperationOutcome.Successful;
+                    }
                 }
                 finally
                 {
@@ -357,7 +385,7 @@ namespace Ryujinx.Common.Utilities
             }
         }
 
-        private void WritePadding(FileStream outfileStream, long bytesToWriteB)
+        private void WritePadding(FileStream outfileStream, long bytesToWriteB, CancellationToken? cancelToken = null)
         {
             long bytesLeftToWriteB = bytesToWriteB;
             long writes = bytesLeftToWriteB / XCIFileTrimmer.BufferSize;
@@ -370,8 +398,17 @@ namespace Ryujinx.Common.Utilities
 
                 while (bytesLeftToWriteB > 0)
                 {
+                    if (cancelToken.HasValue && cancelToken.Value.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
                     long bytesToWrite = Math.Min(XCIFileTrimmer.BufferSize, bytesLeftToWriteB);
-                    outfileStream.Write(buffer, 0, (int)bytesToWrite);
+                    
+#if !XCI_TRIMMER_READ_ONLY_MODE
+                        outfileStream.Write(buffer, 0, (int)bytesToWrite);
+#endif
+
                     bytesLeftToWriteB -= bytesToWrite;
                     Log?.Progress(write, writes, "Writing padding data...", false);
                     write++;

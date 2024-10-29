@@ -269,6 +269,8 @@
                     <MenuItem Header="{locale:Locale MenuBarToolsInstallFileTypes}" Click="InstallFileTypes_Click"/>
                     <MenuItem Header="{locale:Locale MenuBarToolsUninstallFileTypes}" Click="UninstallFileTypes_Click"/>
                 </MenuItem>
+                <Separator />
+                <MenuItem Header="{locale:Locale MenuBarToolsXCITrimmer}" Click="OpenXCITrimmerWindow" Icon="{icon:Icon fa-solid fa-scissors}" />
             </MenuItem>
             <MenuItem VerticalAlignment="Center" Header="{locale:Locale MenuBarView}">
                 <MenuItem VerticalAlignment="Center" Header="{locale:Locale MenuBarViewWindow}">

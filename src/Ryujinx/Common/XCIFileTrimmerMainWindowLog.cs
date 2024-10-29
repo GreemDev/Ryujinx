@@ -1,24 +1,24 @@
+using Avalonia.Threading;
 using Ryujinx.Ava.UI.ViewModels;
 
 namespace Ryujinx.Ava.Common
 {
-    internal class XCIFileTrimmerLog : Ryujinx.Common.Logging.XCIFileTrimmerLog
+    internal class XCIFileTrimmerMainWindowLog : Ryujinx.Common.Logging.XCIFileTrimmerLog
     {
         private readonly MainWindowViewModel _viewModel;
 
-        public XCIFileTrimmerLog(MainWindowViewModel viewModel)
+        public XCIFileTrimmerMainWindowLog(MainWindowViewModel viewModel)
         {
             _viewModel = viewModel;
         }
 
         public override void Progress(long current, long total, string text, bool complete)
         {
-            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            Dispatcher.UIThread.Post(() =>
             {
                 _viewModel.StatusBarProgressMaximum = (int)(total);
                 _viewModel.StatusBarProgressValue = (int)(current);
             });
         }
     }
-
 }

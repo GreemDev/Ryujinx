@@ -202,6 +202,8 @@ namespace Ryujinx.Ava.UI.Views.Main
                 await Updater.BeginParse(Window, true);
         }
 
+        public async void OpenXCITrimmerWindow(object sender, RoutedEventArgs e) => await XCITrimmerWindow.Show(ViewModel);
+
         public async void OpenAboutWindow(object sender, RoutedEventArgs e) => await AboutWindow.Show();
 
         public void CloseWindow(object sender, RoutedEventArgs e) => Window.Close();
