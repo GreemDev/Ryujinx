@@ -11,7 +11,7 @@ namespace Ryujinx.Graphics.OpenGL
         private class SyncHandle
         {
             public ulong ID;
-            public IntPtr Handle;
+            public nint Handle;
         }
 
         private ulong _firstHandle = 0;
@@ -50,7 +50,7 @@ namespace Ryujinx.Graphics.OpenGL
                 {
                     lock (handle)
                     {
-                        if (handle.Handle == IntPtr.Zero)
+                        if (handle.Handle == nint.Zero)
                         {
                             continue;
                         }
@@ -96,7 +96,7 @@ namespace Ryujinx.Graphics.OpenGL
             {
                 lock (result)
                 {
-                    if (result.Handle == IntPtr.Zero)
+                    if (result.Handle == nint.Zero)
                     {
                         return;
                     }
@@ -140,7 +140,7 @@ namespace Ryujinx.Graphics.OpenGL
                             _firstHandle = first.ID + 1;
                             _handles.RemoveAt(0);
                             GL.DeleteSync(first.Handle);
-                            first.Handle = IntPtr.Zero;
+                            first.Handle = nint.Zero;
                         }
                     }
                 }
@@ -161,7 +161,7 @@ namespace Ryujinx.Graphics.OpenGL
                     lock (handle)
                     {
                         GL.DeleteSync(handle.Handle);
-                        handle.Handle = IntPtr.Zero;
+                        handle.Handle = nint.Zero;
                     }
                 }
 

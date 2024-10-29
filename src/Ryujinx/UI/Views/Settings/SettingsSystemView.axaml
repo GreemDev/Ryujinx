@@ -195,12 +195,13 @@
                 <Separator Height="1" />
                 <StackPanel
                     Orientation="Vertical"
-                    Spacing="2">
+                    Spacing="5">
                     <TextBlock
                         Classes="h1"
                         Text="{locale:Locale SettingsTabSystemHacks}" />
                     <TextBlock
                         Foreground="{DynamicResource SecondaryTextColor}"
+                        TextDecorations="Underline"
                         Text="{locale:Locale SettingsTabSystemHacksNote}" />
                 </StackPanel>
                 <StackPanel
@@ -237,6 +238,11 @@
                         IsChecked="{Binding IgnoreMissingServices}"
                         ToolTip.Tip="{locale:Locale IgnoreMissingServicesTooltip}">
                         <TextBlock Text="{locale:Locale SettingsTabSystemIgnoreMissingServices}" />
+                    </CheckBox>
+                    <CheckBox 
+                        IsChecked="{Binding IgnoreApplet}"
+                        ToolTip.Tip="{locale:Locale IgnoreAppletTooltip}">
+                        <TextBlock Text="{locale:Locale SettingsTabSystemIgnoreApplet}" />
                     </CheckBox>
                 </StackPanel>
             </StackPanel>

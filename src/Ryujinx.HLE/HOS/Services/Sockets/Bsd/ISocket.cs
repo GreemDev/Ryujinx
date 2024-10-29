@@ -16,7 +16,7 @@ namespace Ryujinx.HLE.HOS.Services.Sockets.Bsd
 
         ProtocolType ProtocolType { get; }
 
-        IntPtr Handle { get; }
+        nint Handle { get; }
 
         LinuxError Receive(out int receiveSize, Span<byte> buffer, BsdSocketFlags flags);
 

@@ -9,7 +9,7 @@ namespace ARMeilleure.Translation
 {
     public static class TranslatorTestMethods
     {
-        public delegate int FpFlagsPInvokeTest(IntPtr managedMethod);
+        public delegate int FpFlagsPInvokeTest(nint managedMethod);
 
         private static bool SetPlatformFtz(EmitterContext context, bool ftz)
         {

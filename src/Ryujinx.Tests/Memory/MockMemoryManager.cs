@@ -7,7 +7,7 @@ namespace Ryujinx.Tests.Memory
     {
         public int AddressSpaceBits => throw new NotImplementedException();
 
-        public IntPtr PageTablePointer => throw new NotImplementedException();
+        public nint PageTablePointer => throw new NotImplementedException();
 
         public MemoryManagerType Type => MemoryManagerType.HostMappedUnsafe;
 

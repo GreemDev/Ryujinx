@@ -68,11 +68,11 @@ namespace Ryujinx.UI.Common.SystemInfo
         private const string SystemLibraryName = "libSystem.dylib";
 
         [LibraryImport(SystemLibraryName, SetLastError = true)]
-        private static partial int sysctlbyname([MarshalAs(UnmanagedType.LPStr)] string name, IntPtr oldValue, ref ulong oldSize, IntPtr newValue, ulong newValueSize);
+        private static partial int sysctlbyname([MarshalAs(UnmanagedType.LPStr)] string name, nint oldValue, ref ulong oldSize, nint newValue, ulong newValueSize);
 
-        private static int SysctlByName(string name, IntPtr oldValue, ref ulong oldSize)
+        private static int SysctlByName(string name, nint oldValue, ref ulong oldSize)
         {
-            if (sysctlbyname(name, oldValue, ref oldSize, IntPtr.Zero, 0) == -1)
+            if (sysctlbyname(name, oldValue, ref oldSize, nint.Zero, 0) == -1)
             {
                 int err = Marshal.GetLastWin32Error();
 
@@ -90,7 +90,7 @@ namespace Ryujinx.UI.Common.SystemInfo
             {
                 ulong oldValueSize = (ulong)Unsafe.SizeOf<T>();
 
-                return SysctlByName(name, (IntPtr)Unsafe.AsPointer(ref oldValue), ref oldValueSize);
+                return SysctlByName(name, (nint)Unsafe.AsPointer(ref oldValue), ref oldValueSize);
             }
         }
 
@@ -100,7 +100,7 @@ namespace Ryujinx.UI.Common.SystemInfo
 
             ulong strSize = 0;
 
-            int res = SysctlByName(name, IntPtr.Zero, ref strSize);
+            int res = SysctlByName(name, nint.Zero, ref strSize);
 
             if (res == 0)
             {
@@ -110,7 +110,7 @@ namespace Ryujinx.UI.Common.SystemInfo
                 {
                     fixed (byte* rawDataPtr = rawData)
                     {
-                        res = SysctlByName(name, (IntPtr)rawDataPtr, ref strSize);
+                        res = SysctlByName(name, (nint)rawDataPtr, ref strSize);
                     }
 
                     if (res == 0)

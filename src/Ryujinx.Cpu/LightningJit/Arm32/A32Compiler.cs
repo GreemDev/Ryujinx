@@ -13,7 +13,7 @@ namespace Ryujinx.Cpu.LightningJit.Arm32
             IMemoryManager memoryManager,
             ulong address,
             AddressTable<ulong> funcTable,
-            IntPtr dispatchStubPtr,
+            nint dispatchStubPtr,
             bool isThumb,
             Architecture targetArch)
         {

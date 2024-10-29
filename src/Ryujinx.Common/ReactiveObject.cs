@@ -41,10 +41,12 @@ namespace Ryujinx.Common
             }
         }
 
-        public static implicit operator T(ReactiveObject<T> obj)
-        {
-            return obj.Value;
-        }
+        public static implicit operator T(ReactiveObject<T> obj) => obj.Value;
+    }
+
+    public static class ReactiveObjectHelper
+    {
+        public static void Toggle(this ReactiveObject<bool> rBoolean) => rBoolean.Value = !rBoolean.Value;
     }
 
     public class ReactiveEventArgs<T>(T oldValue, T newValue)

@@ -212,9 +212,7 @@ namespace Ryujinx.Common.Logging
             foreach (var log in logs)
             {
                 if (log.HasValue)
-                {
                     levels.Add(log.Value.Level);
-                }
             }
 
             return levels;
@@ -233,6 +231,7 @@ namespace Ryujinx.Common.Logging
                 case LogLevel.AccessLog : AccessLog = enabled ? new Log(LogLevel.AccessLog) : new Log?(); break;
                 case LogLevel.Stub      : Stub      = enabled ? new Log(LogLevel.Stub)      : new Log?(); break;
                 case LogLevel.Trace     : Trace     = enabled ? new Log(LogLevel.Trace)     : new Log?(); break;
+                case LogLevel.Notice    : break;
                 default: throw new ArgumentException("Unknown Log Level", nameof(logLevel));
 #pragma warning restore IDE0055
             }

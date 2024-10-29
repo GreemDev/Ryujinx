@@ -37,14 +37,9 @@ namespace Ryujinx.Ava.UI.Applet
 
         public ControllerAppletDialog(MainWindow mainWindow, ControllerAppletUIArgs args)
         {
-            if (args.PlayerCountMin == args.PlayerCountMax)
-            {
-                PlayerCount = args.PlayerCountMin.ToString();
-            }
-            else
-            {
-                PlayerCount = $"{args.PlayerCountMin} - {args.PlayerCountMax}";
-            }
+            PlayerCount = args.PlayerCountMin == args.PlayerCountMax 
+                ? args.PlayerCountMin.ToString() 
+                : $"{args.PlayerCountMin} - {args.PlayerCountMax}";
 
             SupportsProController = (args.SupportedStyles & ControllerType.ProController) != 0;
             SupportsLeftJoycon = (args.SupportedStyles & ControllerType.JoyconLeft) != 0;

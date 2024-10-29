@@ -40,7 +40,7 @@ namespace Ryujinx.Graphics.Vulkan
 
         public int Size { get; }
 
-        private readonly IntPtr _map;
+        private readonly nint _map;
 
         private readonly MultiFenceHolder _waitable;
 
@@ -370,7 +370,7 @@ namespace Ryujinx.Graphics.Vulkan
             return Unsafe.As<ulong, BufferHandle>(ref handle);
         }
 
-        public IntPtr Map(int offset, int mappingSize)
+        public nint Map(int offset, int mappingSize)
         {
             return _map;
         }
@@ -435,7 +435,7 @@ namespace Ryujinx.Graphics.Vulkan
 
             Span<byte> result;
 
-            if (_map != IntPtr.Zero)
+            if (_map != nint.Zero)
             {
                 result = GetDataStorage(offset, size);
 
@@ -470,7 +470,7 @@ namespace Ryujinx.Graphics.Vulkan
         {
             int mappingSize = Math.Min(size, Size - offset);
 
-            if (_map != IntPtr.Zero)
+            if (_map != nint.Zero)
             {
                 return new Span<byte>((void*)(_map + offset), mappingSize);
             }
@@ -515,7 +515,7 @@ namespace Ryujinx.Graphics.Vulkan
 
             bool allowMirror = _useMirrors && allowCbsWait && cbs != null && _activeType <= BufferAllocationType.HostMapped;
 
-            if (_map != IntPtr.Zero)
+            if (_map != nint.Zero)
             {
                 // If persistently mapped, set the data directly if the buffer is not currently in use.
                 bool isRented = _buffer.HasRentedCommandBufferDependency(_gd.CommandBufferPool);
@@ -630,7 +630,7 @@ namespace Ryujinx.Graphics.Vulkan
                 return;
             }
 
-            if (_map != IntPtr.Zero)
+            if (_map != nint.Zero)
             {
                 data[..dataSize].CopyTo(new Span<byte>((void*)(_map + offset), dataSize));
             }

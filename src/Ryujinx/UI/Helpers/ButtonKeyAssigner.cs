@@ -41,11 +41,7 @@ namespace Ryujinx.Ava.UI.Helpers
 
             if (_isWaitingForInput)
             {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    Cancel();
-                });
-
+                Dispatcher.UIThread.Post(() => Cancel());
                 return;
             }
 

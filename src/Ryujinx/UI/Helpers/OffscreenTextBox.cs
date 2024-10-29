@@ -35,7 +35,7 @@ namespace Ryujinx.Ava.UI.Helpers
             {
                 Text = text,
                 Source = this,
-                RoutedEvent = TextInputEvent,
+                RoutedEvent = TextInputEvent
             });
         }
     }

@@ -58,7 +58,7 @@ namespace ARMeilleure.CodeGen
         /// <typeparam name="T">Type of delegate</typeparam>
         /// <param name="codePointer">Pointer to the function code in memory</param>
         /// <returns>A delegate of type <typeparamref name="T"/> pointing to the mapped function</returns>
-        public T MapWithPointer<T>(out IntPtr codePointer)
+        public T MapWithPointer<T>(out nint codePointer)
         {
             codePointer = JitCache.Map(this);
 

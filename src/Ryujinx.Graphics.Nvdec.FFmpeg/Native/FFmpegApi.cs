@@ -37,9 +37,9 @@ namespace Ryujinx.Graphics.Nvdec.FFmpeg.Native
         }
 
 
-        private static bool TryLoadWhitelistedLibrary(string libraryName, Assembly assembly, DllImportSearchPath? searchPath, out IntPtr handle)
+        private static bool TryLoadWhitelistedLibrary(string libraryName, Assembly assembly, DllImportSearchPath? searchPath, out nint handle)
         {
-            handle = IntPtr.Zero;
+            handle = nint.Zero;
 
             if (_librariesWhitelist.TryGetValue(libraryName, out var value))
             {
@@ -71,7 +71,7 @@ namespace Ryujinx.Graphics.Nvdec.FFmpeg.Native
                     return handle;
                 }
 
-                return IntPtr.Zero;
+                return nint.Zero;
             });
         }
 

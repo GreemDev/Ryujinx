@@ -39,7 +39,7 @@ namespace Ryujinx.Cpu.Jit
         /// <summary>
         /// Page table base pointer.
         /// </summary>
-        public IntPtr PageTablePointer => _pageTable.Pointer;
+        public nint PageTablePointer => _pageTable.Pointer;
 
         public MemoryManagerType Type => MemoryManagerType.SoftwarePageTable;
 
@@ -264,7 +264,7 @@ namespace Ryujinx.Cpu.Jit
             for (int i = 0; i < regions.Length; i++)
             {
                 var guestRegion = guestRegions[i];
-                IntPtr pointer = _backingMemory.GetPointer(guestRegion.Address, guestRegion.Size);
+                nint pointer = _backingMemory.GetPointer(guestRegion.Address, guestRegion.Size);
                 regions[i] = new HostMemoryRange((nuint)(ulong)pointer, guestRegion.Size);
             }
 

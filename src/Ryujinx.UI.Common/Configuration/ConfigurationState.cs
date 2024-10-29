@@ -325,12 +325,12 @@ namespace Ryujinx.UI.Common.Configuration
             public ReactiveObject<bool> EnableDockedMode { get; private set; }
 
             /// <summary>
-            /// Enables or disables profiled translation cache persistency
+            /// Enables or disables persistent profiled translation cache
             /// </summary>
             public ReactiveObject<bool> EnablePtc { get; private set; }
 
             /// <summary>
-            /// Enables or disables low-power profiled translation cache persistency loading
+            /// Enables or disables low-power persistent profiled translation cache loading
             /// </summary>
             public ReactiveObject<bool> EnableLowPowerPtc { get; private set; }
 
@@ -643,6 +643,11 @@ namespace Ryujinx.UI.Common.Configuration
         public ReactiveObject<bool> ShowConfirmExit { get; private set; }
 
         /// <summary>
+        /// Ignore Applet
+        /// </summary>
+        public ReactiveObject<bool> IgnoreApplet { get; private set; }
+
+        /// <summary>
         /// Enables or disables save window size, position and state on close.
         /// </summary>
         public ReactiveObject<bool> RememberWindowState { get; private set; }
@@ -668,6 +673,7 @@ namespace Ryujinx.UI.Common.Configuration
             EnableDiscordIntegration = new ReactiveObject<bool>();
             CheckUpdatesOnStart = new ReactiveObject<bool>();
             ShowConfirmExit = new ReactiveObject<bool>();
+            IgnoreApplet = new ReactiveObject<bool>();
             RememberWindowState = new ReactiveObject<bool>();
             EnableHardwareAcceleration = new ReactiveObject<bool>();
             HideCursor = new ReactiveObject<HideCursorMode>();
@@ -706,6 +712,7 @@ namespace Ryujinx.UI.Common.Configuration
                 EnableDiscordIntegration = EnableDiscordIntegration,
                 CheckUpdatesOnStart = CheckUpdatesOnStart,
                 ShowConfirmExit = ShowConfirmExit,
+                IgnoreApplet = IgnoreApplet,
                 RememberWindowState = RememberWindowState,
                 EnableHardwareAcceleration = EnableHardwareAcceleration,
                 HideCursor = HideCursor,
@@ -817,6 +824,7 @@ namespace Ryujinx.UI.Common.Configuration
             EnableDiscordIntegration.Value = true;
             CheckUpdatesOnStart.Value = true;
             ShowConfirmExit.Value = true;
+            IgnoreApplet.Value = false;
             RememberWindowState.Value = true;
             EnableHardwareAcceleration.Value = true;
             HideCursor.Value = HideCursorMode.OnIdle;
@@ -1500,7 +1508,7 @@ namespace Ryujinx.UI.Common.Configuration
             {
                 Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 52.");
 
-                configurationFileFormat.AutoloadDirs = new();
+                configurationFileFormat.AutoloadDirs = [];
 
                 configurationFileUpdated = true;
             }
@@ -1519,6 +1527,15 @@ namespace Ryujinx.UI.Common.Configuration
                 Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 54.");
 
                 configurationFileFormat.DramSize = MemoryConfiguration.MemoryConfiguration4GiB;
+
+                configurationFileUpdated = true;
+            }
+
+            if (configurationFileFormat.Version < 55)
+            {
+                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 55.");
+
+                configurationFileFormat.IgnoreApplet = false;
 
                 configurationFileUpdated = true;
             }
@@ -1553,6 +1570,7 @@ namespace Ryujinx.UI.Common.Configuration
             EnableDiscordIntegration.Value = configurationFileFormat.EnableDiscordIntegration;
             CheckUpdatesOnStart.Value = configurationFileFormat.CheckUpdatesOnStart;
             ShowConfirmExit.Value = configurationFileFormat.ShowConfirmExit;
+            IgnoreApplet.Value = configurationFileFormat.IgnoreApplet;
             RememberWindowState.Value = configurationFileFormat.RememberWindowState;
             EnableHardwareAcceleration.Value = configurationFileFormat.EnableHardwareAcceleration;
             HideCursor.Value = configurationFileFormat.HideCursor;
@@ -1585,7 +1603,7 @@ namespace Ryujinx.UI.Common.Configuration
             UI.ColumnSort.SortColumnId.Value = configurationFileFormat.ColumnSort.SortColumnId;
             UI.ColumnSort.SortAscending.Value = configurationFileFormat.ColumnSort.SortAscending;
             UI.GameDirs.Value = configurationFileFormat.GameDirs;
-            UI.AutoloadDirs.Value = configurationFileFormat.AutoloadDirs;
+            UI.AutoloadDirs.Value = configurationFileFormat.AutoloadDirs ?? [];
             UI.ShownFileTypes.NSP.Value = configurationFileFormat.ShownFileTypes.NSP;
             UI.ShownFileTypes.PFS0.Value = configurationFileFormat.ShownFileTypes.PFS0;
             UI.ShownFileTypes.XCI.Value = configurationFileFormat.ShownFileTypes.XCI;
@@ -1611,12 +1629,7 @@ namespace Ryujinx.UI.Common.Configuration
             Hid.EnableKeyboard.Value = configurationFileFormat.EnableKeyboard;
             Hid.EnableMouse.Value = configurationFileFormat.EnableMouse;
             Hid.Hotkeys.Value = configurationFileFormat.Hotkeys;
-            Hid.InputConfig.Value = configurationFileFormat.InputConfig;
-
-            if (Hid.InputConfig.Value == null)
-            {
-                Hid.InputConfig.Value = new List<InputConfig>();
-            }
+            Hid.InputConfig.Value = configurationFileFormat.InputConfig ?? [];
 
             Multiplayer.LanInterfaceId.Value = configurationFileFormat.MultiplayerLanInterfaceId;
             Multiplayer.Mode.Value = configurationFileFormat.MultiplayerMode;

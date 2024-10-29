@@ -29,7 +29,7 @@ namespace Ryujinx.Audio.Renderer.Server.MemoryPool
 
         private readonly unsafe ref MemoryPoolState MemoryPoolState => ref *_memoryPools;
 
-        public readonly unsafe bool HasMemoryPoolState => (IntPtr)_memoryPools != IntPtr.Zero;
+        public readonly unsafe bool HasMemoryPoolState => (nint)_memoryPools != nint.Zero;
 
         /// <summary>
         /// Create an new empty <see cref="AddressInfo"/>.

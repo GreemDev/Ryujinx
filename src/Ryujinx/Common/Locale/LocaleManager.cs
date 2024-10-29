@@ -99,6 +99,9 @@ namespace Ryujinx.Ava.Common.Locale
                 _ => false
             };
 
+        public static string FormatDynamicValue(LocaleKeys key, params object[] values) 
+            => Instance.UpdateAndGetDynamicValue(key, values);
+
         public string UpdateAndGetDynamicValue(LocaleKeys key, params object[] values)
         {
             _dynamicValues[key] = values;
@@ -127,9 +130,9 @@ namespace Ryujinx.Ava.Common.Locale
                 _localeLanguageCode = languageCode;
             }
 
-            foreach (var item in locale)
+            foreach ((LocaleKeys key, string val) in locale)
             {
-                _localeStrings[item.Key] = item.Value;
+                _localeStrings[key] = val;
             }
 
             OnPropertyChanged("Item");
@@ -150,11 +153,11 @@ namespace Ryujinx.Ava.Common.Locale
 
             var strings = JsonHelper.Deserialize(languageJson, CommonJsonContext.Default.StringDictionary);
 
-            foreach (var item in strings)
+            foreach ((string key, string val) in strings)
             {
-                if (Enum.TryParse<LocaleKeys>(item.Key, out var key))
+                if (Enum.TryParse<LocaleKeys>(key, out var localeKey))
                 {
-                    localeStrings[key] = item.Value;
+                    localeStrings[localeKey] = val;
                 }
             }
 

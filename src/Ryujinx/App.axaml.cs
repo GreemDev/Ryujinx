@@ -66,11 +66,6 @@ namespace Ryujinx.Ava
             }
         }
 
-        private void CustomThemeChanged_Event(object sender, ReactiveEventArgs<bool> e)
-        {
-            ApplyConfiguredTheme();
-        }
-
         private void ShowRestartDialog()
         {
             _ = Dispatcher.UIThread.InvokeAsync(async () =>
@@ -93,11 +88,10 @@ namespace Ryujinx.Ava
                 }
             });
         }
+        
+        private void CustomThemeChanged_Event(object _, ReactiveEventArgs<bool> __) => ApplyConfiguredTheme();
 
-        private void ThemeChanged_Event(object sender, ReactiveEventArgs<string> e)
-        {
-            ApplyConfiguredTheme();
-        }
+        private void ThemeChanged_Event(object _, ReactiveEventArgs<string> __) => ApplyConfiguredTheme();
 
         public void ApplyConfiguredTheme()
         {
@@ -112,13 +106,11 @@ namespace Ryujinx.Ava
                     baseStyle = ConfigurationState.Instance.UI.BaseStyle;
                 }
 
-                ThemeVariant systemTheme = DetectSystemTheme();
-
                 ThemeManager.OnThemeChanged();
 
                 RequestedThemeVariant = baseStyle switch
                 {
-                    "Auto" => systemTheme,
+                    "Auto" => DetectSystemTheme(),
                     "Light" => ThemeVariant.Light,
                     "Dark" => ThemeVariant.Dark,
                     _ => ThemeVariant.Default,

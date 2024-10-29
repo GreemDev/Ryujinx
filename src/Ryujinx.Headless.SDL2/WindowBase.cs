@@ -38,7 +38,7 @@ namespace Ryujinx.Headless.SDL2
 
         [LibraryImport("SDL2")]
         // TODO: Remove this as soon as SDL2-CS was updated to expose this method publicly
-        private static partial IntPtr SDL_LoadBMP_RW(IntPtr src, int freesrc);
+        private static partial nint SDL_LoadBMP_RW(nint src, int freesrc);
 
         public static void QueueMainThreadAction(Action action)
         {
@@ -52,7 +52,7 @@ namespace Ryujinx.Headless.SDL2
 
         public event EventHandler<StatusUpdatedEventArgs> StatusUpdatedEvent;
 
-        protected IntPtr WindowHandle { get; set; }
+        protected nint WindowHandle { get; set; }
 
         public IHostUITheme HostUITheme { get; }
         public int Width { get; private set; }
@@ -148,8 +148,8 @@ namespace Ryujinx.Headless.SDL2
             {
                 fixed (byte* iconPtr = iconBytes)
                 {
-                    IntPtr rwOpsStruct = SDL_RWFromConstMem((IntPtr)iconPtr, iconBytes.Length);
-                    IntPtr iconHandle = SDL_LoadBMP_RW(rwOpsStruct, 1);
+                    nint rwOpsStruct = SDL_RWFromConstMem((nint)iconPtr, iconBytes.Length);
+                    nint iconHandle = SDL_LoadBMP_RW(rwOpsStruct, 1);
 
                     SDL_SetWindowIcon(WindowHandle, iconHandle);
                     SDL_FreeSurface(iconHandle);
@@ -187,7 +187,7 @@ namespace Ryujinx.Headless.SDL2
 
             WindowHandle = SDL_CreateWindow($"Ryujinx {Program.Version}{titleNameSection}{titleVersionSection}{titleIdSection}{titleArchSection}", SDL_WINDOWPOS_CENTERED_DISPLAY(DisplayId), SDL_WINDOWPOS_CENTERED_DISPLAY(DisplayId), Width, Height, DefaultFlags | FullscreenFlag | GetWindowFlags());
 
-            if (WindowHandle == IntPtr.Zero)
+            if (WindowHandle == nint.Zero)
             {
                 string errorMessage = $"SDL_CreateWindow failed with error \"{SDL_GetError()}\"";
 

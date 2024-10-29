@@ -14,9 +14,9 @@ namespace Ryujinx.Graphics.Vulkan
         public class Block : IComparable<Block>
         {
             public DeviceMemory Memory { get; private set; }
-            public IntPtr HostPointer { get; private set; }
+            public nint HostPointer { get; private set; }
             public ulong Size { get; }
-            public bool Mapped => HostPointer != IntPtr.Zero;
+            public bool Mapped => HostPointer != nint.Zero;
 
             private readonly struct Range : IComparable<Range>
             {
@@ -37,7 +37,7 @@ namespace Ryujinx.Graphics.Vulkan
 
             private readonly List<Range> _freeRanges;
 
-            public Block(DeviceMemory memory, IntPtr hostPointer, ulong size)
+            public Block(DeviceMemory memory, nint hostPointer, ulong size)
             {
                 Memory = memory;
                 HostPointer = hostPointer;
@@ -146,7 +146,7 @@ namespace Ryujinx.Graphics.Vulkan
                 if (Mapped)
                 {
                     api.UnmapMemory(device, Memory);
-                    HostPointer = IntPtr.Zero;
+                    HostPointer = nint.Zero;
                 }
 
                 if (Memory.Handle != 0)
@@ -222,13 +222,13 @@ namespace Ryujinx.Graphics.Vulkan
 
             _api.AllocateMemory(_device, in memoryAllocateInfo, null, out var deviceMemory).ThrowOnError();
 
-            IntPtr hostPointer = IntPtr.Zero;
+            nint hostPointer = nint.Zero;
 
             if (map)
             {
                 void* pointer = null;
                 _api.MapMemory(_device, deviceMemory, 0, blockAlignedSize, 0, ref pointer).ThrowOnError();
-                hostPointer = (IntPtr)pointer;
+                hostPointer = (nint)pointer;
             }
 
             var newBlock = new Block(deviceMemory, hostPointer, blockAlignedSize);
@@ -241,14 +241,14 @@ namespace Ryujinx.Graphics.Vulkan
             return new MemoryAllocation(this, newBlock, deviceMemory, GetHostPointer(newBlock, newBlockOffset), newBlockOffset, size);
         }
 
-        private static IntPtr GetHostPointer(Block block, ulong offset)
+        private static nint GetHostPointer(Block block, ulong offset)
         {
-            if (block.HostPointer == IntPtr.Zero)
+            if (block.HostPointer == nint.Zero)
             {
-                return IntPtr.Zero;
+                return nint.Zero;
             }
 
-            return (IntPtr)((nuint)block.HostPointer + offset);
+            return (nint)((nuint)block.HostPointer + offset);
         }
 
         public void Free(Block block, ulong offset, ulong size)

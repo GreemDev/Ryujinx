@@ -11,7 +11,7 @@ namespace Ryujinx.Cpu.Jit.HostTracked
         private readonly AddressSpacePartitionAllocator _owner;
         private readonly PrivateMemoryAllocatorImpl<AddressSpacePartitionAllocator.Block>.Allocation _allocation;
 
-        public IntPtr Pointer => (IntPtr)((ulong)_allocation.Block.Memory.Pointer + _allocation.Offset);
+        public nint Pointer => (nint)((ulong)_allocation.Block.Memory.Pointer + _allocation.Offset);
 
         public bool IsValid => _owner != null;
 
@@ -43,7 +43,7 @@ namespace Ryujinx.Cpu.Jit.HostTracked
             _allocation.Block.Memory.Reprotect(_allocation.Offset + offset, size, permission, throwOnFail);
         }
 
-        public IntPtr GetPointer(ulong offset, ulong size)
+        public nint GetPointer(ulong offset, ulong size)
         {
             return _allocation.Block.Memory.GetPointer(_allocation.Offset + offset, size);
         }

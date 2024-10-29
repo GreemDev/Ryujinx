@@ -15,7 +15,7 @@ namespace Ryujinx.Cpu.LightningJit
             IMemoryManager memoryManager,
             ulong address,
             AddressTable<ulong> funcTable,
-            IntPtr dispatchStubPtr,
+            nint dispatchStubPtr,
             ExecutionMode executionMode,
             Architecture targetArch)
         {

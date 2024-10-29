@@ -21,33 +21,33 @@ namespace Ryujinx.Common.GraphicsDriver
         private const uint NvAPI_DRS_DestroySession_ID = 0x0DAD9CFF8;
 
         [LibraryImport("nvapi64")]
-        private static partial IntPtr nvapi_QueryInterface(uint id);
+        private static partial nint nvapi_QueryInterface(uint id);
 
         private delegate int NvAPI_InitializeDelegate();
         private static NvAPI_InitializeDelegate NvAPI_Initialize;
 
-        private delegate int NvAPI_DRS_CreateSessionDelegate(out IntPtr handle);
+        private delegate int NvAPI_DRS_CreateSessionDelegate(out nint handle);
         private static NvAPI_DRS_CreateSessionDelegate NvAPI_DRS_CreateSession;
 
-        private delegate int NvAPI_DRS_LoadSettingsDelegate(IntPtr handle);
+        private delegate int NvAPI_DRS_LoadSettingsDelegate(nint handle);
         private static NvAPI_DRS_LoadSettingsDelegate NvAPI_DRS_LoadSettings;
 
-        private delegate int NvAPI_DRS_FindProfileByNameDelegate(IntPtr handle, NvapiUnicodeString profileName, out IntPtr profileHandle);
+        private delegate int NvAPI_DRS_FindProfileByNameDelegate(nint handle, NvapiUnicodeString profileName, out nint profileHandle);
         private static NvAPI_DRS_FindProfileByNameDelegate NvAPI_DRS_FindProfileByName;
 
-        private delegate int NvAPI_DRS_CreateProfileDelegate(IntPtr handle, ref NvdrsProfile profileInfo, out IntPtr profileHandle);
+        private delegate int NvAPI_DRS_CreateProfileDelegate(nint handle, ref NvdrsProfile profileInfo, out nint profileHandle);
         private static NvAPI_DRS_CreateProfileDelegate NvAPI_DRS_CreateProfile;
 
-        private delegate int NvAPI_DRS_CreateApplicationDelegate(IntPtr handle, IntPtr profileHandle, ref NvdrsApplicationV4 app);
+        private delegate int NvAPI_DRS_CreateApplicationDelegate(nint handle, nint profileHandle, ref NvdrsApplicationV4 app);
         private static NvAPI_DRS_CreateApplicationDelegate NvAPI_DRS_CreateApplication;
 
-        private delegate int NvAPI_DRS_SetSettingDelegate(IntPtr handle, IntPtr profileHandle, ref NvdrsSetting setting);
+        private delegate int NvAPI_DRS_SetSettingDelegate(nint handle, nint profileHandle, ref NvdrsSetting setting);
         private static NvAPI_DRS_SetSettingDelegate NvAPI_DRS_SetSetting;
 
-        private delegate int NvAPI_DRS_SaveSettingsDelegate(IntPtr handle);
+        private delegate int NvAPI_DRS_SaveSettingsDelegate(nint handle);
         private static NvAPI_DRS_SaveSettingsDelegate NvAPI_DRS_SaveSettings;
 
-        private delegate int NvAPI_DRS_DestroySessionDelegate(IntPtr handle);
+        private delegate int NvAPI_DRS_DestroySessionDelegate(nint handle);
         private static NvAPI_DRS_DestroySessionDelegate NvAPI_DRS_DestroySession;
 
         private static bool _initialized;
@@ -94,7 +94,7 @@ namespace Ryujinx.Common.GraphicsDriver
 
             Check(NvAPI_Initialize());
 
-            Check(NvAPI_DRS_CreateSession(out IntPtr handle));
+            Check(NvAPI_DRS_CreateSession(out nint handle));
 
             Check(NvAPI_DRS_LoadSettings(handle));
 
@@ -148,9 +148,9 @@ namespace Ryujinx.Common.GraphicsDriver
 
         private static T NvAPI_Delegate<T>(uint id) where T : class
         {
-            IntPtr ptr = nvapi_QueryInterface(id);
+            nint ptr = nvapi_QueryInterface(id);
 
-            if (ptr != IntPtr.Zero)
+            if (ptr != nint.Zero)
             {
                 return Marshal.GetDelegateForFunctionPointer<T>(ptr);
             }

@@ -115,7 +115,7 @@ namespace Ryujinx.Input.SDL2
                 {
                     lock (_lock)
                     {
-                        _gamepadsIds.Add(id);
+                        _gamepadsIds.Insert(joystickDeviceId, id);
                     }
 
                     OnGamepadConnected?.Invoke(id);
@@ -160,9 +160,9 @@ namespace Ryujinx.Input.SDL2
                 return null;
             }
 
-            IntPtr gamepadHandle = SDL_GameControllerOpen(joystickIndex);
+            nint gamepadHandle = SDL_GameControllerOpen(joystickIndex);
 
-            if (gamepadHandle == IntPtr.Zero)
+            if (gamepadHandle == nint.Zero)
             {
                 return null;
             }

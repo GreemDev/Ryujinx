@@ -4,18 +4,21 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using FluentAvalonia.UI.Windowing;
 using Ryujinx.Ava.Common.Locale;
+using Ryujinx.Ava.UI.ViewModels;
 
 namespace Ryujinx.Ava.UI.Windows
 {
-    public class StyleableAppWindow : AppWindow
+    public abstract class StyleableAppWindow : AppWindow
     {
-        public StyleableAppWindow()
+        protected StyleableAppWindow()
         {
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             TransparencyLevelHint = [WindowTransparencyLevel.None];
 
             LocaleManager.Instance.LocaleChanged += LocaleChanged;
             LocaleChanged();
+            
+            Icon = MainWindowViewModel.IconBitmap;
         }
 
         private void LocaleChanged()
@@ -31,15 +34,17 @@ namespace Ryujinx.Ava.UI.Windows
         }
     }
 
-    public class StyleableWindow : Window
+    public abstract class StyleableWindow : Window
     {
-        public StyleableWindow()
+        protected StyleableWindow()
         {
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             TransparencyLevelHint = [WindowTransparencyLevel.None];
 
             LocaleManager.Instance.LocaleChanged += LocaleChanged;
             LocaleChanged();
+
+            Icon = new WindowIcon(MainWindowViewModel.IconBitmap);
         }
 
         private void LocaleChanged()

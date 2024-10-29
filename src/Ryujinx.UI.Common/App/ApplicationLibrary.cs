@@ -1,5 +1,6 @@
 using DynamicData;
 using DynamicData.Kernel;
+using Gommon;
 using LibHac;
 using LibHac.Common;
 using LibHac.Fs;
@@ -677,19 +678,18 @@ namespace Ryujinx.UI.App.Common
                         EnumerationOptions options = new()
                         {
                             RecurseSubdirectories = true,
-                            IgnoreInaccessible = false,
+                            IgnoreInaccessible = false
                         };
 
-                        IEnumerable<string> files = Directory.EnumerateFiles(appDir, "*", options).Where(file =>
-                        {
-                            return
-                                (Path.GetExtension(file).ToLower() is ".nsp" && ConfigurationState.Instance.UI.ShownFileTypes.NSP.Value) ||
-                                (Path.GetExtension(file).ToLower() is ".pfs0" && ConfigurationState.Instance.UI.ShownFileTypes.PFS0.Value) ||
-                                (Path.GetExtension(file).ToLower() is ".xci" && ConfigurationState.Instance.UI.ShownFileTypes.XCI.Value) ||
-                                (Path.GetExtension(file).ToLower() is ".nca" && ConfigurationState.Instance.UI.ShownFileTypes.NCA.Value) ||
-                                (Path.GetExtension(file).ToLower() is ".nro" && ConfigurationState.Instance.UI.ShownFileTypes.NRO.Value) ||
-                                (Path.GetExtension(file).ToLower() is ".nso" && ConfigurationState.Instance.UI.ShownFileTypes.NSO.Value);
-                        });
+                        IEnumerable<string> files = Directory.EnumerateFiles(appDir, "*", options)
+                            .Where(file =>
+                                (Path.GetExtension(file).ToLower() is ".nsp" && ConfigurationState.Instance.UI.ShownFileTypes.NSP) ||
+                                (Path.GetExtension(file).ToLower() is ".pfs0" && ConfigurationState.Instance.UI.ShownFileTypes.PFS0) ||
+                                (Path.GetExtension(file).ToLower() is ".xci" && ConfigurationState.Instance.UI.ShownFileTypes.XCI) ||
+                                (Path.GetExtension(file).ToLower() is ".nca" && ConfigurationState.Instance.UI.ShownFileTypes.NCA) ||
+                                (Path.GetExtension(file).ToLower() is ".nro" && ConfigurationState.Instance.UI.ShownFileTypes.NRO) || 
+                                (Path.GetExtension(file).ToLower() is ".nso" && ConfigurationState.Instance.UI.ShownFileTypes.NSO)
+                            );
 
                         foreach (string app in files)
                         {
@@ -802,17 +802,31 @@ namespace Ryujinx.UI.App.Common
 
         // Searches the provided directories for DLC NSP files that are _valid for the currently detected games in the
         // library_, and then enables those DLC.
-        public int AutoLoadDownloadableContents(List<string> appDirs)
+        public int AutoLoadDownloadableContents(List<string> appDirs, out int numDlcRemoved)
         {
             _cancellationToken = new CancellationTokenSource();
 
             List<string> dlcPaths = new();
             int newDlcLoaded = 0;
+            numDlcRemoved = 0;
 
             try
             {
+                // Remove any downloadable content which can no longer be located on disk
+                Logger.Notice.Print(LogClass.Application, $"Removing non-existing Title DLCs");
+                var dlcToRemove = _downloadableContents.Items
+                    .Where(dlc => !File.Exists(dlc.Dlc.ContainerPath))
+                    .ToList();
+                dlcToRemove.ForEach(dlc =>
+                    Logger.Warning?.Print(LogClass.Application, $"Title DLC removed: {dlc.Dlc.ContainerPath}")
+                );
+                numDlcRemoved += dlcToRemove.Distinct().Count();
+                _downloadableContents.RemoveKeys(dlcToRemove.Select(dlc => dlc.Dlc));
+
                 foreach (string appDir in appDirs)
                 {
+                    Logger.Notice.Print(LogClass.Application, $"Auto loading DLC from: {appDir}");
+
                     if (_cancellationToken.Token.IsCancellationRequested)
                     {
                         return newDlcLoaded;
@@ -901,17 +915,37 @@ namespace Ryujinx.UI.App.Common
         // Searches the provided directories for update NSP files that are _valid for the currently detected games in the
         // library_, and then applies those updates. If a newly-detected update is a newer version than the currently
         // selected update (or if no update is currently selected), then that update will be selected.
-        public int AutoLoadTitleUpdates(List<string> appDirs)
+        public int AutoLoadTitleUpdates(List<string> appDirs, out int numUpdatesRemoved)
         {
             _cancellationToken = new CancellationTokenSource();
 
             List<string> updatePaths = new();
             int numUpdatesLoaded = 0;
+            numUpdatesRemoved = 0;
 
             try
             {
+                var titleIdsToSave = new HashSet<ulong>();
+                var titleIdsToRefresh = new HashSet<ulong>();
+
+                // Remove any updates which can no longer be located on disk
+                Logger.Notice.Print(LogClass.Application, $"Removing non-existing Title Updates");
+                var updatesToRemove = _titleUpdates.Items
+                    .Where(it => !File.Exists(it.TitleUpdate.Path))
+                    .ToList();
+
+                numUpdatesRemoved += updatesToRemove.Select(it => it.TitleUpdate).Distinct().Count();
+                updatesToRemove.ForEach(ti =>
+                    Logger.Warning?.Print(LogClass.Application, $"Title update removed: {ti.TitleUpdate.Path}")
+                );
+                _titleUpdates.RemoveKeys(updatesToRemove.Select(it => it.TitleUpdate));
+                titleIdsToSave.UnionWith(updatesToRemove.Select(it => it.TitleUpdate.TitleIdBase));
+                titleIdsToRefresh.UnionWith(updatesToRemove.Where(it => it.IsSelected).Select(update => update.TitleUpdate.TitleIdBase));
+
                 foreach (string appDir in appDirs)
                 {
+                    Logger.Notice.Print(LogClass.Application, $"Auto loading updates from: {appDir}");
+
                     if (_cancellationToken.Token.IsCancellationRequested)
                     {
                         return numUpdatesLoaded;
@@ -980,27 +1014,21 @@ namespace Ryujinx.UI.App.Common
                         {
                             if (!_titleUpdates.Lookup(update).HasValue)
                             {
-                                var currentlySelected = TitleUpdates.Items.FirstOrOptional(it =>
-                                    it.TitleUpdate.TitleIdBase == update.TitleIdBase && it.IsSelected);
-
-                                var shouldSelect = !currentlySelected.HasValue ||
-                                                   currentlySelected.Value.TitleUpdate.Version < update.Version;
-                                _titleUpdates.AddOrUpdate((update, shouldSelect));
-
-                                if (currentlySelected.HasValue && shouldSelect)
-                                    _titleUpdates.AddOrUpdate((currentlySelected.Value.TitleUpdate, false));
-
-                                SaveTitleUpdatesForGame(update.TitleIdBase);
+                                bool shouldSelect = AddAndAutoSelectUpdate(update);
+                                titleIdsToSave.Add(update.TitleIdBase);
                                 numUpdatesLoaded++;
 
                                 if (shouldSelect)
                                 {
-                                    RefreshApplicationInfo(update.TitleIdBase);
+                                    titleIdsToRefresh.Add(update.TitleIdBase);
                                 }
                             }
                         }
                     }
                 }
+
+                titleIdsToSave.ForEach(titleId => SaveTitleUpdatesForGame(titleId));
+                titleIdsToRefresh.ForEach(titleId => RefreshApplicationInfo(titleId));
             }
             finally
             {
@@ -1009,6 +1037,24 @@ namespace Ryujinx.UI.App.Common
             }
 
             return numUpdatesLoaded;
+        }
+
+        private bool AddAndAutoSelectUpdate(TitleUpdateModel update)
+        {
+            var currentlySelected = TitleUpdates.Items.FirstOrOptional(it =>
+                it.TitleUpdate.TitleIdBase == update.TitleIdBase && it.IsSelected);
+
+            var shouldSelect = !currentlySelected.HasValue ||
+                               currentlySelected.Value.TitleUpdate.Version < update.Version;
+
+            _titleUpdates.AddOrUpdate((update, shouldSelect));
+
+            if (currentlySelected.HasValue && shouldSelect)
+            {
+                _titleUpdates.AddOrUpdate((currentlySelected.Value.TitleUpdate, false));
+            }
+
+            return shouldSelect;
         }
 
         protected void OnApplicationCountUpdated(ApplicationCountUpdatedEventArgs e)
@@ -1395,8 +1441,8 @@ namespace Ryujinx.UI.App.Common
                 if (TryGetTitleUpdatesFromFile(application.Path, out var bundledUpdates))
                 {
                     var savedUpdateLookup = savedUpdates.Select(update => update.Item1).ToHashSet();
+                    bool updatesChanged = false;
 
-                    bool addedNewUpdate = false;
                     foreach (var update in bundledUpdates.OrderByDescending(bundled => bundled.Version))
                     {
                         if (!savedUpdateLookup.Contains(update))
@@ -1405,17 +1451,19 @@ namespace Ryujinx.UI.App.Common
                             if (!selectedUpdate.HasValue || selectedUpdate.Value.Item1.Version < update.Version)
                             {
                                 shouldSelect = true;
-                                selectedUpdate = Optional<(TitleUpdateModel, bool IsSelected)>.Create((update, true));
+                                if (selectedUpdate.HasValue)
+                                    _titleUpdates.AddOrUpdate((selectedUpdate.Value.Item1, false));
+                                selectedUpdate = DynamicData.Kernel.Optional<(TitleUpdateModel, bool IsSelected)>.Create((update, true));
                             }
 
                             modifiedVersion = modifiedVersion || shouldSelect;
                             it.AddOrUpdate((update, shouldSelect));
 
-                            addedNewUpdate = true;
+                            updatesChanged = true;
                         }
                     }
 
-                    if (addedNewUpdate)
+                    if (updatesChanged)
                     {
                         var gameUpdates = it.Items.Where(update => update.TitleUpdate.TitleIdBase == application.IdBase).ToList();
                         TitleUpdatesHelper.SaveTitleUpdatesJson(_virtualFileSystem, application.IdBase, gameUpdates);

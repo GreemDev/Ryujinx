@@ -73,7 +73,7 @@ namespace Ryujinx.UI.Common
             {
                 Assets = new Assets
                 {
-                    LargeImageKey = _discordGameAssetKeys.Contains(procRes.ProgramIdText.ToLower()) ? procRes.ProgramIdText : "game",
+                    LargeImageKey = _discordGameAssetKeys.Contains(procRes.ProgramIdText) ? procRes.ProgramIdText : "game",
                     LargeImageText = TruncateToByteLength($"{appMeta.Title} | {procRes.DisplayVersion}"),
                     SmallImageKey = "ryujinx",
                     SmallImageText = TruncateToByteLength(_description)
@@ -131,9 +131,15 @@ namespace Ryujinx.UI.Common
             "0100000000010000", // SUPER MARIO ODYSSEY
             "010015100b514000", // Super Mario Bros. Wonder
             "0100152000022000", // Mario Kart 8 Deluxe
+            "01006fe013472000", // Mario Party Superstars
+            "0100965017338000", // Super Mario Party Jamboree
             "010049900f546000", // Super Mario 3D All-Stars
             "010028600ebda000", // Super Mario 3D World + Bowser's Fury
             "0100ecd018ebe000", // Paper Mario: The Thousand-Year Door
+            "010019401051c000", // Mario Strikers League
+            "0100ea80032ea000", // Super Mario Bros. U Deluxe
+            "0100bc0018138000", // Super Mario RPG
+            "0100bde00862a000", // Mario Tennis Aces
 
             "010048701995e000", // Luigi's Mansion 2 HD
             "0100dca0064a6000", // Luigi's Mansion 3
@@ -148,15 +154,24 @@ namespace Ryujinx.UI.Common
             "0100d680194b2000", // Pikmin 2
             "0100f4c009322000", // Pikmin 3 Deluxe
             "0100b7c00933a000", // Pikmin 4
+            
+            "01004ad014bf0000", // Sonic Frontiers
+            "01005ea01c0fc000", // SONIC X SHADOW GENERATIONS
+            "01005ea01c0fc001", // ^
+            
+            "01004d300c5ae000", // Kirby and the Forgotten Land
+            "01006b601380e000", // Kirby's Return to Dreamland Deluxe
+            "01007e3006dda000", // Kirby Star Allies 
 
             "0100c2500fc20000", // Splatoon 3
             "0100ba0018500000", // Splatoon 3: Splatfest World Premiere
             "01000a10041ea000", // The Elder Scrolls V: Skyrim
             "01007820196a6000", // Red Dead Redemption
+            "01008c8012920000", // Dying Light Platinum Edition
             "0100744001588000", // Cars 3: Driven to Win
+            "0100c1f0051b6000", // Donkey Kong Country: Tropical Freeze
             "01002b00111a2000", // Hyrule Warriors: Age of Calamity
             "01006f8002326000", // Animal Crossing: New Horizons
-            "01004d300c5ae000", // Kirby and the Forgotten Land
             "0100853015e86000", // No Man's Sky
             "01008d100d43e000", // Saints Row IV
             "0100de600beee000", // Saints Row: The Third - The Full Package

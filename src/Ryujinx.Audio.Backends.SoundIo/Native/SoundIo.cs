@@ -10,41 +10,41 @@ namespace Ryujinx.Audio.Backends.SoundIo.Native
         private const string LibraryName = "libsoundio";
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void OnDeviceChangeNativeDelegate(IntPtr ctx);
+        public delegate void OnDeviceChangeNativeDelegate(nint ctx);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void OnBackendDisconnectedDelegate(IntPtr ctx, SoundIoError err);
+        public delegate void OnBackendDisconnectedDelegate(nint ctx, SoundIoError err);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void OnEventsSignalDelegate(IntPtr ctx);
+        public delegate void OnEventsSignalDelegate(nint ctx);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void EmitRtPrioWarningDelegate();
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void JackCallbackDelegate(IntPtr msg);
+        public delegate void JackCallbackDelegate(nint msg);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct SoundIoStruct
         {
-            public IntPtr UserData;
-            public IntPtr OnDeviceChange;
-            public IntPtr OnBackendDisconnected;
-            public IntPtr OnEventsSignal;
+            public nint UserData;
+            public nint OnDeviceChange;
+            public nint OnBackendDisconnected;
+            public nint OnEventsSignal;
             public SoundIoBackend CurrentBackend;
-            public IntPtr ApplicationName;
-            public IntPtr EmitRtPrioWarning;
-            public IntPtr JackInfoCallback;
-            public IntPtr JackErrorCallback;
+            public nint ApplicationName;
+            public nint EmitRtPrioWarning;
+            public nint JackInfoCallback;
+            public nint JackErrorCallback;
         }
 
         public struct SoundIoChannelLayout
         {
-            public IntPtr Name;
+            public nint Name;
             public int ChannelCount;
             public Array24<SoundIoChannelId> Channels;
 
-            public static IntPtr GetDefault(int channelCount)
+            public static nint GetDefault(int channelCount)
             {
                 return soundio_channel_layout_get_default(channelCount);
             }
@@ -63,17 +63,17 @@ namespace Ryujinx.Audio.Backends.SoundIo.Native
 
         public struct SoundIoDevice
         {
-            public IntPtr SoundIo;
-            public IntPtr Id;
-            public IntPtr Name;
+            public nint SoundIo;
+            public nint Id;
+            public nint Name;
             public SoundIoDeviceAim Aim;
-            public IntPtr Layouts;
+            public nint Layouts;
             public int LayoutCount;
             public SoundIoChannelLayout CurrentLayout;
-            public IntPtr Formats;
+            public nint Formats;
             public int FormatCount;
             public SoundIoFormat CurrentFormat;
-            public IntPtr SampleRates;
+            public nint SampleRates;
             public int SampleRateCount;
             public int SampleRateCurrent;
             public double SoftwareLatencyMin;
@@ -86,17 +86,17 @@ namespace Ryujinx.Audio.Backends.SoundIo.Native
 
         public struct SoundIoOutStream
         {
-            public IntPtr Device;
+            public nint Device;
             public SoundIoFormat Format;
             public int SampleRate;
             public SoundIoChannelLayout Layout;
             public double SoftwareLatency;
             public float Volume;
-            public IntPtr UserData;
-            public IntPtr WriteCallback;
-            public IntPtr UnderflowCallback;
-            public IntPtr ErrorCallback;
-            public IntPtr Name;
+            public nint UserData;
+            public nint WriteCallback;
+            public nint UnderflowCallback;
+            public nint ErrorCallback;
+            public nint Name;
             public bool NonTerminalHint;
             public int BytesPerFrame;
             public int BytesPerSample;
@@ -105,74 +105,74 @@ namespace Ryujinx.Audio.Backends.SoundIo.Native
 
         public struct SoundIoChannelArea
         {
-            public IntPtr Pointer;
+            public nint Pointer;
             public int Step;
         }
 
         [LibraryImport(LibraryName)]
-        internal static partial IntPtr soundio_create();
+        internal static partial nint soundio_create();
 
         [LibraryImport(LibraryName)]
-        internal static partial SoundIoError soundio_connect(IntPtr ctx);
+        internal static partial SoundIoError soundio_connect(nint ctx);
 
         [LibraryImport(LibraryName)]
-        internal static partial void soundio_disconnect(IntPtr ctx);
+        internal static partial void soundio_disconnect(nint ctx);
 
         [LibraryImport(LibraryName)]
-        internal static partial void soundio_flush_events(IntPtr ctx);
+        internal static partial void soundio_flush_events(nint ctx);
 
         [LibraryImport(LibraryName)]
-        internal static partial int soundio_output_device_count(IntPtr ctx);
+        internal static partial int soundio_output_device_count(nint ctx);
 
         [LibraryImport(LibraryName)]
-        internal static partial int soundio_default_output_device_index(IntPtr ctx);
+        internal static partial int soundio_default_output_device_index(nint ctx);
 
         [LibraryImport(LibraryName)]
-        internal static partial IntPtr soundio_get_output_device(IntPtr ctx, int index);
-
-        [LibraryImport(LibraryName)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static partial bool soundio_device_supports_format(IntPtr devCtx, SoundIoFormat format);
+        internal static partial nint soundio_get_output_device(nint ctx, int index);
 
         [LibraryImport(LibraryName)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static partial bool soundio_device_supports_layout(IntPtr devCtx, IntPtr layout);
+        internal static partial bool soundio_device_supports_format(nint devCtx, SoundIoFormat format);
 
         [LibraryImport(LibraryName)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static partial bool soundio_device_supports_sample_rate(IntPtr devCtx, int sampleRate);
+        internal static partial bool soundio_device_supports_layout(nint devCtx, nint layout);
 
         [LibraryImport(LibraryName)]
-        internal static partial IntPtr soundio_outstream_create(IntPtr devCtx);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static partial bool soundio_device_supports_sample_rate(nint devCtx, int sampleRate);
 
         [LibraryImport(LibraryName)]
-        internal static partial SoundIoError soundio_outstream_open(IntPtr outStreamCtx);
+        internal static partial nint soundio_outstream_create(nint devCtx);
 
         [LibraryImport(LibraryName)]
-        internal static partial SoundIoError soundio_outstream_start(IntPtr outStreamCtx);
+        internal static partial SoundIoError soundio_outstream_open(nint outStreamCtx);
 
         [LibraryImport(LibraryName)]
-        internal static partial SoundIoError soundio_outstream_begin_write(IntPtr outStreamCtx, IntPtr areas, IntPtr frameCount);
+        internal static partial SoundIoError soundio_outstream_start(nint outStreamCtx);
 
         [LibraryImport(LibraryName)]
-        internal static partial SoundIoError soundio_outstream_end_write(IntPtr outStreamCtx);
+        internal static partial SoundIoError soundio_outstream_begin_write(nint outStreamCtx, nint areas, nint frameCount);
 
         [LibraryImport(LibraryName)]
-        internal static partial SoundIoError soundio_outstream_pause(IntPtr devCtx, [MarshalAs(UnmanagedType.Bool)] bool pause);
+        internal static partial SoundIoError soundio_outstream_end_write(nint outStreamCtx);
 
         [LibraryImport(LibraryName)]
-        internal static partial SoundIoError soundio_outstream_set_volume(IntPtr devCtx, double volume);
+        internal static partial SoundIoError soundio_outstream_pause(nint devCtx, [MarshalAs(UnmanagedType.Bool)] bool pause);
 
         [LibraryImport(LibraryName)]
-        internal static partial void soundio_outstream_destroy(IntPtr streamCtx);
+        internal static partial SoundIoError soundio_outstream_set_volume(nint devCtx, double volume);
 
         [LibraryImport(LibraryName)]
-        internal static partial void soundio_destroy(IntPtr ctx);
+        internal static partial void soundio_outstream_destroy(nint streamCtx);
 
         [LibraryImport(LibraryName)]
-        internal static partial IntPtr soundio_channel_layout_get_default(int channelCount);
+        internal static partial void soundio_destroy(nint ctx);
 
         [LibraryImport(LibraryName)]
-        internal static partial IntPtr soundio_strerror(SoundIoError err);
+        internal static partial nint soundio_channel_layout_get_default(int channelCount);
+
+        [LibraryImport(LibraryName)]
+        internal static partial nint soundio_strerror(SoundIoError err);
     }
 }

@@ -37,7 +37,7 @@ namespace Ryujinx.Cpu.Jit
         /// <inheritdoc/>
         public bool UsesPrivateAllocations => true;
 
-        public IntPtr PageTablePointer => _nativePageTable.PageTablePointer;
+        public nint PageTablePointer => _nativePageTable.PageTablePointer;
 
         public MemoryManagerType Type => _unsafeMode ? MemoryManagerType.HostTrackedUnsafe : MemoryManagerType.HostTracked;
 
@@ -452,7 +452,7 @@ namespace Ryujinx.Cpu.Jit
                 {
                     (MemoryBlock memory, ulong rangeOffset, ulong rangeSize) = GetMemoryOffsetAndSize(va, endVa - va);
 
-                    regions.Add(new((UIntPtr)memory.GetPointer(rangeOffset, rangeSize), rangeSize));
+                    regions.Add(new((nuint)memory.GetPointer(rangeOffset, rangeSize), rangeSize));
 
                     va += rangeSize;
                 }
@@ -469,7 +469,7 @@ namespace Ryujinx.Cpu.Jit
         {
             if (size == 0)
             {
-                return Enumerable.Empty<MemoryRange>();
+                return [];
             }
 
             return GetPhysicalRegionsImpl(va, size);

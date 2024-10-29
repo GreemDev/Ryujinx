@@ -26,7 +26,7 @@ namespace Ryujinx.Audio.Backends.SDL2
         // NOTE: We use a DllImport here because of marshaling issue for spec.
 #pragma warning disable SYSLIB1054
         [DllImport("SDL2")]
-        private static extern int SDL_GetDefaultAudioInfo(IntPtr name, out SDL_AudioSpec spec, int isCapture);
+        private static extern int SDL_GetDefaultAudioInfo(nint name, out SDL_AudioSpec spec, int isCapture);
 #pragma warning restore SYSLIB1054
 
         public SDL2HardwareDeviceDriver()
@@ -37,7 +37,7 @@ namespace Ryujinx.Audio.Backends.SDL2
 
             SDL2Driver.Instance.Initialize();
 
-            int res = SDL_GetDefaultAudioInfo(IntPtr.Zero, out var spec, 0);
+            int res = SDL_GetDefaultAudioInfo(nint.Zero, out var spec, 0);
 
             if (res != 0)
             {
@@ -136,7 +136,7 @@ namespace Ryujinx.Audio.Backends.SDL2
 
             desired.callback = callback;
 
-            uint device = SDL_OpenAudioDevice(IntPtr.Zero, 0, ref desired, out SDL_AudioSpec got, 0);
+            uint device = SDL_OpenAudioDevice(nint.Zero, 0, ref desired, out SDL_AudioSpec got, 0);
 
             if (device == 0)
             {

@@ -25,15 +25,15 @@ namespace Ryujinx.Ava.UI.Renderer
 
         protected GLXWindow X11Window { get; set; }
 
-        protected IntPtr WindowHandle { get; set; }
-        protected IntPtr X11Display { get; set; }
-        protected IntPtr NsView { get; set; }
-        protected IntPtr MetalLayer { get; set; }
+        protected nint WindowHandle { get; set; }
+        protected nint X11Display { get; set; }
+        protected nint NsView { get; set; }
+        protected nint MetalLayer { get; set; }
 
         public delegate void UpdateBoundsCallbackDelegate(Rect rect);
         private UpdateBoundsCallbackDelegate _updateBoundsCallback;
 
-        public event EventHandler<IntPtr> WindowCreated;
+        public event EventHandler<nint> WindowCreated;
         public event EventHandler<Size> BoundsChanged;
 
         public EmbeddedWindow()
@@ -49,10 +49,10 @@ namespace Ryujinx.Ava.UI.Renderer
 
         protected virtual void OnWindowDestroying()
         {
-            WindowHandle = IntPtr.Zero;
-            X11Display = IntPtr.Zero;
-            NsView = IntPtr.Zero;
-            MetalLayer = IntPtr.Zero;
+            WindowHandle = nint.Zero;
+            X11Display = nint.Zero;
+            NsView = nint.Zero;
+            MetalLayer = nint.Zero;
         }
 
         private void OnNativeEmbeddedWindowCreated(object sender, EventArgs e)
@@ -139,7 +139,7 @@ namespace Ryujinx.Ava.UI.Renderer
         {
             _className = "NativeWindow-" + Guid.NewGuid();
 
-            _wndProcDelegate = delegate (IntPtr hWnd, WindowsMessages msg, IntPtr wParam, IntPtr lParam)
+            _wndProcDelegate = delegate (nint hWnd, WindowsMessages msg, nint wParam, nint lParam)
             {
                 switch (msg)
                 {
@@ -162,7 +162,7 @@ namespace Ryujinx.Ava.UI.Renderer
 
             RegisterClassEx(ref wndClassEx);
 
-            WindowHandle = CreateWindowEx(0, _className, "NativeWindow", WindowStyles.WsChild, 0, 0, 640, 480, control.Handle, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+            WindowHandle = CreateWindowEx(0, _className, "NativeWindow", WindowStyles.WsChild, 0, 0, 640, 480, control.Handle, nint.Zero, nint.Zero, nint.Zero);
 
             SetWindowLongPtrW(control.Handle, GWLP_WNDPROC, wndClassEx.lpfnWndProc);
 
@@ -195,7 +195,7 @@ namespace Ryujinx.Ava.UI.Renderer
                 metalLayer.SendMessage("setContentsScale:", Program.DesktopScaleFactor);
             };
 
-            IntPtr nsView = child.ObjPtr;
+            nint nsView = child.ObjPtr;
             MetalLayer = metalLayer.ObjPtr;
             NsView = nsView;
 

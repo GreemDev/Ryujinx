@@ -45,7 +45,6 @@ namespace Ryujinx.Ava.UI.ViewModels.Input
 
         private PlayerIndex _playerId;
         private int _controller;
-        private readonly int _controllerNumber;
         private string _controllerImage;
         private int _device;
         private object _configViewModel;

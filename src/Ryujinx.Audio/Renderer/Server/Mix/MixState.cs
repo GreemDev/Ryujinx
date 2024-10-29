@@ -65,7 +65,7 @@ namespace Ryujinx.Audio.Renderer.Server.Mix
         /// <summary>
         /// The effect processing order storage.
         /// </summary>
-        private readonly IntPtr _effectProcessingOrderArrayPointer;
+        private readonly nint _effectProcessingOrderArrayPointer;
 
         /// <summary>
         /// The max element count that can be found in the effect processing order storage.
@@ -123,7 +123,7 @@ namespace Ryujinx.Audio.Renderer.Server.Mix
         {
             get
             {
-                if (_effectProcessingOrderArrayPointer == IntPtr.Zero)
+                if (_effectProcessingOrderArrayPointer == nint.Zero)
                 {
                     return Span<int>.Empty;
                 }
@@ -153,7 +153,7 @@ namespace Ryujinx.Audio.Renderer.Server.Mix
             unsafe
             {
                 // SAFETY: safe as effectProcessingOrderArray comes from the work buffer memory that is pinned.
-                _effectProcessingOrderArrayPointer = (IntPtr)Unsafe.AsPointer(ref MemoryMarshal.GetReference(effectProcessingOrderArray.Span));
+                _effectProcessingOrderArrayPointer = (nint)Unsafe.AsPointer(ref MemoryMarshal.GetReference(effectProcessingOrderArray.Span));
             }
 
             EffectProcessingOrderArrayMaxCount = (uint)effectProcessingOrderArray.Length;

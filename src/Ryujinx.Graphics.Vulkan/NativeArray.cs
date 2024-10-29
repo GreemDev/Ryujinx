@@ -40,7 +40,7 @@ namespace Ryujinx.Graphics.Vulkan
         {
             if (Pointer != null)
             {
-                Marshal.FreeHGlobal((IntPtr)Pointer);
+                Marshal.FreeHGlobal((nint)Pointer);
                 Pointer = null;
             }
         }

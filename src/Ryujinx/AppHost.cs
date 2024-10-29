@@ -57,7 +57,6 @@ using Key = Ryujinx.Input.Key;
 using MouseButton = Ryujinx.Input.MouseButton;
 using ScalingFilter = Ryujinx.Common.Configuration.ScalingFilter;
 using Size = Avalonia.Size;
-using Switch = Ryujinx.HLE.Switch;
 
 namespace Ryujinx.Ava
 {
@@ -69,8 +68,8 @@ namespace Ryujinx.Ava
         private const float VolumeDelta = 0.05f;
 
         private static readonly Cursor _invisibleCursor = new(StandardCursorType.None);
-        private readonly IntPtr _invisibleCursorWin;
-        private readonly IntPtr _defaultCursorWin;
+        private readonly nint _invisibleCursorWin;
+        private readonly nint _defaultCursorWin;
 
         private readonly long _ticksPerFrame;
         private readonly Stopwatch _chrono;
@@ -103,6 +102,10 @@ namespace Ryujinx.Ava
         private CursorStates _cursorState = !ConfigurationState.Instance.Hid.EnableMouse.Value ?
             CursorStates.CursorIsVisible : CursorStates.CursorIsHidden;
 
+        private DateTime _lastShaderReset;
+        private uint _displayCount;
+        private uint _previousCount = 0;
+
         private bool _isStopped;
         private bool _isActive;
         private bool _renderingStarted;
@@ -120,14 +123,13 @@ namespace Ryujinx.Ava
         private readonly object _lockObject = new();
 
         public event EventHandler AppExit;
-        public event EventHandler<StatusInitEventArgs> StatusInitEvent;
         public event EventHandler<StatusUpdatedEventArgs> StatusUpdatedEvent;
 
         public VirtualFileSystem VirtualFileSystem { get; }
         public ContentManager ContentManager { get; }
         public NpadManager NpadManager { get; }
         public TouchScreenManager TouchScreenManager { get; }
-        public Switch Device { get; set; }
+        public HLE.Switch Device { get; set; }
 
         public int Width { get; private set; }
         public int Height { get; private set; }
@@ -511,8 +513,7 @@ namespace Ryujinx.Ava
             }
 
             _isStopped = true;
-            _isActive = false;
-            DiscordIntegrationModule.SwitchToMainState();
+            Stop();
         }
 
         public void DisposeContext()
@@ -847,7 +848,7 @@ namespace Ryujinx.Ava
             // Initialize Configuration.
             var memoryConfiguration = ConfigurationState.Instance.System.DramSize.Value;
 
-            Device = new Switch(new HLEConfiguration(
+            Device = new HLE.Switch(new HLEConfiguration(
                 VirtualFileSystem,
                 _viewModel.LibHacHorizonManager,
                 ContentManager,
@@ -1043,14 +1044,14 @@ namespace Ryujinx.Ava
 
         public void InitStatus()
         {
-            StatusInitEvent?.Invoke(this, new StatusInitEventArgs(
-                ConfigurationState.Instance.Graphics.GraphicsBackend.Value switch
-                {
-                    GraphicsBackend.Vulkan => "Vulkan",
-                    GraphicsBackend.OpenGl => "OpenGL",
-                    _ => throw new NotImplementedException()
-                },
-                $"GPU: {_renderer.GetHardwareInfo().GpuDriver}"));
+            _viewModel.BackendText = ConfigurationState.Instance.Graphics.GraphicsBackend.Value switch
+            {
+                GraphicsBackend.Vulkan => "Vulkan",
+                GraphicsBackend.OpenGl => "OpenGL",
+                _ => throw new NotImplementedException()
+            };
+
+            _viewModel.GpuNameText = $"GPU: {_renderer.GetHardwareInfo().GpuDriver}";
         }
 
         public void UpdateStatus()
@@ -1058,6 +1059,8 @@ namespace Ryujinx.Ava
             // Run a status update only when a frame is to be drawn. This prevents from updating the ui and wasting a render when no frame is queued.
             string dockedMode = ConfigurationState.Instance.System.EnableDockedMode ? LocaleManager.Instance[LocaleKeys.Docked] : LocaleManager.Instance[LocaleKeys.Handheld];
 
+            UpdateShaderCount();
+            
             if (GraphicsConfig.ResScale != 1)
             {
                 dockedMode += $" ({GraphicsConfig.ResScale}x)";
@@ -1069,7 +1072,8 @@ namespace Ryujinx.Ava
                 dockedMode,
                 ConfigurationState.Instance.Graphics.AspectRatio.Value.ToText(),
                 LocaleManager.Instance[LocaleKeys.Game] + $": {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
-                $"FIFO: {Device.Statistics.GetFifoPercent():00.00} %"));
+                $"FIFO: {Device.Statistics.GetFifoPercent():00.00} %",
+                _displayCount));
         }
 
         public async Task ShowExitPrompt()
@@ -1092,6 +1096,24 @@ namespace Ryujinx.Ava
             if (shouldExit)
             {
                 Stop();
+            }
+        }
+
+        private void UpdateShaderCount()
+        {
+            // If there is a mismatch between total program compile and previous count
+            // this means new shaders have been compiled and should be displayed.
+            if (_renderer.ProgramCount != _previousCount)
+            {
+                _displayCount += _renderer.ProgramCount - _previousCount;
+                _lastShaderReset = DateTime.Now;
+                _previousCount = _renderer.ProgramCount;
+            }
+            // Check if 5s has passed since any new shaders were compiled.
+            // If yes, reset the counter.
+            else if (_lastShaderReset.AddSeconds(5) <= DateTime.Now)
+            {
+                _displayCount = 0;
             }
         }
 

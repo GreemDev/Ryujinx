@@ -64,11 +64,11 @@ namespace Ryujinx.Audio.Renderer.Dsp.Command
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe IntPtr GetBufferPointer(int index)
+        public unsafe nint GetBufferPointer(int index)
         {
             if (index >= 0 && index < _buffersEntryCount)
             {
-                return (IntPtr)((float*)_buffersMemoryHandle.Pointer + index * _sampleCount);
+                return (nint)((float*)_buffersMemoryHandle.Pointer + index * _sampleCount);
             }
 
             throw new ArgumentOutOfRangeException(nameof(index), index, null);

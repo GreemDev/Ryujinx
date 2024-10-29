@@ -68,7 +68,7 @@ namespace Ryujinx.Ava.Common
                     Logger.Warning?.Print(LogClass.Application, "No control file was found for this game. Using a dummy one instead. This may cause inaccuracies in some games.");
                 }
 
-                Uid user = new((ulong)_accountManager.LastOpenedUser.UserId.High, (ulong)_accountManager.LastOpenedUser.UserId.Low);
+                Uid user = _accountManager.LastOpenedUser.UserId.ToLibHacUid();
 
                 result = _horizonClient.Fs.EnsureApplicationSaveData(out _, new ApplicationId(titleId), in control, in user);
                 if (result.IsFailure())

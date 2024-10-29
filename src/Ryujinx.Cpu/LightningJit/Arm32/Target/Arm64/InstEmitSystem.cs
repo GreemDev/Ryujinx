@@ -324,27 +324,27 @@ namespace Ryujinx.Cpu.LightningJit.Arm32.Target.Arm64
             Udf(context, encoding, 0);
         }
 
-        private static IntPtr GetBkptHandlerPtr()
+        private static nint GetBkptHandlerPtr()
         {
             return Marshal.GetFunctionPointerForDelegate<SoftwareInterruptHandler>(NativeInterface.Break);
         }
 
-        private static IntPtr GetSvcHandlerPtr()
+        private static nint GetSvcHandlerPtr()
         {
             return Marshal.GetFunctionPointerForDelegate<SoftwareInterruptHandler>(NativeInterface.SupervisorCall);
         }
 
-        private static IntPtr GetUdfHandlerPtr()
+        private static nint GetUdfHandlerPtr()
         {
             return Marshal.GetFunctionPointerForDelegate<SoftwareInterruptHandler>(NativeInterface.Undefined);
         }
 
-        private static IntPtr GetCntpctEl0Ptr()
+        private static nint GetCntpctEl0Ptr()
         {
             return Marshal.GetFunctionPointerForDelegate<Get64>(NativeInterface.GetCntpctEl0);
         }
 
-        private static IntPtr CheckSynchronizationPtr()
+        private static nint CheckSynchronizationPtr()
         {
             return Marshal.GetFunctionPointerForDelegate<GetBool>(NativeInterface.CheckSynchronization);
         }
@@ -474,7 +474,7 @@ namespace Ryujinx.Cpu.LightningJit.Arm32.Target.Arm64
         private static void WriteCall(
             ref Assembler asm,
             RegisterAllocator regAlloc,
-            IntPtr funcPtr,
+            nint funcPtr,
             bool skipContext,
             int spillBaseOffset,
             int? resultRegister,

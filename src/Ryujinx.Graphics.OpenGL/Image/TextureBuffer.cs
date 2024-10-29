@@ -97,7 +97,7 @@ namespace Ryujinx.Graphics.OpenGL.Image
 
             SizedInternalFormat format = (SizedInternalFormat)FormatTable.GetFormatInfo(Info.Format).PixelInternalFormat;
 
-            GL.TexBufferRange(TextureBufferTarget.TextureBuffer, format, _buffer.ToInt32(), (IntPtr)buffer.Offset, buffer.Size);
+            GL.TexBufferRange(TextureBufferTarget.TextureBuffer, format, _buffer.ToInt32(), (nint)buffer.Offset, buffer.Size);
         }
 
         public void Dispose()

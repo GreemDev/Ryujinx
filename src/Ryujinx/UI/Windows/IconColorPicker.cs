@@ -21,10 +21,10 @@ namespace Ryujinx.Ava.UI.Windows
 
         private readonly struct PaletteColor(int qck, byte r, byte g, byte b)
         {
-            public int Qck { get; } = qck;
-            public byte R { get; } = r;
-            public byte G { get; } = g;
-            public byte B { get; } = b;
+            public int Qck => qck;
+            public byte R => r;
+            public byte G => g;
+            public byte B => b;
         }
 
         public static SKColor GetFilteredColor(SKBitmap image)
@@ -53,15 +53,6 @@ namespace Ryujinx.Ava.UI.Windows
             var dominantColorBin = new Dictionary<int, int>();
 
             var buffer = GetBuffer(image);
-
-            int w = image.Width;
-            int w8 = w << 8;
-            int h8 = image.Height << 8;
-
-#pragma warning disable IDE0059 // Unnecessary assignment
-            int xStep = w8 / ColorsPerLine;
-            int yStep = h8 / ColorsPerLine;
-#pragma warning restore IDE0059
 
             int i = 0;
             int maxHitCount = 0;
@@ -139,7 +130,7 @@ namespace Ryujinx.Ava.UI.Windows
             var value = GetColorValue(color);
 
             // If the color is rarely used on the image,
-            // then chances are that theres a better candidate, even if the saturation value
+            // then chances are that there's a better candidate, even if the saturation value
             // is high. By multiplying the saturation value with a weight, we can lower
             // it if the color is almost never used (hit count is low).
             var satWeighted = quantSat;
