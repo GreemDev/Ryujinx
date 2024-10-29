@@ -82,7 +82,7 @@ namespace Ryujinx.Ava.UI.Windows
 
             ViewModel.Title = App.FormatTitle();
 
-            TitleBar.ExtendsContentIntoTitleBar = (ConfigurationState.Instance.ShowTitleBar) ? false : true;
+            TitleBar.ExtendsContentIntoTitleBar = !ConfigurationState.Instance.ShowTitleBar;
             TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
 
             // NOTE: Height of MenuBar and StatusBar is not usable here, since it would still be 0 at this point.

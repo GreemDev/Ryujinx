@@ -1552,7 +1552,7 @@ namespace Ryujinx.UI.Common.Configuration
             {
                 Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 56.");
 
-                configurationFileFormat.ShowTitleBar = (OperatingSystem.IsWindows()) ? false : true;
+                configurationFileFormat.ShowTitleBar = !OperatingSystem.IsWindows();
 
                 configurationFileUpdated = true;
             }

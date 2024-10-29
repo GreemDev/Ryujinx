@@ -17,7 +17,7 @@ namespace Ryujinx.Ava.UI.Views.Settings
         public SettingsUiView()
         {
             InitializeComponent();
-            ShowTitleBarBox.IsVisible = (OperatingSystem.IsWindows()) ? true : false;
+            ShowTitleBarBox.IsVisible = OperatingSystem.IsWindows();
         }
 
         private async void AddGameDirButton_OnClick(object sender, RoutedEventArgs e)
