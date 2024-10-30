@@ -13,7 +13,7 @@
         <viewModels:MainWindowViewModel />
     </Design.DataContext>
     <DockPanel HorizontalAlignment="Stretch">
-        <Border Padding="7, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Border Name="RyuLogo" Padding="7, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Center">
             <Image 
                 ToolTip.Tip="{Binding Title}" 
                 Height="25" 
