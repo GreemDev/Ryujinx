@@ -25,7 +25,11 @@
 </p>
 <p align="center">
   On October 1st 2024, Ryujinx was discontinued as the creator was forced to abandon the project.
-  This fork is intended to be a direct continuation for existing Ryujinx users.
+  <br>
+  This fork is intended to be a QoL uplift for existing Ryujinx users.
+  <br>
+  This is not a Ryujinx revival project. This is not a Phoenix project.
+  <br>
   Guides and documentation can be found on the <a href="https://github.com/GreemDev/Ryujinx/wiki">Wiki tab</a>.
 </p>
 <p align="center">
