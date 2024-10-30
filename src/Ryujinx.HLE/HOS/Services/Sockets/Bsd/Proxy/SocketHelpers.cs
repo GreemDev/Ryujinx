@@ -16,7 +16,10 @@ namespace Ryujinx.HLE.HOS.Services.Sockets.Bsd.Proxy
             var writeDefault = writeEvents.Select(x => (x as DefaultSocket)?.BaseSocket).Where(x => x != null).ToList();
             var errorDefault = errorEvents.Select(x => (x as DefaultSocket)?.BaseSocket).Where(x => x != null).ToList();
 
-            Socket.Select(readDefault, writeDefault, errorDefault, timeout);
+            if (readDefault.Count != 0 || writeDefault.Count != 0 || errorDefault.Count != 0)
+            {
+                Socket.Select(readDefault, writeDefault, errorDefault, timeout);
+            }
 
             void FilterSockets(List<ISocketImpl> removeFrom, List<Socket> selectedSockets, Func<LdnProxySocket, bool> ldnCheck)
             {
