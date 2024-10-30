@@ -54,7 +54,7 @@ Use the search function to see if a game has been tested already!
 ## Usage
 
 To run this emulator, your PC must be equipped with at least 8GiB of RAM;
-failing to meet this requirement may result in a poor gameplay experience or unexpected crashes.
+failing to meet this requirement may result in a poor performance, which tends to ruin the gameplay experience or can lead to unexpected crashes.
 
 ## Latest build
 
