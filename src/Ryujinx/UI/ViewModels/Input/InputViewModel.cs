@@ -100,6 +100,7 @@ namespace Ryujinx.Ava.UI.ViewModels.Input
                 {
                     _playerId = PlayerIndex.Player1;
                 }
+                _isLoaded = false;
 
                 LoadConfiguration();
                 LoadDevice();
