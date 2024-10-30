@@ -32,6 +32,8 @@ namespace Ryujinx.Ava.UI.Views.Main
         {
             InitializeComponent();
 
+            RyuLogo.IsVisible = !ConfigurationState.Instance.ShowTitleBar;
+
             ToggleFileTypesMenuItem.ItemsSource = GenerateToggleFileTypeItems();
             ChangeLanguageMenuItem.ItemsSource = GenerateLanguageMenuItems();
         }

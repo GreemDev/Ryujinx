@@ -39,6 +39,9 @@
                     <CheckBox IsChecked="{Binding RememberWindowState}">
                         <TextBlock Text="{locale:Locale SettingsTabGeneralRememberWindowState}" />
                     </CheckBox>
+                    <CheckBox IsChecked="{Binding ShowTitleBar}" Name="ShowTitleBarBox">
+                        <TextBlock Text="{locale:Locale SettingsTabGeneralShowTitleBar}" />
+                    </CheckBox>
                     <StackPanel Margin="0, 15, 0, 0" Orientation="Horizontal">
                         <TextBlock VerticalAlignment="Center"
                                    Text="{locale:Locale SettingsTabGeneralHideCursor}"

@@ -653,6 +653,11 @@ namespace Ryujinx.UI.Common.Configuration
         public ReactiveObject<bool> RememberWindowState { get; private set; }
 
         /// <summary>
+        /// Enables or disables the redesigned title bar
+        /// </summary>
+        public ReactiveObject<bool> ShowTitleBar { get; private set; }
+
+        /// <summary>
         /// Enables hardware-accelerated rendering for Avalonia
         /// </summary>
         public ReactiveObject<bool> EnableHardwareAcceleration { get; private set; }
@@ -675,6 +680,7 @@ namespace Ryujinx.UI.Common.Configuration
             ShowConfirmExit = new ReactiveObject<bool>();
             IgnoreApplet = new ReactiveObject<bool>();
             RememberWindowState = new ReactiveObject<bool>();
+            ShowTitleBar = new ReactiveObject<bool>();
             EnableHardwareAcceleration = new ReactiveObject<bool>();
             HideCursor = new ReactiveObject<HideCursorMode>();
         }
@@ -714,6 +720,7 @@ namespace Ryujinx.UI.Common.Configuration
                 ShowConfirmExit = ShowConfirmExit,
                 IgnoreApplet = IgnoreApplet,
                 RememberWindowState = RememberWindowState,
+                ShowTitleBar = ShowTitleBar,
                 EnableHardwareAcceleration = EnableHardwareAcceleration,
                 HideCursor = HideCursor,
                 EnableVsync = Graphics.EnableVsync,
@@ -826,6 +833,7 @@ namespace Ryujinx.UI.Common.Configuration
             ShowConfirmExit.Value = true;
             IgnoreApplet.Value = false;
             RememberWindowState.Value = true;
+            ShowTitleBar.Value = !OperatingSystem.IsWindows();
             EnableHardwareAcceleration.Value = true;
             HideCursor.Value = HideCursorMode.OnIdle;
             Graphics.EnableVsync.Value = true;
@@ -1540,6 +1548,15 @@ namespace Ryujinx.UI.Common.Configuration
                 configurationFileUpdated = true;
             }
 
+            if (configurationFileFormat.Version < 56)
+            {
+                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 56.");
+
+                configurationFileFormat.ShowTitleBar = !OperatingSystem.IsWindows();
+
+                configurationFileUpdated = true;
+            }
+
             Logger.EnableFileLog.Value = configurationFileFormat.EnableFileLog;
             Graphics.ResScale.Value = configurationFileFormat.ResScale;
             Graphics.ResScaleCustom.Value = configurationFileFormat.ResScaleCustom;
@@ -1572,6 +1589,7 @@ namespace Ryujinx.UI.Common.Configuration
             ShowConfirmExit.Value = configurationFileFormat.ShowConfirmExit;
             IgnoreApplet.Value = configurationFileFormat.IgnoreApplet;
             RememberWindowState.Value = configurationFileFormat.RememberWindowState;
+            ShowTitleBar.Value = configurationFileFormat.ShowTitleBar;
             EnableHardwareAcceleration.Value = configurationFileFormat.EnableHardwareAcceleration;
             HideCursor.Value = configurationFileFormat.HideCursor;
             Graphics.EnableVsync.Value = configurationFileFormat.EnableVsync;

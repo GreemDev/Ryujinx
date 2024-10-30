@@ -100,6 +100,7 @@
   "SettingsTabGeneralCheckUpdatesOnLaunch": "ตรวจหาการอัปเดตเมื่อเปิดโปรแกรม",
   "SettingsTabGeneralShowConfirmExitDialog": "แสดง \"ปุ่มยืนยันการออก\" เมื่อออกเกม",
   "SettingsTabGeneralRememberWindowState": "จดจำ ขนาดหน้าต่างแอพพลิเคชั่น/คำแหน่ง",
+  "SettingsTabGeneralShowTitleBar": "Show Title Bar (Requires restart)",
   "SettingsTabGeneralHideCursor": "ซ่อน เคอร์เซอร์:",
   "SettingsTabGeneralHideCursorNever": "ไม่ต้อง",
   "SettingsTabGeneralHideCursorOnIdle": "เมื่อไม่ได้ใช้งาน",
