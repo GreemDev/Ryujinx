@@ -256,6 +256,11 @@ namespace Ryujinx.HLE.HOS.Services.Ldn.UserServiceCreator.LdnRyu.Proxy
             {
                 _proxy.ReturnEphemeralPort(ProtocolType, (ushort)((IPEndPoint)LocalEndPoint).Port);
             }
+            var asIPEndpoint = (IPEndPoint)localEP;
+            if (asIPEndpoint.Port == 0)
+            {
+                asIPEndpoint.Port = (ushort)_proxy.GetEphemeralPort(ProtocolType);
+            }
 
             LocalEndPoint = (IPEndPoint)localEP;
 
