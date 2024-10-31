@@ -754,73 +754,79 @@ namespace ARMeilleure.CodeGen.X86
 
             if (source != default)
             {
-                if (source.Kind == OperandKind.Constant)
+                switch (source.Kind)
                 {
-                    ulong imm = source.Value;
+                    case OperandKind.Constant:
+                        ulong imm = source.Value;
 
-                    if (inst == X86Instruction.Mov8)
-                    {
-                        WriteOpCode(dest, default, default, type, info.Flags, info.OpRMImm8);
-
-                        WriteByte((byte)imm);
-                    }
-                    else if (inst == X86Instruction.Mov16)
-                    {
-                        WriteOpCode(dest, default, default, type, info.Flags, info.OpRMImm32);
-
-                        WriteInt16((short)imm);
-                    }
-                    else if (IsImm8(imm, type) && info.OpRMImm8 != BadOp)
-                    {
-                        WriteOpCode(dest, default, default, type, info.Flags, info.OpRMImm8);
-
-                        WriteByte((byte)imm);
-                    }
-                    else if (!source.Relocatable && IsImm32(imm, type) && info.OpRMImm32 != BadOp)
-                    {
-                        WriteOpCode(dest, default, default, type, info.Flags, info.OpRMImm32);
-
-                        WriteInt32((int)imm);
-                    }
-                    else if (dest != default && dest.Kind == OperandKind.Register && info.OpRImm64 != BadOp)
-                    {
-                        int rexPrefix = GetRexPrefix(dest, source, type, rrm: false);
-
-                        if (rexPrefix != 0)
+                        if (inst == X86Instruction.Mov8)
                         {
-                            WriteByte((byte)rexPrefix);
+                            WriteOpCode(dest, default, default, type, info.Flags, info.OpRMImm8);
+
+                            WriteByte((byte)imm);
                         }
-
-                        WriteByte((byte)(info.OpRImm64 + (dest.GetRegister().Index & 0b111)));
-
-                        if (HasRelocs && source.Relocatable)
+                        else if (inst == X86Instruction.Mov16)
                         {
-                            _relocs.Add(new Reloc
+                            WriteOpCode(dest, default, default, type, info.Flags, info.OpRMImm32);
+
+                            WriteInt16((short)imm);
+                        }
+                        else if (IsImm8(imm, type) && info.OpRMImm8 != BadOp)
+                        {
+                            WriteOpCode(dest, default, default, type, info.Flags, info.OpRMImm8);
+
+                            WriteByte((byte)imm);
+                        }
+                        else if (!source.Relocatable && IsImm32(imm, type) && info.OpRMImm32 != BadOp)
+                        {
+                            WriteOpCode(dest, default, default, type, info.Flags, info.OpRMImm32);
+
+                            WriteInt32((int)imm);
+                        }
+                        else if (dest != default && dest.Kind == OperandKind.Register && info.OpRImm64 != BadOp)
+                        {
+                            int rexPrefix = GetRexPrefix(dest, source, type, rrm: false);
+
+                            if (rexPrefix != 0)
                             {
-                                JumpIndex = _jumps.Count - 1,
-                                Position = (int)_stream.Position,
-                                Symbol = source.Symbol,
-                            });
+                                WriteByte((byte)rexPrefix);
+                            }
+
+                            WriteByte((byte)(info.OpRImm64 + (dest.GetRegister().Index & 0b111)));
+
+                            if (HasRelocs && source.Relocatable)
+                            {
+                                _relocs.Add(new Reloc
+                                {
+                                    JumpIndex = _jumps.Count - 1,
+                                    Position = (int)_stream.Position,
+                                    Symbol = source.Symbol,
+                                });
+                            }
+
+                            WriteUInt64(imm);
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"Failed to encode constant 0x{imm:X}.");
                         }
 
-                        WriteUInt64(imm);
-                    }
-                    else
-                    {
-                        throw new ArgumentException($"Failed to encode constant 0x{imm:X}.");
-                    }
-                }
-                else if (source.Kind == OperandKind.Register && info.OpRMR != BadOp)
-                {
-                    WriteOpCode(dest, default, source, type, info.Flags, info.OpRMR);
-                }
-                else if (info.OpRRM != BadOp)
-                {
-                    WriteOpCode(dest, default, source, type, info.Flags, info.OpRRM, rrm: true);
-                }
-                else
-                {
-                    throw new ArgumentException($"Invalid source operand kind \"{source.Kind}\".");
+                        break;
+
+                    case OperandKind.Register when info.OpRMR != BadOp:
+                        WriteOpCode(dest, default, source, type, info.Flags, info.OpRMR);
+                        break;
+                    default:
+                        if (info.OpRRM != BadOp)
+                        {
+                            WriteOpCode(dest, default, source, type, info.Flags, info.OpRRM, rrm: true);
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"Invalid source operand kind \"{source.Kind}\".");
+                        }
+
+                        break;
                 }
             }
             else if (info.OpRRM != BadOp)
@@ -848,32 +854,39 @@ namespace ARMeilleure.CodeGen.X86
 
             if (src2 != default)
             {
-                if (src2.Kind == OperandKind.Constant)
+                switch (src2.Kind)
                 {
-                    ulong imm = src2.Value;
+                    case OperandKind.Constant:
+                        ulong imm = src2.Value;
 
-                    if ((byte)imm == imm && info.OpRMImm8 != BadOp)
-                    {
-                        WriteOpCode(dest, src1, default, type, info.Flags, info.OpRMImm8);
+                        if ((byte)imm == imm && info.OpRMImm8 != BadOp)
+                        {
+                            WriteOpCode(dest, src1, default, type, info.Flags, info.OpRMImm8);
 
-                        WriteByte((byte)imm);
-                    }
-                    else
-                    {
-                        throw new ArgumentException($"Failed to encode constant 0x{imm:X}.");
-                    }
-                }
-                else if (src2.Kind == OperandKind.Register && info.OpRMR != BadOp)
-                {
-                    WriteOpCode(dest, src1, src2, type, info.Flags, info.OpRMR);
-                }
-                else if (info.OpRRM != BadOp)
-                {
-                    WriteOpCode(dest, src1, src2, type, info.Flags, info.OpRRM, rrm: true);
-                }
-                else
-                {
-                    throw new ArgumentException($"Invalid source operand kind \"{src2.Kind}\".");
+                            WriteByte((byte)imm);
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"Failed to encode constant 0x{imm:X}.");
+                        }
+
+                        break;
+
+                    case OperandKind.Register when info.OpRMR != BadOp:
+                        WriteOpCode(dest, src1, src2, type, info.Flags, info.OpRMR);
+                        break;
+
+                    default:
+                        if (info.OpRRM != BadOp)
+                        {
+                            WriteOpCode(dest, src1, src2, type, info.Flags, info.OpRRM, rrm: true);
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"Invalid source operand kind \"{src2.Kind}\".");
+                        }
+
+                        break;
                 }
             }
             else if (info.OpRRM != BadOp)
@@ -913,49 +926,53 @@ namespace ARMeilleure.CodeGen.X86
 
             if (dest != default)
             {
-                if (dest.Kind == OperandKind.Register)
+                switch (dest.Kind)
                 {
-                    int regIndex = dest.GetRegister().Index;
+                    case OperandKind.Register:
+                        int regIndex = dest.GetRegister().Index;
 
-                    modRM |= (regIndex & 0b111) << (rrm ? 3 : 0);
+                        modRM |= (regIndex & 0b111) << (rrm ? 3 : 0);
 
-                    if ((flags & InstructionFlags.Reg8Dest) != 0 && regIndex >= 4)
-                    {
-                        rexPrefix |= RexPrefix;
-                    }
-                }
-                else if (dest.Kind == OperandKind.Memory)
-                {
-                    memOp = dest.GetMemory();
-                    hasMemOp = true;
-                }
-                else
-                {
-                    throw new ArgumentException("Invalid destination operand kind \"" + dest.Kind + "\".");
+                        if ((flags & InstructionFlags.Reg8Dest) != 0 && regIndex >= 4)
+                        {
+                            rexPrefix |= RexPrefix;
+                        }
+
+                        break;
+
+                    case OperandKind.Memory:
+                        memOp = dest.GetMemory();
+                        hasMemOp = true;
+                        break;
+
+                    default:
+                        throw new ArgumentException("Invalid destination operand kind \"" + dest.Kind + "\".");
                 }
             }
 
             if (src2 != default)
             {
-                if (src2.Kind == OperandKind.Register)
+                switch (src2.Kind)
                 {
-                    int regIndex = src2.GetRegister().Index;
+                    case OperandKind.Register:
+                        int regIndex = src2.GetRegister().Index;
 
-                    modRM |= (regIndex & 0b111) << (rrm ? 0 : 3);
+                        modRM |= (regIndex & 0b111) << (rrm ? 0 : 3);
 
-                    if ((flags & InstructionFlags.Reg8Src) != 0 && regIndex >= 4)
-                    {
-                        rexPrefix |= RexPrefix;
-                    }
-                }
-                else if (src2.Kind == OperandKind.Memory && !hasMemOp)
-                {
-                    memOp = src2.GetMemory();
-                    hasMemOp = true;
-                }
-                else
-                {
-                    throw new ArgumentException("Invalid source operand kind \"" + src2.Kind + "\".");
+                        if ((flags & InstructionFlags.Reg8Src) != 0 && regIndex >= 4)
+                        {
+                            rexPrefix |= RexPrefix;
+                        }
+
+                        break;
+
+                    case OperandKind.Memory when !hasMemOp:
+                        memOp = src2.GetMemory();
+                        hasMemOp = true;
+                        break;
+
+                    default:
+                        throw new ArgumentException("Invalid source operand kind \"" + src2.Kind + "\".");
                 }
             }
 

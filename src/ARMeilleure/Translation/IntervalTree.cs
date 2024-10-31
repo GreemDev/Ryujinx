@@ -152,17 +152,16 @@ namespace ARMeilleure.Translation
             while (node != null)
             {
                 int cmp = key.CompareTo(node.Start);
-                if (cmp < 0)
+                switch (cmp)
                 {
-                    node = node.Left;
-                }
-                else if (cmp > 0)
-                {
-                    node = node.Right;
-                }
-                else
-                {
-                    return node;
+                    case < 0:
+                        node = node.Left;
+                        break;
+                    case > 0:
+                        node = node.Right;
+                        break;
+                    default:
+                        return node;
                 }
             }
             return null;
@@ -272,43 +271,42 @@ namespace ARMeilleure.Translation
             {
                 parent = node;
                 int cmp = start.CompareTo(node.Start);
-                if (cmp < 0)
+                switch (cmp)
                 {
-                    node = node.Left;
-                }
-                else if (cmp > 0)
-                {
-                    node = node.Right;
-                }
-                else
-                {
-                    outNode = node;
+                    case < 0:
+                        node = node.Left;
+                        break;
+                    case > 0:
+                        node = node.Right;
+                        break;
+                    default:
+                        outNode = node;
 
-                    if (updateFactoryCallback != null)
-                    {
-                        // Replace
-                        node.Value = updateFactoryCallback(start, node.Value);
-
-                        int endCmp = end.CompareTo(node.End);
-
-                        if (endCmp > 0)
+                        if (updateFactoryCallback != null)
                         {
-                            node.End = end;
-                            if (end.CompareTo(node.Max) > 0)
+                            // Replace
+                            node.Value = updateFactoryCallback(start, node.Value);
+
+                            int endCmp = end.CompareTo(node.End);
+
+                            if (endCmp > 0)
                             {
-                                node.Max = end;
-                                PropagateIncrease(node);
-                                RestoreBalanceAfterInsertion(node);
+                                node.End = end;
+                                if (end.CompareTo(node.Max) > 0)
+                                {
+                                    node.Max = end;
+                                    PropagateIncrease(node);
+                                    RestoreBalanceAfterInsertion(node);
+                                }
+                            }
+                            else if (endCmp < 0)
+                            {
+                                node.End = end;
+                                PropagateFull(node);
                             }
                         }
-                        else if (endCmp < 0)
-                        {
-                            node.End = end;
-                            PropagateFull(node);
-                        }
-                    }
 
-                    return false;
+                        return false;
                 }
             }
             IntervalTreeNode<TK, TV> newNode = new(start, end, value, parent);

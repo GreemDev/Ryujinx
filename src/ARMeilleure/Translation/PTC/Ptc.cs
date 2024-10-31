@@ -977,27 +977,24 @@ namespace ARMeilleure.Translation.PTC
 
         private static FeatureInfo GetFeatureInfo()
         {
-            if (RuntimeInformation.ProcessArchitecture == Architecture.Arm64)
+            switch (RuntimeInformation.ProcessArchitecture)
             {
-                return new FeatureInfo(
-                    (ulong)Arm64HardwareCapabilities.LinuxFeatureInfoHwCap,
-                    (ulong)Arm64HardwareCapabilities.LinuxFeatureInfoHwCap2,
-                    (ulong)Arm64HardwareCapabilities.MacOsFeatureInfo,
-                    0,
-                    0);
-            }
-            else if (RuntimeInformation.ProcessArchitecture == Architecture.X64)
-            {
-                return new FeatureInfo(
-                    (ulong)X86HardwareCapabilities.FeatureInfo1Ecx,
-                    (ulong)X86HardwareCapabilities.FeatureInfo1Edx,
-                    (ulong)X86HardwareCapabilities.FeatureInfo7Ebx,
-                    (ulong)X86HardwareCapabilities.FeatureInfo7Ecx,
-                    (ulong)X86HardwareCapabilities.Xcr0InfoEax);
-            }
-            else
-            {
-                return new FeatureInfo(0, 0, 0, 0, 0);
+                case Architecture.Arm64:
+                    return new FeatureInfo(
+                                    (ulong)Arm64HardwareCapabilities.LinuxFeatureInfoHwCap,
+                                    (ulong)Arm64HardwareCapabilities.LinuxFeatureInfoHwCap2,
+                                    (ulong)Arm64HardwareCapabilities.MacOsFeatureInfo,
+                                    0,
+                                    0);
+                case Architecture.X64:
+                    return new FeatureInfo(
+                                    (ulong)X86HardwareCapabilities.FeatureInfo1Ecx,
+                                    (ulong)X86HardwareCapabilities.FeatureInfo1Edx,
+                                    (ulong)X86HardwareCapabilities.FeatureInfo7Ebx,
+                                    (ulong)X86HardwareCapabilities.FeatureInfo7Ecx,
+                                    (ulong)X86HardwareCapabilities.Xcr0InfoEax);
+                default:
+                    return new FeatureInfo(0, 0, 0, 0, 0);
             }
         }
 

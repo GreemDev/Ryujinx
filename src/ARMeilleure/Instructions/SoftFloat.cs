@@ -495,33 +495,33 @@ namespace ARMeilleure.Instructions
 
             double result;
 
-            if (type == FPType.SNaN || type == FPType.QNaN)
+            switch (type)
             {
-                if ((context.Fpcr & FPCR.Dn) != 0)
-                {
-                    result = SoftFloat64.FPDefaultNaN();
-                }
-                else
-                {
-                    result = FPConvertNaN(valueBits);
-                }
+                case FPType.SNaN:
+                case FPType.QNaN:
+                    if ((context.Fpcr & FPCR.Dn) != 0)
+                    {
+                        result = SoftFloat64.FPDefaultNaN();
+                    }
+                    else
+                    {
+                        result = FPConvertNaN(valueBits);
+                    }
 
-                if (type == FPType.SNaN)
-                {
-                    SoftFloat.FPProcessException(FPException.InvalidOp, context);
-                }
-            }
-            else if (type == FPType.Infinity)
-            {
-                result = SoftFloat64.FPInfinity(sign);
-            }
-            else if (type == FPType.Zero)
-            {
-                result = SoftFloat64.FPZero(sign);
-            }
-            else
-            {
-                result = FPRoundCv(real, context);
+                    if (type == FPType.SNaN)
+                    {
+                        SoftFloat.FPProcessException(FPException.InvalidOp, context);
+                    }
+                    break;
+                case FPType.Infinity:
+                    result = SoftFloat64.FPInfinity(sign);
+                    break;
+                case FPType.Zero:
+                    result = SoftFloat64.FPZero(sign);
+                    break;
+                default:
+                    result = FPRoundCv(real, context);
+                    break;
             }
 
             return result;
@@ -672,46 +672,49 @@ namespace ARMeilleure.Instructions
 
             ushort resultBits;
 
-            if (type == FPType.SNaN || type == FPType.QNaN)
+            switch (type)
             {
-                if (altHp)
-                {
+                case FPType.SNaN:
+                case FPType.QNaN:
+                    if (altHp)
+                    {
+                        resultBits = SoftFloat16.FPZero(sign);
+                    }
+                    else if ((context.Fpcr & FPCR.Dn) != 0)
+                    {
+                        resultBits = SoftFloat16.FPDefaultNaN();
+                    }
+                    else
+                    {
+                        resultBits = FPConvertNaN(valueBits);
+                    }
+
+                    if (type == FPType.SNaN || altHp)
+                    {
+                        SoftFloat.FPProcessException(FPException.InvalidOp, context);
+                    }
+                    break;
+
+                case FPType.Infinity:
+                    if (altHp)
+                    {
+                        resultBits = (ushort)((sign ? 1u : 0u) << 15 | 0x7FFFu);
+
+                        SoftFloat.FPProcessException(FPException.InvalidOp, context);
+                    }
+                    else
+                    {
+                        resultBits = SoftFloat16.FPInfinity(sign);
+                    }
+                    break;
+
+                case FPType.Zero:
                     resultBits = SoftFloat16.FPZero(sign);
-                }
-                else if ((context.Fpcr & FPCR.Dn) != 0)
-                {
-                    resultBits = SoftFloat16.FPDefaultNaN();
-                }
-                else
-                {
-                    resultBits = FPConvertNaN(valueBits);
-                }
+                    break;
 
-                if (type == FPType.SNaN || altHp)
-                {
-                    SoftFloat.FPProcessException(FPException.InvalidOp, context);
-                }
-            }
-            else if (type == FPType.Infinity)
-            {
-                if (altHp)
-                {
-                    resultBits = (ushort)((sign ? 1u : 0u) << 15 | 0x7FFFu);
-
-                    SoftFloat.FPProcessException(FPException.InvalidOp, context);
-                }
-                else
-                {
-                    resultBits = SoftFloat16.FPInfinity(sign);
-                }
-            }
-            else if (type == FPType.Zero)
-            {
-                resultBits = SoftFloat16.FPZero(sign);
-            }
-            else
-            {
-                resultBits = SoftFloat16.FPRoundCv(real, context);
+                default:
+                    resultBits = SoftFloat16.FPRoundCv(real, context);
+                    break;
             }
 
             return resultBits;
@@ -1056,46 +1059,46 @@ namespace ARMeilleure.Instructions
             {
                 if (value1 > value2)
                 {
-                    if (type1 == FPType.Infinity)
+                    switch (type1)
                     {
-                        result = FPInfinity(sign1);
-                    }
-                    else if (type1 == FPType.Zero)
-                    {
-                        result = FPZero(sign1 && sign2);
-                    }
-                    else
-                    {
-                        result = value1;
+                        case FPType.Infinity:
+                            result = FPInfinity(sign1);
+                            break;
+                        case FPType.Zero:
+                            result = FPZero(sign1 && sign2);
+                            break;
+                        default:
+                            result = value1;
 
-                        if ((fpcr & FPCR.Fz) != 0 && float.IsSubnormal(result))
-                        {
-                            context.Fpsr |= FPSR.Ufc;
+                            if ((fpcr & FPCR.Fz) != 0 && float.IsSubnormal(result))
+                            {
+                                context.Fpsr |= FPSR.Ufc;
 
-                            result = FPZero(result < 0f);
-                        }
+                                result = FPZero(result < 0f);
+                            }
+                            break;
                     }
                 }
                 else
                 {
-                    if (type2 == FPType.Infinity)
+                    switch (type2)
                     {
-                        result = FPInfinity(sign2);
-                    }
-                    else if (type2 == FPType.Zero)
-                    {
-                        result = FPZero(sign1 && sign2);
-                    }
-                    else
-                    {
-                        result = value2;
+                        case FPType.Infinity:
+                            result = FPInfinity(sign2);
+                            break;
+                        case FPType.Zero:
+                            result = FPZero(sign1 && sign2);
+                            break;
+                        default:
+                            result = value2;
 
-                        if ((fpcr & FPCR.Fz) != 0 && float.IsSubnormal(result))
-                        {
-                            context.Fpsr |= FPSR.Ufc;
+                            if ((fpcr & FPCR.Fz) != 0 && float.IsSubnormal(result))
+                            {
+                                context.Fpsr |= FPSR.Ufc;
 
-                            result = FPZero(result < 0f);
-                        }
+                                result = FPZero(result < 0f);
+                            }
+                            break;
                     }
                 }
             }
@@ -1147,46 +1150,46 @@ namespace ARMeilleure.Instructions
             {
                 if (value1 < value2)
                 {
-                    if (type1 == FPType.Infinity)
+                    switch (type1)
                     {
-                        result = FPInfinity(sign1);
-                    }
-                    else if (type1 == FPType.Zero)
-                    {
-                        result = FPZero(sign1 || sign2);
-                    }
-                    else
-                    {
-                        result = value1;
+                        case FPType.Infinity:
+                            result = FPInfinity(sign1);
+                            break;
+                        case FPType.Zero:
+                            result = FPZero(sign1 || sign2);
+                            break;
+                        default:
+                            result = value1;
 
-                        if ((fpcr & FPCR.Fz) != 0 && float.IsSubnormal(result))
-                        {
-                            context.Fpsr |= FPSR.Ufc;
+                            if ((fpcr & FPCR.Fz) != 0 && float.IsSubnormal(result))
+                            {
+                                context.Fpsr |= FPSR.Ufc;
 
-                            result = FPZero(result < 0f);
-                        }
+                                result = FPZero(result < 0f);
+                            }
+                            break;
                     }
                 }
                 else
                 {
-                    if (type2 == FPType.Infinity)
+                    switch (type2)
                     {
-                        result = FPInfinity(sign2);
-                    }
-                    else if (type2 == FPType.Zero)
-                    {
-                        result = FPZero(sign1 || sign2);
-                    }
-                    else
-                    {
-                        result = value2;
+                        case FPType.Infinity:
+                            result = FPInfinity(sign2);
+                            break;
+                        case FPType.Zero:
+                            result = FPZero(sign1 || sign2);
+                            break;
+                        default:
+                            result = value2;
 
-                        if ((fpcr & FPCR.Fz) != 0 && float.IsSubnormal(result))
-                        {
-                            context.Fpsr |= FPSR.Ufc;
+                            if ((fpcr & FPCR.Fz) != 0 && float.IsSubnormal(result))
+                            {
+                                context.Fpsr |= FPSR.Ufc;
 
-                            result = FPZero(result < 0f);
-                        }
+                                result = FPZero(result < 0f);
+                            }
+                            break;
                     }
                 }
             }

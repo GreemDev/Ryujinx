@@ -100,40 +100,48 @@ namespace ARMeilleure.Instructions
             {
                 Operand res = GetVec(op.Rn);
 
-                if (op.Size == 0)
+                switch (op.Size)
                 {
-                    if (op.DstIndex != 0)
-                    {
-                        res = context.AddIntrinsic(Intrinsic.X86Psrldq, res, Const(op.DstIndex));
-                    }
+                    case 0:
+                        if (op.DstIndex != 0)
+                        {
+                            res = context.AddIntrinsic(Intrinsic.X86Psrldq, res, Const(op.DstIndex));
+                        }
 
-                    res = context.AddIntrinsic(Intrinsic.X86Punpcklbw, res, res);
-                    res = context.AddIntrinsic(Intrinsic.X86Punpcklwd, res, res);
-                    res = context.AddIntrinsic(Intrinsic.X86Shufps, res, res, Const(0));
-                }
-                else if (op.Size == 1)
-                {
-                    if (op.DstIndex != 0)
-                    {
-                        res = context.AddIntrinsic(Intrinsic.X86Psrldq, res, Const(op.DstIndex * 2));
-                    }
+                        res = context.AddIntrinsic(Intrinsic.X86Punpcklbw, res, res);
+                        res = context.AddIntrinsic(Intrinsic.X86Punpcklwd, res, res);
+                        res = context.AddIntrinsic(Intrinsic.X86Shufps, res, res, Const(0));
+                        break;
 
-                    res = context.AddIntrinsic(Intrinsic.X86Punpcklwd, res, res);
-                    res = context.AddIntrinsic(Intrinsic.X86Shufps, res, res, Const(0));
-                }
-                else if (op.Size == 2)
-                {
-                    int mask = op.DstIndex * 0b01010101;
+                    case 1:
+                        if (op.DstIndex != 0)
+                        {
+                            res = context.AddIntrinsic(Intrinsic.X86Psrldq, res, Const(op.DstIndex * 2));
+                        }
 
-                    res = context.AddIntrinsic(Intrinsic.X86Shufps, res, res, Const(mask));
-                }
-                else if (op.DstIndex == 0 && op.RegisterSize != RegisterSize.Simd64)
-                {
-                    res = context.AddIntrinsic(Intrinsic.X86Movlhps, res, res);
-                }
-                else if (op.DstIndex == 1)
-                {
-                    res = context.AddIntrinsic(Intrinsic.X86Movhlps, res, res);
+                        res = context.AddIntrinsic(Intrinsic.X86Punpcklwd, res, res);
+                        res = context.AddIntrinsic(Intrinsic.X86Shufps, res, res, Const(0));
+                        break;
+
+                    case 2:
+                        {
+                            int mask = op.DstIndex * 0b01010101;
+
+                            res = context.AddIntrinsic(Intrinsic.X86Shufps, res, res, Const(mask));
+                            break;
+                        }
+
+                    default:
+                        if (op.DstIndex == 0 && op.RegisterSize != RegisterSize.Simd64)
+                        {
+                            res = context.AddIntrinsic(Intrinsic.X86Movlhps, res, res);
+                        }
+                        else if (op.DstIndex == 1)
+                        {
+                            res = context.AddIntrinsic(Intrinsic.X86Movhlps, res, res);
+                        }
+
+                        break;
                 }
 
                 if (op.RegisterSize == RegisterSize.Simd64)

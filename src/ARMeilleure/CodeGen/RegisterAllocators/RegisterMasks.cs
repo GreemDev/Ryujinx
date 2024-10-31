@@ -33,17 +33,14 @@ namespace ARMeilleure.CodeGen.RegisterAllocators
 
         public int GetAvailableRegisters(RegisterType type)
         {
-            if (type == RegisterType.Integer)
+            switch (type)
             {
-                return IntAvailableRegisters;
-            }
-            else if (type == RegisterType.Vector)
-            {
-                return VecAvailableRegisters;
-            }
-            else
-            {
-                throw new ArgumentException($"Invalid register type \"{type}\".");
+                case RegisterType.Integer:
+                    return IntAvailableRegisters;
+                case RegisterType.Vector:
+                    return VecAvailableRegisters;
+                default:
+                    throw new ArgumentException($"Invalid register type \"{type}\".");
             }
         }
     }

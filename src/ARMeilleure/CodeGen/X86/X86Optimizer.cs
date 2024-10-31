@@ -141,19 +141,18 @@ namespace ARMeilleure.CodeGen.X86
             Operand constOp;
             Operand otherOp;
 
-            if (src1.Kind == OperandKind.Constant && src2.Kind == OperandKind.LocalVariable)
+            switch (src1.Kind)
             {
-                constOp = src1;
-                otherOp = src2;
-            }
-            else if (src1.Kind == OperandKind.LocalVariable && src2.Kind == OperandKind.Constant)
-            {
-                constOp = src2;
-                otherOp = src1;
-            }
-            else
-            {
-                return 0;
+                case OperandKind.Constant when src2.Kind == OperandKind.LocalVariable:
+                    constOp = src1;
+                    otherOp = src2;
+                    break;
+                case OperandKind.LocalVariable when src2.Kind == OperandKind.Constant:
+                    constOp = src2;
+                    otherOp = src1;
+                    break;
+                default:
+                    return 0;
             }
 
             // If we have addition by 64-bits constant, then we can't optimize it further,

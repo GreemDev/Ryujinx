@@ -1214,17 +1214,17 @@ namespace ARMeilleure.Instructions
 
                 elementAction(tempD, nByte, mByte);
 
-                if (b == 0)
+                switch (b)
                 {
-                    result = context.ZeroExtend8(OperandType.I32, tempD);
-                }
-                else if (b < 3)
-                {
-                    result = context.BitwiseOr(result, context.ShiftLeft(context.ZeroExtend8(OperandType.I32, tempD), Const(b * 8)));
-                }
-                else
-                {
-                    result = context.BitwiseOr(result, context.ShiftLeft(tempD, Const(24)));
+                    case 0:
+                        result = context.ZeroExtend8(OperandType.I32, tempD);
+                        break;
+                    case < 3:
+                        result = context.BitwiseOr(result, context.ShiftLeft(context.ZeroExtend8(OperandType.I32, tempD), Const(b * 8)));
+                        break;
+                    default:
+                        result = context.BitwiseOr(result, context.ShiftLeft(tempD, Const(24)));
+                        break;
                 }
             }
 

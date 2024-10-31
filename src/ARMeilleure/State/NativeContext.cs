@@ -184,41 +184,36 @@ namespace ARMeilleure.State
 
         public unsafe static int GetRegisterOffset(Register reg)
         {
-            if (reg.Type == RegisterType.Integer)
+            switch (reg.Type)
             {
-                if ((uint)reg.Index >= RegisterConsts.IntRegsCount)
-                {
-                    throw new ArgumentException("Invalid register.");
-                }
+                case RegisterType.Integer:
+                    if ((uint)reg.Index >= RegisterConsts.IntRegsCount)
+                    {
+                        throw new ArgumentException("Invalid register.");
+                    }
 
-                return StorageOffset(ref _dummyStorage, ref _dummyStorage.X[reg.Index]);
-            }
-            else if (reg.Type == RegisterType.Vector)
-            {
-                if ((uint)reg.Index >= RegisterConsts.VecRegsCount)
-                {
-                    throw new ArgumentException("Invalid register.");
-                }
+                    return StorageOffset(ref _dummyStorage, ref _dummyStorage.X[reg.Index]);
+                case RegisterType.Vector:
+                    if ((uint)reg.Index >= RegisterConsts.VecRegsCount)
+                    {
+                        throw new ArgumentException("Invalid register.");
+                    }
 
-                return StorageOffset(ref _dummyStorage, ref _dummyStorage.V[reg.Index * 2]);
-            }
-            else if (reg.Type == RegisterType.Flag)
-            {
-                if ((uint)reg.Index >= RegisterConsts.FlagsCount)
-                {
-                    throw new ArgumentException("Invalid register.");
-                }
+                    return StorageOffset(ref _dummyStorage, ref _dummyStorage.V[reg.Index * 2]);
+                case RegisterType.Flag:
+                    if ((uint)reg.Index >= RegisterConsts.FlagsCount)
+                    {
+                        throw new ArgumentException("Invalid register.");
+                    }
 
-                return StorageOffset(ref _dummyStorage, ref _dummyStorage.Flags[reg.Index]);
-            }
-            else /* if (reg.Type == RegisterType.FpFlag) */
-            {
-                if ((uint)reg.Index >= RegisterConsts.FpFlagsCount)
-                {
-                    throw new ArgumentException("Invalid register.");
-                }
+                    return StorageOffset(ref _dummyStorage, ref _dummyStorage.Flags[reg.Index]);
+                default: // case RegisterType.FpFlag
+                    if ((uint)reg.Index >= RegisterConsts.FpFlagsCount)
+                    {
+                        throw new ArgumentException("Invalid register.");
+                    }
 
-                return StorageOffset(ref _dummyStorage, ref _dummyStorage.FpFlags[reg.Index]);
+                    return StorageOffset(ref _dummyStorage, ref _dummyStorage.FpFlags[reg.Index]);
             }
         }
 

@@ -423,25 +423,24 @@ namespace ARMeilleure.CodeGen.X86
 
                             Debug.Assert(!dest.Type.IsInteger());
 
-                            if (info.Inst == X86Instruction.Blendvpd && HardwareCapabilities.SupportsVexEncoding)
+                            switch (info.Inst)
                             {
-                                context.Assembler.WriteInstruction(X86Instruction.Vblendvpd, dest, src1, src2, src3);
-                            }
-                            else if (info.Inst == X86Instruction.Blendvps && HardwareCapabilities.SupportsVexEncoding)
-                            {
-                                context.Assembler.WriteInstruction(X86Instruction.Vblendvps, dest, src1, src2, src3);
-                            }
-                            else if (info.Inst == X86Instruction.Pblendvb && HardwareCapabilities.SupportsVexEncoding)
-                            {
-                                context.Assembler.WriteInstruction(X86Instruction.Vpblendvb, dest, src1, src2, src3);
-                            }
-                            else
-                            {
-                                EnsureSameReg(dest, src1);
+                                case X86Instruction.Blendvpd when HardwareCapabilities.SupportsVexEncoding:
+                                    context.Assembler.WriteInstruction(X86Instruction.Vblendvpd, dest, src1, src2, src3);
+                                    break;
+                                case X86Instruction.Blendvps when HardwareCapabilities.SupportsVexEncoding:
+                                    context.Assembler.WriteInstruction(X86Instruction.Vblendvps, dest, src1, src2, src3);
+                                    break;
+                                case X86Instruction.Pblendvb when HardwareCapabilities.SupportsVexEncoding:
+                                    context.Assembler.WriteInstruction(X86Instruction.Vpblendvb, dest, src1, src2, src3);
+                                    break;
+                                default:
+                                    EnsureSameReg(dest, src1);
 
-                                Debug.Assert(src3.GetRegister().Index == 0);
+                                    Debug.Assert(src3.GetRegister().Index == 0);
 
-                                context.Assembler.WriteInstruction(info.Inst, dest, src1, src2);
+                                    context.Assembler.WriteInstruction(info.Inst, dest, src1, src2);
+                                    break;
                             }
 
                             break;
@@ -1406,88 +1405,91 @@ namespace ARMeilleure.CodeGen.X86
                 }
             }
 
-            if (src2.Type == OperandType.I32)
+            switch (src2.Type)
             {
-                Debug.Assert(index < 4);
+                case OperandType.I32:
+                    Debug.Assert(index < 4);
 
-                if (HardwareCapabilities.SupportsSse41)
-                {
-                    context.Assembler.Pinsrd(dest, src1, src2, index);
-                }
-                else
-                {
-                    InsertIntSse2(2);
-                }
-            }
-            else if (src2.Type == OperandType.I64)
-            {
-                Debug.Assert(index < 2);
-
-                if (HardwareCapabilities.SupportsSse41)
-                {
-                    context.Assembler.Pinsrq(dest, src1, src2, index);
-                }
-                else
-                {
-                    InsertIntSse2(4);
-                }
-            }
-            else if (src2.Type == OperandType.FP32)
-            {
-                Debug.Assert(index < 4);
-
-                if (index != 0)
-                {
                     if (HardwareCapabilities.SupportsSse41)
                     {
-                        context.Assembler.Insertps(dest, src1, src2, (byte)(index << 4));
+                        context.Assembler.Pinsrd(dest, src1, src2, index);
                     }
                     else
                     {
-                        if (src1.GetRegister() == src2.GetRegister())
+                        InsertIntSse2(2);
+                    }
+                    break;
+                case OperandType.I64:
+                    Debug.Assert(index < 2);
+
+                    if (HardwareCapabilities.SupportsSse41)
+                    {
+                        context.Assembler.Pinsrq(dest, src1, src2, index);
+                    }
+                    else
+                    {
+                        InsertIntSse2(4);
+                    }
+                    break;
+                case OperandType.FP32:
+                    {
+                        Debug.Assert(index < 4);
+
+                        if (index != 0)
                         {
-                            int mask = 0b11_10_01_00;
+                            if (HardwareCapabilities.SupportsSse41)
+                            {
+                                context.Assembler.Insertps(dest, src1, src2, (byte)(index << 4));
+                            }
+                            else
+                            {
+                                if (src1.GetRegister() == src2.GetRegister())
+                                {
+                                    int mask = 0b11_10_01_00;
 
-                            mask &= ~(0b11 << index * 2);
+                                    mask &= ~(0b11 << index * 2);
 
-                            context.Assembler.Pshufd(dest, src1, (byte)mask);
+                                    context.Assembler.Pshufd(dest, src1, (byte)mask);
+                                }
+                                else
+                                {
+                                    int mask0 = 0b11_10_01_00;
+                                    int mask1 = 0b11_10_01_00;
+
+                                    mask0 = BitUtils.RotateRight(mask0, index * 2, 8);
+                                    mask1 = BitUtils.RotateRight(mask1, 8 - index * 2, 8);
+
+                                    context.Assembler.Pshufd(src1, src1, (byte)mask0); // Lane to be inserted in position 0.
+                                    context.Assembler.Movss(dest, src1, src2);         // dest[127:0] = src1[127:32] | src2[31:0]
+                                    context.Assembler.Pshufd(dest, dest, (byte)mask1); // Inserted lane in original position.
+
+                                    if (dest.GetRegister() != src1.GetRegister())
+                                    {
+                                        context.Assembler.Pshufd(src1, src1, (byte)mask1); // Restore src1.
+                                    }
+                                }
+                            }
                         }
                         else
                         {
-                            int mask0 = 0b11_10_01_00;
-                            int mask1 = 0b11_10_01_00;
-
-                            mask0 = BitUtils.RotateRight(mask0, index * 2, 8);
-                            mask1 = BitUtils.RotateRight(mask1, 8 - index * 2, 8);
-
-                            context.Assembler.Pshufd(src1, src1, (byte)mask0); // Lane to be inserted in position 0.
-                            context.Assembler.Movss(dest, src1, src2);         // dest[127:0] = src1[127:32] | src2[31:0]
-                            context.Assembler.Pshufd(dest, dest, (byte)mask1); // Inserted lane in original position.
-
-                            if (dest.GetRegister() != src1.GetRegister())
-                            {
-                                context.Assembler.Pshufd(src1, src1, (byte)mask1); // Restore src1.
-                            }
+                            context.Assembler.Movss(dest, src1, src2);
                         }
-                    }
-                }
-                else
-                {
-                    context.Assembler.Movss(dest, src1, src2);
-                }
-            }
-            else /* if (src2.Type == OperandType.FP64) */
-            {
-                Debug.Assert(index < 2);
 
-                if (index != 0)
-                {
-                    context.Assembler.Movlhps(dest, src1, src2);
-                }
-                else
-                {
-                    context.Assembler.Movsd(dest, src1, src2);
-                }
+                        break;
+                    }
+
+                default:
+                    Debug.Assert(index < 2);
+
+                    if (index != 0)
+                    {
+                        context.Assembler.Movlhps(dest, src1, src2);
+                    }
+                    else
+                    {
+                        context.Assembler.Movsd(dest, src1, src2);
+                    }
+                    break;
             }
         }
 

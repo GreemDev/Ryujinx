@@ -137,20 +137,20 @@ namespace ARMeilleure.Translation.Cache
 
                             Debug.Assert(allocSize % 8 == 0);
 
-                            if (allocSize <= 128)
+                            switch (allocSize)
                             {
-                                _unwindInfo->UnwindCodes[codeIndex++] = PackUnwindOp(UnwindOp.AllocSmall, entry.PrologOffset, (allocSize / 8) - 1);
-                            }
-                            else if (allocSize <= 0x7FFF8)
-                            {
-                                _unwindInfo->UnwindCodes[codeIndex++] = PackUnwindOp(UnwindOp.AllocLarge, entry.PrologOffset, 0);
-                                _unwindInfo->UnwindCodes[codeIndex++] = (ushort)(allocSize / 8);
-                            }
-                            else
-                            {
-                                _unwindInfo->UnwindCodes[codeIndex++] = PackUnwindOp(UnwindOp.AllocLarge, entry.PrologOffset, 1);
-                                _unwindInfo->UnwindCodes[codeIndex++] = (ushort)(allocSize >> 0);
-                                _unwindInfo->UnwindCodes[codeIndex++] = (ushort)(allocSize >> 16);
+                                case <= 128:
+                                    _unwindInfo->UnwindCodes[codeIndex++] = PackUnwindOp(UnwindOp.AllocSmall, entry.PrologOffset, (allocSize / 8) - 1);
+                                    break;
+                                case <= 0x7FFF8:
+                                    _unwindInfo->UnwindCodes[codeIndex++] = PackUnwindOp(UnwindOp.AllocLarge, entry.PrologOffset, 0);
+                                    _unwindInfo->UnwindCodes[codeIndex++] = (ushort)(allocSize / 8);
+                                    break;
+                                default:
+                                    _unwindInfo->UnwindCodes[codeIndex++] = PackUnwindOp(UnwindOp.AllocLarge, entry.PrologOffset, 1);
+                                    _unwindInfo->UnwindCodes[codeIndex++] = (ushort)(allocSize >> 0);
+                                    _unwindInfo->UnwindCodes[codeIndex++] = (ushort)(allocSize >> 16);
+                                    break;
                             }
 
                             break;

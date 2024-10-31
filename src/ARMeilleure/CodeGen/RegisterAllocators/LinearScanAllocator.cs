@@ -1099,17 +1099,14 @@ namespace ARMeilleure.CodeGen.RegisterAllocators
 
         private static int GetOperandId(Operand operand)
         {
-            if (operand.Kind == OperandKind.LocalVariable)
+            switch (operand.Kind)
             {
-                return operand.GetLocalNumber();
-            }
-            else if (operand.Kind == OperandKind.Register)
-            {
-                return GetRegisterId(operand.GetRegister());
-            }
-            else
-            {
-                throw new ArgumentException($"Invalid operand kind \"{operand.Kind}\".");
+                case OperandKind.LocalVariable:
+                    return operand.GetLocalNumber();
+                case OperandKind.Register:
+                    return GetRegisterId(operand.GetRegister());
+                default:
+                    throw new ArgumentException($"Invalid operand kind \"{operand.Kind}\".");
             }
         }
 

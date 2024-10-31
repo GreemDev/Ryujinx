@@ -221,54 +221,60 @@ namespace ARMeilleure.Instructions
 
             if (op.U)
             {
-                if (op.Size < 2)
+                switch (op.Size)
                 {
-                    EmitVectorUnaryOpZx32(context, (op1) =>
-                    {
-                        op1 = context.Add(op1, Const(op1.Type, roundConst));
+                    case < 2:
+                        EmitVectorUnaryOpZx32(context, (op1) =>
+                        {
+                            op1 = context.Add(op1, Const(op1.Type, roundConst));
 
-                        return context.ShiftRightUI(op1, Const(shift));
-                    }, accumulate);
-                }
-                else if (op.Size == 2)
-                {
-                    EmitVectorUnaryOpZx32(context, (op1) =>
-                    {
-                        op1 = context.ZeroExtend32(OperandType.I64, op1);
-                        op1 = context.Add(op1, Const(op1.Type, roundConst));
+                            return context.ShiftRightUI(op1, Const(shift));
+                        }, accumulate);
+                        break;
 
-                        return context.ConvertI64ToI32(context.ShiftRightUI(op1, Const(shift)));
-                    }, accumulate);
-                }
-                else /* if (op.Size == 3) */
-                {
-                    EmitVectorUnaryOpZx32(context, (op1) => EmitShrImm64(context, op1, signed: false, roundConst, shift), accumulate);
+                    case 2:
+                        EmitVectorUnaryOpZx32(context, (op1) =>
+                        {
+                            op1 = context.ZeroExtend32(OperandType.I64, op1);
+                            op1 = context.Add(op1, Const(op1.Type, roundConst));
+
+                            return context.ConvertI64ToI32(context.ShiftRightUI(op1, Const(shift)));
+                        }, accumulate);
+                        break;
+
+                    default: // case 3
+                        {
+                            EmitVectorUnaryOpZx32(context, (op1) => EmitShrImm64(context, op1, signed: false, roundConst, shift), accumulate);
+                            break;
+                        }
                 }
             }
             else
             {
-                if (op.Size < 2)
+                switch (op.Size)
                 {
-                    EmitVectorUnaryOpSx32(context, (op1) =>
-                    {
-                        op1 = context.Add(op1, Const(op1.Type, roundConst));
+                    case < 2:
+                        EmitVectorUnaryOpSx32(context, (op1) =>
+                        {
+                            op1 = context.Add(op1, Const(op1.Type, roundConst));
 
-                        return context.ShiftRightSI(op1, Const(shift));
-                    }, accumulate);
-                }
-                else if (op.Size == 2)
-                {
-                    EmitVectorUnaryOpSx32(context, (op1) =>
-                    {
-                        op1 = context.SignExtend32(OperandType.I64, op1);
-                        op1 = context.Add(op1, Const(op1.Type, roundConst));
+                            return context.ShiftRightSI(op1, Const(shift));
+                        }, accumulate);
+                        break;
 
-                        return context.ConvertI64ToI32(context.ShiftRightSI(op1, Const(shift)));
-                    }, accumulate);
-                }
-                else /* if (op.Size == 3) */
-                {
-                    EmitVectorUnaryOpZx32(context, (op1) => EmitShrImm64(context, op1, signed: true, roundConst, shift), accumulate);
+                    case 2:
+                        EmitVectorUnaryOpSx32(context, (op1) =>
+                        {
+                            op1 = context.SignExtend32(OperandType.I64, op1);
+                            op1 = context.Add(op1, Const(op1.Type, roundConst));
+
+                            return context.ConvertI64ToI32(context.ShiftRightSI(op1, Const(shift)));
+                        }, accumulate);
+                        break;
+
+                    default: // case 3
+                        EmitVectorUnaryOpZx32(context, (op1) => EmitShrImm64(context, op1, signed: true, roundConst, shift), accumulate);
+                        break;
                 }
             }
         }

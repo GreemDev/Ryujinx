@@ -1438,27 +1438,28 @@ namespace ARMeilleure.Decoders
                 // but 00 isn't.
                 char chr = encoding[index];
 
-                if (chr == '1')
+                switch (chr)
                 {
-                    value |= 1 << bit;
-                }
-                else if (chr == 'x')
-                {
-                    xMask |= 1 << bit;
-                }
-                else if (chr == '>')
-                {
-                    xPos[xBits++] = bit;
-                }
-                else if (chr == '<')
-                {
-                    xPos[xBits++] = bit;
+                    case '1':
+                        value |= 1 << bit;
+                        break;
+                    case 'x':
+                        xMask |= 1 << bit;
+                        break;
+                    case '>':
+                        xPos[xBits++] = bit;
+                        break;
+                    case '<':
+                        xPos[xBits++] = bit;
+                        blacklisted |= 1 << bit;
+                        break;
+                    default:
+                        if (chr != '0')
+                        {
+                            throw new ArgumentException($"Invalid encoding: {encoding}", nameof(encoding));
+                        }
 
-                    blacklisted |= 1 << bit;
-                }
-                else if (chr != '0')
-                {
-                    throw new ArgumentException($"Invalid encoding: {encoding}", nameof(encoding));
+                        break;
                 }
             }
 

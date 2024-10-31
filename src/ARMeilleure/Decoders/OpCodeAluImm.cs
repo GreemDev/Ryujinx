@@ -10,30 +10,31 @@ namespace ARMeilleure.Decoders
 
         public OpCodeAluImm(InstDescriptor inst, ulong address, int opCode) : base(inst, address, opCode)
         {
-            if (DataOp == DataOp.Arithmetic)
+            switch (DataOp)
             {
-                Immediate = (opCode >> 10) & 0xfff;
+                case DataOp.Arithmetic:
+                    Immediate = opCode >> 10 & 0xfff;
 
-                int shift = (opCode >> 22) & 3;
+                    int shift = opCode >> 22 & 3;
 
-                Immediate <<= shift * 12;
-            }
-            else if (DataOp == DataOp.Logical)
-            {
-                var bm = DecoderHelper.DecodeBitMask(opCode, true);
+                    Immediate <<= shift * 12;
+                    break;
 
-                if (bm.IsUndefined)
-                {
-                    Instruction = InstDescriptor.Undefined;
+                case DataOp.Logical:
+                    var bm = DecoderHelper.DecodeBitMask(opCode, true);
 
-                    return;
-                }
+                    if (bm.IsUndefined)
+                    {
+                        Instruction = InstDescriptor.Undefined;
 
-                Immediate = bm.WMask;
-            }
-            else
-            {
-                throw new ArgumentException($"Invalid data operation: {DataOp}", nameof(opCode));
+                        return;
+                    }
+
+                    Immediate = bm.WMask;
+                    break;
+
+                default:
+                    throw new ArgumentException($"Invalid data operation: {DataOp}", nameof(opCode));
             }
         }
     }

@@ -244,21 +244,20 @@ namespace ARMeilleure.Translation
                 {
                     Register reg = operand.GetRegister();
 
-                    if (reg.Type == RegisterType.Integer)
+                    switch (reg.Type)
                     {
-                        result = reg.Index;
-                    }
-                    else if (reg.Type == RegisterType.Vector)
-                    {
-                        result = RegisterConsts.IntRegsCount + reg.Index;
-                    }
-                    else if (reg.Type == RegisterType.Flag)
-                    {
-                        result = RegisterConsts.IntAndVecRegsCount + reg.Index;
-                    }
-                    else /* if (reg.Type == RegisterType.FpFlag) */
-                    {
-                        result = RegisterConsts.FpFlagsOffset + reg.Index;
+                        case RegisterType.Integer:
+                            result = reg.Index;
+                            break;
+                        case RegisterType.Vector:
+                            result = RegisterConsts.IntRegsCount + reg.Index;
+                            break;
+                        case RegisterType.Flag:
+                            result = RegisterConsts.IntAndVecRegsCount + reg.Index;
+                            break;
+                        default: // case RegisterType.FpFlag
+                            result = RegisterConsts.FpFlagsOffset + reg.Index;
+                            break;
                     }
 
                     return true;

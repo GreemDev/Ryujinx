@@ -69,32 +69,37 @@ namespace ARMeilleure.Instructions
                 // read all the data at once. For a 32-bits pairwise load, we do a
                 // simple 64-bits load, for a 128-bits load, we need to call a special
                 // method to read 128-bits atomically.
-                if (op.Size == 2)
+                switch (op.Size)
                 {
-                    Operand value = EmitLoadExclusive(context, address, exclusive, 3);
+                    case 2:
+                        {
+                            Operand value = EmitLoadExclusive(context, address, exclusive, 3);
 
-                    Operand valueLow = context.ConvertI64ToI32(value);
+                            Operand valueLow = context.ConvertI64ToI32(value);
 
-                    valueLow = context.ZeroExtend32(OperandType.I64, valueLow);
+                            valueLow = context.ZeroExtend32(OperandType.I64, valueLow);
 
-                    Operand valueHigh = context.ShiftRightUI(value, Const(32));
+                            Operand valueHigh = context.ShiftRightUI(value, Const(32));
 
-                    SetIntOrZR(context, op.Rt, valueLow);
-                    SetIntOrZR(context, op.Rt2, valueHigh);
-                }
-                else if (op.Size == 3)
-                {
-                    Operand value = EmitLoadExclusive(context, address, exclusive, 4);
+                            SetIntOrZR(context, op.Rt, valueLow);
+                            SetIntOrZR(context, op.Rt2, valueHigh);
+                            break;
+                        }
 
-                    Operand valueLow = context.VectorExtract(OperandType.I64, value, 0);
-                    Operand valueHigh = context.VectorExtract(OperandType.I64, value, 1);
+                    case 3:
+                        {
+                            Operand value = EmitLoadExclusive(context, address, exclusive, 4);
 
-                    SetIntOrZR(context, op.Rt, valueLow);
-                    SetIntOrZR(context, op.Rt2, valueHigh);
-                }
-                else
-                {
-                    throw new InvalidOperationException($"Invalid load size of {1 << op.Size} bytes.");
+                            Operand valueLow = context.VectorExtract(OperandType.I64, value, 0);
+                            Operand valueHigh = context.VectorExtract(OperandType.I64, value, 1);
+
+                            SetIntOrZR(context, op.Rt, valueLow);
+                            SetIntOrZR(context, op.Rt2, valueHigh);
+                            break;
+                        }
+
+                    default:
+                        throw new InvalidOperationException($"Invalid load size of {1 << op.Size} bytes.");
                 }
             }
             else

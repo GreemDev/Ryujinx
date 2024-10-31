@@ -108,36 +108,36 @@ namespace ARMeilleure.Translation
 
         protected static OperandType GetOperandType(Type type)
         {
-            if (type == typeof(bool) || type == typeof(byte) ||
-                type == typeof(char) || type == typeof(short) ||
-                type == typeof(int) || type == typeof(sbyte) ||
-                type == typeof(ushort) || type == typeof(uint))
+            switch (Type.GetTypeCode(type))
             {
-                return OperandType.I32;
-            }
-            else if (type == typeof(long) || type == typeof(ulong))
-            {
-                return OperandType.I64;
-            }
-            else if (type == typeof(double))
-            {
-                return OperandType.FP64;
-            }
-            else if (type == typeof(float))
-            {
-                return OperandType.FP32;
-            }
-            else if (type == typeof(V128))
-            {
-                return OperandType.V128;
-            }
-            else if (type == typeof(void))
-            {
-                return OperandType.None;
-            }
-            else
-            {
-                throw new ArgumentException($"Invalid type \"{type.Name}\".");
+                case TypeCode.Boolean:
+                case TypeCode.Byte:
+                case TypeCode.Char:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.SByte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                    return OperandType.I32;
+
+                case TypeCode.Int64:
+                case TypeCode.UInt64:
+                    return OperandType.I64;
+
+                case TypeCode.Double:
+                    return OperandType.FP64;
+
+                case TypeCode.Single:
+                    return OperandType.FP32;
+
+                case TypeCode.Object when type == typeof(V128):
+                    return OperandType.V128;
+
+                case TypeCode.Object when type == typeof(void):
+                    return OperandType.None;
+
+                default:
+                    throw new ArgumentException($"Invalid type \"{type.Name}\".");
             }
         }
 

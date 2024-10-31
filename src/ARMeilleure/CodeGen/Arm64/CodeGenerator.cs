@@ -1445,17 +1445,16 @@ namespace ARMeilleure.CodeGen.Arm64
                 return false;
             }
 
-            if (currentOp.Instruction == Instruction.Load)
+            switch (currentOp.Instruction)
             {
-                context.Assembler.LdpRiUn(currentOp.Destination, nextOp.Destination, op1Base, op1Offset);
-            }
-            else if (currentOp.Instruction == Instruction.Store)
-            {
-                context.Assembler.StpRiUn(currentOp.GetSource(1), nextOp.GetSource(1), op1Base, op1Offset);
-            }
-            else
-            {
-                return false;
+                case Instruction.Load:
+                    context.Assembler.LdpRiUn(currentOp.Destination, nextOp.Destination, op1Base, op1Offset);
+                    break;
+                case Instruction.Store:
+                    context.Assembler.StpRiUn(currentOp.GetSource(1), nextOp.GetSource(1), op1Base, op1Offset);
+                    break;
+                default:
+                    return false;
             }
 
             return true;

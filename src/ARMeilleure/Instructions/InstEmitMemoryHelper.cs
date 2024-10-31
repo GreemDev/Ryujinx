@@ -338,17 +338,17 @@ namespace ARMeilleure.Instructions
                 value = context.ConvertI64ToI32(value);
             }
 
-            if (size == 0)
+            switch (size)
             {
-                context.Store8(physAddr, value);
-            }
-            else if (size == 1)
-            {
-                context.Store16(physAddr, value);
-            }
-            else
-            {
-                context.Store(physAddr, value);
+                case 0:
+                    context.Store8(physAddr, value);
+                    break;
+                case 1:
+                    context.Store16(physAddr, value);
+                    break;
+                default:
+                    context.Store(physAddr, value);
+                    break;
             }
         }
 
