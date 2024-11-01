@@ -1767,6 +1767,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             if (WindowState is not WindowState.Normal)
             {
                 WindowState = WindowState.Normal;
+                Window.TitleBar.ExtendsContentIntoTitleBar = !ConfigurationState.Instance.ShowTitleBar;
 
                 if (IsGameRunning)
                 {
@@ -1776,6 +1777,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             else
             {
                 WindowState = WindowState.FullScreen;
+                Window.TitleBar.ExtendsContentIntoTitleBar = true;
 
                 if (IsGameRunning)
                 {
