@@ -1,3 +1,4 @@
+using Humanizer;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Logging;
@@ -485,10 +486,10 @@ namespace Ryujinx.Headless.SDL2
         {
             string playerCount = args.PlayerCountMin == args.PlayerCountMax ? $"exactly {args.PlayerCountMin}" : $"{args.PlayerCountMin}-{args.PlayerCountMax}";
 
-            string message = $"Application requests {playerCount} player(s) with:\n\n"
+            string message = $"Application requests {playerCount} {"player".ToQuantity(args.PlayerCountMin + args.PlayerCountMax, ShowQuantityAs.None)} with:\n\n"
                            + $"TYPES: {args.SupportedStyles}\n\n"
                            + $"PLAYERS: {string.Join(", ", args.SupportedPlayers)}\n\n"
-                           + (args.IsDocked ? "Docked mode set. Handheld is also invalid.\n\n" : "")
+                           + (args.IsDocked ? "Docked mode set. Handheld is also invalid.\n\n" : string.Empty)
                            + "Please reconfigure Input now and then press OK.";
 
             return DisplayMessageDialog("Controller Applet", message);
