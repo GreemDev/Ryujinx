@@ -2,9 +2,10 @@ using Avalonia.Data.Core;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Markup.Xaml.MarkupExtensions.CompiledBindings;
+using Ryujinx.Ava.Common.Locale;
 using System;
 
-namespace Ryujinx.Ava.Common.Locale
+namespace Ryujinx.Ava.Common.Markup
 {
     internal class LocaleExtension(LocaleKeys key) : MarkupExtension
     {

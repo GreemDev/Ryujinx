@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Markup.Xaml.MarkupExtensions.CompiledBindings;
 using System;
 
-namespace Ryujinx.Ava.Common.Icon
+namespace Ryujinx.Ava.Common.Markup
 {
     internal class IconExtension(string iconString) : MarkupExtension
     {
