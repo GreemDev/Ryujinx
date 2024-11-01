@@ -27,7 +27,7 @@ namespace Ryujinx.Ava.UI.Controls
         {
             MainText = mainText;
             SecondaryText = secondaryText;
-            Message = message ?? "";
+            Message = message ?? string.Empty;
             DataContext = this;
             _placeholder = placeholder;
             InitializeComponent();
@@ -55,9 +55,9 @@ namespace Ryujinx.Ava.UI.Controls
             Input.Focus();
         }
 
-        public string Message { get; set; } = "";
-        public string MainText { get; set; } = "";
-        public string SecondaryText { get; set; } = "";
+        public string Message { get; set; } = string.Empty;
+        public string MainText { get; set; } = string.Empty;
+        public string SecondaryText { get; set; } = string.Empty;
 
         public static async Task<(UserResult Result, string Input)> ShowInputDialog(string title, SoftwareKeyboardUIArgs args)
         {
@@ -76,7 +76,7 @@ namespace Ryujinx.Ava.UI.Controls
             contentDialog.Title = title;
             contentDialog.PrimaryButtonText = args.SubmitText;
             contentDialog.IsPrimaryButtonEnabled = content._checkLength(content.Message.Length);
-            contentDialog.SecondaryButtonText = "";
+            contentDialog.SecondaryButtonText = string.Empty;
             contentDialog.CloseButtonText = LocaleManager.Instance[LocaleKeys.InputDialogCancel];
             contentDialog.Content = content;
 
@@ -110,13 +110,13 @@ namespace Ryujinx.Ava.UI.Controls
             Error.IsVisible = false;
             Error.FontStyle = FontStyle.Italic;
 
-            string validationInfoText = "";
+            string validationInfoText = string.Empty;
 
             if (_inputMin <= 0 && _inputMax == int.MaxValue) // Disable.
             {
                 Error.IsVisible = false;
 
-                _checkLength = length => true;
+                _checkLength = _ => true;
             }
             else if (_inputMin > 0 && _inputMax == int.MaxValue)
             {

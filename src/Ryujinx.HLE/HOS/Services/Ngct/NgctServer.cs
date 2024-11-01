@@ -15,7 +15,7 @@ namespace Ryujinx.HLE.HOS.Services.Ngct
             ulong bufferSize = context.Request.PtrBuff[0].Size;
 
             bool isMatch = false;
-            string text = "";
+            string text = string.Empty;
 
             if (bufferSize != 0)
             {
@@ -57,8 +57,8 @@ namespace Ryujinx.HLE.HOS.Services.Ngct
 
             ulong bufferFilteredPosition = context.Request.RecvListBuff[0].Position;
 
-            string text = "";
-            string textFiltered = "";
+            string text = string.Empty;
+            string textFiltered = string.Empty;
 
             if (bufferSize != 0)
             {

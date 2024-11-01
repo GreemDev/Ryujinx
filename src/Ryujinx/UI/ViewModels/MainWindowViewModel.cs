@@ -1092,7 +1092,12 @@ namespace Ryujinx.Ava.UI.ViewModels
 
                                 string message = LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogFirmwareInstallerFirmwareInstallSuccessMessage, firmwareVersion.VersionString);
 
-                                await ContentDialogHelper.CreateInfoDialog(dialogTitle, message, LocaleManager.Instance[LocaleKeys.InputDialogOk], "", LocaleManager.Instance[LocaleKeys.RyujinxInfo]);
+                                await ContentDialogHelper.CreateInfoDialog(
+                                    dialogTitle, 
+                                    message, 
+                                    LocaleManager.Instance[LocaleKeys.InputDialogOk], 
+                                    string.Empty, 
+                                    LocaleManager.Instance[LocaleKeys.RyujinxInfo]);
 
                                 Logger.Info?.Print(LogClass.Application, message);
 
@@ -1163,7 +1168,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                             case LoadState.Loaded:
                                 LoadHeading = LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.LoadingHeading, _currentApplicationData.Name);
                                 IsLoadingIndeterminate = true;
-                                CacheLoadStatus = "";
+                                CacheLoadStatus = string.Empty;
                                 break;
                         }
                         break;
@@ -1183,7 +1188,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                             case ShaderCacheLoadingState.Loaded:
                                 LoadHeading = LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.LoadingHeading, _currentApplicationData.Name);
                                 IsLoadingIndeterminate = true;
-                                CacheLoadStatus = "";
+                                CacheLoadStatus = string.Empty;
                                 break;
                         }
                         break;
@@ -1303,7 +1308,12 @@ namespace Ryujinx.Ava.UI.ViewModels
                 {
                     await ContentDialogHelper.ShowTextDialog(
                         LocaleManager.Instance[numAdded > 0 || numRemoved > 0 ? LocaleKeys.RyujinxConfirm : LocaleKeys.RyujinxInfo],
-                        msg, "", "", "", LocaleManager.Instance[LocaleKeys.InputDialogOk], (int)Symbol.Checkmark);
+                        msg, 
+                        string.Empty, 
+                        string.Empty, 
+                        string.Empty, 
+                        LocaleManager.Instance[LocaleKeys.InputDialogOk], 
+                        (int)Symbol.Checkmark);
                 });
             }
         }
@@ -1600,7 +1610,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                     LocaleManager.Instance[LocaleKeys.DialogLoadAppGameAlreadyLoadedMessage],
                     LocaleManager.Instance[LocaleKeys.DialogLoadAppGameAlreadyLoadedSubMessage],
                     LocaleManager.Instance[LocaleKeys.InputDialogOk],
-                    "",
+                    string.Empty,
                     LocaleManager.Instance[LocaleKeys.RyujinxInfo]);
 
                 return;
@@ -1817,7 +1827,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
                 if (result == UserResult.Yes)
                 {
-                    ConfigurationState.Instance.Graphics.ShadersDumpPath.Value = "";
+                    ConfigurationState.Instance.Graphics.ShadersDumpPath.Value = string.Empty;
 
                     SaveConfig();
                 }

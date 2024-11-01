@@ -22,7 +22,7 @@ namespace Ryujinx.HLE.Generators
             {
                 if (className.Modifiers.Any(SyntaxKind.AbstractKeyword) || className.Modifiers.Any(SyntaxKind.PrivateKeyword) || !className.AttributeLists.Any(x => x.Attributes.Any(y => y.ToString().StartsWith("Service"))))
                     continue;
-                var name = GetFullName(className, context).Replace("global::", "");
+                var name = GetFullName(className, context).Replace("global::", string.Empty);
                 if (!name.StartsWith("Ryujinx.HLE.HOS.Services"))
                     continue;
                 var constructors = className.ChildNodes().Where(x => x.IsKind(SyntaxKind.ConstructorDeclaration)).Select(y => y as ConstructorDeclarationSyntax).ToArray();

@@ -138,7 +138,7 @@ namespace Ryujinx.Ava.UI.Controls
 
             foreach (var account in lostAccounts)
             {
-                ViewModel.LostProfiles.Add(new UserProfile(new HLE.HOS.Services.Account.Acc.UserProfile(account, "", null), this));
+                ViewModel.LostProfiles.Add(new UserProfile(new HLE.HOS.Services.Account.Acc.UserProfile(account, string.Empty, null), this));
             }
 
             ViewModel.Profiles.Add(new BaseModel());
@@ -155,14 +155,11 @@ namespace Ryujinx.Ava.UI.Controls
 
                 if (profile == null)
                 {
-                    Dispatcher.UIThread.Post(Action);
+                    _ = Dispatcher.UIThread.InvokeAsync(async () 
+                        => await ContentDialogHelper.CreateErrorDialog(
+                            LocaleManager.Instance[LocaleKeys.DialogUserProfileDeletionWarningMessage]));
                     
                     return;
-                    
-                    static async void Action()
-                    {
-                        await ContentDialogHelper.CreateErrorDialog(LocaleManager.Instance[LocaleKeys.DialogUserProfileDeletionWarningMessage]);
-                    }
                 }
 
                 AccountManager.OpenUser(profile.UserId);
@@ -170,10 +167,10 @@ namespace Ryujinx.Ava.UI.Controls
 
             var result = await ContentDialogHelper.CreateConfirmationDialog(
                 LocaleManager.Instance[LocaleKeys.DialogUserProfileDeletionConfirmMessage],
-                "",
+                string.Empty,
                 LocaleManager.Instance[LocaleKeys.InputDialogYes],
                 LocaleManager.Instance[LocaleKeys.InputDialogNo],
-                "");
+                string.Empty);
 
             if (result == UserResult.Yes)
             {
