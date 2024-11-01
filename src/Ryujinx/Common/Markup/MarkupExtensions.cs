@@ -1,6 +1,10 @@
 using Avalonia.Data.Core;
+using Avalonia.Markup.Xaml;
+using Avalonia.Markup.Xaml.MarkupExtensions;
+using Avalonia.Markup.Xaml.MarkupExtensions.CompiledBindings;
 using Projektanker.Icons.Avalonia;
 using Ryujinx.Ava.Common.Locale;
+using System;
 
 namespace Ryujinx.Ava.Common.Markup
 {
@@ -26,14 +30,22 @@ namespace Ryujinx.Ava.Common.Markup
             );
     }
     
-    internal class LocaleExtension(LocaleKeys key) : BasicMarkupExtension
+    internal class LocaleExtension(LocaleKeys key) : MarkupExtension
     {
-        protected override ClrPropertyInfo PropertyInfo
+        private ClrPropertyInfo PropertyInfo
             => new(
                 "Item",
                 _ => LocaleManager.Instance[key],
                 null,
                 typeof(string)
             );
+        
+        public override object ProvideValue(IServiceProvider serviceProvider) =>
+            new CompiledBindingExtension(
+                new CompiledBindingPathBuilder()
+                    .Property(PropertyInfo, PropertyInfoAccessorFactory.CreateInpcPropertyAccessor)
+                    .Build()
+            ) { Source = LocaleManager.Instance }
+                .ProvideValue(serviceProvider);
     }
 }
