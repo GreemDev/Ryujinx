@@ -26,7 +26,6 @@
             Margin="0"
             HorizontalAlignment="Left"
             IsOpen="{Binding IsSubMenuOpen, Mode=OneWayToSource}">
-
             <Menu.ItemsPanel>
                 <ItemsPanelTemplate>
                     <DockPanel Margin="0" HorizontalAlignment="Stretch" />
