@@ -34,6 +34,11 @@ namespace Ryujinx.Ava.UI.Controls
 
             Input.Watermark = _placeholder;
 
+            if (string.IsNullOrWhiteSpace(Input.Watermark))
+            {
+                Input.UseFloatingWatermark = false;
+            }
+
             Input.AddHandler(TextInputEvent, Message_TextInput, RoutingStrategies.Tunnel, true);
         }
 
