@@ -107,6 +107,7 @@
   "SettingsTabGeneralHideCursorAlways": "始终隐藏",
   "SettingsTabGeneralGameDirectories": "游戏目录",
   "SettingsTabGeneralAutoloadDirectories": "自动加载DLC/游戏更新目录",
+  "SettingsTabGeneralAutoloadNote": "DLC and Updates which refer to missing files will be unloaded automatically",
   "SettingsTabGeneralAdd": "添加",
   "SettingsTabGeneralRemove": "删除",
   "SettingsTabSystem": "系统",
