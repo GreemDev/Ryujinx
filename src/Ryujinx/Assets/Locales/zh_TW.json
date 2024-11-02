@@ -731,6 +731,7 @@
   "UpdateWindowBundledContentNotice": "Bundled updates cannot be removed, only disabled.",
   "CheatWindowHeading": "可用於 {0} [{1}] 的密技",
   "BuildId": "組建識別碼:",
+  "DlcWindowBundledContentNotice": "Bundled DLC cannot be removed, only disabled.",
   "DlcWindowHeading": "{0} 個可下載內容",
   "DlcWindowDlcAddedMessage": "{0} new downloadable content(s) added",
   "AutoloadDlcAddedMessage": "{0} new downloadable content(s) added",

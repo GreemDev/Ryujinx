@@ -731,6 +731,7 @@
   "UpdateWindowBundledContentNotice": "Bundled updates cannot be removed, only disabled.",
   "CheatWindowHeading": "צ'יטים זמינים עבור {0} [{1}]",
   "BuildId": "מזהה בניה:",
+  "DlcWindowBundledContentNotice": "Bundled DLC cannot be removed, only disabled.",
   "DlcWindowHeading": "{0} הרחבות משחק",
   "DlcWindowDlcAddedMessage": "{0} new downloadable content(s) added",
   "AutoloadDlcAddedMessage": "{0} new downloadable content(s) added",

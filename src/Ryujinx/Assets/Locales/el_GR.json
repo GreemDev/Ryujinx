@@ -731,6 +731,7 @@
   "UpdateWindowBundledContentNotice": "Bundled updates cannot be removed, only disabled.",
   "CheatWindowHeading": "Διαθέσιμα Cheats για {0} [{1}]",
   "BuildId": "BuildId:",
+  "DlcWindowBundledContentNotice": "Bundled DLC cannot be removed, only disabled.",
   "DlcWindowHeading": "{0} Downloadable Content(s) available for {1} ({2})",
   "DlcWindowDlcAddedMessage": "{0} new downloadable content(s) added",
   "AutoloadDlcAddedMessage": "{0} new downloadable content(s) added",

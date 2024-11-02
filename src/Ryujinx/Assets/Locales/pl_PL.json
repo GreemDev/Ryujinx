@@ -731,6 +731,7 @@
   "UpdateWindowBundledContentNotice": "Bundled updates cannot be removed, only disabled.",
   "CheatWindowHeading": "Kody Dostępne dla {0} [{1}]",
   "BuildId": "Identyfikator wersji:",
+  "DlcWindowBundledContentNotice": "Bundled DLC cannot be removed, only disabled.",
   "DlcWindowHeading": "{0} Zawartości do Pobrania dostępna dla {1} ({2})",
   "DlcWindowDlcAddedMessage": "{0} new downloadable content(s) added",
   "AutoloadDlcAddedMessage": "{0} new downloadable content(s) added",

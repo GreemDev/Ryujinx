@@ -731,6 +731,7 @@
   "UpdateWindowBundledContentNotice": "Bundled updates cannot be removed, only disabled.",
   "CheatWindowHeading": "Коди доступні для {0} [{1}]",
   "BuildId": "ID збірки:",
+  "DlcWindowBundledContentNotice": "Bundled DLC cannot be removed, only disabled.",
   "DlcWindowHeading": "Вміст для завантаження, доступний для {1} ({2}): {0}",
   "DlcWindowDlcAddedMessage": "{0} new downloadable content(s) added",
   "AutoloadDlcAddedMessage": "{0} new downloadable content(s) added",
