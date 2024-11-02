@@ -392,6 +392,8 @@ namespace Ryujinx.Ava.UI.Windows
 
             ViewModel.WindowState = ConfigurationState.Instance.UI.WindowStartup.WindowMaximized.Value ? WindowState.Maximized : WindowState.Normal;
 
+            Arrange(new Rect(savedPoint.X, savedPoint.Y, ViewModel.WindowWidth, ViewModel.WindowHeight));
+
             if (CheckScreenBounds(savedPoint))
             {
                 Position = savedPoint;
