@@ -151,7 +151,7 @@
   "SettingsTabSystemAudioBackendSDL2": "SDL2",
   "SettingsTabSystemHacks": "Hacks",
   "SettingsTabSystemHacksNote": "Cela peut causer des instabilités",
-  "SettingsTabSystemDramSize": "Taille de la DRAM:",
+  "SettingsTabSystemDramSize": "Taille de la DRAM :",
   "SettingsTabSystemDramSize4GiB": "4GiO",
   "SettingsTabSystemDramSize6GiB": "6GiO",
   "SettingsTabSystemDramSize8GiB": "8GiO",
