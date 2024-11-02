@@ -80,8 +80,8 @@ namespace Ryujinx.Ava.UI.ViewModels
                 {
                     Dispatcher.UIThread.InvokeAsync(() =>
                          ContentDialogHelper.CreateInfoDialog(LocaleManager.Instance[LocaleKeys.DialogSettingsBackendThreadingWarningMessage],
-                            "",
-                            "",
+                             string.Empty,
+                             string.Empty,
                             LocaleManager.Instance[LocaleKeys.InputDialogOk],
                             LocaleManager.Instance[LocaleKeys.DialogSettingsBackendThreadingWarningTitle])
                     );
@@ -338,7 +338,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                     {
                         _gpuIds.Add(device.Id);
 
-                        AvailableGpus.Add(new ComboBoxItem { Content = $"{device.Name} {(device.IsDiscrete ? "(dGPU)" : "")}" });
+                        AvailableGpus.Add(new ComboBoxItem { Content = $"{device.Name} {(device.IsDiscrete ? "(dGPU)" : string.Empty)}" });
                     });
                 }
             }

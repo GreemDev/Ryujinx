@@ -51,7 +51,6 @@
   <ItemGroup>
     <PackageReference Include="DiscordRichPresence" />
     <PackageReference Include="DynamicData" />
-    <PackageReference Include="Humanizer" />
     <PackageReference Include="securifybv.ShellLink" />
   </ItemGroup>
 

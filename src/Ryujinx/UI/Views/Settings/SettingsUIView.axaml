@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
     mc:Ignorable="d"
     x:DataType="viewModels:SettingsViewModel">
@@ -23,65 +23,65 @@
                 HorizontalAlignment="Stretch"
                 Orientation="Vertical"
                 Spacing="10">
-                <TextBlock Classes="h1" Text="{locale:Locale SettingsTabGeneralGeneral}" />
+                <TextBlock Classes="h1" Text="{ext:Locale SettingsTabGeneralGeneral}" />
                 <StackPanel Margin="10,0,0,0" Orientation="Vertical">
                     <CheckBox IsChecked="{Binding EnableDiscordIntegration}">
                         <TextBlock VerticalAlignment="Center"
-                                   ToolTip.Tip="{locale:Locale ToggleDiscordTooltip}"
-                                   Text="{locale:Locale SettingsTabGeneralEnableDiscordRichPresence}" />
+                                   ToolTip.Tip="{ext:Locale ToggleDiscordTooltip}"
+                                   Text="{ext:Locale SettingsTabGeneralEnableDiscordRichPresence}" />
                     </CheckBox>
                     <CheckBox IsChecked="{Binding CheckUpdatesOnStart}">
-                        <TextBlock Text="{locale:Locale SettingsTabGeneralCheckUpdatesOnLaunch}" />
+                        <TextBlock Text="{ext:Locale SettingsTabGeneralCheckUpdatesOnLaunch}" />
                     </CheckBox>
                     <CheckBox IsChecked="{Binding ShowConfirmExit}">
-                        <TextBlock Text="{locale:Locale SettingsTabGeneralShowConfirmExitDialog}" />
+                        <TextBlock Text="{ext:Locale SettingsTabGeneralShowConfirmExitDialog}" />
                     </CheckBox>
                     <CheckBox IsChecked="{Binding RememberWindowState}">
-                        <TextBlock Text="{locale:Locale SettingsTabGeneralRememberWindowState}" />
+                        <TextBlock Text="{ext:Locale SettingsTabGeneralRememberWindowState}" />
                     </CheckBox>
                     <CheckBox IsChecked="{Binding ShowTitleBar}" Name="ShowTitleBarBox">
-                        <TextBlock Text="{locale:Locale SettingsTabGeneralShowTitleBar}" />
+                        <TextBlock Text="{ext:Locale SettingsTabGeneralShowTitleBar}" />
                     </CheckBox>
                     <StackPanel Margin="0, 15, 0, 0" Orientation="Horizontal">
                         <TextBlock VerticalAlignment="Center"
-                                   Text="{locale:Locale SettingsTabGeneralHideCursor}"
+                                   Text="{ext:Locale SettingsTabGeneralHideCursor}"
                                    Width="150" />
                         <ComboBox SelectedIndex="{Binding HideCursor}"
                                   HorizontalContentAlignment="Left"
                                   MinWidth="100">
                             <ComboBoxItem>
-                                <TextBlock Text="{locale:Locale SettingsTabGeneralHideCursorNever}" />
+                                <TextBlock Text="{ext:Locale SettingsTabGeneralHideCursorNever}" />
                             </ComboBoxItem>
                             <ComboBoxItem>
-                                <TextBlock Text="{locale:Locale SettingsTabGeneralHideCursorOnIdle}" />
+                                <TextBlock Text="{ext:Locale SettingsTabGeneralHideCursorOnIdle}" />
                             </ComboBoxItem>
                             <ComboBoxItem>
-                                <TextBlock Text="{locale:Locale SettingsTabGeneralHideCursorAlways}" />
+                                <TextBlock Text="{ext:Locale SettingsTabGeneralHideCursorAlways}" />
                             </ComboBoxItem>
                         </ComboBox>
                     </StackPanel>
                     <StackPanel Margin="0, 15, 0, 10" Orientation="Horizontal">
                         <TextBlock
                             VerticalAlignment="Center"
-                            Text="{locale:Locale SettingsTabGeneralTheme}"
+                            Text="{ext:Locale SettingsTabGeneralTheme}"
                             Width="150" />
                         <ComboBox SelectedIndex="{Binding BaseStyleIndex}"
                                   HorizontalContentAlignment="Left"
                                   MinWidth="100">
                             <ComboBoxItem>
-                                <TextBlock Text="{locale:Locale SettingsTabGeneralThemeAuto}" />
+                                <TextBlock Text="{ext:Locale SettingsTabGeneralThemeAuto}" />
                             </ComboBoxItem>
                             <ComboBoxItem>
-                                <TextBlock Text="{locale:Locale SettingsTabGeneralThemeLight}" />
+                                <TextBlock Text="{ext:Locale SettingsTabGeneralThemeLight}" />
                             </ComboBoxItem>
                             <ComboBoxItem>
-                                <TextBlock Text="{locale:Locale SettingsTabGeneralThemeDark}" />
+                                <TextBlock Text="{ext:Locale SettingsTabGeneralThemeDark}" />
                             </ComboBoxItem>
                         </ComboBox>
                     </StackPanel>
                 </StackPanel>
                 <Separator Height="1" />
-                <TextBlock Classes="h1" Text="{locale:Locale SettingsTabGeneralGameDirectories}" />
+                <TextBlock Classes="h1" Text="{ext:Locale SettingsTabGeneralGameDirectories}" />
                 <StackPanel
                     Margin="10,0,0,0"
                     HorizontalAlignment="Stretch"
@@ -107,34 +107,34 @@
                         <TextBox
                             Name="GameDirPathBox"
                             Margin="0"
-                            ToolTip.Tip="{locale:Locale AddGameDirBoxTooltip}"
+                            ToolTip.Tip="{ext:Locale AddGameDirBoxTooltip}"
                             VerticalAlignment="Stretch" />
                         <Button
                             Name="AddGameDirButton"
                             Grid.Column="1"
                             MinWidth="90"
                             Margin="10,0,0,0"
-                            ToolTip.Tip="{locale:Locale AddGameDirTooltip}"
+                            ToolTip.Tip="{ext:Locale AddGameDirTooltip}"
                             Click="AddGameDirButton_OnClick">
                             <TextBlock HorizontalAlignment="Center"
-                                       Text="{locale:Locale SettingsTabGeneralAdd}" />
+                                       Text="{ext:Locale SettingsTabGeneralAdd}" />
                         </Button>
                         <Button
                             Name="RemoveGameDirButton"
                             Grid.Column="2"
                             MinWidth="90"
                             Margin="10,0,0,0"
-                            ToolTip.Tip="{locale:Locale RemoveGameDirTooltip}"
+                            ToolTip.Tip="{ext:Locale RemoveGameDirTooltip}"
                             Click="RemoveGameDirButton_OnClick">
                             <TextBlock HorizontalAlignment="Center"
-                                       Text="{locale:Locale SettingsTabGeneralRemove}" />
+                                       Text="{ext:Locale SettingsTabGeneralRemove}" />
                         </Button>
                     </Grid>
                 </StackPanel>
                 <Separator Height="1" />
                <StackPanel Orientation="Vertical" Spacing="5">
-                    <TextBlock Classes="h1" Text="{locale:Locale SettingsTabGeneralAutoloadDirectories}" />
-                    <TextBlock Foreground="{DynamicResource SecondaryTextColor}" Text="{locale:Locale SettingsTabGeneralAutoloadNote}" />
+                    <TextBlock Classes="h1" Text="{ext:Locale SettingsTabGeneralAutoloadDirectories}" />
+                    <TextBlock Foreground="{DynamicResource SecondaryTextColor}" Text="{ext:Locale SettingsTabGeneralAutoloadNote}" />
                 </StackPanel>
                 <StackPanel
                     Margin="10,0,0,0"
@@ -161,27 +161,27 @@
                         <TextBox
                             Name="AutoloadDirPathBox"
                             Margin="0"
-                            ToolTip.Tip="{locale:Locale AddAutoloadDirBoxTooltip}"
+                            ToolTip.Tip="{ext:Locale AddAutoloadDirBoxTooltip}"
                             VerticalAlignment="Stretch" />
                         <Button
                             Name="AddAutoloadDirButton"
                             Grid.Column="1"
                             MinWidth="90"
                             Margin="10,0,0,0"
-                            ToolTip.Tip="{locale:Locale AddAutoloadDirTooltip}"
+                            ToolTip.Tip="{ext:Locale AddAutoloadDirTooltip}"
                             Click="AddAutoloadDirButton_OnClick">
                             <TextBlock HorizontalAlignment="Center"
-                                       Text="{locale:Locale SettingsTabGeneralAdd}" />
+                                       Text="{ext:Locale SettingsTabGeneralAdd}" />
                         </Button>
                         <Button
                             Name="RemoveAutoloadDirButton"
                             Grid.Column="2"
                             MinWidth="90"
                             Margin="10,0,0,0"
-                            ToolTip.Tip="{locale:Locale RemoveAutoloadDirTooltip}"
+                            ToolTip.Tip="{ext:Locale RemoveAutoloadDirTooltip}"
                             Click="RemoveAutoloadDirButton_OnClick">
                             <TextBlock HorizontalAlignment="Center"
-                                       Text="{locale:Locale SettingsTabGeneralRemove}" />
+                                       Text="{ext:Locale SettingsTabGeneralRemove}" />
                         </Button>
                     </Grid>
                 </StackPanel>

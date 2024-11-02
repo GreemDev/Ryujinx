@@ -9,7 +9,7 @@
     d:DesignWidth="578"
     d:DesignHeight="350"
     x:Class="Ryujinx.Ava.UI.Views.User.UserFirmwareAvatarSelectorView"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
     xmlns:helpers="clr-namespace:Ryujinx.Ava.UI.Helpers"
     x:DataType="viewModels:UserFirmwareAvatarSelectorViewModel"
@@ -104,7 +104,7 @@
                 </ui:ColorPickerButton.Styles>
             </ui:ColorPickerButton>
             <Button
-                Content="{locale:Locale AvatarChoose}"
+                Content="{ext:Locale AvatarChoose}"
                 Height="35"
                 Name="ChooseButton"
                 Click="ChooseButton_OnClick" />

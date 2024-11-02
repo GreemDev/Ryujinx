@@ -89,7 +89,7 @@ namespace Ryujinx.HLE.Loaders.Processes.Extensions
                 Logger.Warning?.Print(LogClass.Ptc, "Detected unsupported ExeFs modifications. PTC disabled.");
             }
 
-            string programName = "";
+            string programName = string.Empty;
 
             if (!isHomebrew && programId > 0x010000000000FFFF)
             {

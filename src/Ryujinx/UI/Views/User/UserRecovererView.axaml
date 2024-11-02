@@ -8,7 +8,7 @@
     d:DesignHeight="450"
     Width="500"
     Height="400"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
     x:Class="Ryujinx.Ava.UI.Views.User.UserRecovererView"
@@ -55,7 +55,7 @@
                                             HorizontalAlignment="Right"
                                             Click="Recover"
                                             CommandParameter="{Binding}"
-                                            Content="{locale:Locale Recover}"/>
+                                            Content="{ext:Locale Recover}"/>
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -64,7 +64,7 @@
                 <TextBlock
                     IsVisible="{Binding IsEmpty}"
                     TextAlignment="Center"
-                    Text="{locale:Locale UserProfilesRecoverEmptyList}"/>
+                    Text="{ext:Locale UserProfilesRecoverEmptyList}"/>
             </Panel>
         </Border>
         <StackPanel

@@ -221,7 +221,7 @@ namespace Ryujinx.Horizon.Sdk.Ngc.Detail
                         if (includeMultiWord)
                         {
                             int lastMultiWordIndex = 0;
-                            string multiWord = "";
+                            string multiWord = string.Empty;
 
                             while (_multiWordMap.Has(nodePlainIndex))
                             {

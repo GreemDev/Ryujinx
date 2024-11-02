@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:views="clr-namespace:Ryujinx.Ava.UI.Views.Input"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
     mc:Ignorable="d"
@@ -40,23 +40,23 @@
                             Orientation="Horizontal"
                             Spacing="10">
                             <CheckBox
-                                ToolTip.Tip="{locale:Locale DockModeToggleTooltip}"
+                                ToolTip.Tip="{ext:Locale DockModeToggleTooltip}"
                                 MinWidth="0"
                                 IsChecked="{Binding EnableDockedMode}">
                                 <TextBlock
-                                    Text="{locale:Locale SettingsTabInputEnableDockedMode}" />
+                                    Text="{ext:Locale SettingsTabInputEnableDockedMode}" />
                             </CheckBox>
                             <CheckBox
-                                ToolTip.Tip="{locale:Locale DirectKeyboardTooltip}"
+                                ToolTip.Tip="{ext:Locale DirectKeyboardTooltip}"
                                 IsChecked="{Binding EnableKeyboard}">
                                 <TextBlock
-                                    Text="{locale:Locale SettingsTabInputDirectKeyboardAccess}" />
+                                    Text="{ext:Locale SettingsTabInputDirectKeyboardAccess}" />
                             </CheckBox>
                             <CheckBox
-                                ToolTip.Tip="{locale:Locale DirectMouseTooltip}"
+                                ToolTip.Tip="{ext:Locale DirectMouseTooltip}"
                                 IsChecked="{Binding EnableMouse}">
                                 <TextBlock
-                                    Text="{locale:Locale SettingsTabInputDirectMouseAccess}" />
+                                    Text="{ext:Locale SettingsTabInputDirectMouseAccess}" />
                             </CheckBox>
                         </StackPanel>
                     </StackPanel>

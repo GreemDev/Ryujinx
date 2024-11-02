@@ -162,7 +162,7 @@ namespace Ryujinx.UI.App.Common
             NsoReader reader = new();
             reader.Initialize(nsoFile.Release().AsStorage().AsFile(OpenMode.Read)).ThrowIfFailure();
 
-            return BitConverter.ToString(reader.Header.ModuleId.ItemsRo.ToArray()).Replace("-", "").ToUpper()[..16];
+            return BitConverter.ToString(reader.Header.ModuleId.ItemsRo.ToArray()).Replace("-", string.Empty).ToUpper()[..16];
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Ryujinx.HLE.HOS.Services.Sockets.Nsd.Manager
                 // TODO: Load Environment from the savedata.
                 address = address.Replace("%", IManager.NsdSettings.Environment);
 
-                resolvedAddress = "";
+                resolvedAddress = string.Empty;
 
                 if (IManager.NsdSettings == null)
                 {

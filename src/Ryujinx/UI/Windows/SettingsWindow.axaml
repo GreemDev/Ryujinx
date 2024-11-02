@@ -3,7 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:window="clr-namespace:Ryujinx.Ava.UI.Windows"
@@ -51,23 +51,23 @@
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem
                     IsSelected="True"
-                    Content="{locale:Locale SettingsTabGeneral}"
+                    Content="{ext:Locale SettingsTabGeneral}"
                     Tag="UiPage"
                     IconSource="New" />
                 <ui:NavigationViewItem
-                    Content="{locale:Locale SettingsTabInput}"
+                    Content="{ext:Locale SettingsTabInput}"
                     Tag="InputPage"
                     IconSource="Games" />
                 <ui:NavigationViewItem
-                    Content="{locale:Locale SettingsTabHotkeys}"
+                    Content="{ext:Locale SettingsTabHotkeys}"
                     Tag="HotkeysPage"
                     IconSource="Keyboard" />
                 <ui:NavigationViewItem
-                    Content="{locale:Locale SettingsTabSystem}"
+                    Content="{ext:Locale SettingsTabSystem}"
                     Tag="SystemPage"
                     IconSource="Settings" />
                 <ui:NavigationViewItem
-                    Content="{locale:Locale SettingsTabCpu}"
+                    Content="{ext:Locale SettingsTabCpu}"
                     Tag="CpuPage">
                     <ui:NavigationViewItem.IconSource>
                         <ui:FontIconSource
@@ -76,19 +76,19 @@
                     </ui:NavigationViewItem.IconSource>
                 </ui:NavigationViewItem>
                 <ui:NavigationViewItem
-                    Content="{locale:Locale SettingsTabGraphics}"
+                    Content="{ext:Locale SettingsTabGraphics}"
                     Tag="GraphicsPage"
                     IconSource="Image" />
                 <ui:NavigationViewItem
-                    Content="{locale:Locale SettingsTabAudio}"
+                    Content="{ext:Locale SettingsTabAudio}"
                     IconSource="Audio"
                     Tag="AudioPage" />
                 <ui:NavigationViewItem
-                    Content="{locale:Locale SettingsTabNetwork}"
+                    Content="{ext:Locale SettingsTabNetwork}"
                     Tag="NetworkPage"
                     IconSource="Globe" />
                 <ui:NavigationViewItem
-                    Content="{locale:Locale SettingsTabLogging}"
+                    Content="{ext:Locale SettingsTabLogging}"
                     Tag="LoggingPage"
                     IconSource="Document" />
             </ui:NavigationView.MenuItems>
@@ -111,14 +111,14 @@
             <Button
                 HotKey="Enter"
                 Classes="accent"
-                Content="{locale:Locale SettingsButtonOk}"
+                Content="{ext:Locale SettingsButtonOk}"
                 Command="{Binding OkButton}" />
             <Button
                 HotKey="Escape"
-                Content="{locale:Locale SettingsButtonCancel}"
+                Content="{ext:Locale SettingsButtonCancel}"
                 Command="{Binding CancelButton}" />
             <Button
-                Content="{locale:Locale SettingsButtonApply}"
+                Content="{ext:Locale SettingsButtonApply}"
                 Command="{Binding ApplyButton}" />
         </ReversibleStackPanel>
     </Grid>

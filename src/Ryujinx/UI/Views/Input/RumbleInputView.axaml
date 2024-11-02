@@ -4,7 +4,7 @@
     xmlns:controls="clr-namespace:Ryujinx.Ava.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels.Input"
     mc:Ignorable="d"
     x:Class="Ryujinx.Ava.UI.Views.Input.RumbleInputView"
@@ -21,7 +21,7 @@
                     Width="100"
                     TextWrapping="WrapWithOverflow"
                     HorizontalAlignment="Center"
-                    Text="{locale:Locale ControllerSettingsRumbleStrongMultiplier}" />
+                    Text="{ext:Locale ControllerSettingsRumbleStrongMultiplier}" />
                 <controls:SliderScroll
                     Margin="0,-5,0,-5"
                     Width="200"
@@ -41,7 +41,7 @@
                     Width="100"
                     TextWrapping="WrapWithOverflow"
                     HorizontalAlignment="Center"
-                    Text="{locale:Locale ControllerSettingsRumbleWeakMultiplier}" />
+                    Text="{ext:Locale ControllerSettingsRumbleWeakMultiplier}" />
                 <controls:SliderScroll
                     Margin="0,-5,0,-5"
                     Width="200"

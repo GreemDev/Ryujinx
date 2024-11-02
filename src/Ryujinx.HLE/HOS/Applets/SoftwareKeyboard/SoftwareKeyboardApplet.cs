@@ -51,7 +51,7 @@ namespace Ryujinx.HLE.HOS.Applets
 
         private byte[] _transferMemory;
 
-        private string _textValue = "";
+        private string _textValue = string.Empty;
         private int _cursorBegin = 0;
         private Encoding _encoding = Encoding.Unicode;
         private KeyboardResult _lastResult = KeyboardResult.NotSet;

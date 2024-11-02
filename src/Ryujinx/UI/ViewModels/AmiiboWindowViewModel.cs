@@ -320,7 +320,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                 }
             }
 
-            if (LastScannedAmiiboId != "")
+            if (LastScannedAmiiboId != string.Empty)
             {
                 SelectLastScannedAmiibo();
             }
@@ -421,7 +421,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                         usageStringBuilder.Append($"{LocaleManager.Instance[LocaleKeys.Unknown]}.");
                     }
 
-                    Usage = $"{LocaleManager.Instance[LocaleKeys.Usage]} {(writable ? $" ({LocaleManager.Instance[LocaleKeys.Writable]})" : "")} : {usageStringBuilder}";
+                    Usage = $"{LocaleManager.Instance[LocaleKeys.Usage]} {(writable ? $" ({LocaleManager.Instance[LocaleKeys.Writable]})" : string.Empty)} : {usageStringBuilder}";
                 }
             }
 
@@ -480,7 +480,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             await ContentDialogHelper.CreateInfoDialog(LocaleManager.Instance[LocaleKeys.DialogAmiiboApiTitle],
                 LocaleManager.Instance[LocaleKeys.DialogAmiiboApiFailFetchMessage],
                 LocaleManager.Instance[LocaleKeys.InputDialogOk],
-                "",
+                string.Empty,
                 LocaleManager.Instance[LocaleKeys.RyujinxInfo]);
 
             return null;
@@ -530,7 +530,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             await ContentDialogHelper.CreateInfoDialog(LocaleManager.Instance[LocaleKeys.DialogAmiiboApiTitle],
                 LocaleManager.Instance[LocaleKeys.DialogAmiiboApiConnectErrorMessage],
                 LocaleManager.Instance[LocaleKeys.InputDialogOk],
-                "",
+                string.Empty,
                 LocaleManager.Instance[LocaleKeys.RyujinxInfo]);
         }
     }

@@ -1,7 +1,7 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="clr-namespace:Ryujinx.Ava.UI.Controls"
@@ -73,7 +73,7 @@
                                 Width="20"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Text="{locale:Locale ControllerSettingsTriggerZL}"
+                                Text="{ext:Locale ControllerSettingsTriggerZL}"
                                 TextAlignment="Center" />
                             <ToggleButton Name="ButtonZl">
                                 <TextBlock
@@ -89,7 +89,7 @@
                                 Width="20"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Text="{locale:Locale ControllerSettingsTriggerL}"
+                                Text="{ext:Locale ControllerSettingsTriggerL}"
                                 TextAlignment="Center" />
                             <ToggleButton Name="ButtonL">
                                 <TextBlock
@@ -105,7 +105,7 @@
                                 Width="20"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Text="{locale:Locale ControllerSettingsButtonMinus}"
+                                Text="{ext:Locale ControllerSettingsButtonMinus}"
                                 TextAlignment="Center" />
                             <ToggleButton Name="ButtonMinus">
                                 <TextBlock
@@ -128,7 +128,7 @@
                         <TextBlock
                             Margin="0,0,0,10"
                             HorizontalAlignment="Center"
-                            Text="{locale:Locale ControllerSettingsLStick}" />
+                            Text="{ext:Locale ControllerSettingsLStick}" />
                         <!-- Left Joystick Controller -->
                         <StackPanel Orientation="Vertical">
                             <!-- Left Joystick Button -->
@@ -139,7 +139,7 @@
                                     Width="120"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsStickButton}"
+                                    Text="{ext:Locale ControllerSettingsStickButton}"
                                     TextAlignment="Center" />
                                 <ToggleButton Name="LeftStickButton">
                                     <TextBlock
@@ -156,7 +156,7 @@
                                     Width="120"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsStickStick}"
+                                    Text="{ext:Locale ControllerSettingsStickStick}"
                                     TextAlignment="Center" />
                                 <ToggleButton Name="LeftJoystick" Tag="stick">
                                     <TextBlock
@@ -168,13 +168,13 @@
                                 Margin="0,8,0,8"
                                 Height="1" />
                             <CheckBox IsChecked="{Binding Config.LeftInvertStickX}">
-                                <TextBlock Text="{locale:Locale ControllerSettingsStickInvertXAxis}" />
+                                <TextBlock Text="{ext:Locale ControllerSettingsStickInvertXAxis}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding Config.LeftInvertStickY}">
-                                <TextBlock Text="{locale:Locale ControllerSettingsStickInvertYAxis}" />
+                                <TextBlock Text="{ext:Locale ControllerSettingsStickInvertYAxis}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding Config.LeftRotate90}">
-                                <TextBlock Text="{locale:Locale ControllerSettingsRotate90}" />
+                                <TextBlock Text="{ext:Locale ControllerSettingsRotate90}" />
                             </CheckBox>
                             <Separator
                                 Margin="0,8,0,8"
@@ -182,7 +182,7 @@
                             <StackPanel Orientation="Vertical">
                                 <TextBlock
                                     HorizontalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsStickDeadzone}" />
+                                    Text="{ext:Locale ControllerSettingsStickDeadzone}" />
                                 <StackPanel
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
@@ -202,7 +202,7 @@
                                 </StackPanel>
                                 <TextBlock
                                     HorizontalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsStickRange}" />
+                                    Text="{ext:Locale ControllerSettingsStickRange}" />
                                 <StackPanel
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
@@ -238,7 +238,7 @@
                         <TextBlock
                             Margin="0,0,0,10"
                             HorizontalAlignment="Center"
-                            Text="{locale:Locale ControllerSettingsDPad}" />
+                            Text="{ext:Locale ControllerSettingsDPad}" />
                         <StackPanel Orientation="Vertical">
                             <!-- Left DPad Up -->
                             <StackPanel
@@ -249,7 +249,7 @@
                                     Width="120"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsDPadUp}"
+                                    Text="{ext:Locale ControllerSettingsDPadUp}"
                                     TextAlignment="Center" />
                                 <ToggleButton Name="DpadUp">
                                     <TextBlock
@@ -266,7 +266,7 @@
                                     Width="120"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsDPadDown}"
+                                    Text="{ext:Locale ControllerSettingsDPadDown}"
                                     TextAlignment="Center" />
                                 <ToggleButton Name="DpadDown">
                                     <TextBlock
@@ -283,7 +283,7 @@
                                     Width="120"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsDPadLeft}"
+                                    Text="{ext:Locale ControllerSettingsDPadLeft}"
                                     TextAlignment="Center" />
                                 <ToggleButton Name="DpadLeft">
                                     <TextBlock
@@ -300,7 +300,7 @@
                                     Width="120"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsDPadRight}"
+                                    Text="{ext:Locale ControllerSettingsDPadRight}"
                                     TextAlignment="Center" />
                                 <ToggleButton Name="DpadRight">
                                     <TextBlock
@@ -334,7 +334,7 @@
                         Orientation="Vertical">
                         <TextBlock
                             HorizontalAlignment="Center"
-                            Text="{locale:Locale ControllerSettingsTriggerThreshold}" />
+                            Text="{ext:Locale ControllerSettingsTriggerThreshold}" />
                         <StackPanel
                             HorizontalAlignment="Center"
                             Orientation="Horizontal">
@@ -363,7 +363,7 @@
                                     Width="20"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsLeftSR}"
+                                    Text="{ext:Locale ControllerSettingsLeftSR}"
                                     TextAlignment="Center" />
                                 <ToggleButton Name="LeftButtonSr">
                                     <TextBlock
@@ -381,7 +381,7 @@
                                     Width="20"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsLeftSL}"
+                                    Text="{ext:Locale ControllerSettingsLeftSL}"
                                     TextAlignment="Center" />
                                 <ToggleButton Name="LeftButtonSl">
                                     <TextBlock
@@ -399,7 +399,7 @@
                                     Width="20"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsRightSR}"
+                                    Text="{ext:Locale ControllerSettingsRightSR}"
                                     TextAlignment="Center" />
                                 <ToggleButton Name="RightButtonSr">
                                     <TextBlock
@@ -417,7 +417,7 @@
                                     Width="20"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsRightSL}"
+                                    Text="{ext:Locale ControllerSettingsRightSL}"
                                     TextAlignment="Center" />
                                 <ToggleButton Name="RightButtonSl">
                                     <TextBlock
@@ -450,13 +450,13 @@
                                 MinWidth="0"
                                 Grid.Column="0"
                                 IsChecked="{Binding Config.EnableMotion, Mode=TwoWay}">
-                                <TextBlock Text="{locale:Locale ControllerSettingsMotion}" />
+                                <TextBlock Text="{ext:Locale ControllerSettingsMotion}" />
                             </CheckBox>
                             <Button
                                 Margin="10"
                                 Grid.Column="1"
                                 Command="{Binding ShowMotionConfig}">
-                                <TextBlock Text="{locale:Locale ControllerSettingsConfigureGeneral}" />
+                                <TextBlock Text="{ext:Locale ControllerSettingsConfigureGeneral}" />
                             </Button>
                         </Grid>
                     </Border>
@@ -476,13 +476,13 @@
                                 MinWidth="0"
                                 Grid.Column="0"
                                 IsChecked="{Binding Config.EnableRumble, Mode=TwoWay}">
-                                <TextBlock Text="{locale:Locale ControllerSettingsRumble}" />
+                                <TextBlock Text="{ext:Locale ControllerSettingsRumble}" />
                             </CheckBox>
                             <Button
                                 Margin="10"
                                 Grid.Column="1"
                                 Command="{Binding ShowRumbleConfig}">
-                                <TextBlock Text="{locale:Locale ControllerSettingsConfigureGeneral}" />
+                                <TextBlock Text="{ext:Locale ControllerSettingsConfigureGeneral}" />
                             </Button>
                         </Grid>
                     </Border>
@@ -519,7 +519,7 @@
                                 Width="20"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Text="{locale:Locale ControllerSettingsTriggerZR}"
+                                Text="{ext:Locale ControllerSettingsTriggerZR}"
                                 TextAlignment="Center" />
                             <ToggleButton Name="ButtonZr">
                                 <TextBlock
@@ -537,7 +537,7 @@
                                 Width="20"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Text="{locale:Locale ControllerSettingsTriggerR}"
+                                Text="{ext:Locale ControllerSettingsTriggerR}"
                                 TextAlignment="Center" />
                             <ToggleButton Name="ButtonR">
                                 <TextBlock
@@ -555,7 +555,7 @@
                                 Width="20"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Text="{locale:Locale ControllerSettingsButtonPlus}"
+                                Text="{ext:Locale ControllerSettingsButtonPlus}"
                                 TextAlignment="Center" />
                             <ToggleButton Name="ButtonPlus">
                                 <TextBlock
@@ -578,7 +578,7 @@
                         <TextBlock
                             Margin="0,0,0,10"
                             HorizontalAlignment="Center"
-                            Text="{locale:Locale ControllerSettingsButtons}" />
+                            Text="{ext:Locale ControllerSettingsButtons}" />
                         <StackPanel
                             Orientation="Vertical">
                             <!-- Right Buttons A -->
@@ -590,7 +590,7 @@
                                     Margin="0,0,10,0"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsButtonA}"
+                                    Text="{ext:Locale ControllerSettingsButtonA}"
                                     TextAlignment="Center" />
                                 <ToggleButton Name="ButtonA">
                                     <TextBlock
@@ -607,7 +607,7 @@
                                     Margin="0,0,10,0"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsButtonB}"
+                                    Text="{ext:Locale ControllerSettingsButtonB}"
                                     TextAlignment="Center" />
                                 <ToggleButton Name="ButtonB">
                                     <TextBlock
@@ -624,7 +624,7 @@
                                     Margin="0,0,10,0"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsButtonX}"
+                                    Text="{ext:Locale ControllerSettingsButtonX}"
                                     TextAlignment="Center" />
                                 <ToggleButton Name="ButtonX">
                                     <TextBlock
@@ -641,7 +641,7 @@
                                     Margin="0,0,10,0"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsButtonY}"
+                                    Text="{ext:Locale ControllerSettingsButtonY}"
                                     TextAlignment="Center" />
                                 <ToggleButton Name="ButtonY">
                                     <TextBlock
@@ -664,7 +664,7 @@
                         <TextBlock
                             Margin="0,0,0,10"
                             HorizontalAlignment="Center"
-                            Text="{locale:Locale ControllerSettingsRStick}" />
+                            Text="{ext:Locale ControllerSettingsRStick}" />
                         <!-- Right Joystick Controller -->
                         <StackPanel Orientation="Vertical">
                             <!-- Right Joystick Button -->
@@ -675,7 +675,7 @@
                                     Width="120"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsStickButton}"
+                                    Text="{ext:Locale ControllerSettingsStickButton}"
                                     TextAlignment="Center" />
                                 <ToggleButton Name="RightStickButton">
                                     <TextBlock
@@ -693,7 +693,7 @@
                                     Width="120"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsStickStick}"
+                                    Text="{ext:Locale ControllerSettingsStickStick}"
                                     TextAlignment="Center" />
                                 <ToggleButton Name="RightJoystick" Tag="stick">
                                     <TextBlock
@@ -703,19 +703,19 @@
                             </StackPanel>
                             <Separator Margin="0,8,0,8" Height="1" />
                             <CheckBox IsChecked="{Binding Config.RightInvertStickX}">
-                                <TextBlock Text="{locale:Locale ControllerSettingsStickInvertXAxis}" />
+                                <TextBlock Text="{ext:Locale ControllerSettingsStickInvertXAxis}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding Config.RightInvertStickY}">
-                                <TextBlock Text="{locale:Locale ControllerSettingsStickInvertYAxis}" />
+                                <TextBlock Text="{ext:Locale ControllerSettingsStickInvertYAxis}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding Config.RightRotate90}">
-                                <TextBlock Text="{locale:Locale ControllerSettingsRotate90}" />
+                                <TextBlock Text="{ext:Locale ControllerSettingsRotate90}" />
                             </CheckBox>
                             <Separator Margin="0,8,0,8" Height="1" />
                             <StackPanel Orientation="Vertical">
                                 <TextBlock
                                     HorizontalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsStickDeadzone}" />
+                                    Text="{ext:Locale ControllerSettingsStickDeadzone}" />
                                 <StackPanel
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
@@ -737,7 +737,7 @@
                                 </StackPanel>
                                 <TextBlock
                                     HorizontalAlignment="Center"
-                                    Text="{locale:Locale ControllerSettingsStickRange}" />
+                                    Text="{ext:Locale ControllerSettingsStickRange}" />
                                 <StackPanel
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"

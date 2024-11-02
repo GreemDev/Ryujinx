@@ -2,109 +2,108 @@
     x:Class="Ryujinx.Ava.UI.Controls.ApplicationContextMenu"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
-    xmlns:icon="clr-namespace:Ryujinx.Ava.Common.Icon"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
     x:DataType="viewModels:MainWindowViewModel">
     <MenuItem
         Click="RunApplication_Click"
-        Header="{locale:Locale GameListContextMenuRunApplication}"
-        Icon="{icon:Icon fa-solid fa-play}"/>
+        Header="{ext:Locale GameListContextMenuRunApplication}"
+        Icon="{ext:Icon fa-solid fa-play}"/>
     <MenuItem
         Click="ToggleFavorite_Click"
-        Header="{locale:Locale GameListContextMenuToggleFavorite}"
-        Icon="{icon:Icon fa-solid fa-star}"
-        ToolTip.Tip="{locale:Locale GameListContextMenuToggleFavoriteToolTip}" />
+        Header="{ext:Locale GameListContextMenuToggleFavorite}"
+        Icon="{ext:Icon fa-solid fa-star}"
+        ToolTip.Tip="{ext:Locale GameListContextMenuToggleFavoriteToolTip}" />
     <MenuItem
         Click="CreateApplicationShortcut_Click"
-        Header="{locale:Locale GameListContextMenuCreateShortcut}"
+        Header="{ext:Locale GameListContextMenuCreateShortcut}"
         IsEnabled="{Binding CreateShortcutEnabled}"
-        Icon="{icon:Icon fa-solid fa-bookmark}"
-        ToolTip.Tip="{OnPlatform Default={locale:Locale GameListContextMenuCreateShortcutToolTip}, macOS={locale:Locale GameListContextMenuCreateShortcutToolTipMacOS}}" />
+        Icon="{ext:Icon fa-solid fa-bookmark}"
+        ToolTip.Tip="{OnPlatform Default={ext:Locale GameListContextMenuCreateShortcutToolTip}, macOS={ext:Locale GameListContextMenuCreateShortcutToolTipMacOS}}" />
     <Separator />
     <MenuItem
         Click="OpenUserSaveDirectory_Click"
-        Header="{locale:Locale GameListContextMenuOpenUserSaveDirectory}"
-        Icon="{icon:Icon mdi-folder-account}"
+        Header="{ext:Locale GameListContextMenuOpenUserSaveDirectory}"
+        Icon="{ext:Icon mdi-folder-account}"
         IsEnabled="{Binding OpenUserSaveDirectoryEnabled}"
-        ToolTip.Tip="{locale:Locale GameListContextMenuOpenUserSaveDirectoryToolTip}" />
+        ToolTip.Tip="{ext:Locale GameListContextMenuOpenUserSaveDirectoryToolTip}" />
     <MenuItem
         Click="OpenDeviceSaveDirectory_Click"
-        Header="{locale:Locale GameListContextMenuOpenDeviceSaveDirectory}"
+        Header="{ext:Locale GameListContextMenuOpenDeviceSaveDirectory}"
         IsEnabled="{Binding OpenDeviceSaveDirectoryEnabled}"
-        ToolTip.Tip="{locale:Locale GameListContextMenuOpenDeviceSaveDirectoryToolTip}" />
+        ToolTip.Tip="{ext:Locale GameListContextMenuOpenDeviceSaveDirectoryToolTip}" />
     <MenuItem
         Click="OpenBcatSaveDirectory_Click"
-        Header="{locale:Locale GameListContextMenuOpenBcatSaveDirectory}"
+        Header="{ext:Locale GameListContextMenuOpenBcatSaveDirectory}"
         IsEnabled="{Binding OpenBcatSaveDirectoryEnabled}"
-        ToolTip.Tip="{locale:Locale GameListContextMenuOpenBcatSaveDirectoryToolTip}" />
+        ToolTip.Tip="{ext:Locale GameListContextMenuOpenBcatSaveDirectoryToolTip}" />
     <Separator />
     <MenuItem
         Click="OpenTitleUpdateManager_Click"
-        Header="{locale:Locale GameListContextMenuManageTitleUpdates}"
-        Icon="{icon:Icon fa-solid fa-code-compare}"
-        ToolTip.Tip="{locale:Locale GameListContextMenuManageTitleUpdatesToolTip}" />
+        Header="{ext:Locale GameListContextMenuManageTitleUpdates}"
+        Icon="{ext:Icon fa-solid fa-code-compare}"
+        ToolTip.Tip="{ext:Locale GameListContextMenuManageTitleUpdatesToolTip}" />
     <MenuItem
         Click="OpenDownloadableContentManager_Click"
-        Header="{locale:Locale GameListContextMenuManageDlc}"
-        Icon="{icon:Icon fa-solid fa-download}"
-        ToolTip.Tip="{locale:Locale GameListContextMenuManageDlcToolTip}" />
+        Header="{ext:Locale GameListContextMenuManageDlc}"
+        Icon="{ext:Icon fa-solid fa-download}"
+        ToolTip.Tip="{ext:Locale GameListContextMenuManageDlcToolTip}" />
     <MenuItem
         Click="OpenCheatManager_Click"
-        Header="{locale:Locale GameListContextMenuManageCheat}"
-        Icon="{icon:Icon fa-solid fa-code}"
-        ToolTip.Tip="{locale:Locale GameListContextMenuManageCheatToolTip}" />
+        Header="{ext:Locale GameListContextMenuManageCheat}"
+        Icon="{ext:Icon fa-solid fa-code}"
+        ToolTip.Tip="{ext:Locale GameListContextMenuManageCheatToolTip}" />
     <MenuItem
         Click="OpenModManager_Click"
-        Header="{locale:Locale GameListContextMenuManageMod}"
-        Icon="{icon:Icon mdi-view-module}"
-        ToolTip.Tip="{locale:Locale GameListContextMenuManageModToolTip}" />
+        Header="{ext:Locale GameListContextMenuManageMod}"
+        Icon="{ext:Icon mdi-view-module}"
+        ToolTip.Tip="{ext:Locale GameListContextMenuManageModToolTip}" />
     <Separator />
     <MenuItem
         Click="OpenModsDirectory_Click"
-        Header="{locale:Locale GameListContextMenuOpenModsDirectory}"
-        Icon="{icon:Icon mdi-folder-file}"
-        ToolTip.Tip="{locale:Locale GameListContextMenuOpenModsDirectoryToolTip}" />
+        Header="{ext:Locale GameListContextMenuOpenModsDirectory}"
+        Icon="{ext:Icon mdi-folder-file}"
+        ToolTip.Tip="{ext:Locale GameListContextMenuOpenModsDirectoryToolTip}" />
     <MenuItem
         Click="OpenSdModsDirectory_Click"
-        Header="{locale:Locale GameListContextMenuOpenSdModsDirectory}"
-        Icon="{icon:Icon mdi-folder-file}"
-        ToolTip.Tip="{locale:Locale GameListContextMenuOpenSdModsDirectoryToolTip}" />
+        Header="{ext:Locale GameListContextMenuOpenSdModsDirectory}"
+        Icon="{ext:Icon mdi-folder-file}"
+        ToolTip.Tip="{ext:Locale GameListContextMenuOpenSdModsDirectoryToolTip}" />
     <Separator />
-    <MenuItem Header="{locale:Locale GameListContextMenuCacheManagement}" Icon="{icon:Icon mdi-cached}">
+    <MenuItem Header="{ext:Locale GameListContextMenuCacheManagement}" Icon="{ext:Icon mdi-cached}">
         <MenuItem
             Click="PurgePtcCache_Click"
-            Header="{locale:Locale GameListContextMenuCacheManagementPurgePptc}"
-            Icon="{icon:Icon mdi-refresh}"
-            ToolTip.Tip="{locale:Locale GameListContextMenuCacheManagementPurgePptcToolTip}" />
+            Header="{ext:Locale GameListContextMenuCacheManagementPurgePptc}"
+            Icon="{ext:Icon mdi-refresh}"
+            ToolTip.Tip="{ext:Locale GameListContextMenuCacheManagementPurgePptcToolTip}" />
         <MenuItem
             Click="PurgeShaderCache_Click"
-            Header="{locale:Locale GameListContextMenuCacheManagementPurgeShaderCache}"
-            Icon="{icon:Icon mdi-delete-alert}"
-            ToolTip.Tip="{locale:Locale GameListContextMenuCacheManagementPurgeShaderCacheToolTip}" />
+            Header="{ext:Locale GameListContextMenuCacheManagementPurgeShaderCache}"
+            Icon="{ext:Icon mdi-delete-alert}"
+            ToolTip.Tip="{ext:Locale GameListContextMenuCacheManagementPurgeShaderCacheToolTip}" />
         <MenuItem
             Click="OpenPtcDirectory_Click"
-            Header="{locale:Locale GameListContextMenuCacheManagementOpenPptcDirectory}"
-            Icon="{icon:Icon mdi-folder-arrow-up-down}"
-            ToolTip.Tip="{locale:Locale GameListContextMenuCacheManagementOpenPptcDirectoryToolTip}" />
+            Header="{ext:Locale GameListContextMenuCacheManagementOpenPptcDirectory}"
+            Icon="{ext:Icon mdi-folder-arrow-up-down}"
+            ToolTip.Tip="{ext:Locale GameListContextMenuCacheManagementOpenPptcDirectoryToolTip}" />
         <MenuItem
             Click="OpenShaderCacheDirectory_Click"
-            Header="{locale:Locale GameListContextMenuCacheManagementOpenShaderCacheDirectory}"
-            Icon="{icon:Icon mdi-folder-arrow-up-down}"
-            ToolTip.Tip="{locale:Locale GameListContextMenuCacheManagementOpenShaderCacheDirectoryToolTip}" />
+            Header="{ext:Locale GameListContextMenuCacheManagementOpenShaderCacheDirectory}"
+            Icon="{ext:Icon mdi-folder-arrow-up-down}"
+            ToolTip.Tip="{ext:Locale GameListContextMenuCacheManagementOpenShaderCacheDirectoryToolTip}" />
     </MenuItem>
-    <MenuItem Header="{locale:Locale GameListContextMenuExtractData}">
+    <MenuItem Header="{ext:Locale GameListContextMenuExtractData}">
         <MenuItem
             Click="ExtractApplicationExeFs_Click"
-            Header="{locale:Locale GameListContextMenuExtractDataExeFS}"
-            ToolTip.Tip="{locale:Locale GameListContextMenuExtractDataExeFSToolTip}" />
+            Header="{ext:Locale GameListContextMenuExtractDataExeFS}"
+            ToolTip.Tip="{ext:Locale GameListContextMenuExtractDataExeFSToolTip}" />
         <MenuItem
             Click="ExtractApplicationRomFs_Click"
-            Header="{locale:Locale GameListContextMenuExtractDataRomFS}"
-            ToolTip.Tip="{locale:Locale GameListContextMenuExtractDataRomFSToolTip}" />
+            Header="{ext:Locale GameListContextMenuExtractDataRomFS}"
+            ToolTip.Tip="{ext:Locale GameListContextMenuExtractDataRomFSToolTip}" />
         <MenuItem
             Click="ExtractApplicationLogo_Click"
-            Header="{locale:Locale GameListContextMenuExtractDataLogo}"
-            ToolTip.Tip="{locale:Locale GameListContextMenuExtractDataLogoToolTip}" />
+            Header="{ext:Locale GameListContextMenuExtractDataLogo}"
+            ToolTip.Tip="{ext:Locale GameListContextMenuExtractDataLogoToolTip}" />
     </MenuItem>
 </MenuFlyout>

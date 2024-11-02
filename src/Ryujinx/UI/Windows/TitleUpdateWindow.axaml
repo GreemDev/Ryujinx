@@ -3,7 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
     xmlns:models="clr-namespace:Ryujinx.UI.Common.Models;assembly=Ryujinx.UI.Common"
@@ -33,7 +33,7 @@
             <TextBlock
                 FontStyle="Italic"
                 VerticalAlignment="Bottom"
-                Text="{locale:Locale UpdateWindowBundledContentNotice}" />
+                Text="{ext:Locale UpdateWindowBundledContentNotice}" />
         </StackPanel>
         <Border
             Grid.Row="1"
@@ -103,7 +103,7 @@
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
                                 TextWrapping="Wrap"
-                                Text="{locale:Locale NoUpdate}" />
+                                Text="{ext:Locale NoUpdate}" />
                         </Panel>
                     </DataTemplate>
                 </ListBox.DataTemplates>
@@ -125,13 +125,13 @@
                     Name="AddButton"
                     MinWidth="90"
                     Command="{Binding Add}">
-                    <TextBlock Text="{locale:Locale SettingsTabGeneralAdd}" />
+                    <TextBlock Text="{ext:Locale SettingsTabGeneralAdd}" />
                 </Button>
                 <Button
                     Name="RemoveAllButton"
                     MinWidth="90"
                     Click="RemoveAll">
-                    <TextBlock Text="{locale:Locale DlcManagerRemoveAllButton}" />
+                    <TextBlock Text="{ext:Locale DlcManagerRemoveAllButton}" />
                 </Button>
             </StackPanel>
             <StackPanel
@@ -142,13 +142,13 @@
                     Name="SaveButton"
                     MinWidth="90"
                     Click="Save">
-                    <TextBlock Text="{locale:Locale SettingsButtonSave}" />
+                    <TextBlock Text="{ext:Locale SettingsButtonSave}" />
                 </Button>
                 <Button
                     Name="CancelButton"
                     MinWidth="90"
                     Click="Close">
-                    <TextBlock Text="{locale:Locale InputDialogCancel}" />
+                    <TextBlock Text="{ext:Locale InputDialogCancel}" />
                 </Button>
             </StackPanel>
         </Panel>

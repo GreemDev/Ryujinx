@@ -12,18 +12,11 @@ namespace Ryujinx.UI.Common.Helper
     {
         public static bool IsFirmwareValid(ContentManager contentManager, out UserError error)
         {
-            bool hasFirmware = contentManager.GetCurrentFirmwareVersion() != null;
+            error = contentManager.GetCurrentFirmwareVersion() != null
+                ? UserError.Success
+                : UserError.NoFirmware;
 
-            if (hasFirmware)
-            {
-                error = UserError.Success;
-
-                return true;
-            }
-
-            error = UserError.NoFirmware;
-
-            return false;
+            return error is UserError.Success;
         }
 
         public static bool CanFixStartApplication(ContentManager contentManager, string baseApplicationPath, UserError error, out SystemVersion firmwareVersion)
@@ -95,14 +88,18 @@ namespace Ryujinx.UI.Common.Helper
                 string baseApplicationExtension = Path.GetExtension(baseApplicationPath).ToLowerInvariant();
 
                 // NOTE: We don't force homebrew developers to install a system firmware.
-                if (baseApplicationExtension is not (".nro" or ".nso"))
-                    return IsFirmwareValid(contentManager, out error);
-
+                if (baseApplicationExtension is ".nro" or ".nso")
+                {
+                    error = UserError.Success;
+                    return true;
+                }
+                
+                return IsFirmwareValid(contentManager, out error);
             }
 
             error = UserError.ApplicationNotFound;
 
-            return error is UserError.Success;
+            return false;
         }
     }
 }
