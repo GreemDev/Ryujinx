@@ -10,7 +10,7 @@
   "SettingsTabSystemUseHypervisor": "使用 Hypervisor",
   "MenuBarFile": "檔案(_F)",
   "MenuBarFileOpenFromFile": "從檔案載入應用程式(_L)",
-  "MenuBarFileOpenFromFileError": "No applications found in selected file.",
+  "MenuBarFileOpenFromFileError": "未能從已選擇的檔案中找到應用程式。",
   "MenuBarFileOpenUnpacked": "載入未封裝的遊戲(_U)",
   "MenuBarFileLoadDlcFromFolder": "Load DLC From Folder",
   "MenuBarFileLoadTitleUpdatesFromFolder": "Load Title Updates From Folder",
