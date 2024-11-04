@@ -822,6 +822,6 @@
   "InvalidLdnPassphrase": "Invalid Passphrase! Must be in the format \"Ryujinx-<8 hex chars>\"",
   "LdnServer": "Custom LDN Server:",
   "LdnServerTooltip": "The LDN server to use for LDN connections. Leave blank to use the default server.",
-  "LdnServerInputTooltip": "Enter the URL of the LDN server to use.",
+  "LdnServerInputTooltip": "Enter the name or IP address of the LDN server to use.",
   "LdnServerInputDefault": "(default)"
 }
