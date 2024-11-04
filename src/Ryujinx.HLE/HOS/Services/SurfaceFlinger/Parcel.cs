@@ -63,7 +63,7 @@ namespace Ryujinx.HLE.HOS.Services.SurfaceFlinger
 
             if (size < 0)
             {
-                return "";
+                return string.Empty;
             }
 
             ReadOnlySpan<byte> data = ReadInPlace((size + 1) * 2);

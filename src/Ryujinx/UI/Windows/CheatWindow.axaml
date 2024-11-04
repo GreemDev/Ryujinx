@@ -3,9 +3,8 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:model="clr-namespace:Ryujinx.Ava.UI.Models"
     xmlns:window="clr-namespace:Ryujinx.Ava.UI.Windows"
     Width="500"
     Height="500"
@@ -41,7 +40,7 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             LineHeight="30"
-            Text="{locale:Locale BuildId}"
+            Text="{ext:Locale BuildId}"
             TextAlignment="Center"
             TextWrapping="Wrap" />
         <TextBox
@@ -101,7 +100,7 @@
                     HotKey="Ctrl+S"
                     Command="{Binding Save}"
                     IsVisible="{Binding !NoCheatsFound}">
-                    <TextBlock Text="{locale:Locale SettingsButtonSave}" />
+                    <TextBlock Text="{ext:Locale SettingsButtonSave}" />
                 </Button>
                 <Button
                     Name="CancelButton"
@@ -109,7 +108,7 @@
                     Margin="5"
                     HotKey="Escape"
                     Command="{Binding Close}">
-                    <TextBlock Text="{locale:Locale InputDialogCancel}" />
+                    <TextBlock Text="{ext:Locale InputDialogCancel}" />
                 </Button>
             </DockPanel>
         </DockPanel>

@@ -166,7 +166,7 @@ namespace Ryujinx.HLE.HOS.Services.Vi.RootService
 
         private ResultCode OpenDisplayImpl(ServiceCtx context, string name)
         {
-            if (name == "")
+            if (name == string.Empty)
             {
                 return ResultCode.InvalidValue;
             }

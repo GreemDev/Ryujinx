@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="clr-namespace:Ryujinx.Ava.UI.Controls"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
     xmlns:config="clr-namespace:Ryujinx.Common.Configuration;assembly=Ryujinx.Common"
@@ -49,7 +49,7 @@
                     Margin="0,0,5,0"
                     VerticalAlignment="Center"
                     IsVisible="{Binding EnableNonGameRunningControls}"
-                    Text="{locale:Locale StatusBarGamesLoaded}" />
+                    Text="{ext:Locale StatusBarGamesLoaded}" />
                 <ProgressBar
                     Name="LoadProgressBar"
                     Grid.Column="2"
@@ -115,7 +115,7 @@
                 IsVisible="{Binding !ShowLoadProgress}"
                 Content="{Binding AspectRatioStatusText}"
                 Click="AspectRatioStatus_OnClick"
-                ToolTip.Tip="{locale:Locale AspectRatioTooltip}">
+                ToolTip.Tip="{ext:Locale AspectRatioTooltip}">
                 <SplitButton.Styles>
                     <Style Selector="Border#SeparatorBorder">
                         <Setter Property="Opacity" Value="0" />
@@ -124,27 +124,27 @@
                 <SplitButton.Flyout>
                     <MenuFlyout Placement="Bottom" ShowMode="TransientWithDismissOnPointerMoveAway">
                         <MenuItem
-                            Header="{locale:Locale SettingsTabGraphicsAspectRatio4x3}"
+                            Header="{ext:Locale SettingsTabGraphicsAspectRatio4x3}"
                             Command="{Binding SetAspectRatio}"
                             CommandParameter="{x:Static config:AspectRatio.Fixed4x3}"/>
                         <MenuItem
-                            Header="{locale:Locale SettingsTabGraphicsAspectRatio16x9}"
+                            Header="{ext:Locale SettingsTabGraphicsAspectRatio16x9}"
                             Command="{Binding SetAspectRatio}"
                             CommandParameter="{x:Static config:AspectRatio.Fixed16x9}"/>
                         <MenuItem
-                            Header="{locale:Locale SettingsTabGraphicsAspectRatio16x10}"
+                            Header="{ext:Locale SettingsTabGraphicsAspectRatio16x10}"
                             Command="{Binding SetAspectRatio}"
                             CommandParameter="{x:Static config:AspectRatio.Fixed16x10}"/>
                         <MenuItem
-                            Header="{locale:Locale SettingsTabGraphicsAspectRatio21x9}"
+                            Header="{ext:Locale SettingsTabGraphicsAspectRatio21x9}"
                             Command="{Binding SetAspectRatio}"
                             CommandParameter="{x:Static config:AspectRatio.Fixed21x9}"/>
                         <MenuItem
-                            Header="{locale:Locale SettingsTabGraphicsAspectRatio32x9}"
+                            Header="{ext:Locale SettingsTabGraphicsAspectRatio32x9}"
                             Command="{Binding SetAspectRatio}"
                             CommandParameter="{x:Static config:AspectRatio.Fixed32x9}"/>
                         <MenuItem
-                            Header="{locale:Locale SettingsTabGraphicsAspectRatioStretch}"
+                            Header="{ext:Locale SettingsTabGraphicsAspectRatioStretch}"
                             Command="{Binding SetAspectRatio}"
                             CommandParameter="{x:Static config:AspectRatio.Stretched}"/>
                     </MenuFlyout>
@@ -195,7 +195,7 @@
                                 Minimum="0"
                                 SmallChange="0.01"
                                 TickFrequency="0.05"
-                                ToolTip.Tip="{locale:Locale AudioVolumeTooltip}"
+                                ToolTip.Tip="{ext:Locale AudioVolumeTooltip}"
                                 Value="{Binding Volume}" />
                         </Grid>
                     </Flyout>
@@ -286,7 +286,7 @@
                 Margin="0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
-                Text="{locale:Locale StatusBarSystemVersion}" />
+                Text="{ext:Locale StatusBarSystemVersion}" />
         </StackPanel>
     </Grid>
 </UserControl>

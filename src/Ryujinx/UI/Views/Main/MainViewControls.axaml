@@ -6,7 +6,7 @@
     xmlns:controls="clr-namespace:Ryujinx.Ava.UI.Controls"
     xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
     xmlns:helpers="clr-namespace:Ryujinx.Ava.UI.Helpers"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Ryujinx.Ava.UI.Views.Main.MainViewControls"
@@ -49,8 +49,8 @@
         <TextBlock
             Margin="10,0"
             VerticalAlignment="Center"
-            Text="{locale:Locale IconSize}"
-            ToolTip.Tip="{locale:Locale IconSizeTooltip}" />
+            Text="{ext:Locale IconSize}"
+            ToolTip.Tip="{ext:Locale IconSizeTooltip}" />
         <controls:SliderScroll
             Width="150"
             Height="35"
@@ -61,14 +61,14 @@
             Maximum="4"
             Minimum="1"
             TickFrequency="1"
-            ToolTip.Tip="{locale:Locale IconSizeTooltip}"
+            ToolTip.Tip="{ext:Locale IconSizeTooltip}"
             Value="{Binding GridSizeScale}" />
         <CheckBox
             Margin="0"
             VerticalAlignment="Center"
             IsChecked="{Binding ShowNames, Mode=TwoWay}"
             IsVisible="{Binding IsGrid}">
-            <TextBlock Margin="5,3,0,0" Text="{locale:Locale CommonShowNames}" />
+            <TextBlock Margin="5,3,0,0" Text="{ext:Locale CommonShowNames}" />
         </CheckBox>
         <TextBox
             Name="SearchBox"
@@ -79,7 +79,7 @@
             DockPanel.Dock="Right"
             KeyUp="SearchBox_OnKeyUp"
             Text="{Binding SearchText}"
-            Watermark="{locale:Locale MenuSearch}" />
+            Watermark="{ext:Locale MenuSearch}" />
         <DropDownButton
             Width="150"
             HorizontalAlignment="Right"
@@ -95,49 +95,49 @@
                         <StackPanel>
                             <RadioButton
                                 Checked="Sort_Checked"
-                                Content="{locale:Locale CommonFavorite}"
+                                Content="{ext:Locale CommonFavorite}"
                                 GroupName="Sort"
                                 IsChecked="{Binding IsSortedByFavorite, Mode=OneTime}"
                                 Tag="Favorite" />
                             <RadioButton
                                 Checked="Sort_Checked"
-                                Content="{locale:Locale GameListHeaderApplication}"
+                                Content="{ext:Locale GameListHeaderApplication}"
                                 GroupName="Sort"
                                 IsChecked="{Binding IsSortedByTitle, Mode=OneTime}"
                                 Tag="Title" />
                             <RadioButton
                                 Checked="Sort_Checked"
-                                Content="{locale:Locale GameListHeaderDeveloper}"
+                                Content="{ext:Locale GameListHeaderDeveloper}"
                                 GroupName="Sort"
                                 IsChecked="{Binding IsSortedByDeveloper, Mode=OneTime}"
                                 Tag="Developer" />
                             <RadioButton
                                 Checked="Sort_Checked"
-                                Content="{locale:Locale GameListHeaderTimePlayed}"
+                                Content="{ext:Locale GameListHeaderTimePlayed}"
                                 GroupName="Sort"
                                 IsChecked="{Binding IsSortedByTimePlayed, Mode=OneTime}"
                                 Tag="TotalTimePlayed" />
                             <RadioButton
                                 Checked="Sort_Checked"
-                                Content="{locale:Locale GameListHeaderLastPlayed}"
+                                Content="{ext:Locale GameListHeaderLastPlayed}"
                                 GroupName="Sort"
                                 IsChecked="{Binding IsSortedByLastPlayed, Mode=OneTime}"
                                 Tag="LastPlayed" />
                             <RadioButton
                                 Checked="Sort_Checked"
-                                Content="{locale:Locale GameListHeaderFileExtension}"
+                                Content="{ext:Locale GameListHeaderFileExtension}"
                                 GroupName="Sort"
                                 IsChecked="{Binding IsSortedByType, Mode=OneTime}"
                                 Tag="FileType" />
                             <RadioButton
                                 Checked="Sort_Checked"
-                                Content="{locale:Locale GameListHeaderFileSize}"
+                                Content="{ext:Locale GameListHeaderFileSize}"
                                 GroupName="Sort"
                                 IsChecked="{Binding IsSortedBySize, Mode=OneTime}"
                                 Tag="FileSize" />
                             <RadioButton
                                 Checked="Sort_Checked"
-                                Content="{locale:Locale GameListHeaderPath}"
+                                Content="{ext:Locale GameListHeaderPath}"
                                 GroupName="Sort"
                                 IsChecked="{Binding IsSortedByPath, Mode=OneTime}"
                                 Tag="Path" />
@@ -153,13 +153,13 @@
                         </Border>
                         <RadioButton
                             Checked="Order_Checked"
-                            Content="{locale:Locale OrderAscending}"
+                            Content="{ext:Locale OrderAscending}"
                             GroupName="Order"
                             IsChecked="{Binding IsAscending, Mode=OneTime}"
                             Tag="Ascending" />
                         <RadioButton
                             Checked="Order_Checked"
-                            Content="{locale:Locale OrderDescending}"
+                            Content="{ext:Locale OrderDescending}"
                             GroupName="Order"
                             IsChecked="{Binding !IsAscending, Mode=OneTime}"
                             Tag="Descending" />
@@ -172,6 +172,6 @@
             HorizontalAlignment="Right"
             VerticalAlignment="Center"
             DockPanel.Dock="Right"
-            Text="{locale:Locale CommonSort}" />
+            Text="{ext:Locale CommonSort}" />
     </DockPanel>
 </UserControl>

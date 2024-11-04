@@ -2,7 +2,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:Ryujinx.Ava.UI.Models"
@@ -56,7 +56,7 @@
                         Width="90"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
-                        Text="{locale:Locale ControllerSettingsPlayer}" />
+                        Text="{ext:Locale ControllerSettingsPlayer}" />
                     <ComboBox
                         Grid.Column="1"
                         Name="PlayerIndexBox"
@@ -90,7 +90,7 @@
                         Width="90"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
-                        Text="{locale:Locale ControllerSettingsProfile}" />
+                        Text="{ext:Locale ControllerSettingsProfile}" />
                     <ui:FAComboBox
                         Grid.Column="1"
                         IsEditable="True"
@@ -105,7 +105,7 @@
                         MinWidth="0"
                         Margin="5,0,0,0"
                         VerticalAlignment="Center"
-                        ToolTip.Tip="{locale:Locale ControllerSettingsLoadProfileToolTip}"
+                        ToolTip.Tip="{ext:Locale ControllerSettingsLoadProfileToolTip}"
                         Command="{Binding LoadProfile}">
                         <ui:SymbolIcon
                             Symbol="Upload"
@@ -117,7 +117,7 @@
                             MinWidth="0"
                             Margin="5,0,0,0"
                             VerticalAlignment="Center"
-                            ToolTip.Tip="{locale:Locale ControllerSettingsSaveProfileToolTip}"
+                            ToolTip.Tip="{ext:Locale ControllerSettingsSaveProfileToolTip}"
                             Command="{Binding SaveProfile}">
                         <ui:SymbolIcon
                             Symbol="Save"
@@ -129,7 +129,7 @@
                             MinWidth="0"
                             Margin="5,0,0,0"
                             VerticalAlignment="Center"
-                            ToolTip.Tip="{locale:Locale ControllerSettingsRemoveProfileToolTip}"
+                            ToolTip.Tip="{ext:Locale ControllerSettingsRemoveProfileToolTip}"
                             Command="{Binding RemoveProfile}">
                         <ui:SymbolIcon
                             Symbol="Delete"
@@ -161,7 +161,7 @@
                         Width="90"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
-                        Text="{locale:Locale ControllerSettingsInputDevice}" />
+                        Text="{ext:Locale ControllerSettingsInputDevice}" />
                     <ComboBox
                         Grid.Column="1"
                         Name="DeviceBox"
@@ -196,7 +196,7 @@
                         Width="90"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
-                        Text="{locale:Locale ControllerSettingsControllerType}" />
+                        Text="{ext:Locale ControllerSettingsControllerType}" />
                     <ComboBox
                         Grid.Column="1"
                         HorizontalAlignment="Stretch"

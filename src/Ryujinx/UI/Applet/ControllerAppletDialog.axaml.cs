@@ -26,7 +26,7 @@ namespace Ryujinx.Ava.UI.Applet
         public static SvgImage JoyconLeftImage => GetResource(JoyConLeftResource);
         public static SvgImage JoyconRightImage => GetResource(JoyConRightResource);
 
-        public string PlayerCount { get; set; } = "";
+        public string PlayerCount { get; set; } = string.Empty;
         public bool SupportsProController { get; set; }
         public bool SupportsLeftJoycon { get; set; }
         public bool SupportsRightJoycon { get; set; }

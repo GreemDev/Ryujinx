@@ -855,6 +855,7 @@ namespace ARMeilleure.Translation.PTC
                 Thread thread = new(TranslateFuncs)
                 {
                     IsBackground = true,
+                    Name = "Ptc.TranslateThread." + i
                 };
 
                 threads.Add(thread);
@@ -885,6 +886,7 @@ namespace ARMeilleure.Translation.PTC
             Thread preSaveThread = new(PreSave)
             {
                 IsBackground = true,
+                Name = "Ptc.DiskWriter"
             };
             preSaveThread.Start();
         }

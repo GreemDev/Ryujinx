@@ -299,16 +299,6 @@ namespace Ryujinx.UI.Common.Configuration
         public string LanguageCode { get; set; }
 
         /// <summary>
-        /// Enable or disable custom themes in the GUI
-        /// </summary>
-        public bool EnableCustomTheme { get; set; }
-
-        /// <summary>
-        /// Path to custom GUI theme
-        /// </summary>
-        public string CustomThemePath { get; set; }
-
-        /// <summary>
         /// Chooses the base style // Not Used
         /// </summary>
         public string BaseStyle { get; set; }

@@ -3,7 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
     xmlns:models="clr-namespace:Ryujinx.UI.Common.Models;assembly=Ryujinx.UI.Common"
@@ -33,7 +33,7 @@
             <TextBlock
                 FontStyle="Italic"
                 VerticalAlignment="Bottom"
-                Text="{locale:Locale DlcWindowBundledContentNotice}" />
+                Text="{ext:Locale DlcWindowBundledContentNotice}" />
         </StackPanel>
         <Panel
             Margin="0 0 0 10"
@@ -51,14 +51,14 @@
                         MinWidth="90"
                         Margin="5"
                         Command="{Binding EnableAll}">
-                        <TextBlock Text="{locale:Locale DlcManagerEnableAllButton}" />
+                        <TextBlock Text="{ext:Locale DlcManagerEnableAllButton}" />
                     </Button>
                     <Button
                         Name="DisableAllButton"
                         MinWidth="90"
                         Margin="5"
                         Command="{Binding DisableAll}">
-                        <TextBlock Text="{locale:Locale DlcManagerDisableAllButton}" />
+                        <TextBlock Text="{ext:Locale DlcManagerDisableAllButton}" />
                     </Button>
                 </StackPanel>
                 <TextBox
@@ -66,7 +66,7 @@
                     MinHeight="29"
                     MaxHeight="29"
                     HorizontalAlignment="Stretch"
-                    Watermark="{locale:Locale Search}"
+                    Watermark="{ext:Locale Search}"
                     Text="{Binding Search}" />
             </Grid>
         </Panel>
@@ -167,14 +167,14 @@
                     MinWidth="90"
                     Margin="5"
                     Command="{Binding Add}">
-                    <TextBlock Text="{locale:Locale SettingsTabGeneralAdd}" />
+                    <TextBlock Text="{ext:Locale SettingsTabGeneralAdd}" />
                 </Button>
                 <Button
                     Name="RemoveAllButton"
                     MinWidth="90"
                     Margin="5"
                     Command="{Binding RemoveAll}">
-                    <TextBlock Text="{locale:Locale DlcManagerRemoveAllButton}" />
+                    <TextBlock Text="{ext:Locale DlcManagerRemoveAllButton}" />
                 </Button>
             </StackPanel>
             <StackPanel
@@ -186,14 +186,14 @@
                     MinWidth="90"
                     Margin="5"
                     Click="SaveAndClose">
-                    <TextBlock Text="{locale:Locale SettingsButtonSave}" />
+                    <TextBlock Text="{ext:Locale SettingsButtonSave}" />
                 </Button>
                 <Button
                     Name="CancelButton"
                     MinWidth="90"
                     Margin="5"
                     Click="Close">
-                    <TextBlock Text="{locale:Locale InputDialogCancel}" />
+                    <TextBlock Text="{ext:Locale InputDialogCancel}" />
                 </Button>
             </StackPanel>
         </Panel>

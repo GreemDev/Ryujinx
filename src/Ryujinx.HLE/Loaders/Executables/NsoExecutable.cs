@@ -102,7 +102,7 @@ namespace Ryujinx.HLE.Loaders.Executables
             Match fsSdkMatch = FsSdkRegex().Match(rawTextBuffer);
             if (fsSdkMatch.Success)
             {
-                stringBuilder.AppendLine($"    FS SDK Version: {fsSdkMatch.Value.Replace("sdk_version: ", "")}");
+                stringBuilder.AppendLine($"    FS SDK Version: {fsSdkMatch.Value.Replace("sdk_version: ", string.Empty)}");
             }
 
             MatchCollection sdkMwMatches = SdkMwRegex().Matches(rawTextBuffer);

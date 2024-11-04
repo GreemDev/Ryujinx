@@ -119,7 +119,7 @@ namespace Ryujinx.Common.Configuration
 
         private static string SetUpLogsDir()
         {
-            string logDir = "";
+            string logDir = string.Empty;
 
             if (Mode == LaunchMode.Portable)
             {
@@ -148,7 +148,7 @@ namespace Ryujinx.Common.Configuration
                     catch
                     {
                         Logger.Warning?.Print(LogClass.Application, $"Logging directory could not be created '{logDir}'");
-                        logDir = "";
+                        logDir = string.Empty;
                     }
 
                     if (string.IsNullOrEmpty(logDir))
@@ -179,7 +179,7 @@ namespace Ryujinx.Common.Configuration
                     catch
                     {
                         Logger.Warning?.Print(LogClass.Application, $"Logging directory could not be created '{logDir}'");
-                        logDir = "";
+                        logDir = string.Empty;
                     }
 
                     if (string.IsNullOrEmpty(logDir))

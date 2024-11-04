@@ -41,7 +41,7 @@ namespace Ryujinx.Audio.Backends.OpenAL
 
         public OpenALHardwareDeviceDriver()
         {
-            _device = ALC.OpenDevice("");
+            _device = ALC.OpenDevice(string.Empty);
             _context = ALC.CreateContext(_device, new ALContextAttributes());
             _updateRequiredEvent = new ManualResetEvent(false);
             _pauseEvent = new ManualResetEvent(true);
