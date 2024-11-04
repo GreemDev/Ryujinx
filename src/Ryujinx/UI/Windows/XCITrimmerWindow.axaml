@@ -3,7 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
     xmlns:models="clr-namespace:Ryujinx.UI.Common.Models;assembly=Ryujinx.UI.Common"
@@ -49,7 +49,7 @@
                         Margin="10,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
-                        Text="{locale:Locale CommonSort}" />
+                        Text="{ext:Locale CommonSort}" />
                     <DropDownButton
                         Width="150"
                         HorizontalAlignment="Left"
@@ -64,13 +64,13 @@
                                     <StackPanel>
                                         <RadioButton
                                             Checked="Sort_Checked"
-                                            Content="{locale:Locale XCITrimmerSortName}"
+                                            Content="{ext:Locale XCITrimmerSortName}"
                                             GroupName="Sort"
                                             IsChecked="{Binding IsSortedByName, Mode=OneTime}"
                                             Tag="Name" />
                                         <RadioButton
                                             Checked="Sort_Checked"
-                                            Content="{locale:Locale XCITrimmerSortSaved}"
+                                            Content="{ext:Locale XCITrimmerSortSaved}"
                                             GroupName="Sort"
                                             IsChecked="{Binding IsSortedBySaved, Mode=OneTime}"
                                             Tag="Saved" />
@@ -86,13 +86,13 @@
                                     </Border>
                                     <RadioButton
                                         Checked="Order_Checked"
-                                        Content="{locale:Locale OrderAscending}"
+                                        Content="{ext:Locale OrderAscending}"
                                         GroupName="Order"
                                         IsChecked="{Binding SortingAscending, Mode=OneTime}"
                                         Tag="Ascending" />
                                     <RadioButton
                                         Checked="Order_Checked"
-                                        Content="{locale:Locale OrderDescending}"
+                                        Content="{ext:Locale OrderDescending}"
                                         GroupName="Order"
                                         IsChecked="{Binding !SortingAscending, Mode=OneTime}"
                                         Tag="Descending" />
@@ -107,7 +107,7 @@
                     MaxHeight="29"
                     Margin="5 0 5 0"
                     HorizontalAlignment="Stretch"
-                    Watermark="{locale:Locale Search}"
+                    Watermark="{ext:Locale Search}"
                     Text="{Binding Search}" />
                 <StackPanel
                     Grid.Column="2"
@@ -117,14 +117,14 @@
                         MinWidth="90"
                         Margin="5"
                         Command="{Binding SelectDisplayed}">
-                        <TextBlock Text="{locale:Locale XCITrimmerSelectDisplayed}" />
+                        <TextBlock Text="{ext:Locale XCITrimmerSelectDisplayed}" />
                     </Button>
                     <Button
                         Name="DeselectDisplayedButton"
                         MinWidth="90"
                         Margin="5"
                         Command="{Binding DeselectDisplayed}">
-                        <TextBlock Text="{locale:Locale XCITrimmerDeselectDisplayed}" />
+                        <TextBlock Text="{ext:Locale XCITrimmerDeselectDisplayed}" />
                     </Button>
                 </StackPanel>
             </Grid>
@@ -193,7 +193,7 @@
                                                 IsVisible="{Binding IsFailed}">
                                                 <TextBlock 
                                                     Classes="h1" 
-                                                    Text="{locale:Locale XCITrimmerTitleStatusFailed}" />
+                                                    Text="{ext:Locale XCITrimmerTitleStatusFailed}" />
                                                 <TextBlock 
                                                     Text="{Binding ., Converter={StaticResource StatusDetailLabel}}" 
                                                     MaxLines="5"
@@ -249,7 +249,7 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     MaxLines="1"
-                    Text="{locale:Locale XCITrimmerPotentialSavings}" />
+                    Text="{ext:Locale XCITrimmerPotentialSavings}" />
                 <TextBlock
                     Grid.Column="0"
                     Grid.Row="1"
@@ -258,7 +258,7 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     MaxLines="1"
-                    Text="{locale:Locale XCITrimmerActualSavings}" />
+                    Text="{ext:Locale XCITrimmerActualSavings}" />
                 <TextBlock
                     Grid.Column="1"
                     Grid.Row="0"
@@ -324,7 +324,7 @@
                                 <Binding Path="Cancel" />
                             </MultiBinding>
                         </Button.IsVisible>
-                        <TextBlock Text="{locale:Locale InputDialogCancelling}" />
+                        <TextBlock Text="{ext:Locale InputDialogCancelling}" />
                     </Button>
                     <Button
                         Name="CancelButton"
@@ -337,7 +337,7 @@
                                 <Binding Path="!Cancel" />
                             </MultiBinding>
                         </Button.IsVisible>
-                        <TextBlock Text="{locale:Locale InputDialogCancel}" />
+                        <TextBlock Text="{ext:Locale InputDialogCancel}" />
                     </Button>
                     <Button
                         Name="CloseButton"
@@ -345,7 +345,7 @@
                         Margin="5"
                         Click="Close"
                         IsVisible="{Binding !Processing}">
-                        <TextBlock Text="{locale:Locale InputDialogClose}" />
+                        <TextBlock Text="{ext:Locale InputDialogClose}" />
                     </Button>
                 </StackPanel>
             </Grid>

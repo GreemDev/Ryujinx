@@ -72,9 +72,9 @@
     <Separator />
 	<MenuItem
 		Click="TrimXCI_Click"
-		Header="{locale:Locale GameListContextMenuTrimXCI}"
+		Header="{ext:Locale GameListContextMenuTrimXCI}"
         IsEnabled="{Binding TrimXCIEnabled}"
-		ToolTip.Tip="{locale:Locale GameListContextMenuTrimXCIToolTip}" />
+		ToolTip.Tip="{ext:Locale GameListContextMenuTrimXCIToolTip}" />
     <Separator />
     <MenuItem Header="{ext:Locale GameListContextMenuCacheManagement}" Icon="{ext:Icon mdi-cached}">
         <MenuItem
