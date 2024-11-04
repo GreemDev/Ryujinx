@@ -120,7 +120,7 @@ namespace Ryujinx.Ava.UI.Applet
 
             bool okPressed = false;
             bool error = false;
-            string inputText = args.InitialText ?? "";
+            string inputText = args.InitialText ?? string.Empty;
 
             Dispatcher.UIThread.InvokeAsync(async () =>
             {

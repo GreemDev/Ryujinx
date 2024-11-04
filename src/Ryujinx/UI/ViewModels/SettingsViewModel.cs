@@ -80,8 +80,8 @@ namespace Ryujinx.Ava.UI.ViewModels
                 {
                     Dispatcher.UIThread.InvokeAsync(() =>
                          ContentDialogHelper.CreateInfoDialog(LocaleManager.Instance[LocaleKeys.DialogSettingsBackendThreadingWarningMessage],
-                            "",
-                            "",
+                             string.Empty,
+                             string.Empty,
                             LocaleManager.Instance[LocaleKeys.InputDialogOk],
                             LocaleManager.Instance[LocaleKeys.DialogSettingsBackendThreadingWarningTitle])
                     );
@@ -146,6 +146,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         public bool ShowConfirmExit { get; set; }
         public bool IgnoreApplet { get; set; }
         public bool RememberWindowState { get; set; }
+        public bool ShowTitleBar { get; set; }
         public int HideCursor { get; set; }
         public bool EnableDockedMode { get; set; }
         public bool EnableKeyboard { get; set; }
@@ -337,7 +338,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                     {
                         _gpuIds.Add(device.Id);
 
-                        AvailableGpus.Add(new ComboBoxItem { Content = $"{device.Name} {(device.IsDiscrete ? "(dGPU)" : "")}" });
+                        AvailableGpus.Add(new ComboBoxItem { Content = $"{device.Name} {(device.IsDiscrete ? "(dGPU)" : string.Empty)}" });
                     });
                 }
             }
@@ -410,6 +411,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             ShowConfirmExit = config.ShowConfirmExit;
             IgnoreApplet = config.IgnoreApplet;
             RememberWindowState = config.RememberWindowState;
+            ShowTitleBar = config.ShowTitleBar;
             HideCursor = (int)config.HideCursor.Value;
 
             GameDirectories.Clear();
@@ -507,6 +509,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             config.ShowConfirmExit.Value = ShowConfirmExit;
             config.IgnoreApplet.Value = IgnoreApplet;
             config.RememberWindowState.Value = RememberWindowState;
+            config.ShowTitleBar.Value = ShowTitleBar;
             config.HideCursor.Value = (HideCursorMode)HideCursor;
 
             if (_gameDirectoryChanged)

@@ -6,6 +6,14 @@
   <br>
   <sub><sup><b>(REE-YOU-JINX)</b></sup></sub>
   <br>
+    <a href="https://github.com/GreemDev/Ryujinx/actions/workflows/release.yml">
+        <img src="https://github.com/GreemDev/Ryujinx/actions/workflows/release.yml/badge.svg"
+            alt="">
+    </a>
+    <a href="https://github.com/GreemDev/Ryujinx/releases/latest">
+        <img src="https://img.shields.io/github/v/release/GreemDev/Ryujinx"
+            alt="Latest Release">
+    </a>
 </h1>
 
 <p align="center">
@@ -17,25 +25,22 @@
 </p>
 <p align="center">
   On October 1st 2024, Ryujinx was discontinued as the creator was forced to abandon the project.
-  This fork is intended to be a direct continuation for existing Ryujinx users.
-  Guides and documentation will not be provided at this time, though you can find the old ones on the Internet Archive.
+  <br>
+  This fork is intended to be a QoL uplift for existing Ryujinx users.
+  <br>
+  This is not a Ryujinx revival project. This is not a Phoenix project.
+  <br>
+  Guides and documentation can be found on the <a href="https://github.com/GreemDev/Ryujinx/wiki">Wiki tab</a>.
 </p>
 <p align="center">
-  If you would like a version more true to original Ryujinx, check out <a href="https://github.com/ryujinx-mirror/ryujinx">ryujinx-mirror</a>.
+  If you would like a version more preservative fork of Ryujinx, check out <a href="https://github.com/ryujinx-mirror/ryujinx">ryujinx-mirror</a>.
 </p>
 
 <p align="center">
-    <a href="https://github.com/GreemDev/Ryujinx/actions/workflows/release.yml">
-        <img src="https://github.com/GreemDev/Ryujinx/actions/workflows/release.yml/badge.svg"
-            alt="">
-    </a>
-    <a href="https://crwd.in/ryujinx">
-        <img src="https://badges.crowdin.net/ryujinx/localized.svg"
-            alt="">
-    </a>
+    Click below to join the Discord:
+    <br>
     <a href="https://discord.gg/dHPrkBkkyA">
-        <img src="https://img.shields.io/discord/1294443224030511104?color=5865F2&label=Ryujinx&logo=discord&logoColor=white"
-            alt="Discord">
+        <img src="https://img.shields.io/discord/1294443224030511104?color=5865F2&label=Ryubing&logo=discord&logoColor=white" alt="Discord">
     </a>
     <br>
     <br>
@@ -60,6 +65,8 @@ failing to meet this requirement may result in a poor gameplay experience or une
 
 These builds are compiled automatically for each commit on the master branch.
 While we strive to ensure optimal stability and performance prior to pushing an update, our automated builds **may be unstable or completely broken**.
+
+You can find the latest release [here](https://github.com/GreemDev/Ryujinx/releases/latest).
 
 ## Documentation
 

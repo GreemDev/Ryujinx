@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
     mc:Ignorable="d"
     x:DataType="viewModels:SettingsViewModel">
@@ -23,37 +23,37 @@
                 HorizontalAlignment="Stretch"
                 Orientation="Vertical"
                 Spacing="10">
-                <TextBlock Classes="h1" Text="{locale:Locale SettingsTabNetworkMultiplayer}" />
+                <TextBlock Classes="h1" Text="{ext:Locale SettingsTabNetworkMultiplayer}" />
                 <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
                     <TextBlock VerticalAlignment="Center"
-                        Text="{locale:Locale MultiplayerMode}"
-                        ToolTip.Tip="{locale:Locale MultiplayerModeTooltip}"
+                        Text="{ext:Locale MultiplayerMode}"
+                        ToolTip.Tip="{ext:Locale MultiplayerModeTooltip}"
                         Width="200" />
                     <ComboBox SelectedIndex="{Binding MultiplayerModeIndex}"
-                        ToolTip.Tip="{locale:Locale MultiplayerModeTooltip}"
+                        ToolTip.Tip="{ext:Locale MultiplayerModeTooltip}"
                         HorizontalContentAlignment="Left"
                         Width="250">
                         <ComboBoxItem>
-                            <TextBlock Text="{locale:Locale MultiplayerModeDisabled}" />
+                            <TextBlock Text="{ext:Locale MultiplayerModeDisabled}" />
                         </ComboBoxItem>
                         <ComboBoxItem>
-                            <TextBlock Text="{locale:Locale MultiplayerModeLdnMitm}" />
+                            <TextBlock Text="{ext:Locale MultiplayerModeLdnMitm}" />
                         </ComboBoxItem>
                     </ComboBox>
                 </StackPanel>
                 <Separator Height="1" />
-                <TextBlock Classes="h1" Text="{locale:Locale SettingsTabNetworkConnection}" />
+                <TextBlock Classes="h1" Text="{ext:Locale SettingsTabNetworkConnection}" />
                 <CheckBox Margin="10,0,0,0" IsChecked="{Binding EnableInternetAccess}">
-                    <TextBlock Text="{locale:Locale SettingsTabSystemEnableInternetAccess}"
-                        ToolTip.Tip="{locale:Locale EnableInternetAccessTooltip}" />
+                    <TextBlock Text="{ext:Locale SettingsTabSystemEnableInternetAccess}"
+                        ToolTip.Tip="{ext:Locale EnableInternetAccessTooltip}" />
                 </CheckBox>
                 <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
                     <TextBlock VerticalAlignment="Center"
-                        Text="{locale:Locale SettingsTabNetworkInterface}"
-                        ToolTip.Tip="{locale:Locale NetworkInterfaceTooltip}"
+                        Text="{ext:Locale SettingsTabNetworkInterface}"
+                        ToolTip.Tip="{ext:Locale NetworkInterfaceTooltip}"
                         Width="200" />
                     <ComboBox SelectedIndex="{Binding NetworkInterfaceIndex}"
-                        ToolTip.Tip="{locale:Locale NetworkInterfaceTooltip}"
+                        ToolTip.Tip="{ext:Locale NetworkInterfaceTooltip}"
                         HorizontalContentAlignment="Left"
                         ItemsSource="{Binding NetworkInterfaceList}"
                         Width="250" />

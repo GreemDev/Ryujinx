@@ -35,7 +35,7 @@ namespace Ryujinx.UI.Common.Helper
             if ((uninstall && AreMimeTypesRegisteredLinux()) || (!uninstall && !AreMimeTypesRegisteredLinux()))
             {
                 string mimeTypesFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "mime", "Ryujinx.xml");
-                string additionalArgs = !uninstall ? "--novendor" : "";
+                string additionalArgs = !uninstall ? "--novendor" : string.Empty;
 
                 using Process mimeProcess = new();
 
@@ -83,7 +83,7 @@ namespace Ryujinx.UI.Common.Helper
 
                 var openCmd = key.OpenSubKey(@"shell\open\command");
 
-                string keyValue = (string)openCmd.GetValue("");
+                string keyValue = (string)openCmd.GetValue(string.Empty);
 
                 return keyValue is not null && (keyValue.Contains("Ryujinx") || keyValue.Contains(AppDomain.CurrentDomain.FriendlyName));
             }

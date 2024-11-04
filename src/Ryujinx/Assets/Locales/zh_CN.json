@@ -100,6 +100,7 @@
   "SettingsTabGeneralCheckUpdatesOnLaunch": "启动时检查更新",
   "SettingsTabGeneralShowConfirmExitDialog": "退出游戏时需要确认",
   "SettingsTabGeneralRememberWindowState": "记住窗口大小和位置",
+  "SettingsTabGeneralShowTitleBar": "Show Title Bar (Requires restart)",
   "SettingsTabGeneralHideCursor": "隐藏鼠标指针：",
   "SettingsTabGeneralHideCursorNever": "从不隐藏",
   "SettingsTabGeneralHideCursorOnIdle": "自动隐藏",

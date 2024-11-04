@@ -53,7 +53,7 @@ namespace Ryujinx.UI.Common.Helper
         {
             var titleUpdateWindowData = new TitleUpdateMetadata
             {
-                Selected = "",
+                Selected = string.Empty,
                 Paths = [],
             };
 

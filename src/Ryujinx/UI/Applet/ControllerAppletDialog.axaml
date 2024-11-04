@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:applet="using:Ryujinx.Ava.UI.Applet"
     mc:Ignorable="d"
     Width="400"
@@ -25,11 +25,11 @@
                 Spacing="10"
                 Margin="10">
                 <TextBlock
-                    Text="{locale:Locale ControllerAppletDescription}" />
+                    Text="{ext:Locale ControllerAppletDescription}" />
                 <TextBlock
                     IsVisible="{Binding IsDocked}"
                     FontWeight="Bold"
-                    Text="{locale:Locale ControllerAppletDocked}" />
+                    Text="{ext:Locale ControllerAppletDocked}" />
             </StackPanel>
         </Border>
         <Border
@@ -48,7 +48,7 @@
                     VerticalAlignment="Center"
                     TextAlignment="Center"
                     FontWeight="Bold"
-                    Text="{locale:Locale ControllerAppletControllers}" />
+                    Text="{ext:Locale ControllerAppletControllers}" />
                 <StackPanel
                     Spacing="10"
                     HorizontalAlignment="Center"
@@ -96,7 +96,7 @@
                     VerticalAlignment="Center"
                     TextAlignment="Center"
                     FontWeight="Bold"
-                    Text="{locale:Locale ControllerAppletPlayers}" />
+                    Text="{ext:Locale ControllerAppletPlayers}" />
                 <Border Height="50">
                     <TextBlock
                         HorizontalAlignment="Center"
@@ -121,13 +121,13 @@
                     Name="SaveButton"
                     MinWidth="90"
                     Command="{Binding OpenSettingsWindow}">
-                    <TextBlock Text="{locale:Locale DialogOpenSettingsWindowLabel}" />
+                    <TextBlock Text="{ext:Locale DialogOpenSettingsWindowLabel}" />
                 </Button>
                 <Button
                     Name="CancelButton"
                     MinWidth="90"
                     Command="{Binding Close}">
-                    <TextBlock Text="{locale:Locale SettingsButtonClose}" />
+                    <TextBlock Text="{ext:Locale SettingsButtonClose}" />
                 </Button>
             </StackPanel>
         </Panel>

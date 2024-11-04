@@ -5,7 +5,6 @@ using Gommon;
 using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
 using ICSharpCode.SharpZipLib.Zip;
-using Ryujinx.Ava;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Common;
@@ -28,7 +27,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ryujinx.Modules
+namespace Ryujinx.Ava
 {
     internal static class Updater
     {
@@ -115,7 +114,7 @@ namespace Ryujinx.Modules
                             {
                                 await ContentDialogHelper.CreateUpdaterInfoDialog(
                                     LocaleManager.Instance[LocaleKeys.DialogUpdaterAlreadyOnLatestVersionMessage],
-                                    "");
+                                    string.Empty);
                             }
 
                             _running = false;
@@ -134,7 +133,7 @@ namespace Ryujinx.Modules
                     {
                         await ContentDialogHelper.CreateUpdaterInfoDialog(
                             LocaleManager.Instance[LocaleKeys.DialogUpdaterAlreadyOnLatestVersionMessage],
-                            "");
+                            string.Empty);
                     }
 
                     _running = false;
@@ -177,7 +176,7 @@ namespace Ryujinx.Modules
                 {
                     await ContentDialogHelper.CreateUpdaterInfoDialog(
                         LocaleManager.Instance[LocaleKeys.DialogUpdaterAlreadyOnLatestVersionMessage],
-                        "");
+                        string.Empty);
                 }
 
                 _running = false;
@@ -300,13 +299,6 @@ namespace Ryujinx.Modules
                     {
                         // Find the process name.
                         string ryuName = Path.GetFileName(Environment.ProcessPath) ?? string.Empty;
-
-                        // Migration: Start the updated binary.
-                        // TODO: Remove this in a future update.
-                        if (ryuName.StartsWith("Ryujinx.Ava"))
-                        {
-                            ryuName = ryuName.Replace(".Ava", "");
-                        }
 
                         // Some operating systems can see the renamed executable, so strip off the .ryuold if found.
                         if (ryuName.EndsWith(".ryuold"))

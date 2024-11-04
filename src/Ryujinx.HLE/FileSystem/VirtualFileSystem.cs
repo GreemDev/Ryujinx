@@ -132,7 +132,7 @@ namespace Ryujinx.HLE.FileSystem
 
             if (systemPath.StartsWith(baseSystemPath))
             {
-                string rawPath = systemPath.Replace(baseSystemPath, "");
+                string rawPath = systemPath.Replace(baseSystemPath, string.Empty);
                 int firstSeparatorOffset = rawPath.IndexOf(Path.DirectorySeparatorChar);
 
                 if (firstSeparatorOffset == -1)

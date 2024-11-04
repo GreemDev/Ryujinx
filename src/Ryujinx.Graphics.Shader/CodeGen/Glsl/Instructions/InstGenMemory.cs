@@ -432,7 +432,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Glsl.Instructions
 
             bool colorIsVector = isGather || !isShadow;
 
-            texCall += ")" + (colorIsVector ? GetMaskMultiDest(texOp.Index) : "");
+            texCall += ")" + (colorIsVector ? GetMaskMultiDest(texOp.Index) : string.Empty);
 
             return texCall;
         }

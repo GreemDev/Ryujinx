@@ -145,16 +145,6 @@ namespace Ryujinx.UI.Common.Configuration
             public ReactiveObject<string> LanguageCode { get; private set; }
 
             /// <summary>
-            /// Enable or disable custom themes in the GUI
-            /// </summary>
-            public ReactiveObject<bool> EnableCustomTheme { get; private set; }
-
-            /// <summary>
-            /// Path to custom GUI theme
-            /// </summary>
-            public ReactiveObject<string> CustomThemePath { get; private set; }
-
-            /// <summary>
             /// Selects the base style
             /// </summary>
             public ReactiveObject<string> BaseStyle { get; private set; }
@@ -202,8 +192,6 @@ namespace Ryujinx.UI.Common.Configuration
                 AutoloadDirs = new ReactiveObject<List<string>>();
                 ShownFileTypes = new ShownFileTypeSettings();
                 WindowStartup = new WindowStartupSettings();
-                EnableCustomTheme = new ReactiveObject<bool>();
-                CustomThemePath = new ReactiveObject<string>();
                 BaseStyle = new ReactiveObject<string>();
                 StartFullscreen = new ReactiveObject<bool>();
                 GameListViewMode = new ReactiveObject<int>();
@@ -653,6 +641,11 @@ namespace Ryujinx.UI.Common.Configuration
         public ReactiveObject<bool> RememberWindowState { get; private set; }
 
         /// <summary>
+        /// Enables or disables the redesigned title bar
+        /// </summary>
+        public ReactiveObject<bool> ShowTitleBar { get; private set; }
+
+        /// <summary>
         /// Enables hardware-accelerated rendering for Avalonia
         /// </summary>
         public ReactiveObject<bool> EnableHardwareAcceleration { get; private set; }
@@ -675,6 +668,7 @@ namespace Ryujinx.UI.Common.Configuration
             ShowConfirmExit = new ReactiveObject<bool>();
             IgnoreApplet = new ReactiveObject<bool>();
             RememberWindowState = new ReactiveObject<bool>();
+            ShowTitleBar = new ReactiveObject<bool>();
             EnableHardwareAcceleration = new ReactiveObject<bool>();
             HideCursor = new ReactiveObject<HideCursorMode>();
         }
@@ -714,6 +708,7 @@ namespace Ryujinx.UI.Common.Configuration
                 ShowConfirmExit = ShowConfirmExit,
                 IgnoreApplet = IgnoreApplet,
                 RememberWindowState = RememberWindowState,
+                ShowTitleBar = ShowTitleBar,
                 EnableHardwareAcceleration = EnableHardwareAcceleration,
                 HideCursor = HideCursor,
                 EnableVsync = Graphics.EnableVsync,
@@ -770,8 +765,6 @@ namespace Ryujinx.UI.Common.Configuration
                     WindowMaximized = UI.WindowStartup.WindowMaximized,
                 },
                 LanguageCode = UI.LanguageCode,
-                EnableCustomTheme = UI.EnableCustomTheme,
-                CustomThemePath = UI.CustomThemePath,
                 BaseStyle = UI.BaseStyle,
                 GameListViewMode = UI.GameListViewMode,
                 ShowNames = UI.ShowNames,
@@ -804,8 +797,8 @@ namespace Ryujinx.UI.Common.Configuration
             Graphics.MaxAnisotropy.Value = -1.0f;
             Graphics.AspectRatio.Value = AspectRatio.Fixed16x9;
             Graphics.GraphicsBackend.Value = DefaultGraphicsBackend();
-            Graphics.PreferredGpu.Value = "";
-            Graphics.ShadersDumpPath.Value = "";
+            Graphics.PreferredGpu.Value = string.Empty;
+            Graphics.ShadersDumpPath.Value = string.Empty;
             Logger.EnableDebug.Value = false;
             Logger.EnableStub.Value = true;
             Logger.EnableInfo.Value = true;
@@ -814,7 +807,7 @@ namespace Ryujinx.UI.Common.Configuration
             Logger.EnableTrace.Value = false;
             Logger.EnableGuest.Value = true;
             Logger.EnableFsAccessLog.Value = false;
-            Logger.FilteredClasses.Value = Array.Empty<LogClass>();
+            Logger.FilteredClasses.Value = [];
             Logger.GraphicsDebugLevel.Value = GraphicsDebugLevel.None;
             System.Language.Value = Language.AmericanEnglish;
             System.Region.Value = Region.USA;
@@ -826,6 +819,7 @@ namespace Ryujinx.UI.Common.Configuration
             ShowConfirmExit.Value = true;
             IgnoreApplet.Value = false;
             RememberWindowState.Value = true;
+            ShowTitleBar.Value = !OperatingSystem.IsWindows();
             EnableHardwareAcceleration.Value = true;
             HideCursor.Value = HideCursorMode.OnIdle;
             Graphics.EnableVsync.Value = true;
@@ -860,17 +854,15 @@ namespace Ryujinx.UI.Common.Configuration
             UI.GuiColumns.PathColumn.Value = true;
             UI.ColumnSort.SortColumnId.Value = 0;
             UI.ColumnSort.SortAscending.Value = false;
-            UI.GameDirs.Value = new List<string>();
-            UI.AutoloadDirs.Value = new List<string>();
+            UI.GameDirs.Value = [];
+            UI.AutoloadDirs.Value = [];
             UI.ShownFileTypes.NSP.Value = true;
             UI.ShownFileTypes.PFS0.Value = true;
             UI.ShownFileTypes.XCI.Value = true;
             UI.ShownFileTypes.NCA.Value = true;
             UI.ShownFileTypes.NRO.Value = true;
             UI.ShownFileTypes.NSO.Value = true;
-            UI.EnableCustomTheme.Value = true;
             UI.LanguageCode.Value = "en_US";
-            UI.CustomThemePath.Value = "";
             UI.BaseStyle.Value = "Dark";
             UI.GameListViewMode.Value = 0;
             UI.ShowNames.Value = true;
@@ -1540,6 +1532,15 @@ namespace Ryujinx.UI.Common.Configuration
                 configurationFileUpdated = true;
             }
 
+            if (configurationFileFormat.Version < 56)
+            {
+                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 56.");
+
+                configurationFileFormat.ShowTitleBar = !OperatingSystem.IsWindows();
+
+                configurationFileUpdated = true;
+            }
+
             Logger.EnableFileLog.Value = configurationFileFormat.EnableFileLog;
             Graphics.ResScale.Value = configurationFileFormat.ResScale;
             Graphics.ResScaleCustom.Value = configurationFileFormat.ResScaleCustom;
@@ -1572,6 +1573,7 @@ namespace Ryujinx.UI.Common.Configuration
             ShowConfirmExit.Value = configurationFileFormat.ShowConfirmExit;
             IgnoreApplet.Value = configurationFileFormat.IgnoreApplet;
             RememberWindowState.Value = configurationFileFormat.RememberWindowState;
+            ShowTitleBar.Value = configurationFileFormat.ShowTitleBar;
             EnableHardwareAcceleration.Value = configurationFileFormat.EnableHardwareAcceleration;
             HideCursor.Value = configurationFileFormat.HideCursor;
             Graphics.EnableVsync.Value = configurationFileFormat.EnableVsync;
@@ -1610,9 +1612,7 @@ namespace Ryujinx.UI.Common.Configuration
             UI.ShownFileTypes.NCA.Value = configurationFileFormat.ShownFileTypes.NCA;
             UI.ShownFileTypes.NRO.Value = configurationFileFormat.ShownFileTypes.NRO;
             UI.ShownFileTypes.NSO.Value = configurationFileFormat.ShownFileTypes.NSO;
-            UI.EnableCustomTheme.Value = configurationFileFormat.EnableCustomTheme;
             UI.LanguageCode.Value = configurationFileFormat.LanguageCode;
-            UI.CustomThemePath.Value = configurationFileFormat.CustomThemePath;
             UI.BaseStyle.Value = configurationFileFormat.BaseStyle;
             UI.GameListViewMode.Value = configurationFileFormat.GameListViewMode;
             UI.ShowNames.Value = configurationFileFormat.ShowNames;

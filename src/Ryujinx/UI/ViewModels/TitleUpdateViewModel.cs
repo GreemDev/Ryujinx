@@ -227,10 +227,16 @@ namespace Ryujinx.Ava.UI.ViewModels
         private Task ShowNewUpdatesAddedDialog(int numAdded)
         {
             var msg = string.Format(LocaleManager.Instance[LocaleKeys.UpdateWindowUpdateAddedMessage], numAdded);
-            return Dispatcher.UIThread.InvokeAsync(async () =>
-            {
-                await ContentDialogHelper.ShowTextDialog(LocaleManager.Instance[LocaleKeys.DialogConfirmationTitle], msg, "", "", "", LocaleManager.Instance[LocaleKeys.InputDialogOk], (int)Symbol.Checkmark);
-            });
+            return Dispatcher.UIThread.InvokeAsync(async () => 
+                await ContentDialogHelper.ShowTextDialog(
+                    LocaleManager.Instance[LocaleKeys.DialogConfirmationTitle], 
+                    msg, 
+                    string.Empty, 
+                    string.Empty, 
+                    string.Empty, 
+                    LocaleManager.Instance[LocaleKeys.InputDialogOk], 
+                    (int)Symbol.Checkmark
+                ));
         }
     }
 }
