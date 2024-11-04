@@ -58,6 +58,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         private int _networkInterfaceIndex;
         private int _multiplayerModeIndex;
         private string _ldnPassphrase;
+        private string _LdnServer;
 
         public int ResolutionScale
         {
@@ -297,6 +298,16 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public bool IsInvalidLdnPassphraseVisible { get; set; }
 
+        public string LdnServer
+        {
+            get => _LdnServer;
+            set
+            {
+                _LdnServer = value;
+                OnPropertyChanged();
+            }
+        }
+
         public SettingsViewModel(VirtualFileSystem virtualFileSystem, ContentManager contentManager) : this()
         {
             _virtualFileSystem = virtualFileSystem;
@@ -525,6 +536,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             MultiplayerModeIndex = (int)config.Multiplayer.Mode.Value;
             DisableP2P = config.Multiplayer.DisableP2p.Value;
             LdnPassphrase = config.Multiplayer.LdnPassphrase.Value;
+            LdnServer = config.Multiplayer.LdnServer.Value;
         }
 
         public void SaveSettings()
@@ -643,6 +655,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             config.Multiplayer.Mode.Value = (MultiplayerMode)MultiplayerModeIndex;
             config.Multiplayer.DisableP2p.Value = DisableP2P;
             config.Multiplayer.LdnPassphrase.Value = LdnPassphrase;
+            config.Multiplayer.LdnServer.Value = LdnServer;
 
             config.ToFileFormat().SaveConfig(Program.ConfigurationPath);
 

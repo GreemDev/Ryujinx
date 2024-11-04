@@ -584,6 +584,11 @@ namespace Ryujinx.UI.Common.Configuration
             /// </summary>
             public ReactiveObject<string> LdnPassphrase { get; private set; }
 
+            /// <summary>
+            /// Custom LDN server
+            /// </summary>
+            public ReactiveObject<string> LdnServer { get; private set; }
+
             public MultiplayerSection()
             {
                 LanInterfaceId = new ReactiveObject<string>();
@@ -592,6 +597,7 @@ namespace Ryujinx.UI.Common.Configuration
                 DisableP2p = new ReactiveObject<bool>();
                 DisableP2p.Event += static (_, e) => LogValueChange(e, nameof(DisableP2p));
                 LdnPassphrase = new ReactiveObject<string>();
+                LdnServer = new ReactiveObject<string>();
             }
         }
 
@@ -801,6 +807,7 @@ namespace Ryujinx.UI.Common.Configuration
                 MultiplayerMode = Multiplayer.Mode,
                 MultiplayerDisableP2p = Multiplayer.DisableP2p,
                 MultiplayerLdnPassphrase = Multiplayer.LdnPassphrase,
+                LdnServer = Multiplayer.LdnServer,
             };
 
             return configurationFile;
@@ -862,6 +869,7 @@ namespace Ryujinx.UI.Common.Configuration
             Multiplayer.Mode.Value = MultiplayerMode.Disabled;
             Multiplayer.DisableP2p.Value = false;
             Multiplayer.LdnPassphrase.Value = "";
+            Multiplayer.LdnServer.Value = "";
             UI.GuiColumns.FavColumn.Value = true;
             UI.GuiColumns.IconColumn.Value = true;
             UI.GuiColumns.AppColumn.Value = true;
@@ -1656,6 +1664,7 @@ namespace Ryujinx.UI.Common.Configuration
             Multiplayer.Mode.Value = configurationFileFormat.MultiplayerMode;
             Multiplayer.DisableP2p.Value = configurationFileFormat.MultiplayerDisableP2p;
             Multiplayer.LdnPassphrase.Value = configurationFileFormat.MultiplayerLdnPassphrase;
+            Multiplayer.LdnServer.Value = configurationFileFormat.LdnServer;
 
             if (configurationFileUpdated)
             {

@@ -23,7 +23,7 @@ namespace Ryujinx.HLE.HOS.Services.Ldn.UserServiceCreator
 {
     class IUserLocalCommunicationService : IpcService, IDisposable
     {
-        public static string LanPlayHost = "ryuldn.vudjun.com";
+        public static string DefaultLanPlayHost = "ryuldn.vudjun.com";
         public static short LanPlayPort = 30456;
 
         public INetworkClient NetworkClient { get; private set; }
@@ -1092,15 +1092,21 @@ namespace Ryujinx.HLE.HOS.Services.Ldn.UserServiceCreator
                             case MultiplayerMode.LdnRyu:
                                 try
                                 {
-                                    if (!IPAddress.TryParse(LanPlayHost, out IPAddress ipAddress))
+                                    string ldnServer = context.Device.Configuration.MultiplayerLdnServer;
+                                    if (string.IsNullOrEmpty(ldnServer))
                                     {
-                                        ipAddress = Dns.GetHostEntry(LanPlayHost).AddressList[0];
+                                        ldnServer = DefaultLanPlayHost;
+                                    }
+                                    if (!IPAddress.TryParse(ldnServer, out IPAddress ipAddress))
+                                    {
+                                        ipAddress = Dns.GetHostEntry(ldnServer).AddressList[0];
                                     }
                                     NetworkClient = new LdnMasterProxyClient(ipAddress.ToString(), LanPlayPort, context.Device.Configuration);
                                 }
-                                catch (Exception)
+                                catch (Exception ex)
                                 {
                                     Logger.Error?.Print(LogClass.ServiceLdn, "Could not locate LdnRyu server. Defaulting to stubbed wireless.");
+                                    Logger.Error?.Print(LogClass.ServiceLdn, ex.Message);
                                     NetworkClient = new LdnDisabledClient();
                                 }
                                 break;

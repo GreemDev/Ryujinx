@@ -403,6 +403,11 @@ namespace Ryujinx.UI.Common.Configuration
         public string MultiplayerLdnPassphrase { get; set; }
 
         /// <summary>
+        /// Custom LDN Server
+        /// </summary>
+        public string LdnServer { get; set; }
+
+        /// <summary>
         /// Uses Hypervisor over JIT if available
         /// </summary>
         public bool UseHypervisor { get; set; }

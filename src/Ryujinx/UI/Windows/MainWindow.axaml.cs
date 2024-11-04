@@ -501,6 +501,11 @@ namespace Ryujinx.Ava.UI.Windows
             {
                 _ = Task.Run(ViewModel.ApplicationLibrary.RefreshLdn);
             };
+
+            ConfigurationState.Instance.Multiplayer.LdnServer.Event += (sender, evt) =>
+            {
+                _ = Task.Run(ViewModel.ApplicationLibrary.RefreshLdn);
+            };
             _ = Task.Run(ViewModel.ApplicationLibrary.RefreshLdn);
 
             ViewModel.RefreshFirmwareStatus();

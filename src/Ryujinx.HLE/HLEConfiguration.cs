@@ -175,6 +175,11 @@ namespace Ryujinx.HLE
         public string MultiplayerLdnPassphrase { internal get; set; }
 
         /// <summary>
+        /// LDN Server
+        /// </summary>
+        public string MultiplayerLdnServer { internal get; set; }
+
+        /// <summary>
         /// An action called when HLE force a refresh of output after docked mode changed.
         /// </summary>
         public Action RefreshInputConfig { internal get; set; }
@@ -206,7 +211,8 @@ namespace Ryujinx.HLE
                                 string multiplayerLanInterfaceId,
                                 MultiplayerMode multiplayerMode,
                                 bool multiplayerDisableP2p,
-                                string multiplayerLdnPassphrase)
+                                string multiplayerLdnPassphrase,
+                                string multiplayerLdnServer)
         {
             VirtualFileSystem = virtualFileSystem;
             LibHacHorizonManager = libHacHorizonManager;
@@ -236,6 +242,7 @@ namespace Ryujinx.HLE
             MultiplayerMode = multiplayerMode;
             MultiplayerDisableP2p = multiplayerDisableP2p;
             MultiplayerLdnPassphrase = multiplayerLdnPassphrase;
+            MultiplayerLdnServer = multiplayerLdnServer;
         }
     }
 }

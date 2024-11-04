@@ -44,6 +44,7 @@ namespace Ryujinx.UI.App.Common
 {
     public class ApplicationLibrary
     {
+        public static string DefaultLanPlayWebHost = "ryuldnweb.vudjun.com";
         public Language DesiredLanguage { get; set; }
         public event EventHandler<ApplicationCountUpdatedEventArgs> ApplicationCountUpdated;
         public event EventHandler<LdnGameDataReceivedEventArgs> LdnGameDataReceived;
@@ -788,9 +789,14 @@ namespace Ryujinx.UI.App.Common
             {
                 try
                 {
+                    string ldnWebHost = ConfigurationState.Instance.Multiplayer.LdnServer;
+                    if (string.IsNullOrEmpty(ldnWebHost))
+                    {
+                        ldnWebHost = DefaultLanPlayWebHost;
+                    }
                     IEnumerable<LdnGameData> ldnGameDataArray = Array.Empty<LdnGameData>();
                     using HttpClient httpClient = new HttpClient();
-                    string ldnGameDataArrayString = await httpClient.GetStringAsync("https://ryuldnweb.vudjun.com/api/public_games");
+                    string ldnGameDataArrayString = await httpClient.GetStringAsync($"https://{ldnWebHost}/api/public_games");
                     ldnGameDataArray = JsonHelper.Deserialize(ldnGameDataArrayString, _ldnDataSerializerContext.IEnumerableLdnGameData);
                     var evt = new LdnGameDataReceivedEventArgs
                     {
@@ -798,9 +804,9 @@ namespace Ryujinx.UI.App.Common
                     };
                     LdnGameDataReceived?.Invoke(null, evt);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    Logger.Warning?.Print(LogClass.Application, "Failed to fetch the public games JSON from the API. Player and game count in the game list will be unavailable.");
+                    Logger.Warning?.Print(LogClass.Application, $"Failed to fetch the public games JSON from the API. Player and game count in the game list will be unavailable.\n{ex.Message}");
                     LdnGameDataReceived?.Invoke(null, new LdnGameDataReceivedEventArgs()
                     {
                         LdnData = Array.Empty<LdnGameData>()

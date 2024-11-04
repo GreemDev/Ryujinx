@@ -208,6 +208,7 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.Multiplayer.LanInterfaceId.Event += UpdateLanInterfaceIdState;
             ConfigurationState.Instance.Multiplayer.Mode.Event += UpdateMultiplayerModeState;
             ConfigurationState.Instance.Multiplayer.LdnPassphrase.Event += UpdateLdnPassphraseState;
+            ConfigurationState.Instance.Multiplayer.LdnServer.Event += UpdateLdnServerState;
             ConfigurationState.Instance.Multiplayer.DisableP2p.Event += UpdateDisableP2pState;
 
             _gpuCancellationTokenSource = new CancellationTokenSource();
@@ -496,6 +497,11 @@ namespace Ryujinx.Ava
         private void UpdateLdnPassphraseState(object sender, ReactiveEventArgs<string> e)
         {
             Device.Configuration.MultiplayerLdnPassphrase = e.NewValue;
+        }
+
+        private void UpdateLdnServerState(object sender, ReactiveEventArgs<string> e)
+        {
+            Device.Configuration.MultiplayerLdnServer = e.NewValue;
         }
 
         private void UpdateDisableP2pState(object sender, ReactiveEventArgs<bool> e)
@@ -878,7 +884,8 @@ namespace Ryujinx.Ava
                 ConfigurationState.Instance.Multiplayer.LanInterfaceId.Value,
                 ConfigurationState.Instance.Multiplayer.Mode,
                 ConfigurationState.Instance.Multiplayer.DisableP2p,
-                ConfigurationState.Instance.Multiplayer.LdnPassphrase));
+                ConfigurationState.Instance.Multiplayer.LdnPassphrase,
+                ConfigurationState.Instance.Multiplayer.LdnServer));
         }
 
         private static IHardwareDeviceDriver InitializeAudio()
