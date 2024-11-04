@@ -580,6 +580,7 @@ namespace Ryujinx.Headless.SDL2
                 options.MultiplayerLanInterfaceId,
                 Common.Configuration.Multiplayer.MultiplayerMode.Disabled,
                 false,
+                "",
                 "");
 
             return new Switch(configuration);
