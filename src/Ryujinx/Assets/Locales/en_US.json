@@ -100,6 +100,7 @@
   "SettingsTabGeneralCheckUpdatesOnLaunch": "Check for Updates on Launch",
   "SettingsTabGeneralShowConfirmExitDialog": "Show \"Confirm Exit\" Dialog",
   "SettingsTabGeneralRememberWindowState": "Remember Window Size/Position",
+  "SettingsTabGeneralShowTitleBar": "Show Title Bar (Requires restart)",
   "SettingsTabGeneralHideCursor": "Hide Cursor:",
   "SettingsTabGeneralHideCursorNever": "Never",
   "SettingsTabGeneralHideCursorOnIdle": "On Idle",

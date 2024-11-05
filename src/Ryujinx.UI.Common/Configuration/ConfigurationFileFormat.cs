@@ -16,7 +16,7 @@ namespace Ryujinx.UI.Common.Configuration
         /// <summary>
         /// The current version of the file format
         /// </summary>
-        public const int CurrentVersion = 55;
+        public const int CurrentVersion = 56;
 
         /// <summary>
         /// Version of the configuration file format
@@ -174,6 +174,11 @@ namespace Ryujinx.UI.Common.Configuration
         public bool RememberWindowState { get; set; }
 
         /// <summary>
+        /// Enables or disables the redesigned title bar
+        /// </summary>
+        public bool ShowTitleBar { get; set; }
+
+        /// <summary>
         /// Enables hardware-accelerated rendering for Avalonia
         /// </summary>
         public bool EnableHardwareAcceleration { get; set; }
@@ -292,16 +297,6 @@ namespace Ryujinx.UI.Common.Configuration
         /// Language Code for the UI
         /// </summary>
         public string LanguageCode { get; set; }
-
-        /// <summary>
-        /// Enable or disable custom themes in the GUI
-        /// </summary>
-        public bool EnableCustomTheme { get; set; }
-
-        /// <summary>
-        /// Path to custom GUI theme
-        /// </summary>
-        public string CustomThemePath { get; set; }
 
         /// <summary>
         /// Chooses the base style // Not Used

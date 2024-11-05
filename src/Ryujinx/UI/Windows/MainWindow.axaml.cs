@@ -22,7 +22,6 @@ using Ryujinx.HLE.HOS;
 using Ryujinx.HLE.HOS.Services.Account.Acc;
 using Ryujinx.Input.HLE;
 using Ryujinx.Input.SDL2;
-using Ryujinx.Modules;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common;
 using Ryujinx.UI.Common.Configuration;
@@ -82,8 +81,8 @@ namespace Ryujinx.Ava.UI.Windows
 
             ViewModel.Title = App.FormatTitle();
 
-            TitleBar.ExtendsContentIntoTitleBar = true;
-            TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
+            TitleBar.ExtendsContentIntoTitleBar = !ConfigurationState.Instance.ShowTitleBar;
+            TitleBar.TitleBarHitTestType = (ConfigurationState.Instance.ShowTitleBar) ? TitleBarHitTestType.Simple : TitleBarHitTestType.Complex;
 
             // NOTE: Height of MenuBar and StatusBar is not usable here, since it would still be 0 at this point.
             StatusBarHeight = StatusBarView.StatusBar.MinHeight;
@@ -109,7 +108,7 @@ namespace Ryujinx.Ava.UI.Windows
         private static void OnPlatformColorValuesChanged(object sender, PlatformColorValues e)
         {
             if (Application.Current is App app)
-                app.ApplyConfiguredTheme();
+                app.ApplyConfiguredTheme(ConfigurationState.Instance.UI.BaseStyle);
         }
 
         protected override void OnClosed(EventArgs e)
@@ -664,8 +663,14 @@ namespace Ryujinx.Ava.UI.Windows
 
             Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                await ContentDialogHelper.ShowTextDialog(LocaleManager.Instance[LocaleKeys.DialogConfirmationTitle],
-                    msg, "", "", "", LocaleManager.Instance[LocaleKeys.InputDialogOk], (int)Symbol.Checkmark);
+                await ContentDialogHelper.ShowTextDialog(
+                    LocaleManager.Instance[LocaleKeys.DialogConfirmationTitle],
+                    msg,
+                    string.Empty, 
+                    string.Empty, 
+                    string.Empty, 
+                    LocaleManager.Instance[LocaleKeys.InputDialogOk], 
+                    (int)Symbol.Checkmark);
             });
         }
     }

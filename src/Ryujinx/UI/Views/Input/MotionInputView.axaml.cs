@@ -43,7 +43,7 @@ namespace Ryujinx.Ava.UI.Views.Input
             {
                 Title = LocaleManager.Instance[LocaleKeys.ControllerMotionTitle],
                 PrimaryButtonText = LocaleManager.Instance[LocaleKeys.ControllerSettingsSave],
-                SecondaryButtonText = "",
+                SecondaryButtonText = string.Empty,
                 CloseButtonText = LocaleManager.Instance[LocaleKeys.ControllerSettingsClose],
                 Content = content,
             };

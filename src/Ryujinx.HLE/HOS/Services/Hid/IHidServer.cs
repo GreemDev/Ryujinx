@@ -130,6 +130,26 @@ namespace Ryujinx.HLE.HOS.Services.Hid
 
             return ResultCode.Success;
         }
+        
+        [CommandCmif(26)]
+        // ActivateDebugMouse(nn::applet::AppletResourceUserId)
+        public ResultCode ActivateDebugMouse(ServiceCtx context)
+        {
+            long appletResourceUserId = context.RequestData.ReadInt64();
+
+            context.Device.Hid.DebugMouse.Active = true;
+
+            // Initialize entries to avoid issues with some games.
+
+            for (int entry = 0; entry < Hid.SharedMemEntryCount; entry++)
+            {
+                context.Device.Hid.DebugMouse.Update();
+            }
+
+            Logger.Stub?.PrintStub(LogClass.ServiceHid, new { appletResourceUserId });
+
+            return ResultCode.Success;
+        }
 
         [CommandCmif(31)]
         // ActivateKeyboard(nn::applet::AppletResourceUserId)

@@ -55,14 +55,7 @@
                             VerticalAlignment="Stretch"
                             ClipToBounds="True"
                             CornerRadius="5">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="10" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="150" />
-                                    <ColumnDefinition Width="100" />
-                                </Grid.ColumnDefinitions>
+                            <Grid ColumnDefinitions="Auto,10,*,150,100">
                                 <Image
                                     Grid.RowSpan="3"
                                     Grid.Column="0"

@@ -152,16 +152,17 @@ namespace Ryujinx.Graphics.Gpu
         /// Creates a new GPU memory manager.
         /// </summary>
         /// <param name="pid">ID of the process that owns the memory manager</param>
+        /// <param name="cpuMemorySize">The amount of physical CPU Memory Avaiable on the device.</param>
         /// <returns>The memory manager</returns>
         /// <exception cref="ArgumentException">Thrown when <paramref name="pid"/> is invalid</exception>
-        public MemoryManager CreateMemoryManager(ulong pid)
+        public MemoryManager CreateMemoryManager(ulong pid, ulong cpuMemorySize)
         {
             if (!PhysicalMemoryRegistry.TryGetValue(pid, out var physicalMemory))
             {
                 throw new ArgumentException("The PID is invalid or the process was not registered", nameof(pid));
             }
 
-            return new MemoryManager(physicalMemory);
+            return new MemoryManager(physicalMemory, cpuMemorySize);
         }
 
         /// <summary>

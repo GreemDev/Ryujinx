@@ -97,6 +97,7 @@
   "SettingsTabGeneralCheckUpdatesOnLaunch": "啟動時檢查更新",
   "SettingsTabGeneralShowConfirmExitDialog": "顯示「確認結束」對話方塊",
   "SettingsTabGeneralRememberWindowState": "記住視窗大小/位置",
+  "SettingsTabGeneralShowTitleBar": "Show Title Bar (Requires restart)",
   "SettingsTabGeneralHideCursor": "隱藏滑鼠游標:",
   "SettingsTabGeneralHideCursorNever": "從不",
   "SettingsTabGeneralHideCursorOnIdle": "閒置時",

@@ -97,6 +97,7 @@
   "SettingsTabGeneralCheckUpdatesOnLaunch": "Beim Start nach Updates suchen",
   "SettingsTabGeneralShowConfirmExitDialog": "Zeige den \"Beenden bestätigen\"-Dialog",
   "SettingsTabGeneralRememberWindowState": "Fenstergröße/-position merken",
+  "SettingsTabGeneralShowTitleBar": "Show Title Bar (Requires restart)",
   "SettingsTabGeneralHideCursor": "Mauszeiger ausblenden",
   "SettingsTabGeneralHideCursorNever": "Niemals",
   "SettingsTabGeneralHideCursorOnIdle": "Mauszeiger bei Inaktivität ausblenden",

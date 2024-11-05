@@ -97,6 +97,7 @@
   "SettingsTabGeneralCheckUpdatesOnLaunch": "Перевіряти наявність оновлень під час запуску",
   "SettingsTabGeneralShowConfirmExitDialog": "Показати діалогове вікно «Підтвердити вихід».",
   "SettingsTabGeneralRememberWindowState": "Remember Window Size/Position",
+  "SettingsTabGeneralShowTitleBar": "Show Title Bar (Requires restart)",
   "SettingsTabGeneralHideCursor": "Сховати вказівник:",
   "SettingsTabGeneralHideCursorNever": "Ніколи",
   "SettingsTabGeneralHideCursorOnIdle": "Сховати у режимі очікування",

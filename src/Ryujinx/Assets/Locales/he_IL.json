@@ -97,6 +97,7 @@
   "SettingsTabGeneralCheckUpdatesOnLaunch": "בדוק אם קיימים עדכונים בהפעלה",
   "SettingsTabGeneralShowConfirmExitDialog": "הראה דיאלוג \"אשר יציאה\"",
   "SettingsTabGeneralRememberWindowState": "Remember Window Size/Position",
+  "SettingsTabGeneralShowTitleBar": "Show Title Bar (Requires restart)",
   "SettingsTabGeneralHideCursor": "הסתר את הסמן",
   "SettingsTabGeneralHideCursorNever": "אף פעם",
   "SettingsTabGeneralHideCursorOnIdle": "במצב סרק",

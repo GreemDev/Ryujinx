@@ -205,7 +205,7 @@ namespace Ryujinx.Ava.UI.Helpers
                 primary,
                 secondaryText,
                 acceptButton,
-                "",
+                string.Empty,
                 closeButton,
                 (int)Symbol.Important);
 
@@ -221,7 +221,7 @@ namespace Ryujinx.Ava.UI.Helpers
                 primaryText,
                 secondaryText,
                 acceptButtonText,
-                "",
+                string.Empty,
                 cancelButtonText,
                 (int)Symbol.Help,
                 primaryButtonResult);
@@ -239,8 +239,8 @@ namespace Ryujinx.Ava.UI.Helpers
                 LocaleManager.Instance[LocaleKeys.DialogUpdaterTitle],
                 primary,
                 secondaryText,
-                "",
-                "",
+                string.Empty,
+                string.Empty,
                 LocaleManager.Instance[LocaleKeys.InputDialogOk],
                 (int)Symbol.Important);
 
@@ -249,8 +249,8 @@ namespace Ryujinx.Ava.UI.Helpers
                 LocaleManager.Instance[LocaleKeys.DialogWarningTitle],
                 primary,
                 secondaryText,
-                "",
-                "",
+                string.Empty,
+                string.Empty,
                 LocaleManager.Instance[LocaleKeys.InputDialogOk],
                 (int)Symbol.Important);
 
@@ -263,7 +263,7 @@ namespace Ryujinx.Ava.UI.Helpers
                 LocaleManager.Instance[LocaleKeys.DialogErrorMessage],
                 errorMessage,
                 secondaryErrorMessage,
-                "",
+                string.Empty,
                 LocaleManager.Instance[LocaleKeys.InputDialogOk],
                 (int)Symbol.Dismiss);
         }
@@ -282,7 +282,7 @@ namespace Ryujinx.Ava.UI.Helpers
                 primary,
                 secondaryText,
                 LocaleManager.Instance[LocaleKeys.InputDialogYes],
-                "",
+                string.Empty,
                 LocaleManager.Instance[LocaleKeys.InputDialogNo],
                 (int)Symbol.Help,
                 UserResult.Yes);

@@ -97,6 +97,7 @@
   "SettingsTabGeneralCheckUpdatesOnLaunch": "التحقق من وجود تحديثات عند التشغيل",
   "SettingsTabGeneralShowConfirmExitDialog": "إظهار مربع حوار \"تأكيد الخروج\"",
   "SettingsTabGeneralRememberWindowState": "تذكر حجم/موضع النافذة",
+  "SettingsTabGeneralShowTitleBar": "Show Title Bar (Requires restart)",
   "SettingsTabGeneralHideCursor": "إخفاء المؤشر:",
   "SettingsTabGeneralHideCursorNever": "مطلقا",
   "SettingsTabGeneralHideCursorOnIdle": "عند الخمول",

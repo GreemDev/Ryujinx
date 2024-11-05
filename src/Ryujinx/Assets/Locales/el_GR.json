@@ -97,6 +97,7 @@
   "SettingsTabGeneralCheckUpdatesOnLaunch": "Έλεγχος για Ενημερώσεις στην Εκκίνηση",
   "SettingsTabGeneralShowConfirmExitDialog": "Εμφάνιση διαλόγου \"Επιβεβαίωση Εξόδου\".",
   "SettingsTabGeneralRememberWindowState": "Remember Window Size/Position",
+  "SettingsTabGeneralShowTitleBar": "Show Title Bar (Requires restart)",
   "SettingsTabGeneralHideCursor": "Απόκρυψη Κέρσορα:",
   "SettingsTabGeneralHideCursorNever": "Ποτέ",
   "SettingsTabGeneralHideCursorOnIdle": "Απόκρυψη Δρομέα στην Αδράνεια",

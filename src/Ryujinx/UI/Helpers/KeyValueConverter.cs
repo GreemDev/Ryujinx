@@ -122,7 +122,7 @@ namespace Ryujinx.Ava.UI.Helpers
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string keyString = "";
+            string keyString = string.Empty;
             LocaleKeys localeKey;
 
             switch (value)
