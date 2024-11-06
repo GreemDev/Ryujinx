@@ -12,13 +12,13 @@
         <viewModels:MainWindowViewModel />
     </Design.DataContext>
     <DockPanel HorizontalAlignment="Stretch">
-        <Border Name="RyuLogo" Padding="7, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Image 
-                ToolTip.Tip="{Binding Title}" 
-                Height="25" 
-                Width="25"
-                Source="resm:Ryujinx.UI.Common.Resources.Logo_Ryujinx.png?assembly=Ryujinx.UI.Common" />
-        </Border>
+        <Image
+            Name="RyuLogo"
+            Margin="7,0"
+            Height="25"
+            Width="25"
+            ToolTip.Tip="{Binding Title}"
+            Source="resm:Ryujinx.UI.Common.Resources.Logo_Ryujinx.png?assembly=Ryujinx.UI.Common" />
         <Menu
             Name="Menu"
             Height="35"
