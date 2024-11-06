@@ -53,6 +53,7 @@ jobs:
         with:
           name: "Canary ${{ steps.version_info.outputs.build_version }}"
           tag: ${{ steps.version_info.outputs.build_version }}
+          body: "**Full Changelog**: https://github.com/${{ github.repository }}/compare/Canary-${{ steps.version_info.outputs.prev_build_version }}...Canary-${{ steps.version_info.outputs.build_version }}"
           omitBodyDuringUpdate: true
           owner: ${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}
           repo: ${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}
