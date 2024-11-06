@@ -1,10 +1,10 @@
-name: Release job
+name: Canary release job
 
 on:
   workflow_dispatch:
     inputs: {}
   push:
-    branches: [ release ]
+    branches: [ master ]
     paths-ignore:
       - '.github/**'
       - 'docs/**'
@@ -20,9 +20,9 @@ env:
   POWERSHELL_TELEMETRY_OPTOUT: 1
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   RYUJINX_BASE_VERSION: "1.2"
-  RYUJINX_TARGET_RELEASE_CHANNEL_NAME: "release"
+  RYUJINX_TARGET_RELEASE_CHANNEL_NAME: "canary"
   RYUJINX_TARGET_RELEASE_CHANNEL_OWNER: "GreemDev"
-  RYUJINX_TARGET_RELEASE_CHANNEL_REPO: "Ryujinx"
+  RYUJINX_TARGET_RELEASE_CHANNEL_REPO: "Ryujinx-Canary"
   RELEASE: 1
 
 jobs:
@@ -51,9 +51,8 @@ jobs:
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
-          name: ${{ steps.version_info.outputs.build_version }}
+          name: "Canary ${{ steps.version_info.outputs.build_version }}"
           tag: ${{ steps.version_info.outputs.build_version }}
-          body: "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.version_info.outputs.prev_build_version }}...${{ steps.version_info.outputs.build_version }}"
           omitBodyDuringUpdate: true
           owner: ${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}
           repo: ${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}
@@ -242,10 +241,9 @@ jobs:
       - name: Pushing new release
         uses: ncipollo/release-action@v1
         with:
-          name: ${{ steps.version_info.outputs.build_version }}
+          name: "Canary ${{ steps.version_info.outputs.build_version }}"
           artifacts: "publish_ava/*.tar.gz, publish_headless/*.tar.gz"
           tag: ${{ steps.version_info.outputs.build_version }}
-          body: "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.version_info.outputs.prev_build_version }}...${{ steps.version_info.outputs.build_version }}"
           omitBodyDuringUpdate: true
           allowUpdates: true
           replacesArtifacts: true
