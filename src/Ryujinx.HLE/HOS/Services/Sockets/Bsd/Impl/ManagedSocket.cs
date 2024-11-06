@@ -186,6 +186,8 @@ namespace Ryujinx.HLE.HOS.Services.Sockets.Bsd.Impl
             }
         }
 
+        bool hasEmittedBlockingWarning = false;
+
         public LinuxError Receive(out int receiveSize, Span<byte> buffer, BsdSocketFlags flags)
         {
             LinuxError result;
@@ -198,6 +200,12 @@ namespace Ryujinx.HLE.HOS.Services.Sockets.Bsd.Impl
                 {
                     Blocking = false;
                     shouldBlockAfterOperation = true;
+                }
+
+                if (Blocking && !hasEmittedBlockingWarning)
+                {
+                    Logger.Warning?.PrintMsg(LogClass.ServiceBsd, "Blocking socket operations are not yet working properly. Expect network errors.");
+                    hasEmittedBlockingWarning = true;
                 }
 
                 receiveSize = Socket.Receive(buffer, ConvertBsdSocketFlags(flags));
@@ -235,6 +243,12 @@ namespace Ryujinx.HLE.HOS.Services.Sockets.Bsd.Impl
                 {
                     Blocking = false;
                     shouldBlockAfterOperation = true;
+                }
+
+                if (Blocking && !hasEmittedBlockingWarning)
+                {
+                    Logger.Warning?.PrintMsg(LogClass.ServiceBsd, "Blocking socket operations are not yet working properly. Expect network errors.");
+                    hasEmittedBlockingWarning = true;
                 }
 
                 if (!Socket.IsBound)
