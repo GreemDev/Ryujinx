@@ -184,8 +184,10 @@ namespace Ryujinx.Ava.UI.Views.Main
             if (sender is not MenuItem { Tag: string resolution })
                 return;
 
-            (int height, int width) = resolution.Split(' ')
-                .Into(parts => (int.Parse(parts[0]), int.Parse(parts[1])));
+            (int width, int height) = resolution.Split(' ', 2)
+                .Into(parts => 
+                    (int.Parse(parts[0]), int.Parse(parts[1]))
+                );
 
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
@@ -200,7 +202,7 @@ namespace Ryujinx.Ava.UI.Views.Main
         public async void CheckForUpdates(object sender, RoutedEventArgs e)
         {
             if (Updater.CanUpdate(true))
-                await Updater.BeginParse(Window, true);
+                await Window.BeginUpdateAsync(true);
         }
 
         public async void OpenXCITrimmerWindow(object sender, RoutedEventArgs e) => await XCITrimmerWindow.Show(ViewModel);

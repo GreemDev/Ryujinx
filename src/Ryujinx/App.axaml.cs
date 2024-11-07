@@ -23,8 +23,10 @@ namespace Ryujinx.Ava
     {
         internal static string FormatTitle(LocaleKeys? windowTitleKey = null)
             => windowTitleKey is null
-                ? $"Ryujinx {Program.Version}"
-                : $"Ryujinx {Program.Version} - {LocaleManager.Instance[windowTitleKey.Value]}";
+                ? $"{FullAppName} {Program.Version}"
+                : $"{FullAppName} {Program.Version} - {LocaleManager.Instance[windowTitleKey.Value]}";
+
+        public static readonly string FullAppName = ReleaseInformation.IsCanaryBuild ? "Ryujinx Canary" : "Ryujinx";
 
         public static MainWindow MainWindow => Current!
             .ApplicationLifetime.Cast<IClassicDesktopStyleApplicationLifetime>()
