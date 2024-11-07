@@ -101,7 +101,7 @@ namespace Ryujinx.Ava
                 
                 string fetchedJson = await jsonClient.GetStringAsync(LatestReleaseUrl);
                 var fetched = JsonHelper.Deserialize(fetchedJson, _serializerContext.GithubReleasesJsonResponse);
-                _buildVer = fetched.Name;
+                _buildVer = fetched.TagName;
 
                 foreach (var asset in fetched.Assets)
                 {
@@ -156,7 +156,7 @@ namespace Ryujinx.Ava
 
             try
             {
-                newVersion = Version.Parse(ReleaseInformation.IsCanaryBuild ? _buildVer.Split(' ')[1] : _buildVer);
+                newVersion = Version.Parse(_buildVer);
             }
             catch
             {
