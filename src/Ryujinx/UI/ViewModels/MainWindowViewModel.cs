@@ -22,6 +22,7 @@ using Ryujinx.Ava.UI.Windows;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
+using Ryujinx.Common.Utilities;
 using Ryujinx.Cpu;
 using Ryujinx.HLE;
 using Ryujinx.HLE.FileSystem;
@@ -84,6 +85,8 @@ namespace Ryujinx.Ava.UI.ViewModels
         private bool _isAppletMenuActive;
         private int _statusBarProgressMaximum;
         private int _statusBarProgressValue;
+        private string _statusBarProgressStatusText;
+        private bool _statusBarProgressStatusVisible;
         private bool _isPaused;
         private bool _showContent = true;
         private bool _isLoadingIndeterminate = true;
@@ -393,6 +396,8 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public bool OpenDeviceSaveDirectoryEnabled => !SelectedApplication.ControlHolder.ByteSpan.IsZeros() && SelectedApplication.ControlHolder.Value.DeviceSaveDataSize > 0;
 
+        public bool TrimXCIEnabled => Ryujinx.Common.Utilities.XCIFileTrimmer.CanTrim(SelectedApplication.Path, new Common.XCIFileTrimmerMainWindowLog(this));
+
         public bool OpenBcatSaveDirectoryEnabled => !SelectedApplication.ControlHolder.ByteSpan.IsZeros() && SelectedApplication.ControlHolder.Value.BcatDeliveryCacheStorageSize > 0;
 
         public bool CreateShortcutEnabled => !ReleaseInformation.IsFlatHubBuild;
@@ -502,6 +507,28 @@ namespace Ryujinx.Ava.UI.ViewModels
             set
             {
                 _statusBarProgressValue = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool StatusBarProgressStatusVisible
+        {
+            get => _statusBarProgressStatusVisible;
+            set
+            {
+                _statusBarProgressStatusVisible = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public string StatusBarProgressStatusText
+        {
+            get => _statusBarProgressStatusText;
+            set
+            {
+                _statusBarProgressStatusText = value;
 
                 OnPropertyChanged();
             }
@@ -1778,6 +1805,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             if (WindowState is not WindowState.Normal)
             {
                 WindowState = WindowState.Normal;
+                Window.TitleBar.ExtendsContentIntoTitleBar = !ConfigurationState.Instance.ShowTitleBar;
 
                 if (IsGameRunning)
                 {
@@ -1787,6 +1815,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             else
             {
                 WindowState = WindowState.FullScreen;
+                Window.TitleBar.ExtendsContentIntoTitleBar = true;
 
                 if (IsGameRunning)
                 {
@@ -1834,6 +1863,98 @@ namespace Ryujinx.Ava.UI.ViewModels
                 }
             }
         }
+
+        public async void ProcessTrimResult(String filename, Ryujinx.Common.Utilities.XCIFileTrimmer.OperationOutcome operationOutcome)
+        {
+            string notifyUser = operationOutcome.ToLocalisedText();
+
+            if (notifyUser != null)
+            {
+                await ContentDialogHelper.CreateWarningDialog(
+                    LocaleManager.Instance[LocaleKeys.TrimXCIFileFailedPrimaryText],
+                    notifyUser
+                );
+            }
+            else
+            {
+                switch (operationOutcome)
+                {
+                    case Ryujinx.Common.Utilities.XCIFileTrimmer.OperationOutcome.Successful:
+                        if (Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                        {
+                            if (desktop.MainWindow is MainWindow mainWindow)
+                                mainWindow.LoadApplications();
+                        }
+                        break;
+                }
+            }
+        }
+
+        public async Task TrimXCIFile(string filename)
+        {
+            if (filename == null)
+            {
+                return;
+            }
+
+            var trimmer = new XCIFileTrimmer(filename, new Common.XCIFileTrimmerMainWindowLog(this));
+
+            if (trimmer.CanBeTrimmed)
+            {
+                var savings = (double)trimmer.DiskSpaceSavingsB / 1024.0 / 1024.0;
+                var currentFileSize = (double)trimmer.FileSizeB / 1024.0 / 1024.0;
+                var cartDataSize = (double)trimmer.DataSizeB / 1024.0 / 1024.0;
+                string secondaryText = LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.TrimXCIFileDialogSecondaryText, currentFileSize, cartDataSize, savings);
+
+                var result = await ContentDialogHelper.CreateConfirmationDialog(
+                    LocaleManager.Instance[LocaleKeys.TrimXCIFileDialogPrimaryText],
+                    secondaryText,
+                    LocaleManager.Instance[LocaleKeys.Continue],
+                    LocaleManager.Instance[LocaleKeys.Cancel],
+                    LocaleManager.Instance[LocaleKeys.TrimXCIFileDialogTitle]
+                );
+
+                if (result == UserResult.Yes)
+                {
+                    Thread XCIFileTrimThread = new(() =>
+                    {
+                        Dispatcher.UIThread.Post(() =>
+                        {
+                            StatusBarProgressStatusText = LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.StatusBarXCIFileTrimming, Path.GetFileName(filename));
+                            StatusBarProgressStatusVisible = true;
+                            StatusBarProgressMaximum = 1;
+                            StatusBarProgressValue = 0;
+                            StatusBarVisible = true;
+                        });
+
+                        try
+                        {
+                            XCIFileTrimmer.OperationOutcome operationOutcome = trimmer.Trim();
+
+                            Dispatcher.UIThread.Post(() =>
+                            {
+                                ProcessTrimResult(filename, operationOutcome);
+                            });
+                        }
+                        finally
+                        {
+                            Dispatcher.UIThread.Post(() =>
+                            {
+                                StatusBarProgressStatusVisible = false;
+                                StatusBarProgressStatusText = string.Empty;
+                                StatusBarVisible = false;
+                            });
+                        }
+                    })
+                    {
+                        Name = "GUI.XCIFileTrimmerThread",
+                        IsBackground = true,
+                    };
+                    XCIFileTrimThread.Start();
+                }
+            }
+        }
+
         #endregion
     }
 }
