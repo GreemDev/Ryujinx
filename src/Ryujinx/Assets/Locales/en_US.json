@@ -451,7 +451,7 @@
   "DialogUpdaterCancelUpdateMessage": "Update canceled!",
   "DialogUpdaterAlreadyOnLatestVersionMessage": "You are already using the latest version of Ryujinx!",
   "DialogUpdaterFailedToGetVersionMessage": "An error occurred while trying to retrieve release information from GitHub. This may happen if a new release is currently being compiled by GitHub Actions. Please try again in a few minutes.",
-  "DialogUpdaterConvertFailedGithubMessage": "Failed to convert the Ryujinx version received from GitHub."
+  "DialogUpdaterConvertFailedGithubMessage": "Failed to convert the Ryujinx version received from GitHub.",
   "DialogUpdaterDownloadingMessage": "Downloading Update...",
   "DialogUpdaterExtractionMessage": "Extracting Update...",
   "DialogUpdaterRenamingMessage": "Renaming Update...",
