@@ -33,7 +33,7 @@ namespace Ryujinx.Ava.UI.Views.Main
                 LocaleManager.Instance.LocaleChanged += () => Dispatcher.UIThread.Post(() =>
                 {
                     if (Window.ViewModel.EnableNonGameRunningControls)
-                        Refresh_OnClick(null, null);
+                        Window.LoadApplications();
                 });
             }
         }

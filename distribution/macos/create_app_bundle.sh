@@ -46,5 +46,5 @@ then
     rcodesign sign --entitlements-xml-path "$ENTITLEMENTS_FILE_PATH" "$APP_BUNDLE_DIRECTORY"
 else
     echo "Usign codesign for ad-hoc signing"
-    codesign --entitlements "$ENTITLEMENTS_FILE_PATH" -f --deep -s - "$APP_BUNDLE_DIRECTORY"
+    codesign --entitlements "$ENTITLEMENTS_FILE_PATH" -f -s - "$APP_BUNDLE_DIRECTORY"
 fi
