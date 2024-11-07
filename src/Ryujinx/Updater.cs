@@ -156,7 +156,7 @@ namespace Ryujinx.Ava
 
             try
             {
-                newVersion = Version.Parse(_buildVer);
+                newVersion = Version.Parse(ReleaseInformation.IsCanaryBuild ? _buildVer.Split(' ')[1] : _buildVer);
             }
             catch
             {

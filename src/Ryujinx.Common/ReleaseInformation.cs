@@ -28,9 +28,9 @@ namespace Ryujinx.Common
 
         public static bool IsFlatHubBuild => IsValid && ReleaseChannelOwner.Equals(FlatHubChannel);
 
-        public static bool IsCanaryBuild => IsValid && ReleaseChannelOwner.Equals(CanaryChannel);
+        public static bool IsCanaryBuild => IsValid && ReleaseChannelName.Equals(CanaryChannel);
         
-        public static bool IsReleaseBuild => IsValid && ReleaseChannelOwner.Equals(ReleaseChannel);
+        public static bool IsReleaseBuild => IsValid && ReleaseChannelName.Equals(ReleaseChannel);
 
         public static string Version => IsValid ? BuildVersion : Assembly.GetEntryAssembly()!.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
     }
