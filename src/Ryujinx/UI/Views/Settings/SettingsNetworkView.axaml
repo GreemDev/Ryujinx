@@ -87,17 +87,6 @@
                     IsVisible="{Binding IsInvalidLdnPassphraseVisible}"
                     Focusable="False"
                     Text="{ext:Locale InvalidLdnPassphrase}" />
-                <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                    <TextBlock VerticalAlignment="Center"
-                        Text="{ext:Locale LdnServer}"
-                        ToolTip.Tip="{ext:Locale LdnServerTooltip}"
-                        Width="200" />
-                    <TextBox Name="LdnServer"
-                        Text="{Binding LdnServer}"
-                        Width="250"
-                        ToolTip.Tip="{ext:Locale LdnServerInputTooltip}"
-                        Watermark="{ext:Locale LdnServerInputDefault}" />
-                </StackPanel>
                 <Separator Height="1" />
                 <TextBlock Classes="h1" Text="{ext:Locale SettingsTabNetworkConnection}" />
                 <CheckBox Margin="10,0,0,0" IsChecked="{Binding EnableInternetAccess}">
