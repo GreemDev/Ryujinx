@@ -14,6 +14,15 @@
         <img src="https://img.shields.io/github/v/release/GreemDev/Ryujinx"
             alt="Latest Release">
     </a>
+  <br>
+    <a href="https://github.com/GreemDev/Ryujinx/actions/workflows/canary.yml">
+        <img src="https://github.com/GreemDev/Ryujinx/actions/workflows/canary.yml/badge.svg"
+            alt="">
+    </a>
+    <a href="https://github.com/GreemDev/Ryujinx-Canary/releases/latest">
+        <img src="https://img.shields.io/github/v/release/GreemDev/Ryujinx-Canary?label=canary"
+            alt="Latest Canary Release">
+    </a>
 </h1>
 
 <p align="center">
