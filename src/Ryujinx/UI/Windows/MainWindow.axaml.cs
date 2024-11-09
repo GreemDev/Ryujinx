@@ -28,6 +28,7 @@ using Ryujinx.UI.Common.Configuration;
 using Ryujinx.UI.Common.Helper;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Runtime.Versioning;
 using System.Threading;
@@ -349,12 +350,12 @@ namespace Ryujinx.Ava.UI.Windows
                 await Dispatcher.UIThread.InvokeAsync(async () => await UserErrorDialog.ShowUserErrorDialog(UserError.NoKeys));
             }
 
-            if (ConfigurationState.Instance.CheckUpdatesOnStart && Updater.CanUpdate(false))
+            if (ConfigurationState.Instance.CheckUpdatesOnStart && Updater.CanUpdate())
             {
-                await Updater.BeginParse(this, false).ContinueWith(task =>
-                {
-                    Logger.Error?.Print(LogClass.Application, $"Updater Error: {task.Exception}");
-                }, TaskContinuationOptions.OnlyOnFaulted);
+                await this.BeginUpdateAsync()
+                    .ContinueWith(
+                        task => Logger.Error?.Print(LogClass.Application, $"Updater Error: {task.Exception}"), 
+                        TaskContinuationOptions.OnlyOnFaulted);
             }
         }
 
@@ -392,28 +393,15 @@ namespace Ryujinx.Ava.UI.Windows
 
             ViewModel.WindowState = ConfigurationState.Instance.UI.WindowStartup.WindowMaximized.Value ? WindowState.Maximized : WindowState.Normal;
 
-            if (CheckScreenBounds(savedPoint))
+            if (Screens.All.Any(screen => screen.Bounds.Contains(savedPoint)))
             {
                 Position = savedPoint;
             }
             else
             {
+                Logger.Warning?.Print(LogClass.Application, "Failed to find valid start-up coordinates. Defaulting to primary monitor center.");
                 WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
-        }
-
-        private bool CheckScreenBounds(PixelPoint configPoint)
-        {
-            for (int i = 0; i < Screens.ScreenCount; i++)
-            {
-                if (Screens.All[i].Bounds.Contains(configPoint))
-                {
-                    return true;
-                }
-            }
-
-            Logger.Warning?.Print(LogClass.Application, "Failed to find valid start-up coordinates. Defaulting to primary monitor center.");
-            return false;
         }
 
         private void SaveWindowSizePosition()
@@ -507,8 +495,7 @@ namespace Ryujinx.Ava.UI.Windows
 
         private void VolumeStatus_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            var volumeSplitButton = sender as ToggleSplitButton;
-            if (ViewModel.IsGameRunning)
+            if (ViewModel.IsGameRunning && sender is ToggleSplitButton volumeSplitButton)
             {
                 if (!volumeSplitButton.IsChecked)
                 {

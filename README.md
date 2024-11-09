@@ -14,6 +14,15 @@
         <img src="https://img.shields.io/github/v/release/GreemDev/Ryujinx"
             alt="Latest Release">
     </a>
+  <br>
+    <a href="https://github.com/GreemDev/Ryujinx/actions/workflows/canary.yml">
+        <img src="https://github.com/GreemDev/Ryujinx/actions/workflows/canary.yml/badge.svg"
+            alt="">
+    </a>
+    <a href="https://github.com/GreemDev/Ryujinx-Canary/releases/latest">
+        <img src="https://img.shields.io/github/v/release/GreemDev/Ryujinx-Canary?label=canary"
+            alt="Latest Canary Release">
+    </a>
 </h1>
 
 <p align="center">
@@ -61,9 +70,9 @@ Use the search function to see if a game has been tested already!
 To run this emulator, your PC must be equipped with at least 8GiB of RAM;
 failing to meet this requirement may result in a poor gameplay experience or unexpected crashes.
 
-## Latest build
+## Latest release
 
-These builds are compiled automatically for each commit on the master branch.
+Releases are compiled automatically for each commit on the master branch.
 While we strive to ensure optimal stability and performance prior to pushing an update, our automated builds **may be unstable or completely broken**.
 
 You can find the latest release [here](https://github.com/GreemDev/Ryujinx/releases/latest).
@@ -74,6 +83,7 @@ If you are planning to contribute or just want to learn more about this project 
 
 ## Building
 
+Building the project is for advanced users.
 If you wish to build the emulator yourself, follow these steps:
 
 ### Step 1

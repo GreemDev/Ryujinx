@@ -32,6 +32,8 @@ namespace Ryujinx.Ava
     internal static class Updater
     {
         private const string GitHubApiUrl = "https://api.github.com";
+        private const string LatestReleaseUrl = $"{GitHubApiUrl}/repos/{ReleaseInformation.ReleaseChannelOwner}/{ReleaseInformation.ReleaseChannelRepo}/releases/latest";
+        
         private static readonly GithubReleasesJsonSerializerContext _serializerContext = new(JsonHelper.GetDefaultSerializerOptions());
 
         private static readonly string _homeDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -46,9 +48,9 @@ namespace Ryujinx.Ava
         private static bool _updateSuccessful;
         private static bool _running;
 
-        private static readonly string[] _windowsDependencyDirs = Array.Empty<string>();
+        private static readonly string[] _windowsDependencyDirs = [];
 
-        public static async Task BeginParse(Window mainWindow, bool showVersionUpToDate)
+        public static async Task BeginUpdateAsync(this Window mainWindow, bool showVersionUpToDate = false)
         {
             if (_running)
             {
@@ -96,11 +98,10 @@ namespace Ryujinx.Ava
             try
             {
                 using HttpClient jsonClient = ConstructHttpClient();
-
-                string buildInfoUrl = $"{GitHubApiUrl}/repos/{ReleaseInformation.ReleaseChannelOwner}/{ReleaseInformation.ReleaseChannelRepo}/releases/latest";
-                string fetchedJson = await jsonClient.GetStringAsync(buildInfoUrl);
+                
+                string fetchedJson = await jsonClient.GetStringAsync(LatestReleaseUrl);
                 var fetched = JsonHelper.Deserialize(fetchedJson, _serializerContext.GithubReleasesJsonResponse);
-                _buildVer = fetched.Name;
+                _buildVer = fetched.TagName;
 
                 foreach (var asset in fetched.Assets)
                 {
@@ -159,7 +160,7 @@ namespace Ryujinx.Ava
             }
             catch
             {
-                Logger.Error?.Print(LogClass.Application, "Failed to convert the received Ryujinx version from Github!");
+                Logger.Error?.Print(LogClass.Application, $"Failed to convert the received {App.FullAppName} version from GitHub!");
 
                 await ContentDialogHelper.CreateWarningDialog(
                     LocaleManager.Instance[LocaleKeys.DialogUpdaterConvertFailedGithubMessage],
@@ -636,7 +637,7 @@ namespace Ryujinx.Ava
             taskDialog.Hide();
         }
 
-        public static bool CanUpdate(bool showWarnings)
+        public static bool CanUpdate(bool showWarnings = false)
         {
 #if !DISABLE_UPDATER
             if (!NetworkInterface.GetIsNetworkAvailable())
