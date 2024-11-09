@@ -175,3 +175,7 @@ PublishProfiles/
 
 # Glade backup files
 *.glade~
+
+# Distribution for MACOS Files
+distribution/macos/temp/*
+distribution/macos/output/*
