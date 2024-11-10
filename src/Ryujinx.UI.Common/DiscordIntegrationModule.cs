@@ -163,6 +163,7 @@ namespace Ryujinx.UI.Common
             "010036b0034e4000", // Super Mario Party
             "01006fe013472000", // Mario Party Superstars
             "0100965017338000", // Super Mario Party Jamboree
+            "01006d0017f7a000", // Mario & Luigi: Brothership
             "010067300059a000", // Mario + Rabbids: Kingdom Battle
             "0100317013770000", // Mario + Rabbids: Sparks of Hope
             "0100a3900c3e2000", // Paper Mario: The Origami King

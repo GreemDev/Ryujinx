@@ -101,7 +101,7 @@ namespace Ryujinx.Ava
             // Delete backup files after updating.
             Task.Run(Updater.CleanupUpdate);
 
-            Console.Title = $"Ryujinx Console {Version}";
+            Console.Title = $"{App.FullAppName} Console {Version}";
 
             // Hook unhandled exception and process exit events.
             AppDomain.CurrentDomain.UnhandledException += (sender, e) 
