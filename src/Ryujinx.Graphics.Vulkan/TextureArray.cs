@@ -1,7 +1,9 @@
+using Gommon;
 using Ryujinx.Graphics.GAL;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Ryujinx.Graphics.Vulkan
 {
@@ -54,18 +56,28 @@ namespace Ryujinx.Graphics.Vulkan
 
         public void SetSamplers(int index, ISampler[] samplers)
         {
+            if (_textureRefs is null)
+                return;
+            
             for (int i = 0; i < samplers.Length; i++)
             {
                 ISampler sampler = samplers[i];
 
+                Optional<TextureRef> textureRefOpt = _textureRefs.FindElement(index + i);
+                if (!textureRefOpt.HasValue) continue;
+
+                TextureRef textureRef = textureRefOpt.Value;
+
                 if (sampler is SamplerHolder samplerHolder)
                 {
-                    _textureRefs[index + i].Sampler = samplerHolder.GetSampler();
+                    textureRef.Sampler = samplerHolder.GetSampler();
                 }
                 else
                 {
-                    _textureRefs[index + i].Sampler = default;
+                    textureRef.Sampler = default;
                 }
+
+                _textureRefs[index + i] = textureRef;
             }
 
             SetDirty();
