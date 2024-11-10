@@ -67,11 +67,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
         public static RegisterInfo GetRegisterInfo(ITickSource tickSource, string amiiboId, string userName)
         {
             VirtualAmiiboFile amiiboFile = LoadAmiiboFile(amiiboId);
-            string nickname = "Ryujinx";
-            if (amiiboFile.NickName != null)
-            {
-                nickname = amiiboFile.NickName;
-            }
+            string nickname = amiiboFile.NickName ?? "Ryujinx";
             UtilityImpl utilityImpl = new(tickSource);
             CharInfo charInfo = new();
 
