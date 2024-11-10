@@ -26,9 +26,12 @@ namespace Ryujinx.HLE.HOS.Services.Ldn.UserServiceCreator
 
         public void Dispose()
         {
-            _parent.NetworkClient.DisconnectNetwork();
+            if (_parent?.NetworkClient != null)
+            {
+                _parent.NetworkClient.DisconnectNetwork();
 
-            _parent.NetworkClient.NetworkChange -= NetworkChanged;
+                _parent.NetworkClient.NetworkChange -= NetworkChanged;
+            }
         }
 
         private void NetworkChanged(object sender, NetworkChangeEventArgs e)
