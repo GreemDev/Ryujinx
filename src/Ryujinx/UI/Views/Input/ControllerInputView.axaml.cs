@@ -55,7 +55,7 @@ namespace Ryujinx.Ava.UI.Views.Input
 
         private float _changeSlider = -1.0f;
 
-        private void Slider_IsCheckedChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+        private void Slider_IsCheckedChanged(object sender, AvaloniaPropertyChangedEventArgs e)
         {
             if (sender is Slider check)
             {
@@ -74,7 +74,6 @@ namespace Ryujinx.Ava.UI.Views.Input
 
                      var viewModel = (DataContext as ControllerInputViewModel);
                      viewModel.ParentModel.IsModified = true;
-                    //Logger.Notice.Print(LogClass.Application, $"IsEnabled: {temp}\" \"{check.Value} {check.IsPointerOver}");
                     _changeSlider = (float)check.Value;
                 }
             }
