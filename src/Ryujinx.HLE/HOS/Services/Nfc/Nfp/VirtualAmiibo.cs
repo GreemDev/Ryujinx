@@ -64,10 +64,14 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
             };
         }
 
-        public static RegisterInfo GetRegisterInfo(ITickSource tickSource, string amiiboId, string nickname)
+        public static RegisterInfo GetRegisterInfo(ITickSource tickSource, string amiiboId)
         {
             VirtualAmiiboFile amiiboFile = LoadAmiiboFile(amiiboId);
-
+            string nickname = "Ryujinx";
+            if (amiiboFile.NickName != null)
+            {
+                nickname = amiiboFile.NickName;
+            }
             UtilityImpl utilityImpl = new(tickSource);
             CharInfo charInfo = new();
 
@@ -85,7 +89,9 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
                 Reserved1 = new Array64<byte>(),
                 Reserved2 = new Array58<byte>(),
             };
-            "Ryujinx"u8.CopyTo(registerInfo.Nickname.AsSpan());
+            //"Ryujinx"u8.CopyTo(registerInfo.Nickname.AsSpan());
+            byte[] nicknameBytes = System.Text.Encoding.UTF8.GetBytes(nickname);
+            nicknameBytes.CopyTo(registerInfo.Nickname.AsSpan());
 
             return registerInfo;
         }

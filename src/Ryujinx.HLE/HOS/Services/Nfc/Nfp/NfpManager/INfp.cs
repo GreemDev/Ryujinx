@@ -688,8 +688,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
                         {
                             RegisterInfo registerInfo = VirtualAmiibo.GetRegisterInfo(
                                 context.Device.System.TickSource,
-                                context.Device.System.NfpDevices[i].AmiiboId,
-                                context.Device.System.AccountManager.LastOpenedUser.Name);
+                                context.Device.System.NfpDevices[i].AmiiboId);
 
                             context.Memory.Write(outputPosition, registerInfo);
 
