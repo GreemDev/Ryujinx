@@ -393,6 +393,7 @@ namespace Ryujinx.HLE.HOS.Services
 
                     // TODO: Whats the difference between IpcDuplicateSession/Ex?
                     case 2:
+                        break;
                     case 4:
                         {
                             _ = _requestDataReader.ReadInt32();
