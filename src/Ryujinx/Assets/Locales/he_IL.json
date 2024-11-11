@@ -437,7 +437,7 @@
   "DialogMessageFindSaveErrorMessage": "אירעה שגיאה במציאת שמור המשחק שצויין: {0}",
   "FolderDialogExtractTitle": "בחרו את התיקייה לחילוץ",
   "DialogNcaExtractionMessage": "מלחץ {0} ממקטע {1}...",
-  "DialogNcaExtractionTitle": "ריוג'ינקס - מחלץ מקטע NCA",
+  "DialogNcaExtractionTitle": "מחלץ מקטע NCA",
   "DialogNcaExtractionMainNcaNotFoundErrorMessage": "כשל בחילוץ. ה-NCA הראשי לא היה קיים בקובץ שנבחר.",
   "DialogNcaExtractionCheckLogErrorMessage": "כשל בחילוץ. קרא את קובץ הרישום למידע נוסף.",
   "DialogNcaExtractionSuccessMessage": "החילוץ הושלם בהצלחה.",

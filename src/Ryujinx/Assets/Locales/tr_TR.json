@@ -437,7 +437,7 @@
   "DialogMessageFindSaveErrorMessage": "Belirtilen kayıt verisi bulunmaya çalışırken hata: {0}",
   "FolderDialogExtractTitle": "İçine ayıklanacak klasörü seç",
   "DialogNcaExtractionMessage": "{1} den {0} kısmı ayıklanıyor...",
-  "DialogNcaExtractionTitle": "Ryujinx - NCA Kısmı Ayıklayıcısı",
+  "DialogNcaExtractionTitle": "NCA Kısmı Ayıklayıcısı",
   "DialogNcaExtractionMainNcaNotFoundErrorMessage": "Ayıklama hatası. Ana NCA seçilen dosyada bulunamadı.",
   "DialogNcaExtractionCheckLogErrorMessage": "Ayıklama hatası. Ek bilgi için kayıt dosyasını okuyun.",
   "DialogNcaExtractionSuccessMessage": "Ayıklama başarıyla tamamlandı.",

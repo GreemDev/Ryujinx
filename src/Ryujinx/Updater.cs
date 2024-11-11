@@ -83,7 +83,7 @@ namespace Ryujinx.Ava
             }
             catch
             {
-                Logger.Error?.Print(LogClass.Application, "Failed to convert the current Ryujinx version!");
+                Logger.Error?.Print(LogClass.Application, $"Failed to convert the current {App.FullAppName} version!");
 
                 await ContentDialogHelper.CreateWarningDialog(
                     LocaleManager.Instance[LocaleKeys.DialogUpdaterConvertFailedMessage],

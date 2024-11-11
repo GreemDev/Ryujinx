@@ -437,7 +437,7 @@
   "DialogMessageFindSaveErrorMessage": "حدث خطأ أثناء البحث عن بيانات الحفظ المحددة: {0}",
   "FolderDialogExtractTitle": "اختر المجلد الذي تريد الاستخراج إليه",
   "DialogNcaExtractionMessage": "استخراج قسم {0} من {1}...",
-  "DialogNcaExtractionTitle": "ريوجينكس - مستخرج قسم NCA",
+  "DialogNcaExtractionTitle": "مستخرج قسم NCA",
   "DialogNcaExtractionMainNcaNotFoundErrorMessage": "فشل الاستخراج. لم يكن NCA الرئيسي موجودا في الملف المحدد.",
   "DialogNcaExtractionCheckLogErrorMessage": "فشل الاستخراج. اقرأ ملف التسجيل لمزيد من المعلومات.",
   "DialogNcaExtractionSuccessMessage": "تم الاستخراج بنجاح.",

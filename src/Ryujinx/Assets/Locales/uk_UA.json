@@ -437,7 +437,7 @@
   "DialogMessageFindSaveErrorMessage": "Під час пошуку вказаних даних збереження сталася помилка: {0}",
   "FolderDialogExtractTitle": "Виберіть папку для видобування",
   "DialogNcaExtractionMessage": "Видобування розділу {0} з {1}...",
-  "DialogNcaExtractionTitle": "Ryujinx - Екстрактор розділів NCA",
+  "DialogNcaExtractionTitle": "Екстрактор розділів NCA",
   "DialogNcaExtractionMainNcaNotFoundErrorMessage": "Помилка видобування. Основний NCA не був присутній у вибраному файлі.",
   "DialogNcaExtractionCheckLogErrorMessage": "Помилка видобування. Прочитайте файл журналу для отримання додаткової інформації.",
   "DialogNcaExtractionSuccessMessage": "Видобування успішно завершено.",
