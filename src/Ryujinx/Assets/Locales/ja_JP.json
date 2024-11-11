@@ -407,6 +407,7 @@
   "AvatarSetBackgroundColor": "背景色を指定",
   "AvatarClose": "閉じる",
   "ControllerSettingsLoadProfileToolTip": "プロファイルをロード",
+  "ControllerSettingsViewProfileToolTip": "View Profile",
   "ControllerSettingsAddProfileToolTip": "プロファイルを追加",
   "ControllerSettingsRemoveProfileToolTip": "プロファイルを削除",
   "ControllerSettingsSaveProfileToolTip": "プロファイルをセーブ",

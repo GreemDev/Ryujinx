@@ -407,6 +407,7 @@
   "AvatarSetBackgroundColor": "تعيين لون الخلفية",
   "AvatarClose": "إغلاق",
   "ControllerSettingsLoadProfileToolTip": "تحميل الملف الشخصي",
+  "ControllerSettingsViewProfileToolTip": "View Profile",
   "ControllerSettingsAddProfileToolTip": "إضافة ملف شخصي",
   "ControllerSettingsRemoveProfileToolTip": "إزالة الملف الشخصي",
   "ControllerSettingsSaveProfileToolTip": "حفظ الملف الشخصي",

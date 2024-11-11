@@ -408,6 +408,7 @@
   "AvatarClose": "Fermer",
   "ControllerSettingsLoadProfileToolTip": "Charger un profil",
   "ControllerSettingsAddProfileToolTip": "Ajouter un profil",
+  "ControllerSettingsViewProfileToolTip": "View Profile",
   "ControllerSettingsRemoveProfileToolTip": "Supprimer un profil",
   "ControllerSettingsSaveProfileToolTip": "Enregistrer un profil",
   "MenuBarFileToolsTakeScreenshot": "Prendre une capture d'écran",

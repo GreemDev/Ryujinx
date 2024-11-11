@@ -407,6 +407,7 @@
   "AvatarSetBackgroundColor": "Встановити колір фону",
   "AvatarClose": "Закрити",
   "ControllerSettingsLoadProfileToolTip": "Завантажити профіль",
+  "ControllerSettingsViewProfileToolTip": "View Profile",
   "ControllerSettingsAddProfileToolTip": "Додати профіль",
   "ControllerSettingsRemoveProfileToolTip": "Видалити профіль",
   "ControllerSettingsSaveProfileToolTip": "Зберегти профіль",

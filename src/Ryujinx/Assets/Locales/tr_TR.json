@@ -407,6 +407,7 @@
   "AvatarSetBackgroundColor": "Arka Plan Rengi Ayarla",
   "AvatarClose": "Kapat",
   "ControllerSettingsLoadProfileToolTip": "Profil Yükle",
+  "ControllerSettingsViewProfileToolTip": "View Profile",
   "ControllerSettingsAddProfileToolTip": "Profil Ekle",
   "ControllerSettingsRemoveProfileToolTip": "Profili Kaldır",
   "ControllerSettingsSaveProfileToolTip": "Profili Kaydet",

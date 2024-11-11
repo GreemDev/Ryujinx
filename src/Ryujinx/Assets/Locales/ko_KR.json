@@ -407,6 +407,7 @@
   "AvatarSetBackgroundColor": "배경색 설정",
   "AvatarClose": "닫기",
   "ControllerSettingsLoadProfileToolTip": "프로필 불러오기",
+  "ControllerSettingsViewProfileToolTip": "View Profile",
   "ControllerSettingsAddProfileToolTip": "프로필 추가",
   "ControllerSettingsRemoveProfileToolTip": "프로필 제거",
   "ControllerSettingsSaveProfileToolTip": "프로필 저장",

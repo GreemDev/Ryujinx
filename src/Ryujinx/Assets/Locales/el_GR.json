@@ -407,6 +407,7 @@
   "AvatarSetBackgroundColor": "Ορισμός Χρώματος Φόντου",
   "AvatarClose": "Κλείσιμο",
   "ControllerSettingsLoadProfileToolTip": "Φόρτωση Προφίλ",
+  "ControllerSettingsViewProfileToolTip": "View Profile",
   "ControllerSettingsAddProfileToolTip": "Προσθήκη Προφίλ",
   "ControllerSettingsRemoveProfileToolTip": "Κατάργηση Προφίλ",
   "ControllerSettingsSaveProfileToolTip": "Αποθήκευση Προφίλ",

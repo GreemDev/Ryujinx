@@ -407,6 +407,7 @@
   "AvatarSetBackgroundColor": "設定背景顏色",
   "AvatarClose": "關閉",
   "ControllerSettingsLoadProfileToolTip": "載入設定檔",
+  "ControllerSettingsViewProfileToolTip": "View Profile",
   "ControllerSettingsAddProfileToolTip": "新增設定檔",
   "ControllerSettingsRemoveProfileToolTip": "刪除設定檔",
   "ControllerSettingsSaveProfileToolTip": "儲存設定檔",

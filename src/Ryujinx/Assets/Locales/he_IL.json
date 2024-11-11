@@ -407,6 +407,7 @@
   "AvatarSetBackgroundColor": "הגדר צבע רקע",
   "AvatarClose": "סגור",
   "ControllerSettingsLoadProfileToolTip": "טען פרופיל",
+  "ControllerSettingsViewProfileToolTip": "View Profile",
   "ControllerSettingsAddProfileToolTip": "הוסף פרופיל",
   "ControllerSettingsRemoveProfileToolTip": "הסר פרופיל",
   "ControllerSettingsSaveProfileToolTip": "שמור פרופיל",

@@ -407,6 +407,7 @@
   "AvatarSetBackgroundColor": "ตั้งค่าสีพื้นหลัง",
   "AvatarClose": "ปิด",
   "ControllerSettingsLoadProfileToolTip": "โหลด โปรไฟล์",
+  "ControllerSettingsViewProfileToolTip": "View Profile",
   "ControllerSettingsAddProfileToolTip": "เพิ่ม โปรไฟล์",
   "ControllerSettingsRemoveProfileToolTip": "ลบ โปรไฟล์",
   "ControllerSettingsSaveProfileToolTip": "บันทึก โปรไฟล์",
