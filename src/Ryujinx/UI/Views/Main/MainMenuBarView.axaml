@@ -4,8 +4,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
+    xmlns:uih="clr-namespace:Ryujinx.UI.Common.Helper"
     mc:Ignorable="d"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
+    xmlns:helper="clr-namespace:Ryujinx.UI.Common.Helper;assembly=Ryujinx.UI.Common"
     x:DataType="viewModels:MainWindowViewModel"
     x:Class="Ryujinx.Ava.UI.Views.Main.MainMenuBarView">
     <Design.DataContext>
@@ -265,8 +267,8 @@
                     <MenuItem Command="{Binding InstallFirmwareFromFolder}" Header="{ext:Locale MenuBarFileToolsInstallFirmwareFromDirectory}" Icon="{ext:Icon mdi-folder-cog}" />
                 </MenuItem>
                 <MenuItem Header="{ext:Locale MenuBarToolsManageFileTypes}" IsVisible="{Binding ManageFileTypesVisible}">
-                    <MenuItem Header="{ext:Locale MenuBarToolsInstallFileTypes}" Click="InstallFileTypes_Click"/>
-                    <MenuItem Header="{ext:Locale MenuBarToolsUninstallFileTypes}" Click="UninstallFileTypes_Click"/>
+                    <MenuItem Header="{ext:Locale MenuBarToolsInstallFileTypes}" Click="InstallFileTypes_Click" IsEnabled="{Binding AreMimeTypesRegistered, Converter={x:Static BoolConverters.Not}}" />
+                    <MenuItem Header="{ext:Locale MenuBarToolsUninstallFileTypes}" Click="UninstallFileTypes_Click" IsEnabled="{Binding AreMimeTypesRegistered}" />
                 </MenuItem>
                 <Separator />
                 <MenuItem Header="{ext:Locale MenuBarToolsXCITrimmer}" IsEnabled="{Binding EnableNonGameRunningControls}" Click="OpenXCITrimmerWindow" Icon="{ext:Icon fa-solid fa-scissors}" />
