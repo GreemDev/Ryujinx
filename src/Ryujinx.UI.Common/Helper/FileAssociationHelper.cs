@@ -127,7 +127,7 @@ namespace Ryujinx.UI.Common.Helper
 
                     Logger.Debug?.Print(LogClass.Application, $"Adding type association {ext}");
                     using var openCmd = key.CreateSubKey(@"shell\open\command");
-                    openCmd.SetValue("", $"\"{Environment.ProcessPath}\" \"%1\"");
+                    openCmd.SetValue(string.Empty, $"\"{Environment.ProcessPath}\" \"%1\"");
                     Logger.Debug?.Print(LogClass.Application, $"Added type association {ext}");
 
                 }

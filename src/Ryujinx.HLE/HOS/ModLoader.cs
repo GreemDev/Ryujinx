@@ -169,7 +169,7 @@ namespace Ryujinx.HLE.HOS
             foreach (var modDir in dir.EnumerateDirectories())
             {
                 types.Clear();
-                Mod<DirectoryInfo> mod = new("", null, true);
+                Mod<DirectoryInfo> mod = new(string.Empty, null, true);
 
                 if (StrEquals(RomfsDir, modDir.Name))
                 {
