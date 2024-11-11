@@ -13,8 +13,6 @@ using Ryujinx.UI.Common.Configuration.UI;
 using Ryujinx.UI.Common.Helper;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Text.Json.Nodes;
 
 namespace Ryujinx.UI.Common.Configuration
 {
@@ -201,7 +199,7 @@ namespace Ryujinx.UI.Common.Configuration
                 IsAscendingOrder = new ReactiveObject<bool>();
                 LanguageCode = new ReactiveObject<string>();
                 ShowConsole = new ReactiveObject<bool>();
-                ShowConsole.Event += static (s, e) => { ConsoleHelper.SetConsoleWindowState(e.NewValue); };
+                ShowConsole.Event += static (_, e) => ConsoleHelper.SetConsoleWindowState(e.NewValue);
             }
         }
 
@@ -268,6 +266,7 @@ namespace Ryujinx.UI.Common.Configuration
             public LoggerSection()
             {
                 EnableDebug = new ReactiveObject<bool>();
+                EnableDebug.LogChangesToValue(nameof(EnableDebug));
                 EnableStub = new ReactiveObject<bool>();
                 EnableInfo = new ReactiveObject<bool>();
                 EnableWarn = new ReactiveObject<bool>();
@@ -277,7 +276,7 @@ namespace Ryujinx.UI.Common.Configuration
                 EnableFsAccessLog = new ReactiveObject<bool>();
                 FilteredClasses = new ReactiveObject<LogClass[]>();
                 EnableFileLog = new ReactiveObject<bool>();
-                EnableFileLog.Event += static (sender, e) => LogValueChange(e, nameof(EnableFileLog));
+                EnableFileLog.LogChangesToValue(nameof(EnableFileLog));
                 GraphicsDebugLevel = new ReactiveObject<GraphicsDebugLevel>();
             }
         }
@@ -370,33 +369,37 @@ namespace Ryujinx.UI.Common.Configuration
             public SystemSection()
             {
                 Language = new ReactiveObject<Language>();
+                Language.LogChangesToValue(nameof(Language));
                 Region = new ReactiveObject<Region>();
+                Region.LogChangesToValue(nameof(Region));
                 TimeZone = new ReactiveObject<string>();
+                TimeZone.LogChangesToValue(nameof(TimeZone));
                 SystemTimeOffset = new ReactiveObject<long>();
+                SystemTimeOffset.LogChangesToValue(nameof(SystemTimeOffset));
                 EnableDockedMode = new ReactiveObject<bool>();
-                EnableDockedMode.Event += static (sender, e) => LogValueChange(e, nameof(EnableDockedMode));
+                EnableDockedMode.LogChangesToValue(nameof(EnableDockedMode));
                 EnablePtc = new ReactiveObject<bool>();
-                EnablePtc.Event += static (sender, e) => LogValueChange(e, nameof(EnablePtc));
+                EnablePtc.LogChangesToValue(nameof(EnablePtc));
                 EnableLowPowerPtc = new ReactiveObject<bool>();
-                EnableLowPowerPtc.Event += static (sender, e) => LogValueChange(e, nameof(EnableLowPowerPtc));
+                EnableLowPowerPtc.LogChangesToValue(nameof(EnableLowPowerPtc));
                 EnableInternetAccess = new ReactiveObject<bool>();
-                EnableInternetAccess.Event += static (sender, e) => LogValueChange(e, nameof(EnableInternetAccess));
+                EnableInternetAccess.LogChangesToValue(nameof(EnableInternetAccess));
                 EnableFsIntegrityChecks = new ReactiveObject<bool>();
-                EnableFsIntegrityChecks.Event += static (sender, e) => LogValueChange(e, nameof(EnableFsIntegrityChecks));
+                EnableFsIntegrityChecks.LogChangesToValue(nameof(EnableFsIntegrityChecks));
                 FsGlobalAccessLogMode = new ReactiveObject<int>();
-                FsGlobalAccessLogMode.Event += static (sender, e) => LogValueChange(e, nameof(FsGlobalAccessLogMode));
+                FsGlobalAccessLogMode.LogChangesToValue(nameof(FsGlobalAccessLogMode));
                 AudioBackend = new ReactiveObject<AudioBackend>();
-                AudioBackend.Event += static (sender, e) => LogValueChange(e, nameof(AudioBackend));
+                AudioBackend.LogChangesToValue(nameof(AudioBackend));
                 MemoryManagerMode = new ReactiveObject<MemoryManagerMode>();
-                MemoryManagerMode.Event += static (sender, e) => LogValueChange(e, nameof(MemoryManagerMode));
+                MemoryManagerMode.LogChangesToValue(nameof(MemoryManagerMode));
                 DramSize = new ReactiveObject<MemoryConfiguration>();
-                DramSize.Event += static (sender, e) => LogValueChange(e, nameof(DramSize));
+                DramSize.LogChangesToValue(nameof(DramSize));
                 IgnoreMissingServices = new ReactiveObject<bool>();
-                IgnoreMissingServices.Event += static (sender, e) => LogValueChange(e, nameof(IgnoreMissingServices));
+                IgnoreMissingServices.LogChangesToValue(nameof(IgnoreMissingServices));
                 AudioVolume = new ReactiveObject<float>();
-                AudioVolume.Event += static (sender, e) => LogValueChange(e, nameof(AudioVolume));
+                AudioVolume.LogChangesToValue(nameof(AudioVolume));
                 UseHypervisor = new ReactiveObject<bool>();
-                UseHypervisor.Event += static (sender, e) => LogValueChange(e, nameof(UseHypervisor));
+                UseHypervisor.LogChangesToValue(nameof(UseHypervisor));
             }
         }
 
@@ -524,36 +527,36 @@ namespace Ryujinx.UI.Common.Configuration
             public GraphicsSection()
             {
                 BackendThreading = new ReactiveObject<BackendThreading>();
-                BackendThreading.Event += static (_, e) => LogValueChange(e, nameof(BackendThreading));
+                BackendThreading.LogChangesToValue(nameof(BackendThreading));
                 ResScale = new ReactiveObject<int>();
-                ResScale.Event += static (_, e) => LogValueChange(e, nameof(ResScale));
+                ResScale.LogChangesToValue(nameof(ResScale));
                 ResScaleCustom = new ReactiveObject<float>();
-                ResScaleCustom.Event += static (_, e) => LogValueChange(e, nameof(ResScaleCustom));
+                ResScaleCustom.LogChangesToValue(nameof(ResScaleCustom));
                 MaxAnisotropy = new ReactiveObject<float>();
-                MaxAnisotropy.Event += static (_, e) => LogValueChange(e, nameof(MaxAnisotropy));
+                MaxAnisotropy.LogChangesToValue(nameof(MaxAnisotropy));
                 AspectRatio = new ReactiveObject<AspectRatio>();
-                AspectRatio.Event += static (_, e) => LogValueChange(e, nameof(AspectRatio));
+                AspectRatio.LogChangesToValue(nameof(AspectRatio));
                 ShadersDumpPath = new ReactiveObject<string>();
                 EnableVsync = new ReactiveObject<bool>();
-                EnableVsync.Event += static (_, e) => LogValueChange(e, nameof(EnableVsync));
+                EnableVsync.LogChangesToValue(nameof(EnableVsync));
                 EnableShaderCache = new ReactiveObject<bool>();
-                EnableShaderCache.Event += static (_, e) => LogValueChange(e, nameof(EnableShaderCache));
+                EnableShaderCache.LogChangesToValue(nameof(EnableShaderCache));
                 EnableTextureRecompression = new ReactiveObject<bool>();
-                EnableTextureRecompression.Event += static (_, e) => LogValueChange(e, nameof(EnableTextureRecompression));
+                EnableTextureRecompression.LogChangesToValue(nameof(EnableTextureRecompression));
                 GraphicsBackend = new ReactiveObject<GraphicsBackend>();
-                GraphicsBackend.Event += static (_, e) => LogValueChange(e, nameof(GraphicsBackend));
+                GraphicsBackend.LogChangesToValue(nameof(GraphicsBackend));
                 PreferredGpu = new ReactiveObject<string>();
-                PreferredGpu.Event += static (_, e) => LogValueChange(e, nameof(PreferredGpu));
+                PreferredGpu.LogChangesToValue(nameof(PreferredGpu));
                 EnableMacroHLE = new ReactiveObject<bool>();
-                EnableMacroHLE.Event += static (_, e) => LogValueChange(e, nameof(EnableMacroHLE));
+                EnableMacroHLE.LogChangesToValue(nameof(EnableMacroHLE));
                 EnableColorSpacePassthrough = new ReactiveObject<bool>();
-                EnableColorSpacePassthrough.Event += static (_, e) => LogValueChange(e, nameof(EnableColorSpacePassthrough));
+                EnableColorSpacePassthrough.LogChangesToValue(nameof(EnableColorSpacePassthrough));
                 AntiAliasing = new ReactiveObject<AntiAliasing>();
-                AntiAliasing.Event += static (_, e) => LogValueChange(e, nameof(AntiAliasing));
+                AntiAliasing.LogChangesToValue(nameof(AntiAliasing));
                 ScalingFilter = new ReactiveObject<ScalingFilter>();
-                ScalingFilter.Event += static (_, e) => LogValueChange(e, nameof(ScalingFilter));
+                ScalingFilter.LogChangesToValue(nameof(ScalingFilter));
                 ScalingFilterLevel = new ReactiveObject<int>();
-                ScalingFilterLevel.Event += static (_, e) => LogValueChange(e, nameof(ScalingFilterLevel));
+                ScalingFilterLevel.LogChangesToValue(nameof(ScalingFilterLevel));
             }
         }
 
@@ -576,7 +579,7 @@ namespace Ryujinx.UI.Common.Configuration
             {
                 LanInterfaceId = new ReactiveObject<string>();
                 Mode = new ReactiveObject<MultiplayerMode>();
-                Mode.Event += static (_, e) => LogValueChange(e, nameof(MultiplayerMode));
+                Mode.LogChangesToValue(nameof(Mode));
             }
         }
 
@@ -667,6 +670,7 @@ namespace Ryujinx.UI.Common.Configuration
             CheckUpdatesOnStart = new ReactiveObject<bool>();
             ShowConfirmExit = new ReactiveObject<bool>();
             IgnoreApplet = new ReactiveObject<bool>();
+            IgnoreApplet.LogChangesToValue(nameof(IgnoreApplet));
             RememberWindowState = new ReactiveObject<bool>();
             ShowTitleBar = new ReactiveObject<bool>();
             EnableHardwareAcceleration = new ReactiveObject<bool>();
@@ -1652,13 +1656,6 @@ namespace Ryujinx.UI.Common.Configuration
             }
 
             return GraphicsBackend.OpenGl;
-        }
-
-        private static void LogValueChange<T>(ReactiveEventArgs<T> eventArgs, string valueName)
-        {
-            string message = string.Create(CultureInfo.InvariantCulture, $"{valueName} set to: {eventArgs.NewValue}");
-
-            Ryujinx.Common.Logging.Logger.Info?.Print(LogClass.Configuration, message);
         }
 
         public static void Initialize()
