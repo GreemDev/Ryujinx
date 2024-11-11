@@ -21,7 +21,7 @@ namespace Ryujinx.UI.Common.Configuration
             ConfigurationState.Instance.Logger.EnableError.Event += 
                 (_, e) => Logger.SetEnable(LogLevel.Error, e.NewValue);
             ConfigurationState.Instance.Logger.EnableTrace.Event += 
-                (_, e) => Logger.SetEnable(LogLevel.Error, e.NewValue);
+                (_, e) => Logger.SetEnable(LogLevel.Trace, e.NewValue);
             ConfigurationState.Instance.Logger.EnableGuest.Event += 
                 (_, e) => Logger.SetEnable(LogLevel.Guest, e.NewValue);
             ConfigurationState.Instance.Logger.EnableFsAccessLog.Event +=
