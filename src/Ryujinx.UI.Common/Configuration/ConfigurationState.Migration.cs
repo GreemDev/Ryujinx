@@ -1,4 +1,4 @@
-﻿using Ryujinx.Common.Configuration;
+using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Configuration.Hid.Controller;
 using Ryujinx.Common.Configuration.Hid.Keyboard;
@@ -703,6 +703,9 @@ namespace Ryujinx.UI.Common.Configuration
 
             Multiplayer.LanInterfaceId.Value = configurationFileFormat.MultiplayerLanInterfaceId;
             Multiplayer.Mode.Value = configurationFileFormat.MultiplayerMode;
+            Multiplayer.DisableP2p.Value = configurationFileFormat.MultiplayerDisableP2p;
+            Multiplayer.LdnPassphrase.Value = configurationFileFormat.MultiplayerLdnPassphrase;
+            Multiplayer.LdnServer.Value = configurationFileFormat.LdnServer;
 
             if (configurationFileUpdated)
             {
