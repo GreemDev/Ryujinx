@@ -24,8 +24,6 @@ namespace Ryujinx.UI.Common.Configuration
             }
 
             Instance = new ConfigurationState();
-
-            Instance.System.EnableLowPowerPtc.Event += (_, evnt) => Optimizations.LowPower = evnt.NewValue;
         }
         
         public ConfigurationFileFormat ToFileFormat()

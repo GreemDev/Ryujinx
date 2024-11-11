@@ -1,4 +1,5 @@
-﻿using Ryujinx.Common;
+﻿using ARMeilleure;
+using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Configuration.Multiplayer;
@@ -12,7 +13,7 @@ namespace Ryujinx.UI.Common.Configuration
 {
     public partial class ConfigurationState
     {
-                /// <summary>
+        /// <summary>
         /// UI configuration section
         /// </summary>
         public class UISection
@@ -376,6 +377,8 @@ namespace Ryujinx.UI.Common.Configuration
                 EnablePtc.LogChangesToValue(nameof(EnablePtc));
                 EnableLowPowerPtc = new ReactiveObject<bool>();
                 EnableLowPowerPtc.LogChangesToValue(nameof(EnableLowPowerPtc));
+                EnableLowPowerPtc.Event += (_, evnt) 
+                    => Optimizations.LowPower = evnt.NewValue;
                 EnableInternetAccess = new ReactiveObject<bool>();
                 EnableInternetAccess.LogChangesToValue(nameof(EnableInternetAccess));
                 EnableFsIntegrityChecks = new ReactiveObject<bool>();
