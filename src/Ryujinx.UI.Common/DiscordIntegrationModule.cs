@@ -20,7 +20,7 @@ namespace Ryujinx.UI.Common
 
         private static readonly string _description = 
             ReleaseInformation.IsValid 
-                    ? $"{VersionString} {ReleaseInformation.ReleaseChannelOwner}/{ReleaseInformation.ReleaseChannelRepo}@{ReleaseInformation.BuildGitHash}" 
+                    ? $"{VersionString} {ReleaseInformation.ReleaseChannelOwner}/{ReleaseInformation.ReleaseChannelSourceRepo}@{ReleaseInformation.BuildGitHash}" 
                     : "dev build";
 
         private const string ApplicationId = "1293250299716173864";
