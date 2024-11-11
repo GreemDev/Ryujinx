@@ -15,9 +15,13 @@ namespace Ryujinx.UI.Common
     {
         public static Timestamps StartedAt { get; set; }
 
-        private static readonly string _description = ReleaseInformation.IsValid
-                ? $"v{ReleaseInformation.Version} {ReleaseInformation.ReleaseChannelOwner}/{ReleaseInformation.ReleaseChannelRepo}@{ReleaseInformation.BuildGitHash}"
-                : "dev build";
+        private static string VersionString
+            => (ReleaseInformation.IsCanaryBuild ? "Canary " : string.Empty) + $"v{ReleaseInformation.Version}"; 
+
+        private static readonly string _description = 
+            ReleaseInformation.IsValid 
+                    ? $"{VersionString} {ReleaseInformation.ReleaseChannelOwner}/{ReleaseInformation.ReleaseChannelRepo}@{ReleaseInformation.BuildGitHash}" 
+                    : "dev build";
 
         private const string ApplicationId = "1293250299716173864";
 
