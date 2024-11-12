@@ -1,11 +1,10 @@
 using DiscordRPC;
 using Humanizer;
-using LibHac.Bcat;
+using Humanizer.Localisation;
 using Ryujinx.Common;
 using Ryujinx.HLE.Loaders.Processes;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common.Configuration;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -78,13 +77,13 @@ namespace Ryujinx.UI.Common
                 Assets = new Assets
                 {
                     LargeImageKey = _discordGameAssetKeys.Contains(procRes.ProgramIdText) ? procRes.ProgramIdText : "game",
-                    LargeImageText = TruncateToByteLength($"{appMeta.Title} | {procRes.DisplayVersion}"),
+                    LargeImageText = TruncateToByteLength($"{appMeta.Title} (v{procRes.DisplayVersion})"),
                     SmallImageKey = "ryujinx",
                     SmallImageText = TruncateToByteLength(_description)
                 },
                 Details = TruncateToByteLength($"Playing {appMeta.Title}"),
                 State = appMeta.LastPlayed.HasValue && appMeta.TimePlayed.TotalSeconds > 5
-                    ? $"Total play time: {appMeta.TimePlayed.Humanize(2, false)}"
+                    ? $"Total play time: {appMeta.TimePlayed.Humanize(2, false, maxUnit: TimeUnit.Hour)}"
                     : "Never played",
                 Timestamps = Timestamps.Now
             });
