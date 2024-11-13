@@ -28,6 +28,7 @@ namespace Ryujinx.HLE.HOS.Services.Am.AppletAE
         }
 
         [CommandCmif(350)]
+        // OpenSystemApplicationProxy(u64, pid, handle<copy>) -> object<nn::am::service::IApplicationProxy>
         public ResultCode OpenSystemApplicationProxy(ServiceCtx context)
         {
             MakeObject(context, new IApplicationProxy(context.Request.HandleDesc.PId));
