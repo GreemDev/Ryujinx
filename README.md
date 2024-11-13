@@ -70,12 +70,18 @@ Use the search function to see if a game has been tested already!
 To run this emulator, your PC must be equipped with at least 8GiB of RAM;
 failing to meet this requirement may result in a poor gameplay experience or unexpected crashes.
 
-## Latest release
+## Latest build
 
-Releases are compiled automatically for each commit on the master branch.
+Stable builds are made every so often. 
+They exist so that the end user can get a more **enjoyable and stable experience**.
+
+You can find the latest stable release [here](https://github.com/GreemDev/Ryujinx/releases/latest).
+
+These builds are compiled automatically for each commit on the master branch.
 While we strive to ensure optimal stability and performance prior to pushing an update, our automated builds **may be unstable or completely broken**.
+Canary builds are only recommended for experienced users.
 
-You can find the latest release [here](https://github.com/GreemDev/Ryujinx/releases/latest).
+You can find the latest canary release [here](https://github.com/GreemDev/Ryujinx-Canary/releases/latest).
 
 ## Documentation
 
