@@ -8,6 +8,7 @@ using LibHac.Tools.Fs;
 using LibHac.Tools.FsSystem;
 using LibHac.Tools.FsSystem.NcaUtils;
 using LibHac.Tools.Ncm;
+using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.Memory;
 using Ryujinx.Common.Utilities;
@@ -472,6 +473,56 @@ namespace Ryujinx.HLE.FileSystem
             }
 
             FinishInstallation(temporaryDirectory, registeredDirectory);
+        }
+
+        public void InstallKeys(string keysSource)
+        {
+            string systemDirectory = AppDataManager.KeysDirPath;
+            //if(AppDataManager.Mode == AppDataManager.LaunchMode.UserProfile)
+            //{
+            //    systemDirectory = AppDataManager.KeysDirPathUser;
+            //}
+
+            if (Directory.Exists(keysSource))
+            {
+                foreach (var filePath in Directory.EnumerateFiles(keysSource, "*.keys"))
+                {
+                    File.Copy(filePath, Path.Combine(systemDirectory, Path.GetFileName(filePath)), true);
+                }
+
+                return;
+            }
+
+            if (!File.Exists(keysSource))
+            {
+                throw new FileNotFoundException("Keys file does not exist.");
+            }
+
+            FileInfo info = new(keysSource);
+
+            using FileStream file = File.OpenRead(keysSource);
+
+            switch (info.Extension)
+            {
+                case ".zip":
+                    using (ZipArchive archive = ZipFile.OpenRead(keysSource))
+                    {
+
+                        foreach (var entry in archive.Entries)
+                        {
+                            if (Path.GetExtension(entry.FullName).Equals(".keys", StringComparison.OrdinalIgnoreCase))
+                            {
+                                entry.ExtractToFile(Path.Combine(systemDirectory, entry.Name), overwrite: true);
+                            }
+                        }
+                    }
+                    break;
+                case ".keys":
+                    File.Copy(keysSource, Path.Combine(systemDirectory, info.Name), true);
+                    break;
+                default:
+                    throw new InvalidFirmwarePackageException("Input file is not a valid key package");
+            }
         }
 
         private void FinishInstallation(string temporaryDirectory, string registeredDirectory)
@@ -946,6 +997,23 @@ namespace Ryujinx.HLE.FileSystem
             }
 
             return null;
+        }
+
+        public bool AreKeysAlredyPresent()
+        {
+            if (!File.Exists(Path.Combine(AppDataManager.KeysDirPath, "prod.keys")) && !File.Exists(Path.Combine(AppDataManager.KeysDirPath, "title.keys")))
+            {
+                if (AppDataManager.Mode == AppDataManager.LaunchMode.UserProfile && (File.Exists(Path.Combine(AppDataManager.KeysDirPathUser, "prod.keys")) || File.Exists(Path.Combine(AppDataManager.KeysDirPathUser, "title.keys"))))
+                {
+                    return true;
+                }
+            } 
+            else
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

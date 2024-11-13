@@ -264,6 +264,10 @@
                     <MenuItem Command="{Binding InstallFirmwareFromFile}" Header="{ext:Locale MenuBarFileToolsInstallFirmwareFromFile}" Icon="{ext:Icon mdi-file-cog}" />
                     <MenuItem Command="{Binding InstallFirmwareFromFolder}" Header="{ext:Locale MenuBarFileToolsInstallFirmwareFromDirectory}" Icon="{ext:Icon mdi-folder-cog}" />
                 </MenuItem>
+                <MenuItem Header="{ext:Locale MenuBarToolsInstallKeys}" Icon="{ext:Icon fa-solid fa-key}" IsEnabled="{Binding EnableNonGameRunningControls}">
+                    <MenuItem Command="{Binding InstallKeysFromFile}" Header="{ext:Locale MenuBarFileToolsInstallKeysFromFile}" Icon="{ext:Icon mdi-file-cog}" />
+                    <MenuItem Command="{Binding InstallKeysFromFolder}" Header="{ext:Locale MenuBarFileToolsInstallKeysFromFolder}" Icon="{ext:Icon mdi-folder-cog}" />
+                </MenuItem>
                 <MenuItem Header="{ext:Locale MenuBarToolsManageFileTypes}" IsVisible="{Binding ManageFileTypesVisible}">
                     <MenuItem Header="{ext:Locale MenuBarToolsInstallFileTypes}" Click="InstallFileTypes_Click" IsEnabled="{Binding AreMimeTypesRegistered, Converter={x:Static BoolConverters.Not}}" />
                     <MenuItem Header="{ext:Locale MenuBarToolsUninstallFileTypes}" Click="UninstallFileTypes_Click" IsEnabled="{Binding AreMimeTypesRegistered}" />
