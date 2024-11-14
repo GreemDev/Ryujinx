@@ -21,11 +21,11 @@ namespace Ryujinx.UI.Common.Configuration
             if (Instance != null)
             {
                 throw new InvalidOperationException("Configuration is already initialized");
-            }
+                }
 
             Instance = new ConfigurationState();
-        }
-        
+                }
+
         public ConfigurationFileFormat ToFileFormat()
         {
             ConfigurationFileFormat configurationFile = new()
@@ -87,6 +87,7 @@ namespace Ryujinx.UI.Common.Configuration
                     AppColumn = UI.GuiColumns.AppColumn,
                     DevColumn = UI.GuiColumns.DevColumn,
                     VersionColumn = UI.GuiColumns.VersionColumn,
+                    LdnInfoColumn = UI.GuiColumns.LdnInfoColumn,
                     TimePlayedColumn = UI.GuiColumns.TimePlayedColumn,
                     LastPlayedColumn = UI.GuiColumns.LastPlayedColumn,
                     FileExtColumn = UI.GuiColumns.FileExtColumn,
@@ -136,6 +137,9 @@ namespace Ryujinx.UI.Common.Configuration
                 PreferredGpu = Graphics.PreferredGpu,
                 MultiplayerLanInterfaceId = Multiplayer.LanInterfaceId,
                 MultiplayerMode = Multiplayer.Mode,
+                MultiplayerDisableP2p = Multiplayer.DisableP2p,
+                MultiplayerLdnPassphrase = Multiplayer.LdnPassphrase,
+                LdnServer = Multiplayer.LdnServer,
             };
 
             return configurationFile;
@@ -195,6 +199,9 @@ namespace Ryujinx.UI.Common.Configuration
             System.UseHypervisor.Value = true;
             Multiplayer.LanInterfaceId.Value = "0";
             Multiplayer.Mode.Value = MultiplayerMode.Disabled;
+            Multiplayer.DisableP2p.Value = false;
+            Multiplayer.LdnPassphrase.Value = "";
+            Multiplayer.LdnServer.Value = "";
             UI.GuiColumns.FavColumn.Value = true;
             UI.GuiColumns.IconColumn.Value = true;
             UI.GuiColumns.AppColumn.Value = true;
@@ -307,5 +314,5 @@ namespace Ryujinx.UI.Common.Configuration
 
             return GraphicsBackend.OpenGl;
         }
-    }
-}
+            }
+        }
