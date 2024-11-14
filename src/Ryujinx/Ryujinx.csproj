@@ -112,23 +112,29 @@
 
   <ItemGroup>
     <None Remove="Assets\Locales\ar_SA.json" />
+    <None Remove="Assets\Locales\ca_ES.json" />
+    <None Remove="Assets\Locales\cs_CZ.json" />
+    <None Remove="Assets\Locales\de_DE.json" />
     <None Remove="Assets\Locales\el_GR.json" />
     <None Remove="Assets\Locales\en_US.json" />
     <None Remove="Assets\Locales\es_ES.json" />
+    <None Remove="Assets\Locales\fi_FI.json" />
     <None Remove="Assets\Locales\fr_FR.json" />
     <None Remove="Assets\Locales\he_IL.json" />
-    <None Remove="Assets\Locales\de_DE.json" />
     <None Remove="Assets\Locales\it_IT.json" />
     <None Remove="Assets\Locales\ja_JP.json" />
     <None Remove="Assets\Locales\ko_KR.json" />
+    <None Remove="Assets\Locales\no_NO.json" />
     <None Remove="Assets\Locales\pl_PL.json" />
     <None Remove="Assets\Locales\pt_BR.json" />
     <None Remove="Assets\Locales\ru_RU.json" />
+    <None Remove="Assets\Locales\sv_SE.json" />
     <None Remove="Assets\Locales\th_TH.json" />
     <None Remove="Assets\Locales\tr_TR.json" />
     <None Remove="Assets\Locales\uk_UA.json" />
     <None Remove="Assets\Locales\zh_CN.json" />
     <None Remove="Assets\Locales\zh_TW.json" />
+
     <None Remove="Assets\Styles\Styles.xaml" />
     <None Remove="Assets\Styles\Themes.xaml" />
     <None Remove="Assets\Icons\Controller_JoyConLeft.svg" />
@@ -139,18 +145,23 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Assets\Locales\ar_SA.json" />
+    <EmbeddedResource Include="Assets\Locales\ca_ES.json" />
+    <EmbeddedResource Include="Assets\Locales\cs_CZ.json" />
+    <EmbeddedResource Include="Assets\Locales\de_DE.json" />
     <EmbeddedResource Include="Assets\Locales\el_GR.json" />
     <EmbeddedResource Include="Assets\Locales\en_US.json" />
     <EmbeddedResource Include="Assets\Locales\es_ES.json" />
+    <EmbeddedResource Include="Assets\Locales\fi_FI.json" />
     <EmbeddedResource Include="Assets\Locales\fr_FR.json" />
     <EmbeddedResource Include="Assets\Locales\he_IL.json" />
-    <EmbeddedResource Include="Assets\Locales\de_DE.json" />
     <EmbeddedResource Include="Assets\Locales\it_IT.json" />
     <EmbeddedResource Include="Assets\Locales\ja_JP.json" />
     <EmbeddedResource Include="Assets\Locales\ko_KR.json" />
+    <EmbeddedResource Include="Assets\Locales\no_NO.json" />
     <EmbeddedResource Include="Assets\Locales\pl_PL.json" />
     <EmbeddedResource Include="Assets\Locales\pt_BR.json" />
     <EmbeddedResource Include="Assets\Locales\ru_RU.json" />
+    <EmbeddedResource Include="Assets\Locales\sv_SE.json" />
     <EmbeddedResource Include="Assets\Locales\th_TH.json" />
     <EmbeddedResource Include="Assets\Locales\tr_TR.json" />
     <EmbeddedResource Include="Assets\Locales\uk_UA.json" />
