@@ -848,7 +848,7 @@
   "MultiplayerMode": "모드 :",
   "MultiplayerModeTooltip": "LDN 멀티플레이어 모드를 변경합니다.\n\nLdnMitm은 게임의 로컬 무선/로컬 플레이 기능을 LAN처럼 작동하도록 수정하여 다른 Ryujinx 인스턴스나 ldn_mitm 모듈이 설치된 해킹된 Nintendo Switch 콘솔과 로컬, 동일 네트워크 연결이 가능합니다.\n\n멀티플레이어는 모든 플레이어가 동일한 게임 버전을 사용해야 합니다(예: Super Smash Bros. Ultimate v13.0.1은 v13.0.0에 연결할 수 없음).\n\n모르면 비활성화 상태로 두세요.",
   "MultiplayerModeDisabled": "비활성화됨",
-  "MultiplayerModeLdnMitm": "ldn_mitm"
+  "MultiplayerModeLdnMitm": "ldn_mitm",
   "MultiplayerModeLdnRyu": "RyuLDN",
   "MultiplayerDisableP2P": "P2P 네트워크 호스팅 비활성화(대기 시간이 늘어날 수 있음)",
   "MultiplayerDisableP2PTooltip": "P2P 네트워크 호스팅을 비활성화하면 피어가 직접 연결하지 않고 마스터 서버를 통해 프록시합니다.",
