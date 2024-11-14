@@ -1184,19 +1184,16 @@ namespace Ryujinx.Ava.UI.ViewModels
         {
             try
             {
-                //bool isValidKeysFilke = true;
-
-                //if (!isValidKeysFilke)
-                //{
-                //    await ContentDialogHelper.CreateErrorDialog(LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogKeysInstallerKeysNotFoundErrorMessage, filename));
-
-                //    return;
-                //}
+                string systemDirectory = AppDataManager.KeysDirPath;
+                if (AppDataManager.Mode == AppDataManager.LaunchMode.UserProfile && Directory.Exists(AppDataManager.KeysDirPathUser))
+                {
+                    systemDirectory = AppDataManager.KeysDirPathUser;
+                }
 
                 string dialogTitle = LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogKeysInstallerKeysInstallTitle);
                 string dialogMessage = LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogKeysInstallerKeysInstallMessage);
 
-                bool alreadyKesyInstalled = ContentManager.AreKeysAlredyPresent();
+                bool alreadyKesyInstalled = ContentManager.AreKeysAlredyPresent(systemDirectory);
                 if (alreadyKesyInstalled)
                 {
                     dialogMessage += LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogKeysInstallerKeysInstallSubMessage);
@@ -1226,7 +1223,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
                         try
                         {
-                            ContentManager.InstallKeys(filename);
+                            ContentManager.InstallKeys(filename, systemDirectory);
 
                             Dispatcher.UIThread.InvokeAsync(async delegate
                             {
@@ -1250,7 +1247,13 @@ namespace Ryujinx.Ava.UI.ViewModels
                             {
                                 waitingDialog.Close();
 
-                                await ContentDialogHelper.CreateErrorDialog(ex.Message);
+                                string message = ex.Message;
+                                if(ex is FormatException)
+                                {
+                                    message = LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogKeysInstallerKeysNotFoundErrorMessage, filename);
+                                }
+
+                                await ContentDialogHelper.CreateErrorDialog(message);
                             });
                         }
                         finally

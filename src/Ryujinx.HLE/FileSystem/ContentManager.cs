@@ -8,7 +8,6 @@ using LibHac.Tools.Fs;
 using LibHac.Tools.FsSystem;
 using LibHac.Tools.FsSystem.NcaUtils;
 using LibHac.Tools.Ncm;
-using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.Memory;
 using Ryujinx.Common.Utilities;
@@ -22,6 +21,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Path = System.IO.Path;
 
 namespace Ryujinx.HLE.FileSystem
@@ -475,19 +475,14 @@ namespace Ryujinx.HLE.FileSystem
             FinishInstallation(temporaryDirectory, registeredDirectory);
         }
 
-        public void InstallKeys(string keysSource)
+        public void InstallKeys(string keysSource, string installDirectory)
         {
-            string systemDirectory = AppDataManager.KeysDirPath;
-            //if(AppDataManager.Mode == AppDataManager.LaunchMode.UserProfile)
-            //{
-            //    systemDirectory = AppDataManager.KeysDirPathUser;
-            //}
-
             if (Directory.Exists(keysSource))
             {
                 foreach (var filePath in Directory.EnumerateFiles(keysSource, "*.keys"))
                 {
-                    File.Copy(filePath, Path.Combine(systemDirectory, Path.GetFileName(filePath)), true);
+                    VerifyKeysFile(filePath);
+                    File.Copy(filePath, Path.Combine(installDirectory, Path.GetFileName(filePath)), true);
                 }
 
                 return;
@@ -507,22 +502,45 @@ namespace Ryujinx.HLE.FileSystem
                 case ".zip":
                     using (ZipArchive archive = ZipFile.OpenRead(keysSource))
                     {
-
-                        foreach (var entry in archive.Entries)
-                        {
-                            if (Path.GetExtension(entry.FullName).Equals(".keys", StringComparison.OrdinalIgnoreCase))
-                            {
-                                entry.ExtractToFile(Path.Combine(systemDirectory, entry.Name), overwrite: true);
-                            }
-                        }
+                        InstallKeysFromZip(archive, installDirectory);
                     }
                     break;
                 case ".keys":
-                    File.Copy(keysSource, Path.Combine(systemDirectory, info.Name), true);
+                    VerifyKeysFile(keysSource);
+                    File.Copy(keysSource, Path.Combine(installDirectory, info.Name), true);
                     break;
                 default:
                     throw new InvalidFirmwarePackageException("Input file is not a valid key package");
             }
+        }
+
+        private void InstallKeysFromZip(ZipArchive archive, string installDirectory)
+        {
+            string temporaryDirectory = Path.Combine(installDirectory, "temp");
+            if (Directory.Exists(temporaryDirectory))
+            {
+                Directory.Delete(temporaryDirectory, true);
+            }
+            Directory.CreateDirectory(temporaryDirectory);
+            foreach (var entry in archive.Entries)
+            {
+                if (Path.GetExtension(entry.FullName).Equals(".keys", StringComparison.OrdinalIgnoreCase))
+                {
+                    string extractDestination = Path.Combine(temporaryDirectory, entry.Name);
+                    entry.ExtractToFile(extractDestination, overwrite: true);
+                    try
+                    {
+                        VerifyKeysFile(extractDestination);
+                        File.Move(extractDestination, Path.Combine(installDirectory, entry.Name), true);
+                    }
+                    catch (Exception)
+                    {
+                        Directory.Delete(temporaryDirectory, true);
+                        throw;
+                    }
+                }
+            }
+            Directory.Delete(temporaryDirectory, true);
         }
 
         private void FinishInstallation(string temporaryDirectory, string registeredDirectory)
@@ -999,20 +1017,41 @@ namespace Ryujinx.HLE.FileSystem
             return null;
         }
 
-        public bool AreKeysAlredyPresent()
+        public void VerifyKeysFile(string filePath)
         {
-            if (!File.Exists(Path.Combine(AppDataManager.KeysDirPath, "prod.keys")) && !File.Exists(Path.Combine(AppDataManager.KeysDirPath, "title.keys")))
-            {
-                if (AppDataManager.Mode == AppDataManager.LaunchMode.UserProfile && (File.Exists(Path.Combine(AppDataManager.KeysDirPathUser, "prod.keys")) || File.Exists(Path.Combine(AppDataManager.KeysDirPathUser, "title.keys"))))
-                {
-                    return true;
-                }
-            } 
-            else
-            {
-                return true;
-            }
+            string schemaPattern = @"^[a-zA-Z0-9_]+ = [a-zA-Z0-9]+$";
 
+            if (File.Exists(filePath))
+            {
+                // Read all lines from the file
+                string[] lines = File.ReadAllLines(filePath);
+
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i].Trim();
+
+                    // Check if the line matches the schema
+                    if (!Regex.IsMatch(line, schemaPattern))
+                    {
+                        throw new FormatException("Keys file doesn't have a correct schema.");
+                    }
+                }
+            } else
+            {
+                throw new FileNotFoundException("Keys file not found at " + filePath);
+            }
+        }
+
+        public bool AreKeysAlredyPresent(string pathToCheck)
+        {
+            string[] fileNames = { "prod.keys", "title.keys", "console.keys" };
+            foreach (var file in fileNames)
+            {
+                if (File.Exists(Path.Combine(pathToCheck, file)))
+                {
+                    return true;                    
+                }
+            }
             return false;
         }
     }
