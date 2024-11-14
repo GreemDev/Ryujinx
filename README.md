@@ -72,14 +72,14 @@ failing to meet this requirement may result in a poor gameplay experience or une
 
 ## Latest build
 
-Stable builds are made every so often. 
-They exist so that the end user can get a more **enjoyable and stable experience**.
+Stable builds are made every so often onto a separate "release" branch that then gets put into the releases you know and love. 
+These stable builds exist so that the end user can get a more **enjoyable and stable experience**.
 
 You can find the latest stable release [here](https://github.com/GreemDev/Ryujinx/releases/latest).
 
-These builds are compiled automatically for each commit on the master branch.
-While we strive to ensure optimal stability and performance prior to pushing an update, our automated builds **may be unstable or completely broken**.
-Canary builds are only recommended for experienced users.
+Canary builds are compiled automatically for each commit on the master branch.
+While we strive to ensure optimal stability and performance prior to pushing an update, these builds **may be unstable or completely broken**.
+These canary builds are only recommended for experienced users.
 
 You can find the latest canary release [here](https://github.com/GreemDev/Ryujinx-Canary/releases/latest).
 
