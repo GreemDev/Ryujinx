@@ -814,7 +814,7 @@
 "IgnoreAppletTooltip": "Externa dialogrutan \"Handkontroller-applet\" kommer inte att visas om din gamepad kopplas från under spel. Det kommer inte att frågas om att stänga dialogen eller konfigurera en ny handkontroller. När den tidigare frånkopplade handkontroller ansluts igen kommer spelet att automatiskt återupptas.",
 "InputDialogCancelling": "Avbryter",
 "InputDialogClose": "Stäng",
-"InvalidLdnPassphrase": "Ogiltig lösenfras! Måste vara i formatet \"Ryujinx-<8 hextecken>\""
+"InvalidLdnPassphrase": "Ogiltig lösenfras! Måste vara i formatet \"Ryujinx-<8 hextecken>\"",
 "LdnPassphrase": "Lösenfras för nätverk:",
 "LdnPassphraseInputPublic": "(publik)",
 "LdnPassphraseInputTooltip": "Ange en lösenfras i formatet Ryujinx-<8 hextecken>. Du kommer endast kunna se hostade spel med samma lösenfras som du.",
