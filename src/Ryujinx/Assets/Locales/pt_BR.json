@@ -456,7 +456,7 @@
   "DialogUpdaterNoInternetMessage": "Você não está conectado à Internet!",
   "DialogUpdaterNoInternetSubMessage": "Por favor, certifique-se de que você tem uma conexão funcional à Internet!",
   "DialogUpdaterDirtyBuildMessage": "Você não pode atualizar uma compilação Dirty do Ryujinx!",
-  "DialogUpdaterDirtyBuildSubMessage": "Por favor, baixe o Ryujinx em https://https://github.com/GreemDev/Ryujinx/releases/ se está procurando por uma versão suportada.",
+  "DialogUpdaterDirtyBuildSubMessage": "Por favor, baixe o Ryujinx em https://github.com/GreemDev/Ryujinx/releases/ se está procurando por uma versão suportada.",
   "DialogRestartRequiredMessage": "Reinicialização necessária",
   "DialogThemeRestartMessage": "O tema foi salvo. Uma reinicialização é necessária para aplicar o tema.",
   "DialogThemeRestartSubMessage": "Deseja reiniciar?",
