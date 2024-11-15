@@ -31,7 +31,7 @@ namespace Ryujinx.Ava.UI.Applet
         public bool DisplayMessageDialog(ControllerAppletUIArgs args)
         {
             ManualResetEvent dialogCloseEvent = new(false);
-            
+
             bool okPressed = false;
 
             if (ConfigurationState.Instance.IgnoreApplet)
@@ -120,18 +120,18 @@ namespace Ryujinx.Ava.UI.Applet
 
             bool okPressed = false;
             bool error = false;
-            string inputText = args.InitialText ?? "";
+            string inputText = args.InitialText ?? string.Empty;
 
             Dispatcher.UIThread.InvokeAsync(async () =>
             {
                 try
                 {
                     _parent.ViewModel.AppHost.NpadManager.BlockInputUpdates();
-                    var response = await SwkbdAppletDialog.ShowInputDialog(LocaleManager.Instance[LocaleKeys.SoftwareKeyboard], args);
+                    (UserResult result, string userInput) = await SwkbdAppletDialog.ShowInputDialog(LocaleManager.Instance[LocaleKeys.SoftwareKeyboard], args);
 
-                    if (response.Result == UserResult.Ok)
+                    if (result == UserResult.Ok)
                     {
-                        inputText = response.Input;
+                        inputText = userInput;
                         okPressed = true;
                     }
                 }

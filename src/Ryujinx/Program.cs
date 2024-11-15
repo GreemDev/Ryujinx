@@ -14,7 +14,6 @@ using Ryujinx.Common.GraphicsDriver;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.SystemInterop;
 using Ryujinx.Graphics.Vulkan.MoltenVK;
-using Ryujinx.Modules;
 using Ryujinx.SDL2.Common;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common;
@@ -46,8 +45,7 @@ namespace Ryujinx.Ava
         public static int Main(string[] args)
         {
             Version = ReleaseInformation.Version;
-
-
+            
             if (OperatingSystem.IsWindows() && !OperatingSystem.IsWindowsVersionAtLeast(10, 0, 17134))
             {
                 _ = MessageBoxA(nint.Zero, "You are running an outdated version of Windows.\n\nRyujinx supports Windows 10 version 1803 and newer.\n", $"Ryujinx {Version}", MbIconwarning);
@@ -102,10 +100,10 @@ namespace Ryujinx.Ava
             // Delete backup files after updating.
             Task.Run(Updater.CleanupUpdate);
 
-            Console.Title = $"Ryujinx Console {Version}";
+            Console.Title = $"{App.FullAppName} Console {Version}";
 
             // Hook unhandled exception and process exit events.
-            AppDomain.CurrentDomain.UnhandledException += (sender, e) 
+            AppDomain.CurrentDomain.UnhandledException += (sender, e)
                 => ProcessUnhandledException(sender, e.ExceptionObject as Exception, e.IsTerminating);
             AppDomain.CurrentDomain.ProcessExit += (_, _) => Exit();
 
@@ -226,16 +224,14 @@ namespace Ryujinx.Ava
 
         private static void PrintSystemInfo()
         {
-            Logger.Notice.Print(LogClass.Application, $"Ryujinx Version: {Version}");
+            Logger.Notice.Print(LogClass.Application, $"{App.FullAppName} Version: {Version}");
             SystemInfo.Gather().Print();
 
             var enabledLogLevels = Logger.GetEnabledLevels().ToArray();
 
-            Logger.Notice.Print(LogClass.Application, $"Logs Enabled: {
-                (enabledLogLevels.Length is 0
+            Logger.Notice.Print(LogClass.Application, $"Logs Enabled: {(enabledLogLevels.Length is 0
                     ? "<None>"
-                    : enabledLogLevels.JoinToString(", "))
-            }");
+                    : enabledLogLevels.JoinToString(", "))}");
 
             Logger.Notice.Print(LogClass.Application,
                 AppDataManager.Mode == AppDataManager.LaunchMode.Custom
@@ -247,13 +243,13 @@ namespace Ryujinx.Ava
         {
             Logger.Log log = Logger.Error ?? Logger.Notice;
             string message = $"Unhandled exception caught: {ex}";
-            
+
             // ReSharper disable once ConstantConditionalAccessQualifier
-            if (sender?.GetType()?.AsPrettyString() is {} senderName)
+            if (sender?.GetType()?.AsPrettyString() is { } senderName)
                 log.Print(LogClass.Application, message, senderName);
             else
                 log.PrintMsg(LogClass.Application, message);
-            
+
             if (isTerminating)
                 Exit();
         }

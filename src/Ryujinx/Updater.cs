@@ -5,7 +5,6 @@ using Gommon;
 using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
 using ICSharpCode.SharpZipLib.Zip;
-using Ryujinx.Ava;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Common;
@@ -28,11 +27,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ryujinx.Modules
+namespace Ryujinx.Ava
 {
     internal static class Updater
     {
         private const string GitHubApiUrl = "https://api.github.com";
+        private const string LatestReleaseUrl = 
+            $"{GitHubApiUrl}/repos/{ReleaseInformation.ReleaseChannelOwner}/{ReleaseInformation.ReleaseChannelRepo}/releases/latest";
+        
         private static readonly GithubReleasesJsonSerializerContext _serializerContext = new(JsonHelper.GetDefaultSerializerOptions());
 
         private static readonly string _homeDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -47,9 +49,9 @@ namespace Ryujinx.Modules
         private static bool _updateSuccessful;
         private static bool _running;
 
-        private static readonly string[] _windowsDependencyDirs = Array.Empty<string>();
+        private static readonly string[] _windowsDependencyDirs = [];
 
-        public static async Task BeginParse(Window mainWindow, bool showVersionUpToDate)
+        public static async Task BeginUpdateAsync(this Window mainWindow, bool showVersionUpToDate = false)
         {
             if (_running)
             {
@@ -82,7 +84,7 @@ namespace Ryujinx.Modules
             }
             catch
             {
-                Logger.Error?.Print(LogClass.Application, "Failed to convert the current Ryujinx version!");
+                Logger.Error?.Print(LogClass.Application, $"Failed to convert the current {App.FullAppName} version!");
 
                 await ContentDialogHelper.CreateWarningDialog(
                     LocaleManager.Instance[LocaleKeys.DialogUpdaterConvertFailedMessage],
@@ -97,11 +99,10 @@ namespace Ryujinx.Modules
             try
             {
                 using HttpClient jsonClient = ConstructHttpClient();
-
-                string buildInfoUrl = $"{GitHubApiUrl}/repos/{ReleaseInformation.ReleaseChannelOwner}/{ReleaseInformation.ReleaseChannelRepo}/releases/latest";
-                string fetchedJson = await jsonClient.GetStringAsync(buildInfoUrl);
+                
+                string fetchedJson = await jsonClient.GetStringAsync(LatestReleaseUrl);
                 var fetched = JsonHelper.Deserialize(fetchedJson, _serializerContext.GithubReleasesJsonResponse);
-                _buildVer = fetched.Name;
+                _buildVer = fetched.TagName;
 
                 foreach (var asset in fetched.Assets)
                 {
@@ -115,7 +116,7 @@ namespace Ryujinx.Modules
                             {
                                 await ContentDialogHelper.CreateUpdaterInfoDialog(
                                     LocaleManager.Instance[LocaleKeys.DialogUpdaterAlreadyOnLatestVersionMessage],
-                                    "");
+                                    string.Empty);
                             }
 
                             _running = false;
@@ -134,7 +135,7 @@ namespace Ryujinx.Modules
                     {
                         await ContentDialogHelper.CreateUpdaterInfoDialog(
                             LocaleManager.Instance[LocaleKeys.DialogUpdaterAlreadyOnLatestVersionMessage],
-                            "");
+                            string.Empty);
                     }
 
                     _running = false;
@@ -160,7 +161,7 @@ namespace Ryujinx.Modules
             }
             catch
             {
-                Logger.Error?.Print(LogClass.Application, "Failed to convert the received Ryujinx version from Github!");
+                Logger.Error?.Print(LogClass.Application, $"Failed to convert the received {App.FullAppName} version from GitHub!");
 
                 await ContentDialogHelper.CreateWarningDialog(
                     LocaleManager.Instance[LocaleKeys.DialogUpdaterConvertFailedGithubMessage],
@@ -177,7 +178,7 @@ namespace Ryujinx.Modules
                 {
                     await ContentDialogHelper.CreateUpdaterInfoDialog(
                         LocaleManager.Instance[LocaleKeys.DialogUpdaterAlreadyOnLatestVersionMessage],
-                        "");
+                        string.Empty);
                 }
 
                 _running = false;
@@ -300,13 +301,6 @@ namespace Ryujinx.Modules
                     {
                         // Find the process name.
                         string ryuName = Path.GetFileName(Environment.ProcessPath) ?? string.Empty;
-
-                        // Migration: Start the updated binary.
-                        // TODO: Remove this in a future update.
-                        if (ryuName.StartsWith("Ryujinx.Ava"))
-                        {
-                            ryuName = ryuName.Replace(".Ava", "");
-                        }
 
                         // Some operating systems can see the renamed executable, so strip off the .ryuold if found.
                         if (ryuName.EndsWith(".ryuold"))
@@ -644,7 +638,7 @@ namespace Ryujinx.Modules
             taskDialog.Hide();
         }
 
-        public static bool CanUpdate(bool showWarnings)
+        public static bool CanUpdate(bool showWarnings = false)
         {
 #if !DISABLE_UPDATER
             if (!NetworkInterface.GetIsNetworkAvailable())

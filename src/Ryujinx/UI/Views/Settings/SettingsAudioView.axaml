@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="clr-namespace:Ryujinx.Ava.UI.Controls"
     xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
     mc:Ignorable="d"
     x:DataType="viewModels:SettingsViewModel">
@@ -25,36 +25,36 @@
                 HorizontalAlignment="Stretch"
                 Orientation="Vertical"
                 Spacing="10">
-                <TextBlock Classes="h1" Text="{locale:Locale SettingsTabAudio}" />
+                <TextBlock Classes="h1" Text="{ext:Locale SettingsTabAudio}" />
                 <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
                     <TextBlock VerticalAlignment="Center"
-                               Text="{locale:Locale SettingsTabSystemAudioBackend}"
-                               ToolTip.Tip="{locale:Locale AudioBackendTooltip}"
+                               Text="{ext:Locale SettingsTabSystemAudioBackend}"
+                               ToolTip.Tip="{ext:Locale AudioBackendTooltip}"
                                Width="250" />
                     <ComboBox SelectedIndex="{Binding AudioBackend}"
                               Width="350"
                               HorizontalContentAlignment="Left">
                         <ComboBoxItem>
-                            <TextBlock Text="{locale:Locale SettingsTabSystemAudioBackendDummy}" />
+                            <TextBlock Text="{ext:Locale SettingsTabSystemAudioBackendDummy}" />
                         </ComboBoxItem>
                         <ComboBoxItem IsEnabled="{Binding IsOpenAlEnabled}">
-                            <TextBlock Text="{locale:Locale SettingsTabSystemAudioBackendOpenAL}" />
+                            <TextBlock Text="{ext:Locale SettingsTabSystemAudioBackendOpenAL}" />
                         </ComboBoxItem>
                         <ComboBoxItem IsEnabled="{Binding IsSoundIoEnabled}">
-                            <TextBlock Text="{locale:Locale SettingsTabSystemAudioBackendSoundIO}" />
+                            <TextBlock Text="{ext:Locale SettingsTabSystemAudioBackendSoundIO}" />
                         </ComboBoxItem>
                         <ComboBoxItem IsEnabled="{Binding IsSDL2Enabled}">
-                            <TextBlock Text="{locale:Locale SettingsTabSystemAudioBackendSDL2}" />
+                            <TextBlock Text="{ext:Locale SettingsTabSystemAudioBackendSDL2}" />
                         </ComboBoxItem>
                     </ComboBox>
                 </StackPanel>
                 <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
                     <TextBlock VerticalAlignment="Center"
-                               Text="{locale:Locale SettingsTabSystemAudioVolume}"
-                               ToolTip.Tip="{locale:Locale AudioVolumeTooltip}"
+                               Text="{ext:Locale SettingsTabSystemAudioVolume}"
+                               ToolTip.Tip="{ext:Locale AudioVolumeTooltip}"
                                Width="250" />
                     <ui:NumberBox Value="{Binding Volume}"
-                            ToolTip.Tip="{locale:Locale AudioVolumeTooltip}"
+                            ToolTip.Tip="{ext:Locale AudioVolumeTooltip}"
                             Width="350"
                             SmallChange="1"
                             LargeChange="10"
@@ -66,7 +66,7 @@
                 <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
                     <controls:SliderScroll Value="{Binding Volume}"
                             Margin="250,0,0,0"
-                            ToolTip.Tip="{locale:Locale AudioVolumeTooltip}"
+                            ToolTip.Tip="{ext:Locale AudioVolumeTooltip}"
                             Minimum="0"
                             Maximum="100"
                             SmallChange="1"

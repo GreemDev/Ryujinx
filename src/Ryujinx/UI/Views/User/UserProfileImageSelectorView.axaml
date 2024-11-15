@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:viewModles="clr-namespace:Ryujinx.Ava.UI.ViewModels"
     Focusable="True"
     mc:Ignorable="d"
@@ -28,7 +28,7 @@
             TextWrapping="Wrap"
             HorizontalAlignment="Left"
             TextAlignment="Start"
-            Text="{locale:Locale ProfileImageSelectionNote}" />
+            Text="{ext:Locale ProfileImageSelectionNote}" />
         <StackPanel
             Grid.Row="2"
             Spacing="10"
@@ -49,13 +49,13 @@
             <Button
                 Name="Import"
                 Click="Import_OnClick">
-                <TextBlock Text="{locale:Locale ProfileImageSelectionImportImage}" />
+                <TextBlock Text="{ext:Locale ProfileImageSelectionImportImage}" />
             </Button>
             <Button
                 Name="SelectFirmwareImage"
                 IsEnabled="{Binding FirmwareFound}"
                 Click="SelectFirmwareImage_OnClick">
-                <TextBlock Text="{locale:Locale ProfileImageSelectionSelectAvatar}" />
+                <TextBlock Text="{ext:Locale ProfileImageSelectionSelectAvatar}" />
             </Button>
         </StackPanel>
     </Grid>

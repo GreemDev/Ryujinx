@@ -207,6 +207,9 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.System.EnableInternetAccess.Event += UpdateEnableInternetAccessState;
             ConfigurationState.Instance.Multiplayer.LanInterfaceId.Event += UpdateLanInterfaceIdState;
             ConfigurationState.Instance.Multiplayer.Mode.Event += UpdateMultiplayerModeState;
+            ConfigurationState.Instance.Multiplayer.LdnPassphrase.Event += UpdateLdnPassphraseState;
+            ConfigurationState.Instance.Multiplayer.LdnServer.Event += UpdateLdnServerState;
+            ConfigurationState.Instance.Multiplayer.DisableP2p.Event += UpdateDisableP2pState;
 
             _gpuCancellationTokenSource = new CancellationTokenSource();
             _gpuDoneEvent = new ManualResetEvent(false);
@@ -491,6 +494,21 @@ namespace Ryujinx.Ava
             Device.Configuration.MultiplayerMode = e.NewValue;
         }
 
+        private void UpdateLdnPassphraseState(object sender, ReactiveEventArgs<string> e)
+        {
+            Device.Configuration.MultiplayerLdnPassphrase = e.NewValue;
+        }
+
+        private void UpdateLdnServerState(object sender, ReactiveEventArgs<string> e)
+        {
+            Device.Configuration.MultiplayerLdnServer = e.NewValue;
+        }
+
+        private void UpdateDisableP2pState(object sender, ReactiveEventArgs<bool> e)
+        {
+            Device.Configuration.MultiplayerDisableP2p = e.NewValue;
+        }
+
         public void ToggleVSync()
         {
             Device.EnableDeviceVsync = !Device.EnableDeviceVsync;
@@ -604,61 +622,59 @@ namespace Ryujinx.Ava
 
             SystemVersion firmwareVersion = ContentManager.GetCurrentFirmwareVersion();
 
-            if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime)
             {
                 if (!SetupValidator.CanStartApplication(ContentManager, ApplicationPath, out UserError userError))
-                {
+                { 
+                    if (SetupValidator.CanFixStartApplication(ContentManager, ApplicationPath, userError, out firmwareVersion))
                     {
-                        if (SetupValidator.CanFixStartApplication(ContentManager, ApplicationPath, userError, out firmwareVersion))
+                        if (userError is UserError.NoFirmware)
                         {
-                            if (userError == UserError.NoFirmware)
-                            {
-                                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(
-                                    LocaleManager.Instance[LocaleKeys.DialogFirmwareNoFirmwareInstalledMessage],
-                                    LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogFirmwareInstallEmbeddedMessage, firmwareVersion.VersionString),
-                                    LocaleManager.Instance[LocaleKeys.InputDialogYes],
-                                    LocaleManager.Instance[LocaleKeys.InputDialogNo],
-                                    "");
+                            UserResult result = await ContentDialogHelper.CreateConfirmationDialog(
+                                LocaleManager.Instance[LocaleKeys.DialogFirmwareNoFirmwareInstalledMessage], 
+                                LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogFirmwareInstallEmbeddedMessage, firmwareVersion.VersionString),
+                                LocaleManager.Instance[LocaleKeys.InputDialogYes],
+                                LocaleManager.Instance[LocaleKeys.InputDialogNo],
+                                string.Empty);
 
-                                if (result != UserResult.Yes)
-                                {
-                                    await UserErrorDialog.ShowUserErrorDialog(userError);
-                                    Device.Dispose();
-
-                                    return false;
-                                }
-                            }
-
-                            if (!SetupValidator.TryFixStartApplication(ContentManager, ApplicationPath, userError, out _))
+                            if (result != UserResult.Yes)
                             {
                                 await UserErrorDialog.ShowUserErrorDialog(userError);
                                 Device.Dispose();
 
                                 return false;
                             }
-
-                            // Tell the user that we installed a firmware for them.
-                            if (userError == UserError.NoFirmware)
-                            {
-                                firmwareVersion = ContentManager.GetCurrentFirmwareVersion();
-
-                                _viewModel.RefreshFirmwareStatus();
-
-                                await ContentDialogHelper.CreateInfoDialog(
-                                    LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogFirmwareInstalledMessage, firmwareVersion.VersionString),
-                                    LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogFirmwareInstallEmbeddedSuccessMessage, firmwareVersion.VersionString),
-                                    LocaleManager.Instance[LocaleKeys.InputDialogOk],
-                                    "",
-                                    LocaleManager.Instance[LocaleKeys.RyujinxInfo]);
-                            }
                         }
-                        else
+
+                        if (!SetupValidator.TryFixStartApplication(ContentManager, ApplicationPath, userError, out _))
                         {
                             await UserErrorDialog.ShowUserErrorDialog(userError);
                             Device.Dispose();
 
                             return false;
                         }
+
+                        // Tell the user that we installed a firmware for them.
+                        if (userError is UserError.NoFirmware)
+                        {
+                            firmwareVersion = ContentManager.GetCurrentFirmwareVersion();
+
+                            _viewModel.RefreshFirmwareStatus();
+
+                            await ContentDialogHelper.CreateInfoDialog(
+                                LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogFirmwareInstalledMessage, firmwareVersion.VersionString),
+                                LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogFirmwareInstallEmbeddedSuccessMessage, firmwareVersion.VersionString),
+                                LocaleManager.Instance[LocaleKeys.InputDialogOk],
+                                string.Empty,
+                                LocaleManager.Instance[LocaleKeys.RyujinxInfo]);
+                        }
+                    }
+                    else
+                    {
+                        await UserErrorDialog.ShowUserErrorDialog(userError);
+                        Device.Dispose();
+
+                        return false;
                     }
                 }
             }
@@ -820,20 +836,12 @@ namespace Ryujinx.Ava
             VirtualFileSystem.ReloadKeySet();
 
             // Initialize Renderer.
-            IRenderer renderer;
-
-            if (ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Vulkan)
-            {
-                renderer = new VulkanRenderer(
-                    Vk.GetApi(),
+            IRenderer renderer = ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.OpenGl
+                ? new OpenGLRenderer()
+                : VulkanRenderer.Create(
+                    ConfigurationState.Instance.Graphics.PreferredGpu,
                     (RendererHost.EmbeddedWindow as EmbeddedWindowVulkan)!.CreateSurface,
-                    VulkanHelper.GetRequiredInstanceExtensions,
-                    ConfigurationState.Instance.Graphics.PreferredGpu.Value);
-            }
-            else
-            {
-                renderer = new OpenGLRenderer();
-            }
+                    VulkanHelper.GetRequiredInstanceExtensions);
 
             BackendThreading threadingMode = ConfigurationState.Instance.Graphics.BackendThreading;
 
@@ -873,10 +881,11 @@ namespace Ryujinx.Ava
                 ConfigurationState.Instance.Graphics.AspectRatio,
                 ConfigurationState.Instance.System.AudioVolume,
                 ConfigurationState.Instance.System.UseHypervisor,
-                ConfigurationState.Instance.Multiplayer.LanInterfaceId,
-                ConfigurationState.Instance.Multiplayer.Mode
-                )
-            );
+                ConfigurationState.Instance.Multiplayer.LanInterfaceId.Value,
+                ConfigurationState.Instance.Multiplayer.Mode,
+                ConfigurationState.Instance.Multiplayer.DisableP2p,
+                ConfigurationState.Instance.Multiplayer.LdnPassphrase,
+                ConfigurationState.Instance.Multiplayer.LdnServer));
         }
 
         private static IHardwareDeviceDriver InitializeAudio()
@@ -1060,7 +1069,7 @@ namespace Ryujinx.Ava
             string dockedMode = ConfigurationState.Instance.System.EnableDockedMode ? LocaleManager.Instance[LocaleKeys.Docked] : LocaleManager.Instance[LocaleKeys.Handheld];
 
             UpdateShaderCount();
-            
+
             if (GraphicsConfig.ResScale != 1)
             {
                 dockedMode += $" ({GraphicsConfig.ResScale}x)";

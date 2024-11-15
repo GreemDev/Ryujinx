@@ -2,7 +2,7 @@
     x:Class="Ryujinx.Ava.UI.Views.User.UserEditorView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -32,15 +32,15 @@
             HorizontalAlignment="Stretch"
             Orientation="Vertical"
             Spacing="10">
-            <TextBlock Text="{locale:Locale UserProfilesName}" />
+            <TextBlock Text="{ext:Locale UserProfilesName}" />
             <TextBox
                 Name="NameBox"
                 Width="300"
                 HorizontalAlignment="Stretch"
                 MaxLength="{Binding MaxProfileNameLength}"
-                Watermark="{locale:Locale ProfileNameSelectionWatermark}"
+                Watermark="{ext:Locale ProfileNameSelectionWatermark}"
                 Text="{Binding Name}" />
-            <TextBlock Name="IdText" Text="{locale:Locale UserProfilesUserId}" />
+            <TextBlock Name="IdText" Text="{ext:Locale UserProfilesUserId}" />
             <TextBox
                 Name="IdLabel"
                 Width="300"
@@ -104,19 +104,19 @@
             <Button
                 Name="DeleteButton"
                 Click="DeleteButton_Click"
-                Content="{locale:Locale UserProfilesDelete}" />
+                Content="{ext:Locale UserProfilesDelete}" />
             <Button
                 Name="ChangePictureButton"
                 Click="ChangePictureButton_Click"
-                Content="{locale:Locale UserProfilesChangeProfileImage}" />
+                Content="{ext:Locale UserProfilesChangeProfileImage}" />
             <Button
                 Name="AddPictureButton"
                 Click="ChangePictureButton_Click"
-                Content="{locale:Locale UserProfilesSetProfileImage}" />
+                Content="{ext:Locale UserProfilesSetProfileImage}" />
             <Button
                 Name="SaveButton"
                 Click="SaveButton_Click"
-                Content="{locale:Locale Save}" />
+                Content="{ext:Locale Save}" />
         </StackPanel>
     </Grid>
 </UserControl>

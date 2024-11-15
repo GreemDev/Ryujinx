@@ -48,7 +48,7 @@ namespace Ryujinx.Ava.UI.Controls
 
             if (contentManager.GetCurrentFirmwareVersion() != null)
                 Task.Run(() => UserFirmwareAvatarSelectorViewModel.PreloadAvatars(contentManager, virtualFileSystem));
-            
+
             InitializeComponent();
         }
 
@@ -60,13 +60,13 @@ namespace Ryujinx.Ava.UI.Controls
             LoadProfiles();
         }
 
-        public void Navigate(Type sourcePageType, object parameter) 
+        public void Navigate(Type sourcePageType, object parameter)
             => ContentFrame.Navigate(sourcePageType, parameter);
 
         public static async Task Show(
-            AccountManager ownerAccountManager, 
+            AccountManager ownerAccountManager,
             ContentManager ownerContentManager,
-            VirtualFileSystem ownerVirtualFileSystem, 
+            VirtualFileSystem ownerVirtualFileSystem,
             HorizonClient ownerHorizonClient)
         {
             var content = new NavigationDialogHost(ownerAccountManager, ownerContentManager, ownerVirtualFileSystem, ownerHorizonClient);
@@ -138,7 +138,7 @@ namespace Ryujinx.Ava.UI.Controls
 
             foreach (var account in lostAccounts)
             {
-                ViewModel.LostProfiles.Add(new UserProfile(new HLE.HOS.Services.Account.Acc.UserProfile(account, "", null), this));
+                ViewModel.LostProfiles.Add(new UserProfile(new HLE.HOS.Services.Account.Acc.UserProfile(account, string.Empty, null), this));
             }
 
             ViewModel.Profiles.Add(new BaseModel());
@@ -155,25 +155,22 @@ namespace Ryujinx.Ava.UI.Controls
 
                 if (profile == null)
                 {
-                    Dispatcher.UIThread.Post(Action);
-                    
+                    _ = Dispatcher.UIThread.InvokeAsync(async () 
+                        => await ContentDialogHelper.CreateErrorDialog(
+                            LocaleManager.Instance[LocaleKeys.DialogUserProfileDeletionWarningMessage]));
+
                     return;
-                    
-                    static async void Action()
-                    {
-                        await ContentDialogHelper.CreateErrorDialog(LocaleManager.Instance[LocaleKeys.DialogUserProfileDeletionWarningMessage]);
                     }
-                }
 
                 AccountManager.OpenUser(profile.UserId);
             }
 
             var result = await ContentDialogHelper.CreateConfirmationDialog(
                 LocaleManager.Instance[LocaleKeys.DialogUserProfileDeletionConfirmMessage],
-                "",
+                string.Empty,
                 LocaleManager.Instance[LocaleKeys.InputDialogYes],
                 LocaleManager.Instance[LocaleKeys.InputDialogNo],
-                "");
+                string.Empty);
 
             if (result == UserResult.Yes)
             {

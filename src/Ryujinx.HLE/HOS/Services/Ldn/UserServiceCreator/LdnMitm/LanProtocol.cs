@@ -1,3 +1,4 @@
+using Gommon;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.Memory;
 using Ryujinx.Common.Utilities;
@@ -143,7 +144,7 @@ namespace Ryujinx.HLE.HOS.Services.Ldn.UserServiceCreator.LdnMitm
                             if (decompressedLdnData.Length != header.DecompressLength)
                             {
                                 Logger.Error?.PrintMsg(LogClass.ServiceLdn, $"Decompress error: length does not match. ({decompressedLdnData.Length} != {header.DecompressLength})");
-                                Logger.Error?.PrintMsg(LogClass.ServiceLdn, $"Decompress error data: '{string.Join("", decompressedLdnData.Select(x => (int)x).ToArray())}'");
+                                Logger.Error?.PrintMsg(LogClass.ServiceLdn, $"Decompress error data: '{decompressedLdnData.Select(x => (int)x).JoinToString(string.Empty)}'");
 
                                 return;
                             }

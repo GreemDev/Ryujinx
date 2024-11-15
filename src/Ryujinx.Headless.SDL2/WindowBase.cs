@@ -1,3 +1,4 @@
+using Humanizer;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Logging;
@@ -85,13 +86,15 @@ namespace Ryujinx.Headless.SDL2
 
         private readonly AspectRatio _aspectRatio;
         private readonly bool _enableMouse;
+        private readonly bool _ignoreControllerApplet;
 
         public WindowBase(
             InputManager inputManager,
             GraphicsDebugLevel glLogLevel,
             AspectRatio aspectRatio,
             bool enableMouse,
-            HideCursorMode hideCursorMode)
+            HideCursorMode hideCursorMode,
+            bool ignoreControllerApplet)
         {
             MouseDriver = new SDL2MouseDriver(hideCursorMode);
             _inputManager = inputManager;
@@ -107,6 +110,7 @@ namespace Ryujinx.Headless.SDL2
             _gpuDoneEvent = new ManualResetEvent(false);
             _aspectRatio = aspectRatio;
             _enableMouse = enableMouse;
+            _ignoreControllerApplet = ignoreControllerApplet;
             HostUITheme = new HeadlessHostUiTheme();
 
             SDL2Driver.Instance.Initialize();
@@ -483,12 +487,14 @@ namespace Ryujinx.Headless.SDL2
 
         public bool DisplayMessageDialog(ControllerAppletUIArgs args)
         {
+            if (_ignoreControllerApplet) return false;
+            
             string playerCount = args.PlayerCountMin == args.PlayerCountMax ? $"exactly {args.PlayerCountMin}" : $"{args.PlayerCountMin}-{args.PlayerCountMax}";
 
-            string message = $"Application requests {playerCount} player(s) with:\n\n"
+            string message = $"Application requests {playerCount} {"player".ToQuantity(args.PlayerCountMin + args.PlayerCountMax, ShowQuantityAs.None)} with:\n\n"
                            + $"TYPES: {args.SupportedStyles}\n\n"
                            + $"PLAYERS: {string.Join(", ", args.SupportedPlayers)}\n\n"
-                           + (args.IsDocked ? "Docked mode set. Handheld is also invalid.\n\n" : "")
+                           + (args.IsDocked ? "Docked mode set. Handheld is also invalid.\n\n" : string.Empty)
                            + "Please reconfigure Input now and then press OK.";
 
             return DisplayMessageDialog("Controller Applet", message);

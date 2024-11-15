@@ -11,7 +11,6 @@ using Ryujinx.Ava.UI.ViewModels;
 using Ryujinx.Ava.UI.Windows;
 using Ryujinx.Common;
 using Ryujinx.Common.Utilities;
-using Ryujinx.Modules;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common;
 using Ryujinx.UI.Common.Configuration;
@@ -32,6 +31,8 @@ namespace Ryujinx.Ava.UI.Views.Main
         {
             InitializeComponent();
 
+            RyuLogo.IsVisible = !ConfigurationState.Instance.ShowTitleBar;
+
             ToggleFileTypesMenuItem.ItemsSource = GenerateToggleFileTypeItems();
             ChangeLanguageMenuItem.ItemsSource = GenerateLanguageMenuItems();
         }
@@ -39,8 +40,8 @@ namespace Ryujinx.Ava.UI.Views.Main
         private CheckBox[] GenerateToggleFileTypeItems() =>
             Enum.GetValues<FileTypes>()
                 .Select(it => (FileName: Enum.GetName(it)!, FileType: it))
-                .Select(it => 
-                    new CheckBox 
+                .Select(it =>
+                    new CheckBox
                     {
                         Content = $".{it.FileName}",
                         IsChecked = it.FileType.GetConfigValue(ConfigurationState.Instance.UI.ShownFileTypes),
@@ -183,24 +184,34 @@ namespace Ryujinx.Ava.UI.Views.Main
             if (sender is not MenuItem { Tag: string resolution })
                 return;
 
-            (int height, int width) = resolution.Split(' ')
-                .Into(parts => (int.Parse(parts[0]), int.Parse(parts[1])));
+            (int resolutionWidth, int resolutionHeight) = resolution.Split(' ', 2)
+                .Into(parts => 
+                    (int.Parse(parts[0]), int.Parse(parts[1]))
+                );
+
+            // Correctly size window when 'TitleBar' is enabled (Nov. 14, 2024)
+            double barsHeight = ((Window.StatusBarHeight + Window.MenuBarHeight) +
+                (ConfigurationState.Instance.ShowTitleBar ? (int)Window.TitleBar.Height : 0));
+
+            double windowWidthScaled = (resolutionWidth * Program.WindowScaleFactor);
+            double windowHeightScaled = ((resolutionHeight + barsHeight) * Program.WindowScaleFactor);
 
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
+                
                 ViewModel.WindowState = WindowState.Normal;
 
-                height += (int)Window.StatusBarHeight + (int)Window.MenuBarHeight;
-
-                Window.Arrange(new Rect(Window.Position.X, Window.Position.Y, width, height));
+                Window.Arrange(new Rect(Window.Position.X, Window.Position.Y, windowWidthScaled, windowHeightScaled));
             });
         }
 
         public async void CheckForUpdates(object sender, RoutedEventArgs e)
         {
             if (Updater.CanUpdate(true))
-                await Updater.BeginParse(Window, true);
+                await Window.BeginUpdateAsync(true);
         }
+
+        public async void OpenXCITrimmerWindow(object sender, RoutedEventArgs e) => await XCITrimmerWindow.Show(ViewModel);
 
         public async void OpenAboutWindow(object sender, RoutedEventArgs e) => await AboutWindow.Show();
 

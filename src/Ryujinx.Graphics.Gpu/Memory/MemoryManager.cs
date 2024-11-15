@@ -55,7 +55,8 @@ namespace Ryujinx.Graphics.Gpu.Memory
         /// Creates a new instance of the GPU memory manager.
         /// </summary>
         /// <param name="physicalMemory">Physical memory that this memory manager will map into</param>
-        internal MemoryManager(PhysicalMemory physicalMemory)
+        /// <param name="cpuMemorySize">The amount of physical CPU Memory Avaiable on the device.</param>
+        internal MemoryManager(PhysicalMemory physicalMemory, ulong cpuMemorySize)
         {
             Physical = physicalMemory;
             VirtualRangeCache = new VirtualRangeCache(this);
@@ -65,7 +66,7 @@ namespace Ryujinx.Graphics.Gpu.Memory
             MemoryUnmapped += Physical.BufferCache.MemoryUnmappedHandler;
             MemoryUnmapped += VirtualRangeCache.MemoryUnmappedHandler;
             MemoryUnmapped += CounterCache.MemoryUnmappedHandler;
-            Physical.TextureCache.Initialize();
+            Physical.TextureCache.Initialize(cpuMemorySize);
         }
 
         /// <summary>

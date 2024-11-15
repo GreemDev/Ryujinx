@@ -6,6 +6,23 @@
   <br>
   <sub><sup><b>(REE-YOU-JINX)</b></sup></sub>
   <br>
+    <a href="https://github.com/GreemDev/Ryujinx/actions/workflows/release.yml">
+        <img src="https://github.com/GreemDev/Ryujinx/actions/workflows/release.yml/badge.svg"
+            alt="">
+    </a>
+    <a href="https://github.com/GreemDev/Ryujinx/releases/latest">
+        <img src="https://img.shields.io/github/v/release/GreemDev/Ryujinx"
+            alt="Latest Release">
+    </a>
+  <br>
+    <a href="https://github.com/GreemDev/Ryujinx/actions/workflows/canary.yml">
+        <img src="https://github.com/GreemDev/Ryujinx/actions/workflows/canary.yml/badge.svg"
+            alt="">
+    </a>
+    <a href="https://github.com/GreemDev/Ryujinx-Canary/releases/latest">
+        <img src="https://img.shields.io/github/v/release/GreemDev/Ryujinx-Canary?label=canary"
+            alt="Latest Canary Release">
+    </a>
 </h1>
 
 <p align="center">
@@ -17,39 +34,27 @@
 </p>
 <p align="center">
   On October 1st 2024, Ryujinx was discontinued as the creator was forced to abandon the project.
-  This fork is intended to be a direct continuation for existing Ryujinx users.
-  Guides and documentation will not be provided at this time, though you can find the old ones on the Internet Archive.
+  <br>
+  This fork is intended to be a QoL uplift for existing Ryujinx users.
+  <br>
+  This is not a Ryujinx revival project. This is not a Phoenix project.
+  <br>
+  Guides and documentation can be found on the <a href="https://github.com/GreemDev/Ryujinx/wiki">Wiki tab</a>.
 </p>
 <p align="center">
-  If you would like a version more true to original Ryujinx, check out <a href="https://github.com/ryujinx-mirror/ryujinx">ryujinx-mirror</a>.
+  If you would like a version more preservative fork of Ryujinx, check out <a href="https://github.com/ryujinx-mirror/ryujinx">ryujinx-mirror</a>.
 </p>
 
 <p align="center">
-    <a href="https://github.com/GreemDev/Ryujinx/actions/workflows/release.yml">
-        <img src="https://github.com/GreemDev/Ryujinx/actions/workflows/release.yml/badge.svg"
-            alt="">
-    </a>
-    <a href="https://crwd.in/ryujinx">
-        <img src="https://badges.crowdin.net/ryujinx/localized.svg"
-            alt="">
-    </a>
+    Click below to join the Discord:
+    <br>
     <a href="https://discord.gg/dHPrkBkkyA">
-        <img src="https://img.shields.io/discord/1294443224030511104?color=5865F2&label=Ryujinx&logo=discord&logoColor=white"
-            alt="Discord">
+        <img src="https://img.shields.io/discord/1294443224030511104?color=5865F2&label=Ryubing&logo=discord&logoColor=white" alt="Discord">
     </a>
     <br>
     <br>
     <img src="https://raw.githubusercontent.com/GreemDev/Ryujinx/refs/heads/master/docs/shell.png">
 </p>
-
-## Compatibility
-
-As of May 2024, Ryujinx has been tested on approximately 4,300 titles;
-over 4,100 boot past menus and into gameplay, with roughly 3,550 of those being considered playable.
-
-Anyone is free to submit a new game test or update an existing game test entry;
-simply follow the new issue template and testing guidelines, or post as a reply to the applicable game issue.
-Use the search function to see if a game has been tested already!
 
 ## Usage
 
@@ -58,35 +63,20 @@ failing to meet this requirement may result in a poor gameplay experience or une
 
 ## Latest build
 
-These builds are compiled automatically for each commit on the master branch.
-While we strive to ensure optimal stability and performance prior to pushing an update, our automated builds **may be unstable or completely broken**.
+Stable builds are made every so often onto a separate "release" branch that then gets put into the releases you know and love. 
+These stable builds exist so that the end user can get a more **enjoyable and stable experience**.
+
+You can find the latest stable release [here](https://github.com/GreemDev/Ryujinx/releases/latest).
+
+Canary builds are compiled automatically for each commit on the master branch.
+While we strive to ensure optimal stability and performance prior to pushing an update, these builds **may be unstable or completely broken**.
+These canary builds are only recommended for experienced users.
+
+You can find the latest canary release [here](https://github.com/GreemDev/Ryujinx-Canary/releases/latest).
 
 ## Documentation
 
 If you are planning to contribute or just want to learn more about this project please read through our [documentation](docs/README.md).
-
-## Building
-
-If you wish to build the emulator yourself, follow these steps:
-
-### Step 1
-
-Install the [.NET 8.0 (or higher) SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
-Make sure your SDK version is higher or equal to the required version specified in [global.json](global.json). 
-
-### Step 2
-
-Either use `git clone https://github.com/GreemDev/Ryujinx` on the command line to clone the repository or use Code --> Download zip button to get the files.
-
-### Step 3
-
-To build Ryujinx, open a command prompt inside the project directory.
-You can quickly access it on Windows by holding shift in File Explorer, then right clicking and selecting `Open command window here`.
-Then type the following command: `dotnet build -c Release -o build`
-the built files will be found in the newly created build directory.
-
-Ryujinx system files are stored in the `Ryujinx` folder.
-This folder is located in the user folder, which can be accessed by clicking `Open Ryujinx Folder` under the File menu in the GUI.
 
 ## Features
 

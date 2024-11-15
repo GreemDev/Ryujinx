@@ -22,13 +22,13 @@ using Ryujinx.HLE.HOS;
 using Ryujinx.HLE.HOS.Services.Account.Acc;
 using Ryujinx.Input.HLE;
 using Ryujinx.Input.SDL2;
-using Ryujinx.Modules;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common;
 using Ryujinx.UI.Common.Configuration;
 using Ryujinx.UI.Common.Helper;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Runtime.Versioning;
 using System.Threading;
@@ -65,6 +65,9 @@ namespace Ryujinx.Ava.UI.Windows
         public static bool ShowKeyErrorOnLoad { get; set; }
         public ApplicationLibrary ApplicationLibrary { get; set; }
 
+        // Correctly size window when 'TitleBar' is enabled (Nov. 14, 2024)
+        public readonly double TitleBarHeight;
+
         public readonly double StatusBarHeight;
         public readonly double MenuBarHeight;
 
@@ -82,15 +85,15 @@ namespace Ryujinx.Ava.UI.Windows
 
             ViewModel.Title = App.FormatTitle();
 
-            TitleBar.ExtendsContentIntoTitleBar = true;
-            TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
+            TitleBar.ExtendsContentIntoTitleBar = !ConfigurationState.Instance.ShowTitleBar;
+            TitleBar.TitleBarHitTestType = (ConfigurationState.Instance.ShowTitleBar) ? TitleBarHitTestType.Simple : TitleBarHitTestType.Complex;
+
+            // Correctly size window when 'TitleBar' is enabled (Nov. 14, 2024)
+            TitleBarHeight = (ConfigurationState.Instance.ShowTitleBar ? TitleBar.Height : 0);
 
             // NOTE: Height of MenuBar and StatusBar is not usable here, since it would still be 0 at this point.
             StatusBarHeight = StatusBarView.StatusBar.MinHeight;
             MenuBarHeight = MenuBar.MinHeight;
-            double barHeight = MenuBarHeight + StatusBarHeight;
-            Height = ((Height - barHeight) / Program.WindowScaleFactor) + barHeight;
-            Width /= Program.WindowScaleFactor;
 
             SetWindowSizePosition();
 
@@ -109,7 +112,7 @@ namespace Ryujinx.Ava.UI.Windows
         private static void OnPlatformColorValuesChanged(object sender, PlatformColorValues e)
         {
             if (Application.Current is App app)
-                app.ApplyConfiguredTheme();
+                app.ApplyConfiguredTheme(ConfigurationState.Instance.UI.BaseStyle);
         }
 
         protected override void OnClosed(EventArgs e)
@@ -152,6 +155,36 @@ namespace Ryujinx.Ava.UI.Windows
                     StatusBarView.LoadProgressBar.IsVisible = false;
                 }
             });
+        }
+
+        private void ApplicationLibrary_LdnGameDataReceived(object sender, LdnGameDataReceivedEventArgs e)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                var ldnGameDataArray = e.LdnData;
+                ViewModel.LastLdnGameData = ldnGameDataArray;
+                foreach (var application in ViewModel.Applications)
+                {
+                    UpdateApplicationWithLdnData(application);
+                }
+                ViewModel.RefreshView();
+            });
+        }
+
+        private void UpdateApplicationWithLdnData(ApplicationData application)
+        {
+            if (application.ControlHolder.ByteSpan.Length > 0 && ViewModel.LastLdnGameData != null)
+            {
+                IEnumerable<LdnGameData> ldnGameData = ViewModel.LastLdnGameData.Where(game => application.ControlHolder.Value.LocalCommunicationId.Items.Contains(Convert.ToUInt64(game.TitleId, 16)));
+
+                application.PlayerCount = ldnGameData.Sum(game => game.PlayerCount);
+                application.GameCount = ldnGameData.Count();
+            }
+            else
+            {
+                application.PlayerCount = 0;
+                application.GameCount = 0;
+            }
         }
 
         public void Application_Opened(object sender, ApplicationOpenedEventArgs args)
@@ -350,12 +383,12 @@ namespace Ryujinx.Ava.UI.Windows
                 await Dispatcher.UIThread.InvokeAsync(async () => await UserErrorDialog.ShowUserErrorDialog(UserError.NoKeys));
             }
 
-            if (ConfigurationState.Instance.CheckUpdatesOnStart && Updater.CanUpdate(false))
+            if (ConfigurationState.Instance.CheckUpdatesOnStart && Updater.CanUpdate())
             {
-                await Updater.BeginParse(this, false).ContinueWith(task =>
-                {
-                    Logger.Error?.Print(LogClass.Application, $"Updater Error: {task.Exception}");
-                }, TaskContinuationOptions.OnlyOnFaulted);
+                await this.BeginUpdateAsync()
+                    .ContinueWith(
+                        task => Logger.Error?.Print(LogClass.Application, $"Updater Error: {task.Exception}"), 
+                        TaskContinuationOptions.OnlyOnFaulted);
             }
         }
 
@@ -376,7 +409,8 @@ namespace Ryujinx.Ava.UI.Windows
         {
             if (!ConfigurationState.Instance.RememberWindowState)
             {
-                ViewModel.WindowHeight = (720 + StatusBarHeight + MenuBarHeight) * Program.WindowScaleFactor;
+                // Correctly size window when 'TitleBar' is enabled (Nov. 14, 2024)
+                ViewModel.WindowHeight = (720 + StatusBarHeight + MenuBarHeight + TitleBarHeight) * Program.WindowScaleFactor;
                 ViewModel.WindowWidth = 1280 * Program.WindowScaleFactor;
 
                 WindowState = WindowState.Normal;
@@ -393,28 +427,15 @@ namespace Ryujinx.Ava.UI.Windows
 
             ViewModel.WindowState = ConfigurationState.Instance.UI.WindowStartup.WindowMaximized.Value ? WindowState.Maximized : WindowState.Normal;
 
-            if (CheckScreenBounds(savedPoint))
+            if (Screens.All.Any(screen => screen.Bounds.Contains(savedPoint)))
             {
                 Position = savedPoint;
             }
             else
             {
+                Logger.Warning?.Print(LogClass.Application, "Failed to find valid start-up coordinates. Defaulting to primary monitor center.");
                 WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
-        }
-
-        private bool CheckScreenBounds(PixelPoint configPoint)
-        {
-            for (int i = 0; i < Screens.ScreenCount; i++)
-            {
-                if (Screens.All[i].Bounds.Contains(configPoint))
-                {
-                    return true;
-                }
-            }
-
-            Logger.Warning?.Print(LogClass.Application, "Failed to find valid start-up coordinates. Defaulting to primary monitor center.");
-            return false;
         }
 
         private void SaveWindowSizePosition()
@@ -424,8 +445,10 @@ namespace Ryujinx.Ava.UI.Windows
             // Only save rectangle properties if the window is not in a maximized state.
             if (WindowState != WindowState.Maximized)
             {
-                ConfigurationState.Instance.UI.WindowStartup.WindowSizeHeight.Value = (int)Height;
-                ConfigurationState.Instance.UI.WindowStartup.WindowSizeWidth.Value = (int)Width;
+                // Since scaling is being applied to the loaded settings from disk (see SetWindowSizePosition() above), scaling should be removed from width/height before saving out to disk
+                // as well - otherwise anyone not using a 1.0 scale factor their window will increase in size with every subsequent launch of the program when scaling is applied (Nov. 14, 2024)
+                ConfigurationState.Instance.UI.WindowStartup.WindowSizeHeight.Value = (int)(Height / Program.WindowScaleFactor);
+                ConfigurationState.Instance.UI.WindowStartup.WindowSizeWidth.Value = (int)(Width / Program.WindowScaleFactor);
 
                 ConfigurationState.Instance.UI.WindowStartup.WindowPositionX.Value = Position.X;
                 ConfigurationState.Instance.UI.WindowStartup.WindowPositionY.Value = Position.Y;
@@ -463,7 +486,20 @@ namespace Ryujinx.Ava.UI.Windows
                     .Connect()
                     .ObserveOn(SynchronizationContext.Current!)
                     .Bind(ViewModel.Applications)
+                    .OnItemAdded(UpdateApplicationWithLdnData)
                     .Subscribe();
+            ApplicationLibrary.LdnGameDataReceived += ApplicationLibrary_LdnGameDataReceived;
+
+            ConfigurationState.Instance.Multiplayer.Mode.Event += (sender, evt) =>
+            {
+                _ = Task.Run(ViewModel.ApplicationLibrary.RefreshLdn);
+            };
+
+            ConfigurationState.Instance.Multiplayer.LdnServer.Event += (sender, evt) =>
+            {
+                _ = Task.Run(ViewModel.ApplicationLibrary.RefreshLdn);
+            };
+            _ = Task.Run(ViewModel.ApplicationLibrary.RefreshLdn);
 
             ViewModel.RefreshFirmwareStatus();
 
@@ -472,7 +508,7 @@ namespace Ryujinx.Ava.UI.Windows
             {
                 LoadApplications();
             }
-            
+
             _ = CheckLaunchState();
         }
 
@@ -508,8 +544,7 @@ namespace Ryujinx.Ava.UI.Windows
 
         private void VolumeStatus_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            var volumeSplitButton = sender as ToggleSplitButton;
-            if (ViewModel.IsGameRunning)
+            if (ViewModel.IsGameRunning && sender is ToggleSplitButton volumeSplitButton)
             {
                 if (!volumeSplitButton.IsChecked)
                 {
@@ -602,13 +637,26 @@ namespace Ryujinx.Ava.UI.Windows
         {
             switch (fileType)
             {
-                case "NSP": ConfigurationState.Instance.UI.ShownFileTypes.NSP.Toggle(); break;
-                case "PFS0": ConfigurationState.Instance.UI.ShownFileTypes.PFS0.Toggle(); break;
-                case "XCI": ConfigurationState.Instance.UI.ShownFileTypes.XCI.Toggle(); break;
-                case "NCA": ConfigurationState.Instance.UI.ShownFileTypes.NCA.Toggle(); break;
-                case "NRO": ConfigurationState.Instance.UI.ShownFileTypes.NRO.Toggle(); break;
-                case "NSO": ConfigurationState.Instance.UI.ShownFileTypes.NSO.Toggle(); break;
-                default: throw new ArgumentOutOfRangeException(fileType);
+                case "NSP":
+                    ConfigurationState.Instance.UI.ShownFileTypes.NSP.Toggle();
+                    break;
+                case "PFS0":
+                    ConfigurationState.Instance.UI.ShownFileTypes.PFS0.Toggle();
+                    break;
+                case "XCI":
+                    ConfigurationState.Instance.UI.ShownFileTypes.XCI.Toggle();
+                    break;
+                case "NCA":
+                    ConfigurationState.Instance.UI.ShownFileTypes.NCA.Toggle();
+                    break;
+                case "NRO":
+                    ConfigurationState.Instance.UI.ShownFileTypes.NRO.Toggle();
+                    break;
+                case "NSO":
+                    ConfigurationState.Instance.UI.ShownFileTypes.NSO.Toggle();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(fileType);
             }
 
             ConfigurationState.Instance.ToFileFormat().SaveConfig(Program.ConfigurationPath);
@@ -664,8 +712,14 @@ namespace Ryujinx.Ava.UI.Windows
 
             Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                await ContentDialogHelper.ShowTextDialog(LocaleManager.Instance[LocaleKeys.DialogConfirmationTitle],
-                    msg, "", "", "", LocaleManager.Instance[LocaleKeys.InputDialogOk], (int)Symbol.Checkmark);
+                await ContentDialogHelper.ShowTextDialog(
+                    LocaleManager.Instance[LocaleKeys.DialogConfirmationTitle],
+                    msg,
+                    string.Empty, 
+                    string.Empty, 
+                    string.Empty, 
+                    LocaleManager.Instance[LocaleKeys.InputDialogOk], 
+                    (int)Symbol.Checkmark);
             });
         }
     }

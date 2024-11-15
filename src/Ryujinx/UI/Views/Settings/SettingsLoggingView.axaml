@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
     mc:Ignorable="d"
     x:DataType="viewModels:SettingsViewModel">
@@ -24,37 +24,37 @@
                 HorizontalAlignment="Stretch"
                 Orientation="Vertical"
                 Spacing="10">
-                <TextBlock Classes="h1" Text="{locale:Locale SettingsTabLoggingLogging}" />
+                <TextBlock Classes="h1" Text="{ext:Locale SettingsTabLoggingLogging}" />
                 <StackPanel Margin="10,0,0,0" Orientation="Vertical">
                     <CheckBox IsChecked="{Binding EnableFileLog}"
-                              ToolTip.Tip="{locale:Locale FileLogTooltip}">
-                        <TextBlock Text="{locale:Locale SettingsTabLoggingEnableLoggingToFile}" />
+                              ToolTip.Tip="{ext:Locale FileLogTooltip}">
+                        <TextBlock Text="{ext:Locale SettingsTabLoggingEnableLoggingToFile}" />
                     </CheckBox>
                     <CheckBox IsChecked="{Binding EnableStub}"
-                              ToolTip.Tip="{locale:Locale StubLogTooltip}">
-                        <TextBlock Text="{locale:Locale SettingsTabLoggingEnableStubLogs}" />
+                              ToolTip.Tip="{ext:Locale StubLogTooltip}">
+                        <TextBlock Text="{ext:Locale SettingsTabLoggingEnableStubLogs}" />
                     </CheckBox>
                     <CheckBox IsChecked="{Binding EnableInfo}"
-                              ToolTip.Tip="{locale:Locale InfoLogTooltip}">
-                        <TextBlock Text="{locale:Locale SettingsTabLoggingEnableInfoLogs}" />
+                              ToolTip.Tip="{ext:Locale InfoLogTooltip}">
+                        <TextBlock Text="{ext:Locale SettingsTabLoggingEnableInfoLogs}" />
                     </CheckBox>
                     <CheckBox IsChecked="{Binding EnableWarn}"
-                              ToolTip.Tip="{locale:Locale WarnLogTooltip}">
-                        <TextBlock Text="{locale:Locale SettingsTabLoggingEnableWarningLogs}" />
+                              ToolTip.Tip="{ext:Locale WarnLogTooltip}">
+                        <TextBlock Text="{ext:Locale SettingsTabLoggingEnableWarningLogs}" />
                     </CheckBox>
                     <CheckBox IsChecked="{Binding EnableError}"
-                              ToolTip.Tip="{locale:Locale ErrorLogTooltip}">
-                        <TextBlock Text="{locale:Locale SettingsTabLoggingEnableErrorLogs}" />
+                              ToolTip.Tip="{ext:Locale ErrorLogTooltip}">
+                        <TextBlock Text="{ext:Locale SettingsTabLoggingEnableErrorLogs}" />
                     </CheckBox>
                     <CheckBox IsChecked="{Binding EnableGuest}"
-                              ToolTip.Tip="{locale:Locale GuestLogTooltip}">
-                        <TextBlock Text="{locale:Locale SettingsTabLoggingEnableGuestLogs}" />
+                              ToolTip.Tip="{ext:Locale GuestLogTooltip}">
+                        <TextBlock Text="{ext:Locale SettingsTabLoggingEnableGuestLogs}" />
                     </CheckBox>
                 </StackPanel>
                 <Separator Height="1" />
                 <StackPanel Orientation="Vertical" Spacing="5">
-                    <TextBlock Classes="h1" Text="{locale:Locale SettingsTabLoggingDeveloperOptions}" />
-                    <TextBlock Foreground="{DynamicResource SecondaryTextColor}" Text="{locale:Locale SettingsTabLoggingDeveloperOptionsNote}" />
+                    <TextBlock Classes="h1" Text="{ext:Locale SettingsTabLoggingDeveloperOptions}" />
+                    <TextBlock Foreground="{DynamicResource SecondaryTextColor}" Text="{ext:Locale SettingsTabLoggingDeveloperOptionsNote}" />
                 </StackPanel>
                 <StackPanel
                     Margin="10,0,0,0"
@@ -63,21 +63,21 @@
                     Spacing="10">
                     <StackPanel Orientation="Vertical">
                         <CheckBox IsChecked="{Binding EnableTrace}"
-                                  ToolTip.Tip="{locale:Locale TraceLogTooltip}">
-                            <TextBlock Text="{locale:Locale SettingsTabLoggingEnableTraceLogs}" />
+                                  ToolTip.Tip="{ext:Locale TraceLogTooltip}">
+                            <TextBlock Text="{ext:Locale SettingsTabLoggingEnableTraceLogs}" />
                         </CheckBox>
                         <CheckBox IsChecked="{Binding EnableFsAccessLog}"
-                                ToolTip.Tip="{locale:Locale FileAccessLogTooltip}">
-                        <TextBlock Text="{locale:Locale SettingsTabLoggingEnableFsAccessLogs}" />
+                                ToolTip.Tip="{ext:Locale FileAccessLogTooltip}">
+                        <TextBlock Text="{ext:Locale SettingsTabLoggingEnableFsAccessLogs}" />
                         </CheckBox>
                         <CheckBox IsChecked="{Binding EnableDebug}"
-                                  ToolTip.Tip="{locale:Locale DebugLogTooltip}">
-                            <TextBlock Text="{locale:Locale SettingsTabLoggingEnableDebugLogs}" />
+                                  ToolTip.Tip="{ext:Locale DebugLogTooltip}">
+                            <TextBlock Text="{ext:Locale SettingsTabLoggingEnableDebugLogs}" />
                         </CheckBox>
                         <StackPanel Margin="0,10,0,0" Orientation="Horizontal" VerticalAlignment="Stretch">
                             <TextBlock VerticalAlignment="Center"
-                                    ToolTip.Tip="{locale:Locale FSAccessLogModeTooltip}"
-                                    Text="{locale:Locale SettingsTabLoggingFsGlobalAccessLogMode}"
+                                    ToolTip.Tip="{ext:Locale FSAccessLogModeTooltip}"
+                                    Text="{ext:Locale SettingsTabLoggingFsGlobalAccessLogMode}"
                                     Width="285" />
                             <ui:NumberBox
                                 Maximum="3"
@@ -90,25 +90,25 @@
                         </StackPanel>
                         <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
                             <TextBlock VerticalAlignment="Center"
-                                    Text="{locale:Locale SettingsTabLoggingGraphicsBackendLogLevel}"
-                                    ToolTip.Tip="{locale:Locale OpenGlLogLevel}"
+                                    Text="{ext:Locale SettingsTabLoggingGraphicsBackendLogLevel}"
+                                    ToolTip.Tip="{ext:Locale OpenGlLogLevel}"
                                     Width="285" />
                             <ComboBox SelectedIndex="{Binding OpenglDebugLevel}"
                                     Width="150"
                                     HorizontalContentAlignment="Left"
-                                    ToolTip.Tip="{locale:Locale OpenGlLogLevel}">
+                                    ToolTip.Tip="{ext:Locale OpenGlLogLevel}">
                                 <ComboBoxItem>
-                                    <TextBlock Text="{locale:Locale SettingsTabLoggingGraphicsBackendLogLevelNone}" />
+                                    <TextBlock Text="{ext:Locale SettingsTabLoggingGraphicsBackendLogLevelNone}" />
                                 </ComboBoxItem>
                                 <ComboBoxItem>
-                                    <TextBlock Text="{locale:Locale SettingsTabLoggingGraphicsBackendLogLevelError}" />
+                                    <TextBlock Text="{ext:Locale SettingsTabLoggingGraphicsBackendLogLevelError}" />
                                 </ComboBoxItem>
                                 <ComboBoxItem>
                                     <TextBlock
-                                        Text="{locale:Locale SettingsTabLoggingGraphicsBackendLogLevelPerformance}" />
+                                        Text="{ext:Locale SettingsTabLoggingGraphicsBackendLogLevelPerformance}" />
                                 </ComboBoxItem>
                                 <ComboBoxItem>
-                                    <TextBlock Text="{locale:Locale SettingsTabLoggingGraphicsBackendLogLevelAll}" />
+                                    <TextBlock Text="{ext:Locale SettingsTabLoggingGraphicsBackendLogLevelAll}" />
                                 </ComboBoxItem>
                             </ComboBox>
                         </StackPanel>

@@ -830,12 +830,12 @@ namespace Ryujinx.Graphics.Shader.Translation
 
                 if (use.Node != null)
                 {
-                    Console.Write($"{indentation} {separator}- ({(use.Inverted ? "INV " : "")}{use.Index})");
+                    Console.Write($"{indentation} {separator}- ({(use.Inverted ? "INV " : string.Empty)}{use.Index})");
                     PrintTreeNode(use.Node, indentation + (last ? "       " : " |     "));
                 }
                 else
                 {
-                    Console.WriteLine($"{indentation} {separator}- ({(use.Inverted ? "INV " : "")}{use.Index}) NULL");
+                    Console.WriteLine($"{indentation} {separator}- ({(use.Inverted ? "INV " : string.Empty)}{use.Index}) NULL");
                 }
             }
         }
@@ -852,12 +852,12 @@ namespace Ryujinx.Graphics.Shader.Translation
 
                 if (use.Node != null)
                 {
-                    Console.Write($"{indentation} {separator}- ({(use.Inverted ? "INV " : "")}{use.Index})");
+                    Console.Write($"{indentation} {separator}- ({(use.Inverted ? "INV " : string.Empty)}{use.Index})");
                     PrintTreeNode(use.Node, indentation + (last ? "       " : " |     "));
                 }
                 else
                 {
-                    Console.WriteLine($"{indentation} {separator}- ({(use.Inverted ? "INV " : "")}{use.Index}) NULL");
+                    Console.WriteLine($"{indentation} {separator}- ({(use.Inverted ? "INV " : string.Empty)}{use.Index}) NULL");
                 }
             }
         }

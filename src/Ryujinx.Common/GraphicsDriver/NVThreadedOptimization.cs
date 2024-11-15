@@ -121,8 +121,8 @@ namespace Ryujinx.Common.GraphicsDriver
                 };
                 application.AppName.Set("Ryujinx.exe");
                 application.UserFriendlyName.Set("Ryujinx");
-                application.Launcher.Set("");
-                application.FileInFolder.Set("");
+                application.Launcher.Set(string.Empty);
+                application.FileInFolder.Set(string.Empty);
 
                 Check(NvAPI_DRS_CreateApplication(handle, profileHandle, ref application));
             }

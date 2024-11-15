@@ -64,7 +64,7 @@ namespace Ryujinx.HLE.HOS.Services.Account.Acc
         {
             if (userId.IsNull)
             {
-                userId = new UserId(Guid.NewGuid().ToString().Replace("-", ""));
+                userId = new UserId(Guid.NewGuid().ToString().Replace("-", string.Empty));
             }
 
             UserProfile profile = new(userId, name, image);

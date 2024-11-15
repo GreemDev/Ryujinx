@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -853,17 +854,15 @@ namespace ARMeilleure.Translation.PTC
                 }
             }
 
-            List<Thread> threads = new();
 
-            for (int i = 0; i < degreeOfParallelism; i++)
-            {
-                Thread thread = new(TranslateFuncs)
-                {
-                    IsBackground = true,
-                };
-
-                threads.Add(thread);
-            }
+            List<Thread> threads = Enumerable.Range(0, degreeOfParallelism)
+                .Select(idx => 
+                    new Thread(TranslateFuncs)
+                    {
+                        IsBackground = true, 
+                        Name = "Ptc.TranslateThread." + idx 
+                    }
+                ).ToList();
 
             Stopwatch sw = Stopwatch.StartNew();
 
@@ -890,6 +889,7 @@ namespace ARMeilleure.Translation.PTC
             Thread preSaveThread = new(PreSave)
             {
                 IsBackground = true,
+                Name = "Ptc.DiskWriter"
             };
             preSaveThread.Start();
         }
