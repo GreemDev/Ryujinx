@@ -65,6 +65,9 @@ namespace Ryujinx.Ava.UI.Windows
         public static bool ShowKeyErrorOnLoad { get; set; }
         public ApplicationLibrary ApplicationLibrary { get; set; }
 
+        // Correctly size window when 'TitleBar' is enabled (Nov. 14, 2024)
+        public readonly double TitleBarHeight;
+
         public readonly double StatusBarHeight;
         public readonly double MenuBarHeight;
 
@@ -85,12 +88,12 @@ namespace Ryujinx.Ava.UI.Windows
             TitleBar.ExtendsContentIntoTitleBar = !ConfigurationState.Instance.ShowTitleBar;
             TitleBar.TitleBarHitTestType = (ConfigurationState.Instance.ShowTitleBar) ? TitleBarHitTestType.Simple : TitleBarHitTestType.Complex;
 
+            // Correctly size window when 'TitleBar' is enabled (Nov. 14, 2024)
+            TitleBarHeight = (ConfigurationState.Instance.ShowTitleBar ? TitleBar.Height : 0);
+
             // NOTE: Height of MenuBar and StatusBar is not usable here, since it would still be 0 at this point.
             StatusBarHeight = StatusBarView.StatusBar.MinHeight;
             MenuBarHeight = MenuBar.MinHeight;
-            double barHeight = MenuBarHeight + StatusBarHeight;
-            Height = ((Height - barHeight) / Program.WindowScaleFactor) + barHeight;
-            Width /= Program.WindowScaleFactor;
 
             SetWindowSizePosition();
 
@@ -406,7 +409,8 @@ namespace Ryujinx.Ava.UI.Windows
         {
             if (!ConfigurationState.Instance.RememberWindowState)
             {
-                ViewModel.WindowHeight = (720 + StatusBarHeight + MenuBarHeight) * Program.WindowScaleFactor;
+                // Correctly size window when 'TitleBar' is enabled (Nov. 14, 2024)
+                ViewModel.WindowHeight = (720 + StatusBarHeight + MenuBarHeight + TitleBarHeight) * Program.WindowScaleFactor;
                 ViewModel.WindowWidth = 1280 * Program.WindowScaleFactor;
 
                 WindowState = WindowState.Normal;
