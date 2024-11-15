@@ -184,18 +184,24 @@ namespace Ryujinx.Ava.UI.Views.Main
             if (sender is not MenuItem { Tag: string resolution })
                 return;
 
-            (int width, int height) = resolution.Split(' ', 2)
+            (int resolution_width, int resolution_height) = resolution.Split(' ', 2)
                 .Into(parts => 
                     (int.Parse(parts[0]), int.Parse(parts[1]))
                 );
 
+            // Correctly size window when 'TitleBar' is enabled (Nov. 14, 2024)
+            double bars_height = ((Window.StatusBarHeight + Window.MenuBarHeight) +
+                (ConfigurationState.Instance.ShowTitleBar ? (int)Window.TitleBar.Height : 0));
+
+            double window_width_scaled = (resolution_width * Program.WindowScaleFactor);
+            double window_height_scaled = ((resolution_height + bars_height) * Program.WindowScaleFactor);
+
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
+                
                 ViewModel.WindowState = WindowState.Normal;
 
-                height += (int)Window.StatusBarHeight + (int)Window.MenuBarHeight;
-
-                Window.Arrange(new Rect(Window.Position.X, Window.Position.Y, width, height));
+                Window.Arrange(new Rect(Window.Position.X, Window.Position.Y, window_width_scaled, window_height_scaled));
             });
         }
 
