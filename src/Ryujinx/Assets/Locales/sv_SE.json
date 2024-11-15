@@ -444,7 +444,7 @@
   "DialogUpdaterNoInternetMessage": "Du är inte ansluten till internet!",
   "DialogUpdaterNoInternetSubMessage": "Försäkra dig om att du har en fungerande internetanslutning!",
   "DialogUpdaterDirtyBuildMessage": "Du kan inte uppdatera en Dirty build av Ryujinx!",
-  "DialogUpdaterDirtyBuildSubMessage": "Hämta Ryujinx från https://ryujinx.org/ om du letar efter en version som stöds.",
+  "DialogUpdaterDirtyBuildSubMessage": "Hämta Ryujinx från https://ryujinx.app/download om du letar efter en version som stöds.",
   "DialogRestartRequiredMessage": "Omstart krävs",
   "DialogThemeRestartMessage": "Temat har sparats. En omstart krävs för att verkställa ändringen.",
   "DialogThemeRestartSubMessage": "Vill du starta om",
