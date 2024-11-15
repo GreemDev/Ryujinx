@@ -56,15 +56,6 @@
     <img src="https://raw.githubusercontent.com/GreemDev/Ryujinx/refs/heads/master/docs/shell.png">
 </p>
 
-## Compatibility
-
-As of May 2024, Ryujinx has been tested on approximately 4,300 titles;
-over 4,100 boot past menus and into gameplay, with roughly 3,550 of those being considered playable.
-
-Anyone is free to submit a new game test or update an existing game test entry;
-simply follow the new issue template and testing guidelines, or post as a reply to the applicable game issue.
-Use the search function to see if a game has been tested already!
-
 ## Usage
 
 To run this emulator, your PC must be equipped with at least 8GiB of RAM;
@@ -86,30 +77,6 @@ You can find the latest canary release [here](https://github.com/GreemDev/Ryujin
 ## Documentation
 
 If you are planning to contribute or just want to learn more about this project please read through our [documentation](docs/README.md).
-
-## Building
-
-Building the project is for advanced users.
-If you wish to build the emulator yourself, follow these steps:
-
-### Step 1
-
-Install the [.NET 8.0 (or higher) SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
-Make sure your SDK version is higher or equal to the required version specified in [global.json](global.json). 
-
-### Step 2
-
-Either use `git clone https://github.com/GreemDev/Ryujinx` on the command line to clone the repository or use Code --> Download zip button to get the files.
-
-### Step 3
-
-To build Ryujinx, open a command prompt inside the project directory.
-You can quickly access it on Windows by holding shift in File Explorer, then right clicking and selecting `Open command window here`.
-Then type the following command: `dotnet build -c Release -o build`
-the built files will be found in the newly created build directory.
-
-Ryujinx system files are stored in the `Ryujinx` folder.
-This folder is located in the user folder, which can be accessed by clicking `Open Ryujinx Folder` under the File menu in the GUI.
 
 ## Features
 
