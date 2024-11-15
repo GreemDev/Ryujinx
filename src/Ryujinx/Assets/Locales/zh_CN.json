@@ -456,7 +456,7 @@
   "DialogUpdaterNoInternetMessage": "没有连接到网络",
   "DialogUpdaterNoInternetSubMessage": "请确保互联网连接正常。",
   "DialogUpdaterDirtyBuildMessage": "无法更新非官方版本的 Ryujinx 模拟器！",
-  "DialogUpdaterDirtyBuildSubMessage": "如果想使用受支持的版本，请您在 https://github.com/GreemDev/Ryujinx/releases/ 下载官方版本。",
+  "DialogUpdaterDirtyBuildSubMessage": "如果想使用受支持的版本，请您在 https://ryujinx.app/download 下载官方版本。",
   "DialogRestartRequiredMessage": "需要重启模拟器",
   "DialogThemeRestartMessage": "主题设置已保存，需要重启模拟器才能生效。",
   "DialogThemeRestartSubMessage": "是否要重启模拟器？",

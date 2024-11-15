@@ -456,7 +456,7 @@
   "DialogUpdaterNoInternetMessage": "インターネットに接続されていません!",
   "DialogUpdaterNoInternetSubMessage": "インターネット接続が正常動作しているか確認してください!",
   "DialogUpdaterDirtyBuildMessage": "Dirty ビルドの Ryujinx はアップデートできません!",
-  "DialogUpdaterDirtyBuildSubMessage": "サポートされているバージョンをお探しなら, https://github.com/GreemDev/Ryujinx/releases/ で Ryujinx をダウンロードしてください.",
+  "DialogUpdaterDirtyBuildSubMessage": "サポートされているバージョンをお探しなら, https://ryujinx.app/download で Ryujinx をダウンロードしてください.",
   "DialogRestartRequiredMessage": "再起動が必要",
   "DialogThemeRestartMessage": "テーマがセーブされました. テーマを適用するには再起動が必要です.",
   "DialogThemeRestartSubMessage": "再起動しますか",
