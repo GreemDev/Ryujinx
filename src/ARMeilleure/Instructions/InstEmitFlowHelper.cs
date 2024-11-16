@@ -210,30 +210,24 @@ namespace ARMeilleure.Instructions
                 // Inline table lookup. Only enabled when the sparse function table is enabled with 2 levels.
                 // Deliberately attempts to avoid branches.
 
-                var level0 = table.Levels[0];
-                int clearBits0 = 64 - (level0.Index + level0.Length);
-
-                Operand index = context.ShiftLeft(
-                    context.ShiftRightUI(context.ShiftLeft(guestAddress, Const(clearBits0)), Const(clearBits0 + level0.Index)),
-                    Const(3)
-                );
-
                 Operand tableBase = !context.HasPtc ?
                     Const(table.Base) :
                     Const(table.Base, Ptc.FunctionTableSymbol);
 
-                Operand page = context.Load(OperandType.I64, context.Add(tableBase, index));
+                hostAddress = tableBase;
 
-                // Second level
-                var level1 = table.Levels[1];
-                int clearBits1 = 64 - (level1.Index + level1.Length);
+                for (int i = 0; i < table.Levels.Length; i++)
+                {
+                    var level = table.Levels[i];
+                    int clearBits = 64 - (level.Index + level.Length);
 
-                Operand index2 = context.ShiftLeft(
-                    context.ShiftRightUI(context.ShiftLeft(guestAddress, Const(clearBits1)), Const(clearBits1 + level1.Index)),
-                    Const(3)
-                );
+                    Operand index = context.ShiftLeft(
+                        context.ShiftRightUI(context.ShiftLeft(guestAddress, Const(clearBits)), Const(clearBits + level.Index)),
+                        Const(3)
+                    );
 
-                hostAddress = context.Load(OperandType.I64, context.Add(page, index2));
+                    hostAddress = context.Load(OperandType.I64, context.Add(hostAddress, index));
+                }
             }
             else
             {

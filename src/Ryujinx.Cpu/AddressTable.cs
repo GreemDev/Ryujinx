@@ -141,11 +141,6 @@ namespace ARMeilleure.Common
         {
             ArgumentNullException.ThrowIfNull(levels);
 
-            if (levels.Length < 2)
-            {
-                throw new ArgumentException("Table must be at least 2 levels deep.", nameof(levels));
-            }
-
             _pages = new List<AddressTablePage>(capacity: 16);
 
             Levels = levels;
@@ -344,7 +339,10 @@ namespace ARMeilleure.Common
         {
             if (_table == null)
             {
-                _table = (TEntry**)Allocate(1 << Levels[0].Length, GetFillValue(0), leaf: false);
+                if (Levels.Length == 1)
+                    _table = (TEntry**)Allocate(1 << Levels[0].Length, Fill, leaf: true);
+                else
+                    _table = (TEntry**)Allocate(1 << Levels[0].Length, GetFillValue(0), leaf: false);
             }
 
             return _table;

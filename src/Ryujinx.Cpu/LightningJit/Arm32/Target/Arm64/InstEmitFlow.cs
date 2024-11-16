@@ -143,8 +143,7 @@ namespace Ryujinx.Cpu.LightningJit.Arm32.Target.Arm64
             int tempGuestAddress = -1;
 
             bool inlineLookup = guestAddress.Kind != OperandKind.Constant && 
-                                funcTable is { Sparse: true } &&
-                                funcTable.Levels.Length == 2;
+                                funcTable is { Sparse: true };
 
             if (guestAddress.Kind == OperandKind.Constant)
             {
@@ -199,28 +198,23 @@ namespace Ryujinx.Cpu.LightningJit.Arm32.Target.Arm64
                     guestAddress = Register(tempGuestAddress);
                 }
 
-                var level0 = funcTable.Levels[0];
-                asm.Ubfx(indexReg, guestAddress, level0.Index, level0.Length);
-                asm.Lsl(indexReg, indexReg, Const(3));
-
                 ulong tableBase = (ulong)funcTable.Base;
 
                 // Index into the table.
                 asm.Mov(rn, tableBase);
-                asm.Add(rn, rn, indexReg);
 
-                // Load the page address.
-                asm.LdrRiUn(rn, rn, 0);
+                for (int i = 0; i < funcTable.Levels.Length; i++)
+                {
+                    var level = funcTable.Levels[i];
+                    asm.Ubfx(indexReg, guestAddress, level.Index, level.Length);
+                    asm.Lsl(indexReg, indexReg, Const(3));
 
-                var level1 = funcTable.Levels[1];
-                asm.Ubfx(indexReg, guestAddress, level1.Index, level1.Length);
-                asm.Lsl(indexReg, indexReg, Const(3));
+                    // Index into the page.
+                    asm.Add(rn, rn, indexReg);
 
-                // Index into the page.
-                asm.Add(rn, rn, indexReg);
-
-                // Load the final branch address
-                asm.LdrRiUn(rn, rn, 0);
+                    // Load the page address.
+                    asm.LdrRiUn(rn, rn, 0);
+                }
 
                 if (tempGuestAddress != -1)
                 {
