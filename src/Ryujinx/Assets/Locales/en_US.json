@@ -154,6 +154,7 @@
   "SettingsTabSystemEnableCustomVSyncIntervalTooltip": "Allows the user to specify an emulated refresh rate. In some titles, this may speed up or slow down the rate of gameplay logic. In other titles, it may allow for capping FPS at some multiple of the refresh rate, or lead to unpredictable behavior. This is an experimental feature, with no guarantees for how gameplay will be affected. \n\nLeave OFF if unsure.",
   "SettingsTabSystemCustomVSyncIntervalValueTooltip": "The custom refresh rate target value.",
   "SettingsTabSystemCustomVSyncIntervalSliderTooltip": "The custom refresh rate, as a percentage of the normal Switch refresh rate.",
+  "SettingsTabSystemCustomVSyncIntervalPercentage": "Custom Refresh Rate %:",
   "SettingsTabSystemCustomVSyncIntervalValue": "Custom Refresh Rate Value:",
   "SettingsTabSystemEnablePptc": "PPTC (Profiled Persistent Translation Cache)",
   "SettingsTabSystemEnableLowPowerPptc": "Low-power PPTC cache",

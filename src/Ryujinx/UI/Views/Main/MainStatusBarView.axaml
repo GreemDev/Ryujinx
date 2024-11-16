@@ -111,21 +111,12 @@
                     </Button.Styles>
                     <Button.Flyout>
                         <Flyout Placement="Top" ShowMode="TransientWithDismissOnPointerMoveAway">
-                            <StackPanel Margin="0,0,0,10"
+                            <StackPanel Margin="0,0,0,0"
                                         Orientation="Horizontal">
-                                <ui:NumberBox ToolTip.Tip="{ext:Locale SettingsTabSystemCustomVSyncIntervalValueTooltip}"
-                                              Value="{Binding CustomVSyncInterval}"
-                                              Width="175"
-                                              SmallChange="1.0"
-                                              LargeChange="10"
-                                              SimpleNumberFormat="F0"
-                                              SpinButtonPlacementMode="Hidden"
-                                              Minimum="10"
-                                              Maximum="1000" />
                                 <Slider Value="{Binding CustomVSyncIntervalPercentageProxy}"
                                         ToolTip.Tip="{ext:Locale SettingsTabSystemCustomVSyncIntervalSliderTooltip}"
                                         MinWidth="175"
-                                        Margin="10,-3,0,0"
+                                        Margin="0,-3,0,0"
                                         Height="32"
                                         Padding="0,-5"
                                         TickFrequency="1"

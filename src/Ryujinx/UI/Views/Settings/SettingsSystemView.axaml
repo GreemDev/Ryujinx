@@ -224,19 +224,9 @@
                                 Orientation="Horizontal">
                         <TextBlock
                             VerticalAlignment="Center"
-                            Text="{ext:Locale SettingsTabSystemCustomVSyncIntervalValue}"
+                            Text="{ext:Locale SettingsTabSystemCustomVSyncIntervalPercentage}"
                             ToolTip.Tip="{ext:Locale SettingsTabSystemCustomVSyncIntervalValueTooltip}"
                             Width="250" />
-                        <ui:NumberBox IsVisible="{Binding EnableCustomVSyncInterval}"
-                                      ToolTip.Tip="{ext:Locale SettingsTabSystemCustomVSyncIntervalValueTooltip}"
-                                      Value="{Binding CustomVSyncInterval}"
-                                      Width="165"
-                                      SmallChange="1.0"
-                                      LargeChange="10"
-                                      SimpleNumberFormat="F0"
-                                      SpinButtonPlacementMode="Hidden"
-                                      Minimum="6"
-                                      Maximum="1000" />
                         <Slider Value="{Binding CustomVSyncIntervalPercentageProxy}"
                                 ToolTip.Tip="{ext:Locale SettingsTabSystemCustomVSyncIntervalSliderTooltip}"
                                 MinWidth="175"
