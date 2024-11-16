@@ -13,7 +13,8 @@ namespace Ryujinx.HLE.HOS
             string displayVersion,
             bool diskCacheEnabled,
             ulong codeAddress,
-            ulong codeSize);
+            ulong codeSize,
+            string cacheSelector);
     }
 
     class ArmProcessContext<T> : IArmProcessContext where T : class, IVirtualMemoryManagerTracked, IMemoryManager
@@ -33,7 +34,8 @@ namespace Ryujinx.HLE.HOS
             GpuContext gpuContext,
             T memoryManager,
             ulong addressSpaceSize,
-            bool for64Bit)
+            bool for64Bit,
+            bool lowPower)
         {
             if (memoryManager is IRefCounted rc)
             {
@@ -44,7 +46,7 @@ namespace Ryujinx.HLE.HOS
 
             _pid = pid;
             _gpuContext = gpuContext;
-            _cpuContext = cpuEngine.CreateCpuContext(memoryManager, for64Bit);
+            _cpuContext = cpuEngine.CreateCpuContext(memoryManager, for64Bit, lowPower);
             _memoryManager = memoryManager;
 
             AddressSpaceSize = addressSpaceSize;
@@ -67,10 +69,11 @@ namespace Ryujinx.HLE.HOS
             string displayVersion,
             bool diskCacheEnabled,
             ulong codeAddress,
-            ulong codeSize)
+            ulong codeSize,
+            string cacheSelector)
         {
             _cpuContext.PrepareCodeRange(codeAddress, codeSize);
-            return _cpuContext.LoadDiskCache(titleIdText, displayVersion, diskCacheEnabled);
+            return _cpuContext.LoadDiskCache(titleIdText, displayVersion, diskCacheEnabled, cacheSelector);
         }
 
         public void InvalidateCacheRegion(ulong address, ulong size)

@@ -9,7 +9,7 @@ namespace Ryujinx.Cpu.AppleHv
         private readonly ITickSource _tickSource;
         private readonly HvMemoryManager _memoryManager;
 
-        public HvCpuContext(ITickSource tickSource, IMemoryManager memory, bool for64Bit)
+        public HvCpuContext(ITickSource tickSource, IMemoryManager memory, bool for64Bit, bool lowPower)
         {
             _tickSource = tickSource;
             _memoryManager = (HvMemoryManager)memory;
@@ -32,7 +32,7 @@ namespace Ryujinx.Cpu.AppleHv
         {
         }
 
-        public IDiskCacheLoadState LoadDiskCache(string titleIdText, string displayVersion, bool enabled)
+        public IDiskCacheLoadState LoadDiskCache(string titleIdText, string displayVersion, bool enabled, string cacheSelector)
         {
             return new DummyDiskCacheLoadState();
         }

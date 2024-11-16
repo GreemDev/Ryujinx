@@ -11,9 +11,9 @@ namespace Ryujinx.Tests.Cpu
     {
         private readonly Translator _translator;
 
-        public CpuContext(IMemoryManager memory, bool for64Bit)
+        public CpuContext(IMemoryManager memory, bool for64Bit, bool lowPower)
         {
-            _translator = new Translator(new JitMemoryAllocator(), memory, AddressTable<ulong>.CreateForArm(for64Bit, memory.Type));
+            _translator = new Translator(new JitMemoryAllocator(), memory, AddressTable<ulong>.CreateForArm(for64Bit, memory.Type, lowPower));
             memory.UnmapEvent += UnmapHandler;
         }
 

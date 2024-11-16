@@ -178,12 +178,12 @@ namespace ARMeilleure.Common
         /// <param name="for64Bits">True if the guest is A64, false otherwise</param>
         /// <param name="type">Memory manager type</param>
         /// <returns>An <see cref="AddressTable{TEntry}"/> for ARM function lookup</returns>
-        public static AddressTable<TEntry> CreateForArm(bool for64Bits, MemoryManagerType type)
+        public static AddressTable<TEntry> CreateForArm(bool for64Bits, MemoryManagerType type, bool lowPower)
         {
             // Assume software memory means that we don't want to use any signal handlers.
             bool sparse = type != MemoryManagerType.SoftwareMmu && type != MemoryManagerType.SoftwarePageTable;
 
-            return new AddressTable<TEntry>(AddressTablePresets.GetArmPreset(for64Bits, sparse), sparse);
+            return new AddressTable<TEntry>(AddressTablePresets.GetArmPreset(for64Bits, sparse, lowPower), sparse);
         }
 
         /// <summary>

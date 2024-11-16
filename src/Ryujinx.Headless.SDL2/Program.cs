@@ -566,6 +566,7 @@ namespace Ryujinx.Headless.SDL2
                 !options.DisableVSync,
                 !options.DisableDockedMode,
                 !options.DisablePTC,
+                options.LowPowerPTC,
                 options.EnableInternetAccess,
                 !options.DisableFsIntegrityChecks ? IntegrityCheckLevel.ErrorOnInvalid : IntegrityCheckLevel.None,
                 options.FsGlobalAccessLogMode,

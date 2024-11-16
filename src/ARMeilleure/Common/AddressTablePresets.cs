@@ -36,11 +36,32 @@ namespace ARMeilleure.Common
                 new( 1, 9),
             };
 
-        public static AddressTableLevel[] GetArmPreset(bool for64Bits, bool sparse)
+        private static readonly AddressTableLevel[] _levels64BitSparseGiant =
+            new AddressTableLevel[]
+            {
+                new( 38, 1),
+                new( 2, 36),
+            };
+
+        private static readonly AddressTableLevel[] _levels32BitSparseGiant =
+            new AddressTableLevel[]
+            {
+                new( 31, 1),
+                new( 1, 30),
+            };
+
+        public static AddressTableLevel[] GetArmPreset(bool for64Bits, bool sparse, bool lowPower = false)
         {
             if (sparse)
             {
+                if (lowPower)
+                {
+                    return for64Bits ? _levels64BitSparseTiny : _levels32BitSparseTiny;
+                }
+                else
+                {
                     return for64Bits ? _levels64BitSparseGiant : _levels32BitSparseGiant;
+                }
             }
             else
             {

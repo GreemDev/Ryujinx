@@ -11,11 +11,11 @@ namespace Ryujinx.Cpu.LightningJit
         private readonly Translator _translator;
         private readonly AddressTable<ulong> _functionTable;
 
-        public LightningJitCpuContext(ITickSource tickSource, IMemoryManager memory, bool for64Bit)
+        public LightningJitCpuContext(ITickSource tickSource, IMemoryManager memory, bool for64Bit, bool lowPower)
         {
             _tickSource = tickSource;
 
-            _functionTable = AddressTable<ulong>.CreateForArm(for64Bit, memory.Type);
+            _functionTable = AddressTable<ulong>.CreateForArm(for64Bit, memory.Type, lowPower);
 
             _translator = new Translator(memory, _functionTable);
 
@@ -46,7 +46,7 @@ namespace Ryujinx.Cpu.LightningJit
         }
 
         /// <inheritdoc/>
-        public IDiskCacheLoadState LoadDiskCache(string titleIdText, string displayVersion, bool enabled)
+        public IDiskCacheLoadState LoadDiskCache(string titleIdText, string displayVersion, bool enabled, string cacheSelector)
         {
             return new DummyDiskCacheLoadState();
         }
