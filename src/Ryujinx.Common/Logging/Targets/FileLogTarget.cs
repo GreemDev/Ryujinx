@@ -2,6 +2,7 @@ using Ryujinx.Common.Logging.Formatters;
 using System;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 
 namespace Ryujinx.Common.Logging.Targets
 {
@@ -69,9 +70,10 @@ namespace Ryujinx.Common.Logging.Targets
             }
 
             string version = ReleaseInformation.Version;
+            string appName = ReleaseInformation.IsCanaryBuild ? "Ryujinx Canary" : "Ryujinx";
 
             // Get path for the current time
-            path = Path.Combine(logDir.FullName, $"Ryujinx_{version}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log");
+            path = Path.Combine(logDir.FullName, $"{appName}_{version}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log");
 
             try
             {
