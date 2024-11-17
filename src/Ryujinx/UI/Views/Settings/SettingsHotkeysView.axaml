@@ -29,6 +29,7 @@
         <Style Selector="ToggleButton, Button">
             <Setter Property="Width" Value="90" />
             <Setter Property="Height" Value="27" />
+            <Setter Property="Padding" Value="0,5,0,5" /> <!-- Added vertical padding -->
         </Style>
         <Style Selector="ToggleButton > TextBlock">
             <Setter Property="TextAlignment" Value="Center" />
@@ -114,22 +115,23 @@
                     <TextBlock
                         Classes="h1"
                         Text="{ext:Locale SettingsTabHotkeysCycleControllers}" />
-                    <Button
-                        Margin="10,0,0,0"
-                        Content="+"
-                        Command="{Binding KeyboardHotkey.AddCycleController}" />
-                    <Button
-                        Margin="10,0,0,0"
-                        Content="-"
-                        IsEnabled="{Binding KeyboardHotkey.CanRemoveCycleController}"
-                        Command="{Binding KeyboardHotkey.RemoveCycleController}" />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button
+                            Content="{ext:Locale SettingsTabGeneralAdd}"
+                            Margin="10,0,0,0"
+                            Command="{Binding KeyboardHotkey.AddCycleController}" />
+                        <Button
+                            Content="{ext:Locale SettingsTabGeneralRemove}"
+                            IsEnabled="{Binding KeyboardHotkey.CanRemoveCycleController}"
+                            Command="{Binding KeyboardHotkey.RemoveCycleController}" />
+                    </StackPanel>
                 </StackPanel>
                 <ItemsControl ItemsSource="{Binding KeyboardHotkey.CycleControllers}"
                     Name="CycleControllers">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel
-                                Margin="0"
+                                Margin="10,0,0,0"
                                 Orientation="Vertical"
                                 Spacing="10" />
                         </ItemsPanelTemplate>
