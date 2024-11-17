@@ -108,7 +108,7 @@
                         ToolTip.Tip="{ext:Locale ControllerSettingsLoadProfileToolTip}"
                         Command="{Binding LoadProfile}">
                         <ui:SymbolIcon
-                            Symbol="Upload"
+                            Symbol="View"
                             FontSize="15"
                             Height="20" />
                     </Button>

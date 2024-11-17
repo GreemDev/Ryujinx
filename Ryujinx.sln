@@ -29,14 +29,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.Graphics.Nvdec", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.Audio", "src\Ryujinx.Audio\Ryujinx.Audio.csproj", "{806ACF6D-90B0-45D0-A1AC-5F220F3B3985}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{36F870C1-3E5F-485F-B426-F0645AF78751}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-		Directory.Packages.props = Directory.Packages.props
-		Release Script = .github/workflows/release.yml
-		Build Script = .github/workflows/build.yml
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.Memory", "src\Ryujinx.Memory\Ryujinx.Memory.csproj", "{A5E6C691-9E22-4263-8F40-42F002CE66BE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.Tests.Memory", "src\Ryujinx.Tests.Memory\Ryujinx.Tests.Memory.csproj", "{D1CC5322-7325-4F6B-9625-194B30BE1296}"
@@ -88,6 +80,15 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.Horizon.Kernel.Generators", "src\Ryujinx.Horizon.Kernel.Generators\Ryujinx.Horizon.Kernel.Generators.csproj", "{7F55A45D-4E1D-4A36-ADD3-87F29A285AA2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.HLE.Generators", "src\Ryujinx.HLE.Generators\Ryujinx.HLE.Generators.csproj", "{B575BCDE-2FD8-4A5D-8756-31CDD7FE81F0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{36F870C1-3E5F-485F-B426-F0645AF78751}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Packages.props = Directory.Packages.props
+		.github/workflows/release.yml = .github/workflows/release.yml
+		.github/workflows/canary.yml = .github/workflows/canary.yml
+		.github/workflows/build.yml = .github/workflows/build.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

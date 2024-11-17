@@ -5,6 +5,7 @@ using Ryujinx.HLE.Exceptions;
 using Ryujinx.HLE.HOS.Kernel.Memory;
 using Ryujinx.HLE.HOS.Services.Hid.Types.SharedMemory;
 using Ryujinx.HLE.HOS.Services.Hid.Types.SharedMemory.Common;
+using Ryujinx.HLE.HOS.Services.Hid.Types.SharedMemory.DebugMouse;
 using Ryujinx.HLE.HOS.Services.Hid.Types.SharedMemory.DebugPad;
 using Ryujinx.HLE.HOS.Services.Hid.Types.SharedMemory.Keyboard;
 using Ryujinx.HLE.HOS.Services.Hid.Types.SharedMemory.Mouse;
@@ -28,6 +29,7 @@ namespace Ryujinx.HLE.HOS.Services.Hid
         public DebugPadDevice DebugPad;
         public TouchDevice Touchscreen;
         public MouseDevice Mouse;
+        public DebugMouseDevice DebugMouse;
         public KeyboardDevice Keyboard;
         public NpadDevices Npads;
 
@@ -44,6 +46,7 @@ namespace Ryujinx.HLE.HOS.Services.Hid
             CheckTypeSizeOrThrow<RingLifo<DebugPadState>>(0x2c8);
             CheckTypeSizeOrThrow<RingLifo<TouchScreenState>>(0x2C38);
             CheckTypeSizeOrThrow<RingLifo<MouseState>>(0x350);
+            CheckTypeSizeOrThrow<RingLifo<DebugMouseState>>(0x350);
             CheckTypeSizeOrThrow<RingLifo<KeyboardState>>(0x3D8);
             CheckTypeSizeOrThrow<Array10<NpadState>>(0x32000);
             CheckTypeSizeOrThrow<SharedMemory>(Horizon.HidSize);
@@ -64,6 +67,7 @@ namespace Ryujinx.HLE.HOS.Services.Hid
             DebugPad = new DebugPadDevice(_device, true);
             Touchscreen = new TouchDevice(_device, true);
             Mouse = new MouseDevice(_device, false);
+            DebugMouse = new DebugMouseDevice(_device, false);
             Keyboard = new KeyboardDevice(_device, false);
             Npads = new NpadDevices(_device, true);
         }

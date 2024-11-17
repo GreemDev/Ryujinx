@@ -4,11 +4,14 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
+using DiscordRPC;
 using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Ava.UI.ViewModels.Input;
 using Ryujinx.Common.Configuration.Hid.Controller;
+using Ryujinx.Common.Logging;
 using Ryujinx.Input;
 using Ryujinx.Input.Assigner;
+using System;
 using StickInputId = Ryujinx.Common.Configuration.Hid.Controller.StickInputId;
 
 namespace Ryujinx.Ava.UI.Views.Input
@@ -23,9 +26,17 @@ namespace Ryujinx.Ava.UI.Views.Input
 
             foreach (ILogical visual in SettingButtons.GetLogicalDescendants())
             {
-                if (visual is ToggleButton button and not CheckBox)
+                switch (visual)
                 {
-                    button.IsCheckedChanged += Button_IsCheckedChanged;
+                    case ToggleButton button and not CheckBox:
+                        button.IsCheckedChanged += Button_IsCheckedChanged;
+                        break;
+                    case CheckBox check:
+                        check.IsCheckedChanged += CheckBox_IsCheckedChanged;
+                        break;
+                    case Slider slider:
+                        slider.PropertyChanged += Slider_ValueChanged;
+                        break;
                 }
             }
         }
@@ -34,17 +45,49 @@ namespace Ryujinx.Ava.UI.Views.Input
         {
             base.OnPointerReleased(e);
 
-            if (_currentAssigner != null && _currentAssigner.ToggledButton != null && !_currentAssigner.ToggledButton.IsPointerOver)
+            if (_currentAssigner is { ToggledButton.IsPointerOver: false })
             {
                 _currentAssigner.Cancel();
             }
         }
 
+        private float _changeSlider = float.NaN;
+
+        private void Slider_ValueChanged(object sender, AvaloniaPropertyChangedEventArgs e)
+        {
+            if (sender is Slider check)
+            {
+                _changeSlider = check.IsPointerOver switch
+                {
+                    true when float.IsNaN(_changeSlider) => (float)check.Value,
+                    false => float.NaN,
+                    _ => _changeSlider
+                };
+
+                if (!float.IsNaN(_changeSlider) && _changeSlider != (float)check.Value)
+                {
+                    (DataContext as ControllerInputViewModel)!.ParentModel.IsModified = true;
+                    _changeSlider = (float)check.Value;
+                }
+            }
+        }
+
+        private void CheckBox_IsCheckedChanged(object sender, RoutedEventArgs e)
+        {
+            if (sender is CheckBox { IsPointerOver: true })
+            {
+                (DataContext as ControllerInputViewModel)!.ParentModel.IsModified = true;
+                _currentAssigner?.Cancel();
+                _currentAssigner = null;
+            }
+        }
+
+
         private void Button_IsCheckedChanged(object sender, RoutedEventArgs e)
         {
-            if (sender is ToggleButton button)
+            if (sender is ToggleButton button) 
             {
-                if ((bool)button.IsChecked)
+                if (button.IsChecked is true)
                 {
                     if (_currentAssigner != null && button == _currentAssigner.ToggledButton)
                     {

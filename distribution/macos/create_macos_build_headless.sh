@@ -95,7 +95,7 @@ else
     echo "Using codesign for ad-hoc signing"
     for FILE in "$UNIVERSAL_OUTPUT"/*; do
         if [[ $(file "$FILE") == *"Mach-O"* ]]; then
-            codesign --entitlements "$ENTITLEMENTS_FILE_PATH" -f --deep -s - "$FILE"
+            codesign --entitlements "$ENTITLEMENTS_FILE_PATH" -f -s - "$FILE"
         fi
     done    
 fi

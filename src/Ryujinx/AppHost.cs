@@ -209,6 +209,9 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.System.EnableInternetAccess.Event += UpdateEnableInternetAccessState;
             ConfigurationState.Instance.Multiplayer.LanInterfaceId.Event += UpdateLanInterfaceIdState;
             ConfigurationState.Instance.Multiplayer.Mode.Event += UpdateMultiplayerModeState;
+            ConfigurationState.Instance.Multiplayer.LdnPassphrase.Event += UpdateLdnPassphraseState;
+            ConfigurationState.Instance.Multiplayer.LdnServer.Event += UpdateLdnServerState;
+            ConfigurationState.Instance.Multiplayer.DisableP2p.Event += UpdateDisableP2pState;
 
             _gpuCancellationTokenSource = new CancellationTokenSource();
             _gpuDoneEvent = new ManualResetEvent(false);
@@ -491,6 +494,21 @@ namespace Ryujinx.Ava
         private void UpdateMultiplayerModeState(object sender, ReactiveEventArgs<MultiplayerMode> e)
         {
             Device.Configuration.MultiplayerMode = e.NewValue;
+        }
+
+        private void UpdateLdnPassphraseState(object sender, ReactiveEventArgs<string> e)
+        {
+            Device.Configuration.MultiplayerLdnPassphrase = e.NewValue;
+        }
+
+        private void UpdateLdnServerState(object sender, ReactiveEventArgs<string> e)
+        {
+            Device.Configuration.MultiplayerLdnServer = e.NewValue;
+        }
+
+        private void UpdateDisableP2pState(object sender, ReactiveEventArgs<bool> e)
+        {
+            Device.Configuration.MultiplayerDisableP2p = e.NewValue;
         }
 
         public void ToggleVSync()
@@ -865,10 +883,11 @@ namespace Ryujinx.Ava
                 ConfigurationState.Instance.Graphics.AspectRatio,
                 ConfigurationState.Instance.System.AudioVolume,
                 ConfigurationState.Instance.System.UseHypervisor,
-                ConfigurationState.Instance.Multiplayer.LanInterfaceId,
-                ConfigurationState.Instance.Multiplayer.Mode
-                )
-            );
+                ConfigurationState.Instance.Multiplayer.LanInterfaceId.Value,
+                ConfigurationState.Instance.Multiplayer.Mode,
+                ConfigurationState.Instance.Multiplayer.DisableP2p,
+                ConfigurationState.Instance.Multiplayer.LdnPassphrase,
+                ConfigurationState.Instance.Multiplayer.LdnServer));
         }
 
         private static IHardwareDeviceDriver InitializeAudio()
@@ -1052,7 +1071,7 @@ namespace Ryujinx.Ava
             string dockedMode = ConfigurationState.Instance.System.EnableDockedMode ? LocaleManager.Instance[LocaleKeys.Docked] : LocaleManager.Instance[LocaleKeys.Handheld];
 
             UpdateShaderCount();
-            
+
             if (GraphicsConfig.ResScale != 1)
             {
                 dockedMode += $" ({GraphicsConfig.ResScale}x)";
