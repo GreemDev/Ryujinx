@@ -456,7 +456,7 @@
   "DialogUpdaterNoInternetMessage": "Es besteht keine Verbindung mit dem Internet!",
   "DialogUpdaterNoInternetSubMessage": "Bitte vergewissern, dass eine funktionierende Internetverbindung existiert!",
   "DialogUpdaterDirtyBuildMessage": "Inoffizielle Versionen von Ryujinx können nicht aktualisiert werden",
-  "DialogUpdaterDirtyBuildSubMessage": "Lade Ryujinx bitte von hier herunter, um eine unterstützte Version zu erhalten: https://https://github.com/GreemDev/Ryujinx/releases/",
+  "DialogUpdaterDirtyBuildSubMessage": "Lade Ryujinx bitte von hier herunter, um eine unterstützte Version zu erhalten: https://ryujinx.app/download",
   "DialogRestartRequiredMessage": "Neustart erforderlich",
   "DialogThemeRestartMessage": "Das Design wurde gespeichert. Ein Neustart ist erforderlich, um das Design anzuwenden.",
   "DialogThemeRestartSubMessage": "Jetzt neu starten?",

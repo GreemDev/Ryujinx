@@ -462,7 +462,7 @@
   "DialogUpdaterNoInternetMessage": "인터넷에 연결되어 있지 않습니다!",
   "DialogUpdaterNoInternetSubMessage": "인터넷이 제대로 연결되어 있는지 확인하세요!",
   "DialogUpdaterDirtyBuildMessage": "Ryujinx의 더티 빌드는 업데이트할 수 없습니다!",
-  "DialogUpdaterDirtyBuildSubMessage": "지원되는 버전을 찾으신다면 https://github.com/GreemDev/Ryujinx/releases/에서 Ryujinx를 내려받으세요.",
+  "DialogUpdaterDirtyBuildSubMessage": "지원되는 버전을 찾으신다면 https://ryujinx.app/download 에서 Ryujinx를 내려받으세요.",
   "DialogRestartRequiredMessage": "다시 시작 필요",
   "DialogThemeRestartMessage": "테마를 저장했습니다. 테마를 적용하려면 다시 시작해야 합니다.",
   "DialogThemeRestartSubMessage": "다시 시작하시겠습니까?",
@@ -861,4 +861,4 @@
   "ClearLdnPass": "지우기",
   "ClearLdnPassTooltip": "현재 암호를 지우고 공용 네트워크로 돌아갑니다.",
   "InvalidLdnPassphrase": "유효하지 않은 암호입니다! \"Ryujinx-<8 hex chars>\" 형식이어야 합니다."
-  }
+}
