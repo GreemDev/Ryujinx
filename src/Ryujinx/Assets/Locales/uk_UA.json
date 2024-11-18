@@ -456,7 +456,7 @@
   "DialogUpdaterNoInternetMessage": "Ви не підключені до Інтернету!",
   "DialogUpdaterNoInternetSubMessage": "Будь ласка, переконайтеся, що у вас є робоче підключення до Інтернету!",
   "DialogUpdaterDirtyBuildMessage": "Ви не можете оновити брудну збірку Ryujinx!",
-  "DialogUpdaterDirtyBuildSubMessage": "Будь ласка, завантажте Ryujinx на https://https://github.com/GreemDev/Ryujinx/releases/, якщо ви шукаєте підтримувану версію.",
+  "DialogUpdaterDirtyBuildSubMessage": "Будь ласка, завантажте Ryujinx на https://ryujinx.app/download, якщо ви шукаєте підтримувану версію.",
   "DialogRestartRequiredMessage": "Потрібен перезапуск",
   "DialogThemeRestartMessage": "Тему збережено. Щоб застосувати тему, потрібен перезапуск.",
   "DialogThemeRestartSubMessage": "Ви хочете перезапустити",
