@@ -590,7 +590,7 @@
   "TimeTooltip": "시스템 시간 변경",
   "VSyncToggleTooltip": "에뮬레이트된 콘솔의 수직 동기화입니다. 기본적으로 대부분의 게임에서 프레임 제한 기능으로, 비활성화하면 게임이 더 빠른 속도로 실행되거나 로딩 화면이 더 오래 걸리거나 멈출 수 있습니다.\n\n게임 내에서 원하는 단축키(기본값은 F1)로 전환할 수 있습니다. 비활성화하려면 이 작업을 수행하는 것이 좋습니다.\n\n모르면 켬으로 두세요.",
   "PptcToggleTooltip": "번역된 JIT 함수를 저장하여 게임을 불러올 때마다 번역할 필요가 없도록 합니다.\n\n게임을 처음 부팅한 후 끊김 현상을 줄이고 부팅 시간을 크게 단축합니다.\n\n모르면 켬으로 두세요.",
-  "LowPowerPptcToggleTooltip": "코어의 3분의 1을 사용하여 PPTC를 불러옵니다.",
+  "LowPowerPptcToggleTooltip": "Use smaller memory blocks for the Translation Cache, which makes slow RAM PCs run better, and load the Profile Persistent Translation Cache using a third of the amount of cores.",
   "FsIntegrityToggleTooltip": "게임을 부팅할 때 손상된 파일을 확인하고, 손상된 파일이 감지되면 로그에 해시 오류를 표시합니다.\n\n성능에 영향을 미치지 않으며 문제 해결에 도움이 됩니다.\n\n모르면 켬으로 두세요.",
   "AudioBackendTooltip": "오디오 렌더링에 사용되는 백엔드를 변경합니다.\n\nSDL2가 선호되는 반면 OpenAL 및 SoundIO는 대체 수단으로 사용됩니다. 더미에는 소리가 나지 않습니다.\n\n모르면 SDL2로 설정하세요.",
   "MemoryManagerTooltip": "게스트 메모리 매핑 및 접속 방법을 변경합니다. 에뮬레이트된 CPU 성능에 큰 영향을 미칩니다.\n\n모르면 호스트 확인 안 함으로 설정합니다.",

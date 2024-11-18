@@ -583,7 +583,7 @@
   "TimeTooltip": "システムの時刻を変更します",
   "VSyncToggleTooltip": "エミュレートされたゲーム機の垂直同期です. 多くのゲームにおいて, フレームリミッタとして機能します. 無効にすると, ゲームが高速で実行されたり, ロード中に時間がかかったり, 止まったりすることがあります.\n\n設定したホットキー(デフォルトではF1)で, ゲーム内で切り替え可能です. 無効にする場合は, この操作を行うことをおすすめします.\n\nよくわからない場合はオンのままにしてください.",
   "PptcToggleTooltip": "翻訳されたJIT関数をセーブすることで, ゲームをロードするたびに毎回翻訳する処理を不要とします.\n\n一度ゲームを起動すれば,二度目以降の起動時遅延を大きく軽減できます.\n\nよくわからない場合はオンのままにしてください.",
-  "LowPowerPptcToggleTooltip": "Load the PPTC using a third of the amount of cores.",
+  "LowPowerPptcToggleTooltip": "Use smaller memory blocks for the Translation Cache, which makes slow RAM PCs run better, and load the Profile Persistent Translation Cache using a third of the amount of cores.",
   "FsIntegrityToggleTooltip": "ゲーム起動時にファイル破損をチェックし,破損が検出されたらログにハッシュエラーを表示します..\n\nパフォーマンスには影響なく, トラブルシューティングに役立ちます.\n\nよくわからない場合はオンのままにしてください.",
   "AudioBackendTooltip": "音声レンダリングに使用するバックエンドを変更します.\n\nSDL2 が優先され, OpenAL と SoundIO はフォールバックとして使用されます. ダミーは音声出力しません.\n\nよくわからない場合は SDL2 を設定してください.",
   "MemoryManagerTooltip": "ゲストメモリのマップ/アクセス方式を変更します. エミュレートされるCPUのパフォーマンスに大きな影響を与えます.\n\nよくわからない場合は｢ホスト,チェックなし｣を設定してください.",

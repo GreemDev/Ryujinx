@@ -583,7 +583,7 @@
   "TimeTooltip": "Mudar a hora do sistema",
   "VSyncToggleTooltip": "V-Sync do console emulado. Funciona essencialmente como um limitador de quadros para a maioria dos jogos; desativá-lo pode fazer com que os jogos rodem em uma velocidade mais alta ou que telas de carregamento demorem mais ou travem.\n\nPode ser alternado durante o jogo com uma tecla de atalho de sua preferência (F1 por padrão). Recomendamos isso caso planeje desativá-lo.\n\nMantenha ligado se estiver em dúvida.",
   "PptcToggleTooltip": "Habilita ou desabilita PPTC",
-  "LowPowerPptcToggleTooltip": "Carregar o PPTC usando um terço da quantidade de núcleos.",
+  "LowPowerPptcToggleTooltip": "Use smaller memory blocks for the Translation Cache, which makes slow RAM PCs run better, and load the Profile Persistent Translation Cache using a third of the amount of cores.",
   "FsIntegrityToggleTooltip": "Habilita ou desabilita verificação de integridade dos arquivos do jogo",
   "AudioBackendTooltip": "Mudar biblioteca de áudio",
   "MemoryManagerTooltip": "Muda como a memória do sistema convidado é acessada. Tem um grande impacto na performance da CPU emulada.",

@@ -590,7 +590,7 @@
   "PptcToggleTooltip": "Salva le funzioni JIT tradotte in modo che non debbano essere tradotte tutte le volte che si avvia un determinato gioco.\n\nRiduce i fenomeni di stuttering e velocizza sensibilmente gli avvii successivi del gioco.\n\nNel dubbio, lascia l'opzione attiva.",
   "AddAutoloadDirBoxTooltip": "Inserisci una directory di \"autoload\" da aggiungere alla lista",
   "AddAutoloadDirTooltip": "Aggiungi una directory di \"autoload\" alla lista",
-  "LowPowerPptcToggleTooltip": "Carica il PPTC usando un terzo dei core.",
+  "LowPowerPptcToggleTooltip": "Use smaller memory blocks for the Translation Cache, which makes slow RAM PCs run better, and load the Profile Persistent Translation Cache using a third of the amount of cores.",
   "FsIntegrityToggleTooltip": "Controlla la presenza di file corrotti quando si avvia un gioco. Se vengono rilevati dei file corrotti, verrà mostrato un errore di hash nel log.\n\nQuesta opzione non influisce sulle prestazioni ed è pensata per facilitare la risoluzione dei problemi.\n\nNel dubbio, lascia l'opzione attiva.",
   "AudioBackendTooltip": "Cambia il backend usato per riprodurre l'audio.\n\nSDL2 è quello preferito, mentre OpenAL e SoundIO sono usati come ripiego. Dummy non riprodurrà alcun suono.\n\nNel dubbio, imposta l'opzione su SDL2.",
   "MemoryManagerTooltip": "Cambia il modo in cui la memoria guest è mappata e vi si accede. Influisce notevolmente sulle prestazioni della CPU emulata.\n\nNel dubbio, imposta l'opzione su Host Unchecked.",

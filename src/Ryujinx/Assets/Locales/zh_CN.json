@@ -583,7 +583,7 @@
   "TimeTooltip": "更改系统时间",
   "VSyncToggleTooltip": "模拟控制台的垂直同步，开启后会降低大部分游戏的帧率。关闭后，可以获得更高的帧率，但也可能导致游戏画面加载耗时更长或卡住。\n\n在游戏中可以使用热键进行切换（默认为 F1 键）。\n\n如果不确定，请保持开启状态。",
   "PptcToggleTooltip": "缓存已编译的游戏指令，这样每次游戏加载时就无需重新编译。\n\n可以减少卡顿和启动时间，提高游戏响应速度。\n\n如果不确定，请保持开启状态。",
-  "LowPowerPptcToggleTooltip": "使用三分之一的核心数加载PPTC.",
+  "LowPowerPptcToggleTooltip": "Use smaller memory blocks for the Translation Cache, which makes slow RAM PCs run better, and load the Profile Persistent Translation Cache using a third of the amount of cores.",
   "FsIntegrityToggleTooltip": "启动游戏时检查游戏文件的完整性，并在日志中记录损坏的文件。\n\n对性能没有影响，用于排查故障。\n\n如果不确定，请保持开启状态。",
   "AudioBackendTooltip": "更改音频处理引擎。\n\n推荐选择“SDL2”，另外“OpenAL”和“SoundIO”可以作为备选，选择“无”将没有声音。\n\n如果不确定，请设置为“SDL2”。",
   "MemoryManagerTooltip": "更改模拟器内存映射和访问的方式，对模拟器 CPU 的性能影响很大。\n\n如果不确定，请设置为“跳过检查的本机映射”。",
