@@ -728,6 +728,8 @@
   "DlcWindowTitle": "管理 {0} ({1}) 的 DLC",
   "ModWindowTitle": "管理 {0} ({1}) 的 MOD",
   "UpdateWindowTitle": "游戏更新管理器",
+  "XCITrimmerTrim": "Trim",
+  "XCITrimmerUntrim": "Untrim",
   "UpdateWindowUpdateAddedMessage": "{0} 个更新被添加",
   "UpdateWindowBundledContentNotice": "捆绑的更新无法被移除，只可被禁用。",
   "CheatWindowHeading": "适用于 {0} [{1}] 的金手指",
