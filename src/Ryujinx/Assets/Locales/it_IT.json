@@ -767,6 +767,8 @@
   "XCITrimmerDeselectDisplayed": "Deselziona Visualizzati",
   "XCITrimmerSortName": "Titolo",
   "XCITrimmerSortSaved": "Salvataggio Spazio",
+  "XCITrimmerTrim": "Trim",
+  "XCITrimmerUntrim": "Untrim",
   "UpdateWindowUpdateAddedMessage": "{0} aggiornamento/i aggiunto/i",
   "UpdateWindowBundledContentNotice": "Gli aggiornamenti inclusi non possono essere eliminati, ma solo disattivati",
   "CheatWindowHeading": "Trucchi disponibili per {0} [{1}]",
