@@ -444,7 +444,7 @@
   "DialogUpdaterNoInternetMessage": "Et ole yhdistetty internettiin!",
   "DialogUpdaterNoInternetSubMessage": "Varmista, että sinulla on toimiva Internet-yhteys!",
   "DialogUpdaterDirtyBuildMessage": "Et voi päivittää likaista Ryujinx versioita!",
-  "DialogUpdaterDirtyBuildSubMessage": "Lataa Ryujinx osoitteesta https://ryujinx.org/ jos etsit tuettua versioita.",
+  "DialogUpdaterDirtyBuildSubMessage": "Lataa Ryujinx osoitteesta https://ryujinx.app/download jos etsit tuettua versioita.",
   "DialogRestartRequiredMessage": "Uudelleenkäynnistys vaaditaan",
   "DialogThemeRestartMessage": "Teema on tallennettu. Teeman asettamiseen vaaditaan uudelleenkäynnistys.",
   "DialogThemeRestartSubMessage": "Haluatko käynnistää uudelleen",
