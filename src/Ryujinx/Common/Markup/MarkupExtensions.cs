@@ -1,51 +1,24 @@
-using Avalonia.Data.Core;
-using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.MarkupExtensions;
-using Avalonia.Markup.Xaml.MarkupExtensions.CompiledBindings;
 using Projektanker.Icons.Avalonia;
 using Ryujinx.Ava.Common.Locale;
-using System;
 
 namespace Ryujinx.Ava.Common.Markup
 {
-    internal class IconExtension(string iconString) : BasicMarkupExtension
+    internal class IconExtension(string iconString) : BasicMarkupExtension<Icon>
     {
-        protected override ClrPropertyInfo PropertyInfo
-            => new(
-                "Item",
-                _ => new Icon { Value = iconString },
-                null,
-                typeof(Icon)
-            );
+        protected override Icon GetValue() => new() { Value = iconString };
     }
     
-    internal class SpinningIconExtension(string iconString) : BasicMarkupExtension
+    internal class SpinningIconExtension(string iconString) : BasicMarkupExtension<Icon>
     {
-        protected override ClrPropertyInfo PropertyInfo
-            => new(
-                "Item",
-                _ => new Icon { Value = iconString, Animation = IconAnimation.Spin },
-                null,
-                typeof(Icon)
-            );
+        protected override Icon GetValue() => new() { Value = iconString, Animation = IconAnimation.Spin };
     }
     
-    internal class LocaleExtension(LocaleKeys key) : MarkupExtension
+    internal class LocaleExtension(LocaleKeys key) : BasicMarkupExtension<string>
     {
-        private ClrPropertyInfo PropertyInfo
-            => new(
-                "Item",
-                _ => LocaleManager.Instance[key],
-                null,
-                typeof(string)
-            );
-        
-        public override object ProvideValue(IServiceProvider serviceProvider) =>
-            new CompiledBindingExtension(
-                new CompiledBindingPathBuilder()
-                    .Property(PropertyInfo, PropertyInfoAccessorFactory.CreateInpcPropertyAccessor)
-                    .Build()
-            ) { Source = LocaleManager.Instance }
-                .ProvideValue(serviceProvider);
+        protected override string GetValue() => LocaleManager.Instance[key];
+
+        protected override void ConfigureBindingExtension(CompiledBindingExtension bindingExtension) 
+            => bindingExtension.Source = LocaleManager.Instance;
     }
 }

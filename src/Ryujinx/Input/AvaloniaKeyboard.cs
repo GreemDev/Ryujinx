@@ -23,21 +23,15 @@ namespace Ryujinx.Ava.Input
         public bool IsConnected => true;
         public GamepadFeaturesFlag Features => GamepadFeaturesFlag.None;
 
-        private class ButtonMappingEntry
+        private class ButtonMappingEntry(GamepadButtonInputId to, Key from)
         {
-            public readonly Key From;
-            public readonly GamepadButtonInputId To;
-
-            public ButtonMappingEntry(GamepadButtonInputId to, Key from)
-            {
-                To = to;
-                From = from;
-            }
+            public readonly GamepadButtonInputId To = to;
+            public readonly Key From = from;
         }
 
         public AvaloniaKeyboard(AvaloniaKeyboardDriver driver, string id, string name)
         {
-            _buttonsUserMapping = new List<ButtonMappingEntry>();
+            _buttonsUserMapping = [];
 
             _driver = driver;
             Id = id;
