@@ -444,7 +444,7 @@
   "DialogUpdaterNoInternetMessage": "Nejste připojeni k internetu!",
   "DialogUpdaterNoInternetSubMessage": "Ověřte prosím, zda máte funkční připojení k internetu!",
   "DialogUpdaterDirtyBuildMessage": "Není možné aktualizovat pracovní sestavení Ryujinxu!",
-  "DialogUpdaterDirtyBuildSubMessage": "Pokud hledáte podporovanou verzi, stáhněte si Ryujinx na https://ryujinx.org/.",
+  "DialogUpdaterDirtyBuildSubMessage": "Pokud hledáte podporovanou verzi, stáhněte si Ryujinx na https://ryujinx.app/download.",
   "DialogRestartRequiredMessage": "Vyžadován restart",
   "DialogThemeRestartMessage": "Motiv byl uložen. Restart je nutný pro aplikování motivu.",
   "DialogThemeRestartSubMessage": "Chcete restartovat",
