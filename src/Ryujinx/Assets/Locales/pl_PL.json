@@ -728,6 +728,8 @@
   "DlcWindowTitle": "Menedżer Zawartości do Pobrania",
   "ModWindowTitle": "Zarządzaj modami dla {0} ({1})",
   "UpdateWindowTitle": "Menedżer Aktualizacji Tytułu",
+  "XCITrimmerTrim": "Trim",
+  "XCITrimmerUntrim": "Untrim",
   "UpdateWindowUpdateAddedMessage": "{0} new update(s) added",
   "UpdateWindowBundledContentNotice": "Bundled updates cannot be removed, only disabled.",
   "CheatWindowHeading": "Kody Dostępne dla {0} [{1}]",
