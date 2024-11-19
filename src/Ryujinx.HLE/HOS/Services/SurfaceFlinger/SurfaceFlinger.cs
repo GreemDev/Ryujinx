@@ -329,8 +329,13 @@ namespace Ryujinx.HLE.HOS.Services.SurfaceFlinger
 
                         _device.System?.SignalVsync();
 
-                        // Apply a maximum bound of 3 frames to the tick remainder, in case some event causes Ryujinx to pause for a long time or messes with the timer.
-                        _ticks = Math.Min(_ticks - _ticksPerFrame, _ticksPerFrame * 3);
+                        // Apply a maximum bound of 30 frames to the tick remainder, in case some event causes Ryujinx to pause for a long time or messes with the timer.
+                        _ticks -= _ticksPerFrame;
+                        if (_ticks > _ticksPerFrame * 30)
+                        {
+                            _ticks = _ticksPerFrame * 30;
+                            Logger.Warning?.Print(LogClass.SurfaceFlinger, "Frame tick remainder exceeded maximum bound, resetting.");
+                        }
                     }
 
                     // Sleep if possible. If the time til the next frame is too low, spin wait instead.
