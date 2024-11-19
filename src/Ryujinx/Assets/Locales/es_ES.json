@@ -728,6 +728,8 @@
   "DlcWindowTitle": "Administrar contenido descargable",
   "ModWindowTitle": "Administrar Mods para {0} ({1})",
   "UpdateWindowTitle": "Administrar actualizaciones",
+  "XCITrimmerTrim": "Trim",
+  "XCITrimmerUntrim": "Untrim",
   "UpdateWindowUpdateAddedMessage": "{0} nueva(s) actualización(es) agregada(s)",
   "UpdateWindowBundledContentNotice": "Las actualizaciones agrupadas no pueden ser eliminadas, solamente deshabilitadas.",
   "CheatWindowHeading": "Cheats disponibles para {0} [{1}]",

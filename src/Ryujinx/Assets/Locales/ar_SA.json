@@ -728,6 +728,8 @@
   "DlcWindowTitle": "إدارة المحتوى القابل للتنزيل لـ {0} ({1})",
   "ModWindowTitle": "إدارة التعديلات لـ {0} ({1})",
   "UpdateWindowTitle": "مدير تحديث العنوان",
+  "XCITrimmerTrim": "Trim",
+  "XCITrimmerUntrim": "Untrim",
   "UpdateWindowUpdateAddedMessage": "{0} new update(s) added",
   "UpdateWindowBundledContentNotice": "Bundled updates cannot be removed, only disabled.",
   "CheatWindowHeading": "الغش متوفر لـ {0} [{1}]",

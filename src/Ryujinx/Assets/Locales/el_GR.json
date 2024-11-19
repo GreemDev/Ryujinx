@@ -728,6 +728,8 @@
   "DlcWindowTitle": "Downloadable Content Manager",
   "ModWindowTitle": "Manage Mods for {0} ({1})",
   "UpdateWindowTitle": "Διαχειριστής Ενημερώσεων Τίτλου",
+  "XCITrimmerTrim": "Trim",
+  "XCITrimmerUntrim": "Untrim",
   "UpdateWindowUpdateAddedMessage": "{0} new update(s) added",
   "UpdateWindowBundledContentNotice": "Bundled updates cannot be removed, only disabled.",
   "CheatWindowHeading": "Διαθέσιμα Cheats για {0} [{1}]",

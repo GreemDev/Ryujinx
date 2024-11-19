@@ -728,6 +728,8 @@
   "DlcWindowTitle": "管理 {0} 的可下載內容 ({1})",
   "ModWindowTitle": "管理 {0} 的模組 ({1})",
   "UpdateWindowTitle": "遊戲更新管理員",
+  "XCITrimmerTrim": "Trim",
+  "XCITrimmerUntrim": "Untrim",
   "UpdateWindowUpdateAddedMessage": "已加入 {0} 個遊戲更新",
   "UpdateWindowBundledContentNotice": "附帶的遊戲更新只能被停用而無法被刪除。",
   "CheatWindowHeading": "可用於 {0} [{1}] 的密技",

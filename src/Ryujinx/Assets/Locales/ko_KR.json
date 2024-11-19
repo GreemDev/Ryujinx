@@ -767,6 +767,8 @@
   "XCITrimmerDeselectDisplayed": "표시됨 선택 취소",
   "XCITrimmerSortName": "타이틀",
   "XCITrimmerSortSaved": "공간 절약s",
+  "XCITrimmerTrim": "Trim",
+  "XCITrimmerUntrim": "Untrim",
   "UpdateWindowUpdateAddedMessage": "{0}개의 새 업데이트가 추가됨",
   "UpdateWindowBundledContentNotice": "번들 업데이트는 제거할 수 없으며, 비활성화만 가능합니다.",
   "CheatWindowHeading": "{0} [{1}]에 사용 가능한 치트",

@@ -728,6 +728,8 @@
   "DlcWindowTitle": "Oyun DLC'lerini Yönet",
   "ModWindowTitle": "Manage Mods for {0} ({1})",
   "UpdateWindowTitle": "Oyun Güncellemelerini Yönet",
+  "XCITrimmerTrim": "Trim",
+  "XCITrimmerUntrim": "Untrim",
   "UpdateWindowUpdateAddedMessage": "{0} new update(s) added",
   "UpdateWindowBundledContentNotice": "Bundled updates cannot be removed, only disabled.",
   "CheatWindowHeading": "{0} için Hile mevcut [{1}]",
