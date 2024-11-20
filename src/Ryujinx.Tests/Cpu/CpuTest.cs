@@ -62,7 +62,7 @@ namespace Ryujinx.Tests.Cpu
 
             _context = CpuContext.CreateExecutionContext();
 
-            _cpuContext = new CpuContext(_memory, for64Bit: true, lowPower: false);
+            _cpuContext = new CpuContext(_memory, for64Bit: true);
 
             // Prevent registering LCQ functions in the FunctionTable to avoid initializing and populating the table,
             // which improves test durations.

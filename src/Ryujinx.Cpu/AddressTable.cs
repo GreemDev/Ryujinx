@@ -137,7 +137,7 @@ namespace ARMeilleure.Common
         /// <param name="sparse">True if the bottom page should be sparsely mapped</param>
         /// <exception cref="ArgumentNullException"><paramref name="levels"/> is null</exception>
         /// <exception cref="ArgumentException">Length of <paramref name="levels"/> is less than 2</exception>
-        public AddressTable(AddressTableLevel[] levels, bool sparse, bool lowPower)
+        public AddressTable(AddressTableLevel[] levels, bool sparse)
         {
             ArgumentNullException.ThrowIfNull(levels);
 
@@ -157,7 +157,7 @@ namespace ARMeilleure.Common
             {
                 // If the address table is sparse, allocate a fill block
 
-                _sparseFill = new MemoryBlock(lowPower ? 65536ul : 268435456ul, MemoryAllocationFlags.Mirrorable);
+                _sparseFill = new MemoryBlock(268435456ul, MemoryAllocationFlags.Mirrorable); //low Power TC uses size: 65536ul
 
                 ulong bottomLevelSize = (1ul << levels.Last().Length) * (ulong)sizeof(TEntry);
 
@@ -178,12 +178,12 @@ namespace ARMeilleure.Common
         /// <param name="for64Bits">True if the guest is A64, false otherwise</param>
         /// <param name="type">Memory manager type</param>
         /// <returns>An <see cref="AddressTable{TEntry}"/> for ARM function lookup</returns>
-        public static AddressTable<TEntry> CreateForArm(bool for64Bits, MemoryManagerType type, bool lowPower)
+        public static AddressTable<TEntry> CreateForArm(bool for64Bits, MemoryManagerType type)
         {
             // Assume software memory means that we don't want to use any signal handlers.
             bool sparse = type != MemoryManagerType.SoftwareMmu && type != MemoryManagerType.SoftwarePageTable;
 
-            return new AddressTable<TEntry>(AddressTablePresets.GetArmPreset(for64Bits, sparse, lowPower), sparse, lowPower);
+            return new AddressTable<TEntry>(AddressTablePresets.GetArmPreset(for64Bits, sparse), sparse);
         }
 
         /// <summary>

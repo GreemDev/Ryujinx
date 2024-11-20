@@ -9,7 +9,7 @@ namespace Ryujinx.Cpu.AppleHv
         private readonly ITickSource _tickSource;
         private readonly HvMemoryManager _memoryManager;
 
-        public HvCpuContext(ITickSource tickSource, IMemoryManager memory, bool for64Bit, bool lowPower)
+        public HvCpuContext(ITickSource tickSource, IMemoryManager memory, bool for64Bit)
         {
             _tickSource = tickSource;
             _memoryManager = (HvMemoryManager)memory;

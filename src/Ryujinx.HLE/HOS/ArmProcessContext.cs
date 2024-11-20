@@ -34,8 +34,7 @@ namespace Ryujinx.HLE.HOS
             GpuContext gpuContext,
             T memoryManager,
             ulong addressSpaceSize,
-            bool for64Bit,
-            bool lowPower)
+            bool for64Bit)
         {
             if (memoryManager is IRefCounted rc)
             {
@@ -46,7 +45,7 @@ namespace Ryujinx.HLE.HOS
 
             _pid = pid;
             _gpuContext = gpuContext;
-            _cpuContext = cpuEngine.CreateCpuContext(memoryManager, for64Bit, lowPower);
+            _cpuContext = cpuEngine.CreateCpuContext(memoryManager, for64Bit);
             _memoryManager = memoryManager;
 
             AddressSpaceSize = addressSpaceSize;

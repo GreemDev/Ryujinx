@@ -58,7 +58,7 @@ namespace Ryujinx.Tests.Memory
             _translator ??= new Translator(
                 new JitMemoryAllocator(), 
                 new MockMemoryManager(), 
-                AddressTable<ulong>.CreateForArm(true, MemoryManagerType.SoftwarePageTable, lowPower: false));
+                AddressTable<ulong>.CreateForArm(true, MemoryManagerType.SoftwarePageTable));
         }
 
         [Test]

@@ -12,9 +12,9 @@ namespace Ryujinx.Cpu.LightningJit
         }
 
         /// <inheritdoc/>
-        public ICpuContext CreateCpuContext(IMemoryManager memoryManager, bool for64Bit, bool lowPower)
+        public ICpuContext CreateCpuContext(IMemoryManager memoryManager, bool for64Bit)
         {
-            return new LightningJitCpuContext(_tickSource, memoryManager, for64Bit, lowPower);
+            return new LightningJitCpuContext(_tickSource, memoryManager, for64Bit);
         }
     }
 }

@@ -12,10 +12,10 @@ namespace Ryujinx.Cpu.Jit
         private readonly Translator _translator;
         private readonly AddressTable<ulong> _functionTable;
 
-        public JitCpuContext(ITickSource tickSource, IMemoryManager memory, bool for64Bit, bool lowPower)
+        public JitCpuContext(ITickSource tickSource, IMemoryManager memory, bool for64Bit)
         {
             _tickSource = tickSource;
-            _functionTable = AddressTable<ulong>.CreateForArm(for64Bit, memory.Type, lowPower);
+            _functionTable = AddressTable<ulong>.CreateForArm(for64Bit, memory.Type);
             _translator = new Translator(new JitMemoryAllocator(forJit: true), memory, _functionTable);
 
             if (memory.Type.IsHostMappedOrTracked())
