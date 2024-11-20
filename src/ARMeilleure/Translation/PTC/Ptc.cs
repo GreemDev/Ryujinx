@@ -128,7 +128,7 @@ namespace ARMeilleure.Translation.PTC
             DisplayVersion = !string.IsNullOrEmpty(displayVersion) ? displayVersion : DisplayVersionDefault;
             _memoryMode = memoryMode;
 
-            Logger.Info?.Print(LogClass.Ptc, $"Profiled Persistent Translation Cache Profile: {DisplayVersion}-{cacheSelector}");
+            Logger.Info?.Print(LogClass.Ptc, $"PPTC (v{InternalVersion}) Profile: {DisplayVersion}-{cacheSelector}");
 
             string workPathActual = Path.Combine(AppDataManager.GamesDirPath, TitleIdText, "cache", "cpu", ActualDir);
             string workPathBackup = Path.Combine(AppDataManager.GamesDirPath, TitleIdText, "cache", "cpu", BackupDir);

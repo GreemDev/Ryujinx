@@ -114,7 +114,7 @@ namespace Ryujinx.HLE.HOS
                 }
             }
 
-            DiskCacheLoadState = processContext.Initialize(_titleIdText, _displayVersion, _diskCacheEnabled, _codeAddress, _codeSize, "HighPower"); //Ready for exefs profiles
+            DiskCacheLoadState = processContext.Initialize(_titleIdText, _displayVersion, _diskCacheEnabled, _codeAddress, _codeSize, "default"); //Ready for exefs profiles
 
             return processContext;
         }
