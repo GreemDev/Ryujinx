@@ -25,6 +25,7 @@ env:
   RYUJINX_TARGET_RELEASE_CHANNEL_SOURCE_REPO: "Ryujinx"
   RYUJINX_TARGET_RELEASE_CHANNEL_REPO: "Ryujinx-Canary"
   RELEASE: 1
+  CANARY: 1
 
 jobs:
   tag:
@@ -236,11 +237,11 @@ jobs:
 
       - name: Publish macOS Ryujinx
         run: |
-          ./distribution/macos/create_macos_build_ava_canary.sh . publish_tmp_ava publish_ava ./distribution/macos/entitlements.xml "${{ steps.version_info.outputs.build_version }}" "${{ steps.version_info.outputs.git_short_hash }}" Release
+          ./distribution/macos/create_macos_build_ava.sh . publish_tmp_ava publish_ava ./distribution/macos/entitlements.xml "${{ steps.version_info.outputs.build_version }}" "${{ steps.version_info.outputs.git_short_hash }}" Release
 
       - name: Publish macOS Ryujinx.Headless.SDL2
         run: |
-          ./distribution/macos/create_macos_build_headless_canary.sh . publish_tmp_headless publish_headless ./distribution/macos/entitlements.xml "${{ steps.version_info.outputs.build_version }}" "${{ steps.version_info.outputs.git_short_hash }}" Release
+          ./distribution/macos/create_macos_build_headless.sh . publish_tmp_headless publish_headless ./distribution/macos/entitlements.xml "${{ steps.version_info.outputs.build_version }}" "${{ steps.version_info.outputs.git_short_hash }}" Release
 
       - name: Pushing new release
         uses: ncipollo/release-action@v1
