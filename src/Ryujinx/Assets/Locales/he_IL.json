@@ -583,7 +583,7 @@
   "TimeTooltip": "שנה זמן מערכת",
   "VSyncToggleTooltip": "Emulated console's Vertical Sync. Essentially a frame-limiter for the majority of games; disabling it may cause games to run at higher speed or make loading screens take longer or get stuck.\n\nCan be toggled in-game with a hotkey of your preference (F1 by default). We recommend doing this if you plan on disabling it.\n\nLeave ON if unsure.",
   "PptcToggleTooltip": "שומר את פונקציות ה-JIT המתורגמות כך שלא יצטרכו לעבור תרגום שוב כאשר משחק עולה.\n\nמפחית תקיעות ומשפר מהירות עלייה של המערכת אחרי הפתיחה הראשונה של המשחק.\n\nמוטב להשאיר דלוק אם לא בטוחים.",
-  "LowPowerPptcToggleTooltip": "Use smaller memory blocks for the Translation Cache, which makes slow RAM PCs run better, and load the Profile Persistent Translation Cache using a third of the amount of cores.",
+  "LowPowerPptcToggleTooltip": "Load the PPTC using a third of the amount of cores.",
   "FsIntegrityToggleTooltip": "בודק לקבצים שגויים כאשר משחק עולה, ואם מתגלים כאלו, מציג את מזהה השגיאה שלהם לקובץ הלוג.\n\nאין לכך השפעה על הביצועים ונועד לעזור לבדיקה וניפוי שגיאות של האמולטור.\n\nמוטב להשאיר דלוק אם לא בטוחים.",
   "AudioBackendTooltip": "משנה את אחראי השמע.\n\nSDL2 הוא הנבחר, למראת שOpenAL וגם SoundIO משומשים כאפשרויות חלופיות. אפשרות הDummy לא תשמיע קול כלל.\n\nמוטב להשאיר על SDL2 אם לא בטוחים.",
   "MemoryManagerTooltip": "שנה איך שזיכרון מארח מיוחד ומונגד. משפיע מאוד על ביצועי המעבד המדומה.\n\nמוטב להשאיר על מארח לא מבוקר אם לא בטוחים.",

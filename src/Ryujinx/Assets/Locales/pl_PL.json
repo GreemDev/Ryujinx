@@ -583,7 +583,7 @@
   "TimeTooltip": "Zmień czas systemowy",
   "VSyncToggleTooltip": "Synchronizacja pionowa emulowanej konsoli. Zasadniczo ogranicznik klatek dla większości gier; wyłączenie jej może spowodować, że gry będą działać z większą szybkością, ekrany wczytywania wydłużą się lub nawet utkną.\n\nMoże być przełączana w grze za pomocą preferowanego skrótu klawiszowego. Zalecamy to zrobić, jeśli planujesz ją wyłączyć.\n\nW razie wątpliwości pozostaw WŁĄCZONĄ.",
   "PptcToggleTooltip": "Zapisuje przetłumaczone funkcje JIT, dzięki czemu nie muszą być tłumaczone za każdym razem, gdy gra się ładuje.\n\nZmniejsza zacinanie się i znacznie przyspiesza uruchamianie po pierwszym uruchomieniu gry.\n\nJeśli nie masz pewności, pozostaw WŁĄCZONE",
-  "LowPowerPptcToggleTooltip": "Use smaller memory blocks for the Translation Cache, which makes slow RAM PCs run better, and load the Profile Persistent Translation Cache using a third of the amount of cores.",
+  "LowPowerPptcToggleTooltip": "Load the PPTC using a third of the amount of cores.",
   "FsIntegrityToggleTooltip": "Sprawdza pliki podczas uruchamiania gry i jeśli zostaną wykryte uszkodzone pliki, wyświetla w dzienniku błąd hash.\n\nNie ma wpływu na wydajność i ma pomóc w rozwiązywaniu problemów.\n\nPozostaw WŁĄCZONE, jeśli nie masz pewności.",
   "AudioBackendTooltip": "Zmienia backend używany do renderowania dźwięku.\n\nSDL2 jest preferowany, podczas gdy OpenAL i SoundIO są używane jako rezerwy. Dummy nie będzie odtwarzać dźwięku.\n\nW razie wątpliwości ustaw SDL2.",
   "MemoryManagerTooltip": "Zmień sposób mapowania i uzyskiwania dostępu do pamięci gości. Znacznie wpływa na wydajność emulowanego procesora.\n\nUstaw na HOST UNCHECKED, jeśli nie masz pewności.",

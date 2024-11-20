@@ -583,7 +583,7 @@
   "TimeTooltip": "變更系統時鐘",
   "VSyncToggleTooltip": "模擬遊戲機的垂直同步。對大多數遊戲來說，它本質上是一個幀率限制器；停用它可能會導致遊戲以更高的速度執行，或使載入畫面耗時更長或卡住。\n\n可以在遊戲中使用快速鍵進行切換 (預設為 F1)。如果您打算停用，我們建議您這樣做。\n\n如果不確定，請保持開啟狀態。",
   "PptcToggleTooltip": "儲存已轉譯的 JIT 函數，這樣每次載入遊戲時就無需再轉譯這些函數。\n\n減少遊戲首次啟動後的卡頓現象，並大大加快啟動時間。\n\n如果不確定，請保持開啟狀態。",
-  "LowPowerPptcToggleTooltip": "Use smaller memory blocks for the Translation Cache, which makes slow RAM PCs run better, and load the Profile Persistent Translation Cache using a third of the amount of cores.",
+  "LowPowerPptcToggleTooltip": "使用 CPU 核心數量的三分之一載入 PPTC。",
   "FsIntegrityToggleTooltip": "在啟動遊戲時檢查損壞的檔案，如果檢測到損壞的檔案，則在日誌中顯示雜湊值錯誤。\n\n對效能沒有影響，旨在幫助排除故障。\n\n如果不確定，請保持開啟狀態。",
   "AudioBackendTooltip": "變更用於繪製音訊的後端。\n\nSDL2 是首選，而 OpenAL 和 SoundIO 則作為備用。虛設 (Dummy) 將沒有聲音。\n\n如果不確定，請設定為 SDL2。",
   "MemoryManagerTooltip": "變更客體記憶體的映射和存取方式。這會極大地影響模擬 CPU 效能。\n\n如果不確定，請設定為主體略過檢查模式。",
