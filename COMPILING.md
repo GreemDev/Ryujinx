@@ -1,6 +1,6 @@
 ## Compilation
 
-Building the project is for advanced users.
+Building the project is for users that want to contribute code only.
 If you wish to build the emulator yourself, follow these steps:
 
 ### Step 1
