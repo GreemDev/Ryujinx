@@ -59,8 +59,9 @@ jobs:
           owner: ${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}
           repo: ${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}
           token: ${{ secrets.RELEASE_TOKEN }}
+          canary: 0
           run: |
-            echo "0" >> $CANARY
+            echo $CANARY
           shell: bash
 
   release:
