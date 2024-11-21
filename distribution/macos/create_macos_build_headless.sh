@@ -2,7 +2,7 @@
 
 set -e
 
-if [ "$#" -lt 7 ]; then
+if [ "$#" -lt 9 ]; then
     echo "usage <BASE_DIR> <TEMP_DIRECTORY> <OUTPUT_DIRECTORY> <ENTITLEMENTS_FILE_PATH> <VERSION> <SOURCE_REVISION_ID> <CONFIGURATION> <EXTRA_ARGS> <CANARY>"
     exit 1
 fi
