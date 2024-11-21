@@ -2,7 +2,6 @@ using Ryujinx.Common.Logging.Formatters;
 using System;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 
 namespace Ryujinx.Common.Logging.Targets
 {
