@@ -21,11 +21,10 @@ CONFIGURATION=$7
 EXTRA_ARGS=$8
 CANARY=$9
 
-# shellcheck disable=SC2107
-if [ "$VERSION" == "1.1.0" && "$CANARY" == 1 ];
+if [ "$VERSION" == "1.1.0" ] && [ "$CANARY" == 1 ];
 then
   RELEASE_TAR_FILE_NAME=ryujinx-canary-$CONFIGURATION-$VERSION+$SOURCE_REVISION_ID-macos_universal.app.tar
-elif [ "$VERSION" == "1.1.0" && "$CANARY" == 0 ];
+elif [ "$VERSION" == "1.1.0" ] && [ "$CANARY" == 0 ];
 then
   RELEASE_TAR_FILE_NAME=ryujinx-$CONFIGURATION-$VERSION+$SOURCE_REVISION_ID-macos_universal.app.tar
 else
