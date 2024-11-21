@@ -25,6 +25,7 @@ env:
   RYUJINX_TARGET_RELEASE_CHANNEL_SOURCE_REPO: "Ryujinx"
   RYUJINX_TARGET_RELEASE_CHANNEL_REPO: "Ryujinx-Canary"
   RELEASE: 1
+  CANARY: 1
 
 jobs:
   tag:
@@ -59,10 +60,16 @@ jobs:
           owner: ${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}
           repo: ${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}
           token: ${{ secrets.RELEASE_TOKEN }}
-          canary: 1
-          run: |
-            echo $CANARY
-          shell: bash
+
+  canary:
+    name: Check if canary or not
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check if canary or not
+        id: is_canary
+        run: |
+         echo $CANARY
+        shell: bash
 
   release:
     name: Release for ${{ matrix.platform.name }}
