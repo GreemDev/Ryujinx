@@ -48,6 +48,11 @@ jobs:
               ref: 'refs/tags/${{ steps.version_info.outputs.build_version }}',
               sha: context.sha
             })
+            
+      - name: Check if canary or not
+        run: |
+          echo $CANARY
+        shell: bash
 
       - name: Create release
         uses: ncipollo/release-action@v1
@@ -59,14 +64,6 @@ jobs:
           owner: ${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}
           repo: ${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}
           token: ${{ secrets.RELEASE_TOKEN }}
-
-  canary:
-    name: Check if canary or not
-    runs-on: ubuntu-20.04
-    steps:
-      run: |
-        echo $CANARY
-      shell: bash
 
   release:
     name: Release for ${{ matrix.platform.name }}
