@@ -99,11 +99,6 @@ namespace Ryujinx.HLE
         internal readonly bool EnablePtc;
 
         /// <summary>
-        /// Control if the Profiled Translation Cache (PTC) should run in low power mode.
-        /// </summary>
-        internal readonly bool LowPowerPtc;
-
-        /// <summary>
         /// Control if the guest application should be told that there is a Internet connection available.
         /// </summary>
         public bool EnableInternetAccess { internal get; set; }
@@ -203,7 +198,6 @@ namespace Ryujinx.HLE
                                 bool enableVsync,
                                 bool enableDockedMode,
                                 bool enablePtc,
-                                bool lowPowerPtc,
                                 bool enableInternetAccess,
                                 IntegrityCheckLevel fsIntegrityCheckLevel,
                                 int fsGlobalAccessLogMode,
@@ -234,7 +228,6 @@ namespace Ryujinx.HLE
             EnableVsync = enableVsync;
             EnableDockedMode = enableDockedMode;
             EnablePtc = enablePtc;
-            LowPowerPtc = lowPowerPtc;
             EnableInternetAccess = enableInternetAccess;
             FsIntegrityCheckLevel = fsIntegrityCheckLevel;
             FsGlobalAccessLogMode = fsGlobalAccessLogMode;
