@@ -25,7 +25,6 @@ env:
   RYUJINX_TARGET_RELEASE_CHANNEL_SOURCE_REPO: "Ryujinx"
   RYUJINX_TARGET_RELEASE_CHANNEL_REPO: "Ryujinx-Canary"
   RELEASE: 1
-  CANARY: 1
 
 jobs:
   tag:
@@ -60,6 +59,9 @@ jobs:
           owner: ${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}
           repo: ${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}
           token: ${{ secrets.RELEASE_TOKEN }}
+          run: |
+            echo "1" >> $CANARY
+          shell: bash
 
   release:
     name: Release for ${{ matrix.platform.name }}

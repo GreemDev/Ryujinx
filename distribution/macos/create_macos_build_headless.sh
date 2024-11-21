@@ -21,7 +21,7 @@ CONFIGURATION=$7
 EXTRA_ARGS=$8
 CANARY=$9
 
-printf "Canary var: %s" "$CANARY"
+printf "Canary var: %s" "$CANARY \n"
 
 if [ "$VERSION" == "1.1.0" ] || [ "$CANARY" == 1 ];
 then
