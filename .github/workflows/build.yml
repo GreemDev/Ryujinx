@@ -8,7 +8,6 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   RYUJINX_BASE_VERSION: "1.2.0"
   RELEASE: 0
-  CANARY: 0
 
 jobs:
   build:

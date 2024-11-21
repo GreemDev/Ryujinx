@@ -21,11 +21,11 @@ CONFIGURATION=$7
 CANARY=$8
 
 if [ "$CANARY" == "1" ]; then
-  RELEASE_TAR_FILE_NAME=nogui-ryujinx-canary-$VERSION-macos_universal.app.tar
+  RELEASE_TAR_FILE_NAME=nogui-ryujinx-canary-$VERSION-macos_universal.tar
 elif [ "$VERSION" == "1.1.0" ]; then
-  RELEASE_TAR_FILE_NAME=nogui-ryujinx-$CONFIGURATION-$VERSION+$SOURCE_REVISION_ID-macos_universal.app.tar
+  RELEASE_TAR_FILE_NAME=nogui-ryujinx-$CONFIGURATION-$VERSION+$SOURCE_REVISION_ID-macos_universal.tar
 else
-  RELEASE_TAR_FILE_NAME=nogui-ryujinx-$VERSION-macos_universal.app.tar
+  RELEASE_TAR_FILE_NAME=nogui-ryujinx-$VERSION-macos_universal.tar
 fi
 
 ARM64_OUTPUT="$TEMP_DIRECTORY/publish_arm64"
@@ -57,7 +57,7 @@ mkdir -p "$OUTPUT_DIRECTORY"
 cp -R "$ARM64_OUTPUT/" "$UNIVERSAL_OUTPUT"
 rm "$UNIVERSAL_OUTPUT/$EXECUTABLE_SUB_PATH"
 
-# Make it libraries universal
+# Make its libraries universal
 python3 "$BASE_DIR/distribution/macos/construct_universal_dylib.py" "$ARM64_OUTPUT" "$X64_OUTPUT" "$UNIVERSAL_OUTPUT" "**/*.dylib"
 
 if ! [ -x "$(command -v lipo)" ];
