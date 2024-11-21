@@ -205,7 +205,7 @@ namespace ARMeilleure.Instructions
 
                 hostAddress = context.Load(OperandType.I64, hostAddressAddr);
             }
-            else if (table.Sparse && table.Levels.Length == 2)
+            else if (table.Sparse)
             {
                 // Inline table lookup. Only enabled when the sparse function table is enabled with 2 levels.
                 // Deliberately attempts to avoid branches.
