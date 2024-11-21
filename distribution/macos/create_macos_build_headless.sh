@@ -21,7 +21,7 @@ CONFIGURATION=$7
 CANARY=$8
 
 if [ "$CANARY" == "1" ]; then
-  RELEASE_TAR_FILE_NAME=nogui-ryujinx-canary-$CONFIGURATION-$VERSION+$SOURCE_REVISION_ID-macos_universal.app.tar
+  RELEASE_TAR_FILE_NAME=nogui-ryujinx-canary-$VERSION-macos_universal.app.tar
 elif [ "$VERSION" == "1.1.0" ]; then
   RELEASE_TAR_FILE_NAME=nogui-ryujinx-$CONFIGURATION-$VERSION+$SOURCE_REVISION_ID-macos_universal.app.tar
 else
