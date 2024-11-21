@@ -21,14 +21,14 @@ CONFIGURATION=$7
 EXTRA_ARGS=$8
 CANARY=$9
 
-if [ "$VERSION" == "1.1.0" ] && [ "$CANARY" == 1 ];
+if [ "$VERSION" == "1.1.0" ] || [ "$CANARY" == 1 ];
 then
-  RELEASE_TAR_FILE_NAME=ryujinx-canary-$CONFIGURATION-$VERSION+$SOURCE_REVISION_ID-macos_universal.app.tar
-elif [ "$VERSION" == "1.1.0" ] && [ "$CANARY" == 0 ];
+  RELEASE_TAR_FILE_NAME=nogui-ryujinx-canary-$CONFIGURATION-$VERSION+$SOURCE_REVISION_ID-macos_universal.app.tar
+elif [ "$VERSION" == "1.1.0" ];
 then
-  RELEASE_TAR_FILE_NAME=ryujinx-$CONFIGURATION-$VERSION+$SOURCE_REVISION_ID-macos_universal.app.tar
+  RELEASE_TAR_FILE_NAME=nogui-ryujinx-$CONFIGURATION-$VERSION+$SOURCE_REVISION_ID-macos_universal.app.tar
 else
-  RELEASE_TAR_FILE_NAME=ryujinx-$VERSION-macos_universal.app.tar
+  RELEASE_TAR_FILE_NAME=nogui-ryujinx-$VERSION-macos_universal.app.tar
 fi
 
 ARM64_OUTPUT="$TEMP_DIRECTORY/publish_arm64"
