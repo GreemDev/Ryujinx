@@ -457,6 +457,7 @@
   "DialogUpdaterExtractionMessage": "Update wird entpackt...",
   "DialogUpdaterRenamingMessage": "Update wird umbenannt...",
   "DialogUpdaterAddingFilesMessage": "Update wird hinzugefügt...",
+  "DialogUpdaterShowChangelogMessage": "Show Changelog",
   "DialogUpdaterCompleteMessage": "Update abgeschlossen!",
   "DialogUpdaterRestartMessage": "Ryujinx jetzt neu starten?",
   "DialogUpdaterNoInternetMessage": "Es besteht keine Verbindung mit dem Internet!",

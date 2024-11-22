@@ -457,6 +457,7 @@
   "DialogUpdaterExtractionMessage": "جاري استخراج التحديث...",
   "DialogUpdaterRenamingMessage": "إعادة تسمية التحديث...",
   "DialogUpdaterAddingFilesMessage": "إضافة تحديث جديد...",
+  "DialogUpdaterShowChangelogMessage": "Show Changelog",
   "DialogUpdaterCompleteMessage": "اكتمل التحديث",
   "DialogUpdaterRestartMessage": "هل تريد إعادة تشغيل ريوجينكس الآن؟",
   "DialogUpdaterNoInternetMessage": "أنت غير متصل بالإنترنت.",
