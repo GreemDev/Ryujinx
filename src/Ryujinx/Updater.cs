@@ -114,9 +114,14 @@ namespace Ryujinx.Ava
                         {
                             if (showVersionUpToDate)
                             {
-                                await ContentDialogHelper.CreateUpdaterInfoDialog(
+                                UserResult userResult = await ContentDialogHelper.CreateUpdaterUpToDateInfoDialog(
                                     LocaleManager.Instance[LocaleKeys.DialogUpdaterAlreadyOnLatestVersionMessage],
                                     string.Empty);
+
+                                if (userResult is UserResult.Ok)
+                                {
+                                    OpenHelper.OpenUrl(ReleaseInformation.GetChangelogForVersion(currentVersion));
+                                }
                             }
 
                             _running = false;
@@ -133,9 +138,14 @@ namespace Ryujinx.Ava
                 {
                     if (showVersionUpToDate)
                     {
-                        await ContentDialogHelper.CreateUpdaterInfoDialog(
+                        UserResult userResult = await ContentDialogHelper.CreateUpdaterUpToDateInfoDialog(
                             LocaleManager.Instance[LocaleKeys.DialogUpdaterAlreadyOnLatestVersionMessage],
                             string.Empty);
+
+                        if (userResult is UserResult.Ok)
+                        {
+                            OpenHelper.OpenUrl(ReleaseInformation.GetChangelogForVersion(currentVersion));
+                        }
                     }
 
                     _running = false;
