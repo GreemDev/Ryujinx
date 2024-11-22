@@ -1044,7 +1044,7 @@ namespace Ryujinx.HLE.FileSystem
 
         public bool AreKeysAlredyPresent(string pathToCheck)
         {
-            string[] fileNames = { "prod.keys", "title.keys", "console.keys" };
+            string[] fileNames = { "prod.keys", "title.keys", "console.keys", "dev.keys" };
             foreach (var file in fileNames)
             {
                 if (File.Exists(Path.Combine(pathToCheck, file)))
