@@ -1019,27 +1019,54 @@ namespace Ryujinx.HLE.FileSystem
 
         public void VerifyKeysFile(string filePath)
         {
-            string schemaPattern = @"^[a-zA-Z0-9_]+ = [a-zA-Z0-9]+$";
+            // Verify the keys file format refers to https://github.com/Thealexbarney/LibHac/blob/master/KEYS.md
+            string genericPattern = @"^[a-z0-9_]+ = [a-z0-9]+$";
+            string titlePattern = @"^[a-z0-9]{32} = [a-z0-9]{32}$";
 
             if (File.Exists(filePath))
             {
                 // Read all lines from the file
+                string fileName = Path.GetFileName(filePath);
                 string[] lines = File.ReadAllLines(filePath);
 
-                for (int i = 0; i < lines.Length; i++)
+                bool verified = false;
+                switch (fileName)
                 {
-                    string line = lines[i].Trim();
-
-                    // Check if the line matches the schema
-                    if (!Regex.IsMatch(line, schemaPattern))
-                    {
-                        throw new FormatException("Keys file doesn't have a correct schema.");
-                    }
+                    case "prod.keys":
+                        verified = verifyKeys(lines, genericPattern);
+                        break;
+                    case "title.keys":
+                        verified = verifyKeys(lines, titlePattern);
+                        break;
+                    case "console.keys":
+                        verified = verifyKeys(lines, genericPattern);
+                        break;
+                    case "dev.keys":
+                        verified = verifyKeys(lines, genericPattern);
+                        break;
+                    default:
+                        throw new FormatException($"Keys file name \"{fileName}\" not supported. Only \"prod.keys\", \"title.keys\", \"console.keys\", \"dev.keys\" are supported.");
+                }
+                if (!verified)
+                {
+                    throw new FormatException($"Invalid \"{filePath}\" file format.");
                 }
             } else
             {
-                throw new FileNotFoundException("Keys file not found at " + filePath);
+                throw new FileNotFoundException($"Keys file not found at \"{filePath}\".");
             }
+        }
+
+        private bool verifyKeys(string[] lines, string regex)
+        {
+            foreach (string line in lines)
+            {
+                if (!Regex.IsMatch(line, regex))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public bool AreKeysAlredyPresent(string pathToCheck)
