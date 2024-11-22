@@ -103,8 +103,8 @@ jobs:
 
       - name: Publish
         run: |
-          dotnet publish -c Release -r "${{ matrix.platform.name }}" -o ./publish_ava/publish -p:Version="${{ steps.version_info.outputs.build_version }}" -p:SourceRevisionId="${{ steps.version_info.outputs.git_short_hash }}" -p:DebugType=embedded src/Ryujinx --self-contained -p:IncludeNativeLibrariesForSelfExtract=true
-          dotnet publish -c Release -r "${{ matrix.platform.name }}" -o ./publish_sdl2_headless/publish -p:Version="${{ steps.version_info.outputs.build_version }}" -p:SourceRevisionId="${{ steps.version_info.outputs.git_short_hash }}" -p:DebugType=embedded src/Ryujinx.Headless.SDL2 --self-contained -p:IncludeNativeLibrariesForSelfExtract=true
+          dotnet publish -c Release -r "${{ matrix.platform.name }}" -o ./publish_ava/publish -p:Version="${{ steps.version_info.outputs.build_version }}" -p:SourceRevisionId="${{ steps.version_info.outputs.git_short_hash }}" -p:DebugType=embedded src/Ryujinx --self-contained
+          dotnet publish -c Release -r "${{ matrix.platform.name }}" -o ./publish_sdl2_headless/publish -p:Version="${{ steps.version_info.outputs.build_version }}" -p:SourceRevisionId="${{ steps.version_info.outputs.git_short_hash }}" -p:DebugType=embedded src/Ryujinx.Headless.SDL2 --self-contained
 
       - name: Packing Windows builds
         if: matrix.platform.os == 'windows-latest'
