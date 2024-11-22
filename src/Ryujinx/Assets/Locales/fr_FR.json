@@ -457,6 +457,7 @@
   "DialogUpdaterExtractionMessage": "Extraction de la mise à jour…",
   "DialogUpdaterRenamingMessage": "Renommage de la mise à jour...",
   "DialogUpdaterAddingFilesMessage": "Ajout d'une nouvelle mise à jour...",
+  "DialogUpdaterShowChangelogMessage": "Show Changelog",
   "DialogUpdaterCompleteMessage": "Mise à jour terminée !",
   "DialogUpdaterRestartMessage": "Voulez-vous redémarrer Ryujinx maintenant ?",
   "DialogUpdaterNoInternetMessage": "Vous n'êtes pas connecté à Internet !",

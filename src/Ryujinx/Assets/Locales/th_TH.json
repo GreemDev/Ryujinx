@@ -457,6 +457,7 @@
   "DialogUpdaterExtractionMessage": "กำลังแตกไฟล์อัปเดต...",
   "DialogUpdaterRenamingMessage": "กำลังลบไฟล์เก่า...",
   "DialogUpdaterAddingFilesMessage": "กำลังเพิ่มไฟล์อัปเดตใหม่...",
+  "DialogUpdaterShowChangelogMessage": "Show Changelog",
   "DialogUpdaterCompleteMessage": "อัปเดตเสร็จสมบูรณ์แล้ว!",
   "DialogUpdaterRestartMessage": "คุณต้องการรีสตาร์ท Ryujinx ตอนนี้หรือไม่?",
   "DialogUpdaterNoInternetMessage": "คุณไม่ได้เชื่อมต่อกับอินเทอร์เน็ต!",

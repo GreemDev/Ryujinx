@@ -457,6 +457,7 @@
   "DialogUpdaterExtractionMessage": "Güncelleme Ayıklanıyor...",
   "DialogUpdaterRenamingMessage": "Güncelleme Yeniden Adlandırılıyor...",
   "DialogUpdaterAddingFilesMessage": "Yeni Güncelleme Ekleniyor...",
+  "DialogUpdaterShowChangelogMessage": "Show Changelog",
   "DialogUpdaterCompleteMessage": "Güncelleme Tamamlandı!",
   "DialogUpdaterRestartMessage": "Ryujinx'i şimdi yeniden başlatmak istiyor musunuz?",
   "DialogUpdaterNoInternetMessage": "İnternete bağlı değilsiniz!",
