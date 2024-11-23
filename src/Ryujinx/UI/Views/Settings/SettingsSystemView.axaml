@@ -115,9 +115,6 @@
                                 <TextBlock Text="{ext:Locale SettingsTabSystemSystemLanguageRussian}" />
                             </ComboBoxItem>
                             <ComboBoxItem>
-                                <TextBlock Text="{ext:Locale SettingsTabSystemSystemLanguageSwedish}" />
-                            </ComboBoxItem>
-                            <ComboBoxItem>
                                 <TextBlock Text="{ext:Locale SettingsTabSystemSystemLanguageTaiwanese}" />
                             </ComboBoxItem>
                             <ComboBoxItem>
@@ -137,6 +134,9 @@
                             </ComboBoxItem>
                             <ComboBoxItem>
                                 <TextBlock Text="{ext:Locale SettingsTabSystemSystemLanguageBrazilianPortuguese}" />
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                <TextBlock Text="{ext:Locale SettingsTabSystemSystemLanguageSwedish}" />
                             </ComboBoxItem>
                         </ComboBox>
                     </StackPanel>
