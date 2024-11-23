@@ -610,7 +610,7 @@
   "SettingsTabCpuMemory": "CPU-läge",
   "SettingsTabGeneral": "Användargränssnitt",
   "SettingsTabGeneralAdd": "Lägg till",
-  "SettingsTabGeneralAutoloadDirectories": "Katalog automatisk inläsning av DLC/uppdateringar",
+  "SettingsTabGeneralAutoloadDirectories": "Katalog för automatisk inläsning av DLC/uppdateringar",
   "SettingsTabGeneralAutoloadNote": "DLC och uppdateringar kan referera till saknade filer som kommer att läsas ut automatiskt",
   "SettingsTabGeneralCheckUpdatesOnLaunch": "Leta efter uppdatering vid uppstart",
   "SettingsTabGeneralEnableDiscordRichPresence": "Aktivera Discord Rich Presence",
