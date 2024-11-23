@@ -13,6 +13,7 @@ namespace Ryujinx.Horizon.Sdk.Settings
         Dutch,
         Portuguese,
         Russian,
+        Swedish,
         Taiwanese,
         BritishEnglish,
         CanadianFrench,
