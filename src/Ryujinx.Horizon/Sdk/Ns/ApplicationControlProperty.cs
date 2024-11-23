@@ -133,6 +133,7 @@ namespace Ryujinx.Horizon.Sdk.Ns
             TraditionalChinese = 13,
             SimplifiedChinese = 14,
             BrazilianPortuguese = 15,
+            Swedish = 16,
         }
 
         public enum Organization
