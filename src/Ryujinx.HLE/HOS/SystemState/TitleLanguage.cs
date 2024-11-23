@@ -14,10 +14,10 @@ namespace Ryujinx.HLE.HOS.SystemState
         CanadianFrench,
         Portuguese,
         Russian,
-        Swedish,
         Korean,
         TraditionalChinese,
         SimplifiedChinese,
         BrazilianPortuguese,
+        Swedish,
     }
 }
