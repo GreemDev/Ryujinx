@@ -93,6 +93,7 @@ namespace Ryujinx.HLE.HOS.Applets.Error
                 SystemLanguage.Dutch                => "nl",
                 SystemLanguage.Portuguese           => "pt",
                 SystemLanguage.Russian              => "ru",
+                SystemLanguage.Swedish              => "sv",
                 SystemLanguage.Taiwanese            => "zh-HansT",
                 SystemLanguage.BritishEnglish       => "en-GB",
                 SystemLanguage.CanadianFrench       => "fr-CA",
