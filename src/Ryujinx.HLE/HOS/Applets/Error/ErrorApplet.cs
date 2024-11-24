@@ -101,6 +101,7 @@ namespace Ryujinx.HLE.HOS.Applets.Error
                 SystemLanguage.TraditionalChinese   => "zh-Hant",
                 SystemLanguage.BrazilianPortuguese  => "pt-BR",
                 SystemLanguage.Swedish              => "sv",
+                SystemLanguage.Finnish              => "fi",
                 _                                   => "en-US",
 #pragma warning restore IDE0055
             };
