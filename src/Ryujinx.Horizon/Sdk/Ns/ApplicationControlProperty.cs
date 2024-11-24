@@ -134,6 +134,7 @@ namespace Ryujinx.Horizon.Sdk.Ns
             SimplifiedChinese = 14,
             BrazilianPortuguese = 15,
             Swedish = 16,
+            Finnish = 17,
         }
 
         public enum Organization
