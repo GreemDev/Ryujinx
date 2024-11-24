@@ -1,6 +1,7 @@
 {
   "Language": "ภาษาไทย",
   "MenuBarFileOpenApplet": "เปิด Applet",
+  "MenuBarFileOpenAppletOpenMiiApplet": "Mii Edit Applet",
   "MenuBarFileOpenAppletOpenMiiAppletToolTip": "เปิดโปรแกรม Mii Editor Applet",
   "SettingsTabInputDirectMouseAccess": "เข้าถึงเมาส์ได้โดยตรง",
   "SettingsTabSystemMemoryManagerMode": "โหมดจัดการหน่วยความจำ:",

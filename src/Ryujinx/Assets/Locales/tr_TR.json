@@ -1,6 +1,7 @@
 {
   "Language": "Türkçe",
   "MenuBarFileOpenApplet": "Applet'i Aç",
+  "MenuBarFileOpenAppletOpenMiiApplet": "Mii Edit Applet",
   "MenuBarFileOpenAppletOpenMiiAppletToolTip": "Mii Editör Applet'ini Bağımsız Mod'da Aç",
   "SettingsTabInputDirectMouseAccess": "Doğrudan Mouse Erişimi",
   "SettingsTabSystemMemoryManagerMode": "Hafıza Yönetim Modu:",

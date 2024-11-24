@@ -1,6 +1,7 @@
 {
   "Language": "Русский (RU)",
   "MenuBarFileOpenApplet": "Открыть апплет",
+  "MenuBarFileOpenAppletOpenMiiApplet": "Mii Edit Applet",
   "MenuBarFileOpenAppletOpenMiiAppletToolTip": "Открывает апплет Mii Editor в автономном режиме",
   "SettingsTabInputDirectMouseAccess": "Прямой ввод мыши",
   "SettingsTabSystemMemoryManagerMode": "Режим менеджера памяти:",
