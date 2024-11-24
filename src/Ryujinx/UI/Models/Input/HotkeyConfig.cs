@@ -1,5 +1,10 @@
+using DynamicData;
+using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Ava.UI.ViewModels;
 using Ryujinx.Common.Configuration.Hid;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Input;
 
 namespace Ryujinx.Ava.UI.Models.Input
 {
@@ -104,8 +109,14 @@ namespace Ryujinx.Ava.UI.Models.Input
             }
         }
 
+        public ObservableCollection<CycleController> CycleControllers { get; set; } = new ObservableCollection<CycleController>();
+        public ICommand AddCycleController { get; set; }
+        public ICommand RemoveCycleController { get; set; }
+        public bool CanRemoveCycleController => CycleControllers.Count > 0 && CycleControllers.Count < 8;
         public HotkeyConfig(KeyboardHotkeys config)
         {
+            AddCycleController = MiniCommand.Create(() => CycleControllers.Add(new CycleController(CycleControllers.Count + 1, Key.Unbound)));
+            RemoveCycleController = MiniCommand.Create(() => CycleControllers.Remove(CycleControllers.Last()));
             if (config != null)
             {
                 ToggleVsync = config.ToggleVsync;
@@ -117,7 +128,9 @@ namespace Ryujinx.Ava.UI.Models.Input
                 ResScaleDown = config.ResScaleDown;
                 VolumeUp = config.VolumeUp;
                 VolumeDown = config.VolumeDown;
+                CycleControllers.AddRange((config.CycleControllers ?? []).Select((x, i) => new CycleController(i + 1, x)));
             }
+            CycleControllers.CollectionChanged += (sender, e) => OnPropertyChanged(nameof(CanRemoveCycleController));
         }
 
         public KeyboardHotkeys GetConfig()
@@ -133,6 +146,7 @@ namespace Ryujinx.Ava.UI.Models.Input
                 ResScaleDown = ResScaleDown,
                 VolumeUp = VolumeUp,
                 VolumeDown = VolumeDown,
+                CycleControllers = CycleControllers.Select(x => x.Hotkey).ToList()
             };
 
             return config;
