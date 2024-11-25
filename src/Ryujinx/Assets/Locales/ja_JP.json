@@ -1,6 +1,7 @@
 {
   "Language": "日本語",
   "MenuBarFileOpenApplet": "アプレットを開く",
+  "MenuBarFileOpenAppletOpenMiiApplet": "Mii Edit Applet",
   "MenuBarFileOpenAppletOpenMiiAppletToolTip": "スタンドアロンモードで Mii エディタアプレットを開きます",
   "SettingsTabInputDirectMouseAccess": "マウス直接アクセス",
   "SettingsTabSystemMemoryManagerMode": "メモリ管理モード:",

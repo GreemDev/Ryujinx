@@ -1,6 +1,7 @@
 {
   "Language": "Deutsch",
   "MenuBarFileOpenApplet": "Öffne Anwendung",
+  "MenuBarFileOpenAppletOpenMiiApplet": "Mii Edit Applet",
   "MenuBarFileOpenAppletOpenMiiAppletToolTip": "Öffnet das Mii-Editor-Applet im Standalone-Modus",
   "SettingsTabInputDirectMouseAccess": "Direkter Mauszugriff",
   "SettingsTabSystemMemoryManagerMode": "Speichermanagermodus:",
