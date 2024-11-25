@@ -1,6 +1,7 @@
 {
   "Language": "Ελληνικά",
   "MenuBarFileOpenApplet": "Άνοιγμα Applet",
+  "MenuBarFileOpenAppletOpenMiiApplet": "Mii Edit Applet",
   "MenuBarFileOpenAppletOpenMiiAppletToolTip": "Άνοιγμα του Mii Editor Applet σε Αυτόνομη λειτουργία",
   "SettingsTabInputDirectMouseAccess": "Άμεση Πρόσβαση Ποντικιού",
   "SettingsTabSystemMemoryManagerMode": "Λειτουργία Διαχείρισης Μνήμης:",

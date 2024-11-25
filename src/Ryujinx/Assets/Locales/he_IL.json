@@ -1,6 +1,7 @@
 {
   "Language": "עִברִית",
   "MenuBarFileOpenApplet": "פתח יישומון",
+  "MenuBarFileOpenAppletOpenMiiApplet": "Mii Edit Applet",
   "MenuBarFileOpenAppletOpenMiiAppletToolTip": "פתח את יישומון עורך ה- Mii במצב עצמאי",
   "SettingsTabInputDirectMouseAccess": "גישה ישירה לעכבר",
   "SettingsTabSystemMemoryManagerMode": "מצב מנהל זיכרון:",
