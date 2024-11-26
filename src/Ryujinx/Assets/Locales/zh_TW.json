@@ -1,6 +1,7 @@
 {
   "Language": "繁體中文 (台灣)",
   "MenuBarFileOpenApplet": "開啟小程式",
+  "MenuBarFileOpenAppletOpenMiiApplet": "Mii Edit Applet",
   "MenuBarFileOpenAppletOpenMiiAppletToolTip": "在獨立模式下開啟 Mii 編輯器小程式",
   "SettingsTabInputDirectMouseAccess": "滑鼠直接存取",
   "SettingsTabSystemMemoryManagerMode": "記憶體管理員模式:",

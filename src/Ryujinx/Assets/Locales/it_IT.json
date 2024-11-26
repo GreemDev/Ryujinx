@@ -1,6 +1,7 @@
 {
   "Language": "Italiano",
   "MenuBarFileOpenApplet": "Apri applet",
+  "MenuBarFileOpenAppletOpenMiiApplet": "Mii Edit Applet",
   "MenuBarFileOpenAppletOpenMiiAppletToolTip": "Apri l'applet Mii Editor in modalità Standalone",
   "SettingsTabInputDirectMouseAccess": "Accesso diretto al mouse",
   "SettingsTabSystemMemoryManagerMode": "Modalità di gestione della memoria:",

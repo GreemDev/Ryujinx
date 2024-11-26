@@ -1,6 +1,7 @@
 {
   "Language": "简体中文",
   "MenuBarFileOpenApplet": "打开小程序",
+  "MenuBarFileOpenAppletOpenMiiApplet": "Mii Edit Applet",
   "MenuBarFileOpenAppletOpenMiiAppletToolTip": "打开独立的 Mii 小程序",
   "SettingsTabInputDirectMouseAccess": "直通鼠标操作",
   "SettingsTabSystemMemoryManagerMode": "内存管理模式：",

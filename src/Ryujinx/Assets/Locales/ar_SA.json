@@ -1,6 +1,7 @@
 {
   "Language": "اَلْعَرَبِيَّةُ",
   "MenuBarFileOpenApplet": "فتح التطبيق المصغر",
+  "MenuBarFileOpenAppletOpenMiiApplet": "Mii Edit Applet",
   "MenuBarFileOpenAppletOpenMiiAppletToolTip": "‫افتح تطبيق تحرير Mii في الوضع المستقل",
   "SettingsTabInputDirectMouseAccess": "الوصول المباشر للفأرة",
   "SettingsTabSystemMemoryManagerMode": "وضع إدارة الذاكرة:",

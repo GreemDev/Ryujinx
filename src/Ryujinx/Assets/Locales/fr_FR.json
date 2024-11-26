@@ -1,6 +1,7 @@
 {
   "Language": "Français",
   "MenuBarFileOpenApplet": "Ouvrir un programme",
+  "MenuBarFileOpenAppletOpenMiiApplet": "Éditeur de Mii",
   "MenuBarFileOpenAppletOpenMiiAppletToolTip": "Ouvrir l'éditeur Mii en mode Standalone",
   "SettingsTabInputDirectMouseAccess": "Accès direct à la souris",
   "SettingsTabSystemMemoryManagerMode": "Mode de gestion de la mémoire :",
