@@ -39,7 +39,7 @@ namespace ARMeilleure.Common
         private static readonly AddressTableLevel[] _levels64BitSparseGiant =
             new AddressTableLevel[]
             {
-                new( 38, 1),
+                new( 38, 2),
                 new( 2, 36),
             };
 
