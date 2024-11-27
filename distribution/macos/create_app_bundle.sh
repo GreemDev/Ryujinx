@@ -42,9 +42,10 @@ then
     fi
 
     # cargo install apple-codesign
-    echo "Usign rcodesign for ad-hoc signing"
+    echo "Using rcodesign for ad-hoc signing"
     rcodesign sign --entitlements-xml-path "$ENTITLEMENTS_FILE_PATH" "$APP_BUNDLE_DIRECTORY"
 else
-    echo "Usign codesign for ad-hoc signing"
+    echo "Using codesign for ad-hoc signing"
+    find "$APP_BUNDLE_DIRECTORY" -name "*.dylib" -exec codesign -f -s - {} \;
     codesign --entitlements "$ENTITLEMENTS_FILE_PATH" -f -s - "$APP_BUNDLE_DIRECTORY"
 fi
