@@ -1,6 +1,7 @@
 {
   "Language": "한국어",
   "MenuBarFileOpenApplet": "애플릿 열기",
+  "MenuBarFileOpenAppletOpenMiiApplet": "Mii Edit Applet",
   "MenuBarFileOpenAppletOpenMiiAppletToolTip": "독립 실행형 모드로 Mii 편집기 애플릿 열기",
   "SettingsTabInputDirectMouseAccess": "마우스 직접 접근",
   "SettingsTabSystemMemoryManagerMode": "메모리 관리자 모드 :",
@@ -460,6 +461,7 @@
   "DialogUpdaterExtractionMessage": "업데이트 추출 중...",
   "DialogUpdaterRenamingMessage": "이름 변경 업데이트...",
   "DialogUpdaterAddingFilesMessage": "새 업데이트 추가 중...",
+  "DialogUpdaterShowChangelogMessage": "변경 로그 보기",
   "DialogUpdaterCompleteMessage": "업데이트가 완료되었습니다!",
   "DialogUpdaterRestartMessage": "지금 Ryujinx를 다시 시작하시겠습니까?",
   "DialogUpdaterNoInternetMessage": "인터넷에 연결되어 있지 않습니다!",
