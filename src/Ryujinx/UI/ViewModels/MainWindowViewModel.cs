@@ -1271,6 +1271,108 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
         }
 
+        private async Task HandleKeysInstallation(string filename)
+        {
+            try
+            {
+                string systemDirectory = AppDataManager.KeysDirPath;
+                if (AppDataManager.Mode == AppDataManager.LaunchMode.UserProfile && Directory.Exists(AppDataManager.KeysDirPathUser))
+                {
+                    systemDirectory = AppDataManager.KeysDirPathUser;
+                }
+
+                string dialogTitle = LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogKeysInstallerKeysInstallTitle);
+                string dialogMessage = LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogKeysInstallerKeysInstallMessage);
+
+                bool alreadyKesyInstalled = ContentManager.AreKeysAlredyPresent(systemDirectory);
+                if (alreadyKesyInstalled)
+                {
+                    dialogMessage += LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogKeysInstallerKeysInstallSubMessage);
+                }
+
+                dialogMessage += LocaleManager.Instance[LocaleKeys.DialogKeysInstallerKeysInstallConfirmMessage];
+
+                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(
+                    dialogTitle,
+                    dialogMessage,
+                    LocaleManager.Instance[LocaleKeys.InputDialogYes],
+                    LocaleManager.Instance[LocaleKeys.InputDialogNo],
+                    LocaleManager.Instance[LocaleKeys.RyujinxConfirm]);
+
+                UpdateWaitWindow waitingDialog = new(dialogTitle, LocaleManager.Instance[LocaleKeys.DialogKeysInstallerKeysInstallWaitMessage]);
+
+                if (result == UserResult.Yes)
+                {
+                    Logger.Info?.Print(LogClass.Application, $"Installing Keys");
+
+                    Thread thread = new(() =>
+                    {
+                        Dispatcher.UIThread.InvokeAsync(delegate
+                        {
+                            waitingDialog.Show();
+                        });
+
+                        try
+                        {
+                            ContentManager.InstallKeys(filename, systemDirectory);
+
+                            Dispatcher.UIThread.InvokeAsync(async delegate
+                            {
+                                waitingDialog.Close();
+
+                                string message = LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogKeysInstallerKeysInstallSuccessMessage);
+
+                                await ContentDialogHelper.CreateInfoDialog(
+                                    dialogTitle,
+                                    message,
+                                    LocaleManager.Instance[LocaleKeys.InputDialogOk],
+                                    string.Empty,
+                                    LocaleManager.Instance[LocaleKeys.RyujinxInfo]);
+
+                                Logger.Info?.Print(LogClass.Application, message);
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            Dispatcher.UIThread.InvokeAsync(async () =>
+                            {
+                                waitingDialog.Close();
+
+                                string message = ex.Message;
+                                if(ex is FormatException)
+                                {
+                                    message = LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogKeysInstallerKeysNotFoundErrorMessage, filename);
+                                }
+
+                                await ContentDialogHelper.CreateErrorDialog(message);
+                            });
+                        }
+                        finally
+                        {
+                            VirtualFileSystem.ReloadKeySet();
+                        }
+                    })
+                    {
+                        Name = "GUI.KeysInstallerThread",
+                    };
+
+                    thread.Start();
+                }
+            }
+            catch (MissingKeyException ex)
+            {
+                if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime)
+                {
+                    Logger.Error?.Print(LogClass.Application, ex.ToString());
+
+                    await UserErrorDialog.ShowUserErrorDialog(UserError.NoKeys);
+                }
+            }
+            catch (Exception ex)
+            {
+                await ContentDialogHelper.CreateErrorDialog(ex.Message);
+            }
+        }
         private void ProgressHandler<T>(T state, int current, int total) where T : Enum
         {
             Dispatcher.UIThread.Post(() =>
@@ -1556,6 +1658,53 @@ namespace Ryujinx.Ava.UI.ViewModels
             if (result.Count > 0)
             {
                 await HandleFirmwareInstallation(result[0].Path.LocalPath);
+            }
+        }
+
+        public async Task InstallKeysFromFile()
+        {
+            var result = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                AllowMultiple = false,
+                FileTypeFilter = new List<FilePickerFileType>
+                {
+                    new(LocaleManager.Instance[LocaleKeys.FileDialogAllTypes])
+                    {
+                        Patterns = new[] { "*.keys", "*.zip" },
+                        AppleUniformTypeIdentifiers = new[] { "com.ryujinx.xci", "public.zip-archive" },
+                        MimeTypes = new[] { "application/keys", "application/zip" },
+                    },
+                    new("KEYS")
+                    {
+                        Patterns = new[] { "*.keys" },
+                        AppleUniformTypeIdentifiers = new[] { "com.ryujinx.xci" },
+                        MimeTypes = new[] { "application/keys" },
+                    },
+                    new("ZIP")
+                    {
+                        Patterns = new[] { "*.zip" },
+                        AppleUniformTypeIdentifiers = new[] { "public.zip-archive" },
+                        MimeTypes = new[] { "application/zip" },
+                    },
+                },
+            });
+
+            if (result.Count > 0)
+            {
+                await HandleKeysInstallation(result[0].Path.LocalPath);
+            }
+        }
+
+        public async Task InstallKeysFromFolder()
+        {
+            var result = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+            {
+                AllowMultiple = false,
+            });
+
+            if (result.Count > 0)
+            {
+                await HandleKeysInstallation(result[0].Path.LocalPath);
             }
         }
 
