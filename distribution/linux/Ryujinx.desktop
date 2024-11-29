@@ -12,3 +12,4 @@ MimeType=application/x-nx-nca;application/x-nx-nro;application/x-nx-nso;applicat
 Keywords=Switch;Nintendo;Emulator;
 StartupWMClass=Ryujinx
 PrefersNonDefaultGPU=true
+X-AppImage-Integrate=false
