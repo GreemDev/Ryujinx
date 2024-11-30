@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:helpers="clr-namespace:Ryujinx.Ava.UI.Helpers"
     xmlns:models="clr-namespace:Ryujinx.Ava.UI.Models"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
@@ -40,19 +40,19 @@
                 Orientation="Horizontal"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center">
-                <Label Content="{locale:Locale CommonSort}" VerticalAlignment="Center" />
+                <Label Content="{ext:Locale CommonSort}" VerticalAlignment="Center" />
                 <ComboBox SelectedIndex="{Binding SortIndex}" Width="100">
                     <ComboBoxItem>
                         <Label
                             VerticalAlignment="Center"
                             HorizontalContentAlignment="Left"
-                            Content="{locale:Locale Name}" />
+                            Content="{ext:Locale Name}" />
                     </ComboBoxItem>
                     <ComboBoxItem>
                         <Label
                             VerticalAlignment="Center"
                             HorizontalContentAlignment="Left"
-                            Content="{locale:Locale Size}" />
+                            Content="{ext:Locale Size}" />
                     </ComboBoxItem>
                     <ComboBox.Styles>
                         <Style Selector="ContentControl#ContentPresenter">
@@ -65,13 +65,13 @@
                         <Label
                             VerticalAlignment="Center"
                             HorizontalContentAlignment="Left"
-                            Content="{locale:Locale OrderAscending}" />
+                            Content="{ext:Locale OrderAscending}" />
                     </ComboBoxItem>
                     <ComboBoxItem>
                         <Label
                             VerticalAlignment="Center"
                             HorizontalContentAlignment="Left"
-                            Content="{locale:Locale OrderDescending}" />
+                            Content="{ext:Locale OrderDescending}" />
                     </ComboBoxItem>
                     <ComboBox.Styles>
                         <Style Selector="ContentControl#ContentPresenter">
@@ -88,7 +88,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Label Content="{locale:Locale Search}" VerticalAlignment="Center" />
+                <Label Content="{ext:Locale Search}" VerticalAlignment="Center" />
                 <TextBox
                     Margin="5,0,0,0"
                     Grid.Column="1"

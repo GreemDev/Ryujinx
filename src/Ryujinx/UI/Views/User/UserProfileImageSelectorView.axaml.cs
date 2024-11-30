@@ -63,8 +63,7 @@ namespace Ryujinx.Ava.UI.Views.User
 
         private async void Import_OnClick(object sender, RoutedEventArgs e)
         {
-            var window = this.GetVisualRoot() as Window;
-            var result = await window.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            var result = await ((Window)this.GetVisualRoot()!).StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 AllowMultiple = false,
                 FileTypeFilter = new List<FilePickerFileType>

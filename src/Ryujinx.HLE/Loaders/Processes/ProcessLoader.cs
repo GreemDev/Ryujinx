@@ -145,7 +145,7 @@ namespace Ryujinx.HLE.Loaders.Processes
             IFileSystem dummyExeFs = null;
             Stream romfsStream = null;
 
-            string programName = "";
+            string programName = string.Empty;
             ulong programId = 0000000000000000;
 
             // Load executable.

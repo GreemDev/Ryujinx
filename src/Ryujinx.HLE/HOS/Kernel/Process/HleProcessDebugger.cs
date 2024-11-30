@@ -238,7 +238,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
             }
             else
             {
-                info.SubName = "";
+                info.SubName = string.Empty;
             }
 
             info.ImageName = GetGuessedNsoNameFromIndex(imageIndex);

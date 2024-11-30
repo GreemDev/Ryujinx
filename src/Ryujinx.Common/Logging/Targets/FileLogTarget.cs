@@ -47,7 +47,7 @@ namespace Ryujinx.Common.Logging.Targets
             }
 
             // Clean up old logs, should only keep 3
-            FileInfo[] files = logDir.GetFiles("*.log").OrderBy((info => info.CreationTime)).ToArray();
+            FileInfo[] files = logDir.GetFiles("*.log").OrderBy(info => info.CreationTime).ToArray();
             for (int i = 0; i < files.Length - 2; i++)
             {
                 try
@@ -69,9 +69,10 @@ namespace Ryujinx.Common.Logging.Targets
             }
 
             string version = ReleaseInformation.Version;
+            string appName = ReleaseInformation.IsCanaryBuild ? "Ryujinx_Canary" : "Ryujinx";
 
             // Get path for the current time
-            path = Path.Combine(logDir.FullName, $"Ryujinx_{version}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log");
+            path = Path.Combine(logDir.FullName, $"{appName}_{version}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log");
 
             try
             {

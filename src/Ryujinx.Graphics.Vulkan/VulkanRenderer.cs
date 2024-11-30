@@ -104,24 +104,26 @@ namespace Ryujinx.Graphics.Vulkan
 
         public event EventHandler<ScreenCaptureImageInfo> ScreenCaptured;
 
-        public VulkanRenderer(Vk api, Func<Instance, Vk, SurfaceKHR> surfaceFunc, Func<string[]> requiredExtensionsFunc, string preferredGpuId)
+        public VulkanRenderer(Vk api, Func<Instance, Vk, SurfaceKHR> getSurface, Func<string[]> requiredExtensionsFunc, string preferredGpuId)
         {
-            _getSurface = surfaceFunc;
+            _getSurface = getSurface;
             _getRequiredExtensions = requiredExtensionsFunc;
             _preferredGpuId = preferredGpuId;
             Api = api;
-            Shaders = new HashSet<ShaderCollection>();
-            Textures = new HashSet<ITexture>();
-            Samplers = new HashSet<SamplerHolder>();
+            Shaders = [];
+            Textures = [];
+            Samplers = [];
 
-            if (OperatingSystem.IsMacOS())
-            {
+            // Any device running on MacOS is using MoltenVK, even Intel and AMD vendors.
+            if (IsMoltenVk = OperatingSystem.IsMacOS())
                 MVKInitialization.Initialize();
-
-                // Any device running on MacOS is using MoltenVK, even Intel and AMD vendors.
-                IsMoltenVk = true;
-            }
         }
+
+        public static VulkanRenderer Create(
+            string preferredGpuId, 
+            Func<Instance, Vk, SurfaceKHR> getSurface,
+            Func<string[]> getRequiredExtensions
+        ) => new(Vk.GetApi(), getSurface, getRequiredExtensions, preferredGpuId);
 
         private unsafe void LoadFeatures(uint maxQueueCount, uint queueFamilyIndex)
         {
@@ -547,7 +549,7 @@ namespace Ryujinx.Graphics.Vulkan
         public IProgram CreateProgram(ShaderSource[] sources, ShaderInfo info)
         {
             ProgramCount++;
-            
+
             bool isCompute = sources.Length == 1 && sources[0].Stage == ShaderStage.Compute;
 
             if (info.State.HasValue || isCompute)

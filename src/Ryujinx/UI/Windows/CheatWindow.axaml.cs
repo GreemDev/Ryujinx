@@ -72,15 +72,15 @@ namespace Ryujinx.Ava.UI.Windows
                 if (cheat.Path.FullName != currentCheatFile)
                 {
                     currentCheatFile = cheat.Path.FullName;
-                    string parentPath = currentCheatFile.Replace(titleModsPath, "");
+                    string parentPath = currentCheatFile.Replace(titleModsPath, string.Empty);
 
                     buildId = Path.GetFileNameWithoutExtension(currentCheatFile).ToUpper();
-                    currentGroup = new CheatNode("", buildId, parentPath, true);
+                    currentGroup = new CheatNode(string.Empty, buildId, parentPath, true);
 
                     LoadedCheats.Add(currentGroup);
                 }
 
-                var model = new CheatNode(cheat.Name, buildId, "", false, enabled.Contains($"{buildId}-{cheat.Name}"));
+                var model = new CheatNode(cheat.Name, buildId, string.Empty, false, enabled.Contains($"{buildId}-{cheat.Name}"));
                 currentGroup?.SubNodes.Add(model);
 
                 cheatAdded++;
