@@ -33,7 +33,7 @@
   "MenuBarFileToolsInstallFirmwareFromDirectory": "Instalar firmware desde una carpeta",
   "MenuBarToolsInstallKeys": "Install Keys",
   "MenuBarFileToolsInstallKeysFromFile": "Instalar keys de KEYS o ZIP",
-  "MenuBarFileToolsInstallKeysFromFolder": "Instalar keys de una directory",
+  "MenuBarFileToolsInstallKeysFromFolder": "Instalar keys de un directorio",
   "MenuBarToolsManageFileTypes": "Administrar tipos de archivo",
   "MenuBarToolsInstallFileTypes": "Instalar tipos de archivo",
   "MenuBarToolsUninstallFileTypes": "Desinstalar tipos de archivo",
