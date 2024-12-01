@@ -695,7 +695,7 @@
   "TitleXCIStatusUntrimmableLabel": "Recortado",
   "TitleXCIStatusFailedLabel": "(Fallido)",
   "TitleXCICanSaveLabel": "Ahorra {0:n0} Mb",
-  "TitleXCISavingLabel": "Ahorrado {0:n0} Mb",
+  "TitleXCISavingLabel": "{0:n0} Mb ahorrado(s)",
   "RyujinxInfo": "Ryujinx - Info",
   "RyujinxConfirm": "Ryujinx - Confirmación",
   "FileDialogAllTypes": "Todos los tipos",
