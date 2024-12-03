@@ -321,7 +321,7 @@ namespace Ryujinx.Input.HLE
         {
             lock (_lock)
             {
-                return _inputConfig.Find(x => x.PlayerIndex == (Common.Configuration.Hid.PlayerIndex)index);
+                return _inputConfig.FirstOrDefault(x => x.PlayerIndex == (Common.Configuration.Hid.PlayerIndex)index);
             }
         }
 
