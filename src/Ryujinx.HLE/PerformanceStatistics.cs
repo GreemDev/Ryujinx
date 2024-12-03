@@ -21,8 +21,8 @@ namespace Ryujinx.HLE
         private readonly long[] _framesRendered;
         private readonly double[] _percentTime;
 
-        private readonly Lock[] _frameLock = new[] { new Lock() };
-        private readonly Lock[] _percentLock = new[] { new Lock() };
+        private readonly Lock[] _frameLock = [new()];
+        private readonly Lock[] _percentLock = [new()];
 
         private readonly double _ticksToSeconds;
 
