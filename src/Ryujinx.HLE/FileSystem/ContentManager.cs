@@ -22,6 +22,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Path = System.IO.Path;
 
 namespace Ryujinx.HLE.FileSystem
@@ -55,7 +56,7 @@ namespace Ryujinx.HLE.FileSystem
 
         private readonly VirtualFileSystem _virtualFileSystem;
 
-        private readonly object _lock = new();
+        private readonly Lock _lock = new();
 
         public ContentManager(VirtualFileSystem virtualFileSystem)
         {
@@ -1076,7 +1077,7 @@ namespace Ryujinx.HLE.FileSystem
             {
                 if (File.Exists(Path.Combine(pathToCheck, file)))
                 {
-                    return true;                    
+                    return true;
                 }
             }
             return false;
