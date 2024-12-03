@@ -19,7 +19,7 @@ namespace Ryujinx.Audio.Input
         /// <summary>
         /// Lock used for session allocation.
         /// </summary>
-        private readonly object _sessionLock = new();
+        private readonly Lock _sessionLock = new();
 
         /// <summary>
         /// The session ids allocation table.
