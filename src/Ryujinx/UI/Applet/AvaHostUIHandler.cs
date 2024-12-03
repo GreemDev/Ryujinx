@@ -196,7 +196,7 @@ namespace Ryujinx.Ava.UI.Applet
             {
                 dialogCloseEvent.Set();
                 await ContentDialogHelper.CreateInfoDialog(LocaleManager.Instance[LocaleKeys.CabinetScanDialog],
-                "",
+                string.Empty,
                 LocaleManager.Instance[LocaleKeys.InputDialogOk],
                 string.Empty,
                 LocaleManager.Instance[LocaleKeys.CabinetTitle]);

@@ -97,7 +97,7 @@ namespace Ryujinx.HLE.HOS.Applets.Cabinet
             };
             _system.Device.System.NfpDevices.Add(devicePlayer1);
             _system.Device.UIHandler.DisplayCabinetMessageDialog();
-            string amiiboId = "";
+            string amiiboId = string.Empty;
             bool scanned = false;
             while (!scanned)
             {
