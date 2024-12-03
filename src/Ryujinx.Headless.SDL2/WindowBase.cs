@@ -1,4 +1,5 @@
 using Humanizer;
+using LibHac.Tools.Fs;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Logging;
@@ -86,13 +87,15 @@ namespace Ryujinx.Headless.SDL2
 
         private readonly AspectRatio _aspectRatio;
         private readonly bool _enableMouse;
+        private readonly bool _ignoreControllerApplet;
 
         public WindowBase(
             InputManager inputManager,
             GraphicsDebugLevel glLogLevel,
             AspectRatio aspectRatio,
             bool enableMouse,
-            HideCursorMode hideCursorMode)
+            HideCursorMode hideCursorMode,
+            bool ignoreControllerApplet)
         {
             MouseDriver = new SDL2MouseDriver(hideCursorMode);
             _inputManager = inputManager;
@@ -108,6 +111,7 @@ namespace Ryujinx.Headless.SDL2
             _gpuDoneEvent = new ManualResetEvent(false);
             _aspectRatio = aspectRatio;
             _enableMouse = enableMouse;
+            _ignoreControllerApplet = ignoreControllerApplet;
             HostUITheme = new HeadlessHostUiTheme();
 
             SDL2Driver.Instance.Initialize();
@@ -311,7 +315,7 @@ namespace Ryujinx.Headless.SDL2
                         }
 
                         StatusUpdatedEvent?.Invoke(this, new StatusUpdatedEventArgs(
-                            Device.EnableDeviceVsync,
+                            Device.VSyncMode.ToString(),
                             dockedMode,
                             Device.Configuration.AspectRatio.ToText(),
                             $"Game: {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
@@ -482,8 +486,23 @@ namespace Ryujinx.Headless.SDL2
             return true;
         }
 
+        public bool DisplayCabinetDialog(out string userText)
+        {
+            // SDL2 doesn't support input dialogs
+            userText = "Ryujinx";
+
+            return true;
+        }
+
+        public void DisplayCabinetMessageDialog()
+        {
+            SDL_ShowSimpleMessageBox(SDL_MessageBoxFlags.SDL_MESSAGEBOX_INFORMATION, "Cabinet Dialog", "Please scan your Amiibo now.", WindowHandle);
+        }
+
         public bool DisplayMessageDialog(ControllerAppletUIArgs args)
         {
+            if (_ignoreControllerApplet) return false;
+            
             string playerCount = args.PlayerCountMin == args.PlayerCountMax ? $"exactly {args.PlayerCountMin}" : $"{args.PlayerCountMin}-{args.PlayerCountMax}";
 
             string message = $"Application requests {playerCount} {"player".ToQuantity(args.PlayerCountMin + args.PlayerCountMax, ShowQuantityAs.None)} with:\n\n"

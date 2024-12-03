@@ -444,8 +444,7 @@ namespace Ryujinx.Headless.SDL2
                 {
                     Logger.AddTarget(new AsyncLogTargetWrapper(
                         new FileLogTarget("file", logFile),
-                        1000,
-                        AsyncLogTargetOverflowAction.Block
+                        1000
                     ));
                 }
                 else
@@ -506,8 +505,8 @@ namespace Ryujinx.Headless.SDL2
         private static WindowBase CreateWindow(Options options)
         {
             return options.GraphicsBackend == GraphicsBackend.Vulkan
-                ? new VulkanWindow(_inputManager, options.LoggingGraphicsDebugLevel, options.AspectRatio, options.EnableMouse, options.HideCursorMode)
-                : new OpenGLWindow(_inputManager, options.LoggingGraphicsDebugLevel, options.AspectRatio, options.EnableMouse, options.HideCursorMode);
+                ? new VulkanWindow(_inputManager, options.LoggingGraphicsDebugLevel, options.AspectRatio, options.EnableMouse, options.HideCursorMode, options.IgnoreControllerApplet)
+                : new OpenGLWindow(_inputManager, options.LoggingGraphicsDebugLevel, options.AspectRatio, options.EnableMouse, options.HideCursorMode, options.IgnoreControllerApplet);
         }
 
         private static IRenderer CreateRenderer(Options options, WindowBase window)
@@ -564,7 +563,7 @@ namespace Ryujinx.Headless.SDL2
                 window,
                 options.SystemLanguage,
                 options.SystemRegion,
-                !options.DisableVSync,
+                options.VSyncMode,
                 !options.DisableDockedMode,
                 !options.DisablePTC,
                 options.EnableInternetAccess,
@@ -578,7 +577,11 @@ namespace Ryujinx.Headless.SDL2
                 options.AudioVolume,
                 options.UseHypervisor ?? true,
                 options.MultiplayerLanInterfaceId,
-                Common.Configuration.Multiplayer.MultiplayerMode.Disabled);
+                Common.Configuration.Multiplayer.MultiplayerMode.Disabled,
+                false,
+                "",
+                "",
+                options.CustomVSyncInterval);
 
             return new Switch(configuration);
         }

@@ -64,16 +64,17 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
             };
         }
 
-        public static RegisterInfo GetRegisterInfo(ITickSource tickSource, string amiiboId, string nickname)
+        public static RegisterInfo GetRegisterInfo(ITickSource tickSource, string amiiboId, string userName)
         {
             VirtualAmiiboFile amiiboFile = LoadAmiiboFile(amiiboId);
-
+            string nickname = amiiboFile.NickName ?? "Ryujinx";
             UtilityImpl utilityImpl = new(tickSource);
             CharInfo charInfo = new();
 
             charInfo.SetFromStoreData(StoreData.BuildDefault(utilityImpl, 0));
 
-            charInfo.Nickname = Nickname.FromString(nickname);
+            // This is the player's name
+            charInfo.Nickname = Nickname.FromString(userName);
 
             RegisterInfo registerInfo = new()
             {
@@ -85,9 +86,18 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
                 Reserved1 = new Array64<byte>(),
                 Reserved2 = new Array58<byte>(),
             };
-            "Ryujinx"u8.CopyTo(registerInfo.Nickname.AsSpan());
+            // This is the amiibo's name
+            byte[] nicknameBytes = System.Text.Encoding.UTF8.GetBytes(nickname);
+            nicknameBytes.CopyTo(registerInfo.Nickname.AsSpan());
 
             return registerInfo;
+        }
+
+        public static void UpdateNickName(string amiiboId, string newNickName)
+        {
+            VirtualAmiiboFile virtualAmiiboFile = LoadAmiiboFile(amiiboId);
+            virtualAmiiboFile.NickName = newNickName;
+            SaveAmiiboFile(virtualAmiiboFile);
         }
 
         public static bool OpenApplicationArea(string amiiboId, uint applicationAreaId)
