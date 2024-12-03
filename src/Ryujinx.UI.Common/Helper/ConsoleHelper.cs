@@ -25,7 +25,6 @@ namespace Ryujinx.UI.Common.Helper
         [return: MarshalAs(UnmanagedType.Bool)]
         private static partial bool SetForegroundWindow(nint hWnd);
 
-
         public static bool SetConsoleWindowStateSupported => OperatingSystem.IsWindows();
 
         public static void SetConsoleWindowState(bool show)
