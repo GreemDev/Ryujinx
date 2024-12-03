@@ -1,5 +1,6 @@
 using Ryujinx.Common.Logging;
 using Ryujinx.HLE.HOS.Applets.Browser;
+using Ryujinx.HLE.HOS.Applets.Cabinet;
 using Ryujinx.HLE.HOS.Applets.Dummy;
 using Ryujinx.HLE.HOS.Applets.Error;
 using Ryujinx.HLE.HOS.Services.Am.AppletAE;
@@ -31,6 +32,8 @@ namespace Ryujinx.HLE.HOS.Applets
                 case AppletId.MiiEdit:
                     Logger.Warning?.Print(LogClass.Application, $"Please use the MiiEdit inside File/Open Applet");
                     return new DummyApplet(system);
+                case AppletId.Cabinet:
+                    return new CabinetApplet(system);
             }
 
             Logger.Warning?.Print(LogClass.Application, $"Applet {applet} not implemented!");
