@@ -84,15 +84,25 @@ namespace Ryujinx.HLE.Loaders.Processes
                 return false;
             }
 
-            bool isGame = ProgramId > 0x0100000000007FFF;
+            bool IsFirmware(ulong programId)
+            {
+                return programId switch
+                {
+                    >= 0x0100000000000819 and <= 0x010000000000081C => true,
+                    _ => false
+                };
+            }
+
+            bool isFirmware = IsFirmware(ProgramId);
+            bool isMiiEdit = ProgramId == 0x0100000000001009;
             
-            string name = isGame || !string.IsNullOrWhiteSpace(Name)
-                ? Name
+            string name = !isFirmware
+                ? isMiiEdit ? "miiEdit from Firmware" : (!string.IsNullOrWhiteSpace(Name) ? Name : "<Unknown Name>")
                 : "Firmware";
 
             // TODO: LibHac npdm currently doesn't support version field.
-            string version = isGame || !string.IsNullOrWhiteSpace(DisplayVersion)
-                ? DisplayVersion
+            string version = !isFirmware && !isMiiEdit
+                ? (!string.IsNullOrWhiteSpace(DisplayVersion) ? DisplayVersion : "<Unknown Version>")
                 : device.System.ContentManager.GetCurrentFirmwareVersion()?.VersionString ?? "?";
 
             Logger.Info?.Print(LogClass.Loader, $"Application Loaded: {name} v{version} [{ProgramIdText}] [{(Is64Bit ? "64-bit" : "32-bit")}]");
