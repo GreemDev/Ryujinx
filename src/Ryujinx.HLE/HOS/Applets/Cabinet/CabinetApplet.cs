@@ -71,8 +71,7 @@ namespace Ryujinx.HLE.HOS.Applets.Cabinet
 
         public ResultCode GetResult()
         {
-            var amiibo = _system.Device.System.NfpDevices[0];
-            _system.Device.System.NfpDevices.Remove(amiibo);
+            _system.Device.System.NfpDevices.RemoveAt(0);
             return ResultCode.Success;
         }
 
