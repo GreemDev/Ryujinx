@@ -86,12 +86,12 @@ namespace Ryujinx.HLE.Loaders.Processes
 
             bool isGame = ProgramId > 0x0100000000007FFF;
             
-            string name = isGame
+            string name = isGame || !string.IsNullOrWhiteSpace(Name)
                 ? Name
                 : "Firmware";
 
             // TODO: LibHac npdm currently doesn't support version field.
-            string version = isGame
+            string version = isGame || !string.IsNullOrWhiteSpace(DisplayVersion)
                 ? DisplayVersion
                 : device.System.ContentManager.GetCurrentFirmwareVersion()?.VersionString ?? "?";
 
