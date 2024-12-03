@@ -1,7 +1,6 @@
 using Ryujinx.Common.Logging;
 using System;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.Marshalling;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.UI.Common.Helper
