@@ -79,35 +79,5 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
                     break; // Stop if no overflow
             }
         }
-
-        public DateTime ParseDate(byte[] data, int offset)
-        {
-            ushort year = BitConverter.ToUInt16(data, offset);
-            byte month = data[offset + 2];
-            byte day = data[offset + 3];
-            byte hour = data[offset + 4];
-            byte minute = data[offset + 5];
-            byte second = data[offset + 6];
-
-            return new DateTime(year, month, day, hour, minute, second);
-        }
-
-        public List<object> ParseApplicationAreas(byte[] data, int startOffset, int areaSize)
-        {
-            var areas = new List<object>();
-            for (int i = 0; i < 8; i++) // Assuming 8 areas
-            {
-                int offset = startOffset + (i * areaSize);
-                string applicationId = BitConverter.ToString(data[offset..(offset + 4)]).Replace("-", "");
-                byte[] areaData = data[(offset + 4)..(offset + areaSize)];
-                areas.Add(new VirtualAmiiboApplicationArea
-                {
-                    ApplicationAreaId = uint.Parse(applicationId),
-                    ApplicationArea = areaData
-                });
-            }
-
-            return areas;
-        }
     }
 }

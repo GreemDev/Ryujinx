@@ -3,9 +3,11 @@ using Ryujinx.HLE.HOS.Services.Nfc.Nfp;
 using Ryujinx.HLE.HOS.Services.Nfc.Nfp.NfpManager;
 using Ryujinx.HLE.HOS.Tamper;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using System.Text.Json;
 
@@ -64,17 +66,24 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
             byte[] writeDate = new byte[2];
             byte[] writeCounter = new byte[2];
             byte formData = 0;
-            byte[] applicationAreas = new byte[212];
+            byte[] applicationAreas = new byte[216];
+            byte[] appid = new byte[2];
+            byte[] SettingsBytes = new byte[2];
+            //// apply to decrypt bytes self.data[304:308] = self._calculate_crc32(self.data[308:520]).to_bytes(4, "little")
+            //byte[] crc32Bytes = new byte[212];
+            //Array.Copy(decryptedFileBytes, 308, crc32Bytes, 0, 212);
+            //byte[] toApply = BitConverter.GetBytes(CalculateCRC32(crc32Bytes));
+            //Array.Reverse(crc32Bytes);
+            //Array.Copy(toApply, 0, decryptedFileBytes, 304, 4);
 
             // Reading specific pages and parsing bytes
-            for (int page = 0; page < 128; page++) // NTAG215 has 128 pages
+            for (int page = 0; page < 134; page++) // NTAG215 has 128 pages
             {
                 int pageStartIdx = page * 4; // Each page is 4 bytes
                 byte[] pageData = new byte[4];
                 bool isEncrypted = IsPageEncrypted(page);
                 byte[] sourceBytes = isEncrypted ? decryptedFileBytes : fileBytes;
                 Array.Copy(sourceBytes, pageStartIdx, pageData, 0, 4);
-
                 // Special handling for specific pages
                 switch (page)
                 {
@@ -85,6 +94,10 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
                     case 2: // Page 2 (BCC1 + Internal Value)
                         byte internalValue = pageData[1];
                         Console.WriteLine($"Page 2: BCC1 + Internal Value 0x{internalValue:X2} (Expected 0x48).");
+                        break;
+                    case 5:
+                        // byte 0 amd 1 are settings
+                        Array.Copy(pageData, 0, SettingsBytes, 0, 2);
                         break;
 
                     case 6:
@@ -126,22 +139,28 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
                     case 66:
                         // Bytes 0 and 1 are write counter
                         Array.Copy(pageData, 0, writeCounter, 0, 2);
+                        // bytes 2 and 3 are appid
+                        Array.Copy(pageData, 2, appid, 0, 2);
                         break;
 
                     // Pages 76 to 127 are application areas
-                    case >= 76 and <= 127:
+                    case >= 76 and <= 129:
                         int appAreaOffset = (page - 76) * 4;
                         Array.Copy(pageData, 0, applicationAreas, appAreaOffset, 4);
                         break;
                 }
+
             }
+
             // Debugging
-            string titleIdStr = BitConverter.ToString(titleId).Replace("-", "");
+            uint titleIdStr = BitConverter.ToUInt32(titleId, 0);
             string usedCharacterStr = BitConverter.ToString(usedCharacter).Replace("-", "");
             string variationStr = BitConverter.ToString(variation).Replace("-", "");
             string amiiboIDStr = BitConverter.ToString(amiiboID).Replace("-", "");
             string formDataStr = formData.ToString("X2");
             string setIDStr = BitConverter.ToString(setID).Replace("-", "");
+            uint settingsStr = BitConverter.ToUInt16(SettingsBytes, 0);
+
             string nickName = Encoding.BigEndianUnicode.GetString(nickNameBytes).TrimEnd('\0');
             string head = usedCharacterStr + variationStr;
             string tail = amiiboIDStr + setIDStr + "02";
@@ -161,6 +180,8 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
             Console.WriteLine($"Nickname: {nickName}");
             Console.WriteLine($"Init Date: {initDateStr}");
             Console.WriteLine($"Write Date: {writeDateStr}");
+            Console.WriteLine($"Settings: {settingsStr}");
+            Console.WriteLine("Length of Application Areas: " + applicationAreas.Length);
 
             VirtualAmiiboFile virtualAmiiboFile = new VirtualAmiiboFile
             {
@@ -168,9 +189,10 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
                 TagUuid = uid,
                 AmiiboId = finalID
             };
-
-            DateTime initDateTime = DateTimeFromBytes(initDate);
-            DateTime writeDateTime = DateTimeFromBytes(writeDate);
+            ushort initDateValue = BitConverter.ToUInt16(initDate, 0);
+            ushort writeDateValue = BitConverter.ToUInt16(writeDate, 0);
+            DateTime initDateTime = DateTimeFromTag(initDateValue);
+            DateTime writeDateTime = DateTimeFromTag(writeDateValue);
 
             Console.WriteLine($"Parsed Init Date: {initDateTime}");
             Console.WriteLine($"Parsed Write Date: {writeDateTime}");
@@ -178,16 +200,42 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
             virtualAmiiboFile.FirstWriteDate = initDateTime;
             virtualAmiiboFile.LastWriteDate = writeDateTime;
             virtualAmiiboFile.WriteCounter = BitConverter.ToUInt16(writeCounter, 0);
-
-            // Parse application areas
-            //List<VirtualAmiiboApplicationArea> applicationAreasList = ParseAmiiboData(applicationAreas);
-            List<VirtualAmiiboApplicationArea> applicationAreasList = new List<VirtualAmiiboApplicationArea>();
-            virtualAmiiboFile.ApplicationAreas = applicationAreasList;
-
-            // Save the virtual Amiibo file
             VirtualAmiibo.SaveAmiiboFile(virtualAmiiboFile);
-
+            VirtualAmiibo.applicationBytes = applicationAreas;
             return virtualAmiiboFile;
+        }
+
+        public static uint CalculateCRC32(byte[] input)
+        {
+            // Setup CRC 32 table
+            uint p0 = 0xEDB88320u | 0x80000000u;
+            uint[] u0 = new uint[0x100];
+
+            for (uint i = 1; i < 0x100; i++)
+            {
+                uint t0 = i;
+                for (int j = 0; j < 8; j++)
+                {
+                    if ((t0 & 1) != 0)
+                    {
+                        t0 = (t0 >> 1) ^ p0;
+                    }
+                    else
+                    {
+                        t0 >>= 1;
+                    }
+                }
+                u0[i] = t0;
+            }
+
+            // Calculate CRC32 from table
+            uint t = 0x0;
+            foreach (byte k in input)
+            {
+                t = (t >> 8) ^ u0[(k ^ t) & 0xFF];
+            }
+
+            return t ^ 0xFFFFFFFFu;
         }
 
         private static string GetKeyRetailBinPath()
@@ -197,37 +245,25 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
 
         public static bool IsPageEncrypted(int page)
         {
-            return (page >= 6 && page <= 9) || (page >= 43 && page <= 84);
+            // 0-4 are not encrypted, 5-12 is encrypted, 13-39 is not encrypted,
+            // 40-129 is encrypted, and 130-134 is not encrypted.
+
+            return (page >= 5 && page <= 12) || (page >= 40 && page <= 129);
         }
 
-        public static DateTime DateTimeFromBytes(byte[] date)
+        public static DateTime DateTimeFromTag(ushort value)
         {
-            if (date == null || date.Length != 2)
-            {
-                Console.WriteLine("Invalid date bytes.");
-                return DateTime.MinValue;
-            }
-
-            ushort value = BitConverter.ToUInt16(date, 0);
-
-            int day = value & 0x1F;
-            int month = (value >> 5) & 0x0F;
-            int year = (value >> 9) & 0x7F;
-
             try
             {
-                return new DateTime(2000 + year, month, day);
+                var day = value & 0x1F;
+                var month = (value >> 5) & 0x0F;
+                var year = (value >> 9) & 0x7F;
+                return new DateTime(1970 + year, month, day);
             }
-            catch (ArgumentOutOfRangeException)
+            catch
             {
-                Console.WriteLine("Invalid date values extracted.");
-                return DateTime.MinValue;
+                return DateTime.Now;
             }
-        }
-
-        public static List<VirtualAmiiboApplicationArea> ParseAmiiboData(byte[] decryptedData)
-        {
-            return JsonSerializer.Deserialize<List<VirtualAmiiboApplicationArea>>(decryptedData);
         }
     }
 }

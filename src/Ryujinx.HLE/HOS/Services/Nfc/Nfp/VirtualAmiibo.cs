@@ -13,10 +13,9 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
 {
     static class VirtualAmiibo
     {
-        private static uint _openedApplicationAreaId;
-
+        public static uint _openedApplicationAreaId;
+        public static byte[] applicationBytes = new byte[0];
         private static readonly AmiiboJsonSerializerContext _serializerContext = AmiiboJsonSerializerContext.Default;
-
         public static byte[] GenerateUuid(string amiiboId, bool useRandomUuid)
         {
             if (useRandomUuid)
@@ -103,6 +102,11 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
         public static bool OpenApplicationArea(string amiiboId, uint applicationAreaId)
         {
             VirtualAmiiboFile virtualAmiiboFile = LoadAmiiboFile(amiiboId);
+            if (applicationBytes.Length > 0)
+            {
+                _openedApplicationAreaId = applicationAreaId;
+                return true;
+            }
 
             if (virtualAmiiboFile.ApplicationAreas.Exists(item => item.ApplicationAreaId == applicationAreaId))
             {
@@ -116,6 +120,12 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
 
         public static byte[] GetApplicationArea(string amiiboId)
         {
+            if (applicationBytes.Length > 0)
+            {
+                byte[] bytes = applicationBytes;
+                applicationBytes = new byte[0];
+                return bytes;
+            }
             VirtualAmiiboFile virtualAmiiboFile = LoadAmiiboFile(amiiboId);
 
             foreach (VirtualAmiiboApplicationArea applicationArea in virtualAmiiboFile.ApplicationAreas)
@@ -209,5 +219,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
             string filePath = Path.Join(AppDataManager.BaseDirPath, "system", "amiibo", $"{virtualAmiiboFile.AmiiboId}.json");
             JsonHelper.SerializeToFile(filePath, virtualAmiiboFile, _serializerContext.VirtualAmiiboFile);
         }
+
+        public static bool SaveFileExists(VirtualAmiiboFile virtualAmiiboFile) => File.Exists(Path.Join(AppDataManager.BaseDirPath, "system", "amiibo", $"{virtualAmiiboFile.AmiiboId}.json"));
     }
 }
