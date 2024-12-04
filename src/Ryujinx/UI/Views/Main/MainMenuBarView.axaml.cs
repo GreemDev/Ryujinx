@@ -141,6 +141,9 @@ namespace Ryujinx.Ava.UI.Views.Main
         public async void OpenAmiiboWindow(object sender, RoutedEventArgs e)
             => await ViewModel.OpenAmiiboWindow();
 
+        public async void OpenBinFile(object sender, RoutedEventArgs e)
+            => await ViewModel.OpenBinFile();
+
         public async void OpenCheatManagerForCurrentApp(object sender, RoutedEventArgs e)
         {
             if (!ViewModel.IsGameRunning)
