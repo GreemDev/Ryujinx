@@ -718,7 +718,6 @@
   "UpdaterAddingFiles": "安装更新中...",
   "UpdaterExtracting": "正在提取更新...",
   "UpdaterDownloading": "下载更新中...",
-  "Game": "游戏",
   "Docked": "主机模式",
   "Handheld": "掌机模式",
   "ConnectionError": "连接错误。",
