@@ -70,7 +70,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         private string _gpuStatusText;
         private string _shaderCountText;
         private bool _isAmiiboRequested;
-        private bool _showRightmostSeparator;
+        private bool _showShaderCompilationHint;
         private bool _isGameRunning;
         private bool _isFullScreen;
         private int _progressMaximum;
@@ -275,12 +275,12 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public bool ShowFirmwareStatus => !ShowLoadProgress;
 
-        public bool ShowRightmostSeparator
+        public bool ShowShaderCompilationHint
         {
-            get => _showRightmostSeparator;
+            get => _showShaderCompilationHint;
             set
             {
-                _showRightmostSeparator = value;
+                _showShaderCompilationHint = value;
 
                 OnPropertyChanged();
             }
@@ -1497,7 +1497,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                     VolumeStatusText = args.VolumeStatus;
                     FifoStatusText = args.FifoStatus;
 
-                    ShaderCountText = (ShowRightmostSeparator = args.ShaderCount > 0)
+                    ShaderCountText = (ShowShaderCompilationHint = args.ShaderCount > 0)
                         ? $"{LocaleManager.Instance[LocaleKeys.CompilingShaders]}: {args.ShaderCount}"
                         : string.Empty;
 
