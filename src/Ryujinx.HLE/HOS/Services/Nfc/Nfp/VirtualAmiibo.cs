@@ -17,6 +17,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
         public static uint _openedApplicationAreaId;
         public static byte[] applicationBytes = new byte[0];
         public static string inputBin = string.Empty;
+        public static string nickName = string.Empty;
         private static readonly AmiiboJsonSerializerContext _serializerContext = AmiiboJsonSerializerContext.Default;
         public static byte[] GenerateUuid(string amiiboId, bool useRandomUuid)
         {
@@ -69,6 +70,11 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
         {
             VirtualAmiiboFile amiiboFile = LoadAmiiboFile(amiiboId);
             string nickname = amiiboFile.NickName ?? "Ryujinx";
+            if (nickName != string.Empty)
+            {
+                nickname = nickName;
+                nickName = string.Empty;
+            }
             UtilityImpl utilityImpl = new(tickSource);
             CharInfo charInfo = new();
 

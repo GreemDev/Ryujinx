@@ -145,7 +145,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
             {
                 VirtualAmiibo.applicationBytes = applicationAreas;
             }
-
+            VirtualAmiibo.nickName = nickName;
             return virtualAmiiboFile;
         }
         public static bool SaveBinFile(string inputFile, byte[] appData)
