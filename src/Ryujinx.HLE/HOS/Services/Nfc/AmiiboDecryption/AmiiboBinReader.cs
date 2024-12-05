@@ -3,60 +3,59 @@ using Ryujinx.HLE.HOS.Services.Nfc.Nfp;
 using Ryujinx.HLE.HOS.Services.Nfc.Nfp.NfpManager;
 using Ryujinx.HLE.HOS.Tamper;
 using System;
-using System.CodeDom;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.Intrinsics.Arm;
 using System.Text;
-using System.Text.Json;
 
 namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
 {
     public class AmiiboBinReader
     {
-        // Method to calculate BCC (XOR checksum) from UID bytes
-        private static byte CalculateBCC(byte[] uid, int startIdx)
+        private static byte CalculateBCC0(byte[] uid)
         {
-            return (byte)(uid[startIdx] ^ uid[startIdx + 1] ^ uid[startIdx + 2] ^ 0x88);
+            return (byte)(uid[0] ^ uid[1] ^ uid[2] ^ 0x88);
         }
 
-        // Method to read and process a .bin file
+        private static byte CalculateBCC1(byte[] uid)
+        {
+            return (byte)(uid[3] ^ uid[4] ^ uid[5] ^ uid[6]);
+        }
+
         public static VirtualAmiiboFile ReadBinFile(byte[] fileBytes)
         {
             string keyRetailBinPath = GetKeyRetailBinPath();
             if (string.IsNullOrEmpty(keyRetailBinPath))
             {
-                Console.WriteLine("Key retail bin path not found.");
                 return new VirtualAmiiboFile();
             }
 
             byte[] initialCounter = new byte[16];
 
-            // Ensure the file is long enough
-            if (fileBytes.Length < 128 * 4)  // Each page is 4 bytes, total 512 bytes
+            const int totalPages = 135;
+            const int pageSize = 4;
+            const int totalBytes = totalPages * pageSize;
+
+            if (fileBytes.Length < totalBytes)
             {
-                Console.WriteLine("File is too short to process.");
                 return new VirtualAmiiboFile();
             }
 
-            // Decrypt the Amiibo data
             AmiiboDecrypter amiiboDecryptor = new AmiiboDecrypter(keyRetailBinPath);
             byte[] decryptedFileBytes = amiiboDecryptor.DecryptAmiiboData(fileBytes, initialCounter);
 
-            // Assuming the UID is stored in the first 7 bytes (NTAG215 UID length)
+            if (decryptedFileBytes.Length != totalBytes)
+            {
+                Array.Resize(ref decryptedFileBytes, totalBytes);
+            }
+
             byte[] uid = new byte[7];
             Array.Copy(fileBytes, 0, uid, 0, 7);
 
-            // Calculate BCC values
-            byte bcc0 = CalculateBCC(uid, 0); // BCC0 = UID0 ^ UID1 ^ UID2 ^ 0x88
-            byte bcc1 = CalculateBCC(uid, 3); // BCC1 = UID3 ^ UID4 ^ UID5 ^ 0x00
+            byte bcc0 = CalculateBCC0(uid);
+            byte bcc1 = CalculateBCC1(uid);
 
-            Console.WriteLine($"UID: {BitConverter.ToString(uid)}");
-            Console.WriteLine($"BCC0: 0x{bcc0:X2}, BCC1: 0x{bcc1:X2}");
+            LogDebugData(uid, bcc0, bcc1);
 
-            // Initialize byte arrays for data extraction
-            byte[] nickNameBytes = new byte[20]; // Amiibo nickname is 20 bytes
+            byte[] nickNameBytes = new byte[20];
             byte[] titleId = new byte[8];
             byte[] usedCharacter = new byte[2];
             byte[] variation = new byte[2];
@@ -65,177 +64,160 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
             byte[] initDate = new byte[2];
             byte[] writeDate = new byte[2];
             byte[] writeCounter = new byte[2];
+            byte[] appId = new byte[8];
+            byte[] settingsBytes = new byte[2];
             byte formData = 0;
             byte[] applicationAreas = new byte[216];
-            byte[] appid = new byte[2];
-            byte[] SettingsBytes = new byte[2];
-            //// apply to decrypt bytes self.data[304:308] = self._calculate_crc32(self.data[308:520]).to_bytes(4, "little")
-            //byte[] crc32Bytes = new byte[212];
-            //Array.Copy(decryptedFileBytes, 308, crc32Bytes, 0, 212);
-            //byte[] toApply = BitConverter.GetBytes(CalculateCRC32(crc32Bytes));
-            //Array.Reverse(crc32Bytes);
-            //Array.Copy(toApply, 0, decryptedFileBytes, 304, 4);
 
-            // Reading specific pages and parsing bytes
-            for (int page = 0; page < 134; page++) // NTAG215 has 128 pages
+            for (int page = 0; page < totalPages; page++)
             {
-                int pageStartIdx = page * 4; // Each page is 4 bytes
+                int pageStartIdx = page * pageSize;
                 byte[] pageData = new byte[4];
                 bool isEncrypted = IsPageEncrypted(page);
                 byte[] sourceBytes = isEncrypted ? decryptedFileBytes : fileBytes;
+                if (pageStartIdx + pageSize > sourceBytes.Length)
+                {
+                    break;
+                }
                 Array.Copy(sourceBytes, pageStartIdx, pageData, 0, 4);
-                // Special handling for specific pages
+
                 switch (page)
                 {
-                    case 0: // Page 0 (UID + BCC0)
-                        Console.WriteLine("Page 0: UID and BCC0.");
+                    case 0:
                         break;
 
-                    case 2: // Page 2 (BCC1 + Internal Value)
+                    case 2:
                         byte internalValue = pageData[1];
-                        Console.WriteLine($"Page 2: BCC1 + Internal Value 0x{internalValue:X2} (Expected 0x48).");
                         break;
+
                     case 5:
-                        // byte 0 amd 1 are settings
-                        Array.Copy(pageData, 0, SettingsBytes, 0, 2);
+                        Array.Copy(pageData, 0, settingsBytes, 0, 2);
                         break;
 
                     case 6:
-                        // Bytes 0 and 1 are init date, bytes 2 and 3 are write date
                         Array.Copy(pageData, 0, initDate, 0, 2);
                         Array.Copy(pageData, 2, writeDate, 0, 2);
                         break;
 
-                    case 8:
-                    case 9:
-                    case 10:
-                    case 11:
-                    case 12:
-                        // Extract nickname bytes
+                    case >= 8 and <= 12:
                         int nickNameOffset = (page - 8) * 4;
                         Array.Copy(pageData, 0, nickNameBytes, nickNameOffset, 4);
                         break;
 
                     case 21:
-                        // Bytes 0 and 1 are used character, bytes 2 and 3 are variation
                         Array.Copy(pageData, 0, usedCharacter, 0, 2);
                         Array.Copy(pageData, 2, variation, 0, 2);
                         break;
 
                     case 22:
-                        // Bytes 0 and 1 are amiibo ID, byte 2 is set ID, byte 3 is form data
                         Array.Copy(pageData, 0, amiiboID, 0, 2);
                         setID[0] = pageData[2];
                         formData = pageData[3];
                         break;
 
+                    case 40:
+                    case 41:
+                        int appIdOffset = (page - 40) * 4;
+                        Array.Copy(decryptedFileBytes, pageStartIdx, appId, appIdOffset, 4);
+                        break;
+
                     case 64:
                     case 65:
-                        // Extract title ID
                         int titleIdOffset = (page - 64) * 4;
-                        Array.Copy(pageData, 0, titleId, titleIdOffset, 4);
+                        Array.Copy(sourceBytes, pageStartIdx, titleId, titleIdOffset, 4);
                         break;
 
                     case 66:
-                        // Bytes 0 and 1 are write counter
                         Array.Copy(pageData, 0, writeCounter, 0, 2);
-                        // bytes 2 and 3 are appid
-                        Array.Copy(pageData, 2, appid, 0, 2);
                         break;
 
-                    // Pages 76 to 127 are application areas
                     case >= 76 and <= 129:
                         int appAreaOffset = (page - 76) * 4;
-                        Array.Copy(pageData, 0, applicationAreas, appAreaOffset, 4);
+                        if (appAreaOffset + 4 <= applicationAreas.Length)
+                        {
+                            Array.Copy(pageData, 0, applicationAreas, appAreaOffset, 4);
+                        }
                         break;
                 }
-
             }
 
-            // Debugging
-            uint titleIdStr = BitConverter.ToUInt32(titleId, 0);
             string usedCharacterStr = BitConverter.ToString(usedCharacter).Replace("-", "");
             string variationStr = BitConverter.ToString(variation).Replace("-", "");
             string amiiboIDStr = BitConverter.ToString(amiiboID).Replace("-", "");
-            string formDataStr = formData.ToString("X2");
             string setIDStr = BitConverter.ToString(setID).Replace("-", "");
-            uint settingsStr = BitConverter.ToUInt16(SettingsBytes, 0);
-
-            string nickName = Encoding.BigEndianUnicode.GetString(nickNameBytes).TrimEnd('\0');
             string head = usedCharacterStr + variationStr;
             string tail = amiiboIDStr + setIDStr + "02";
             string finalID = head + tail;
-            string initDateStr = BitConverter.ToString(initDate).Replace("-", "");
-            string writeDateStr = BitConverter.ToString(writeDate).Replace("-", "");
 
-            Console.WriteLine($"Title ID: {titleIdStr}");
-            Console.WriteLine($"Head: {head}");
-            Console.WriteLine($"Tail: {tail}");
-            Console.WriteLine($"Used Character: {usedCharacterStr}");
-            Console.WriteLine($"Form Data: {formDataStr}");
-            Console.WriteLine($"Variation: {variationStr}");
-            Console.WriteLine($"Amiibo ID: {amiiboIDStr}");
-            Console.WriteLine($"Set ID: {setIDStr}");
-            Console.WriteLine($"Final ID: {finalID}");
-            Console.WriteLine($"Nickname: {nickName}");
-            Console.WriteLine($"Init Date: {initDateStr}");
-            Console.WriteLine($"Write Date: {writeDateStr}");
-            Console.WriteLine($"Settings: {settingsStr}");
-            Console.WriteLine("Length of Application Areas: " + applicationAreas.Length);
+            ushort settingsValue = BitConverter.ToUInt16(settingsBytes, 0);
+            string nickName = Encoding.BigEndianUnicode.GetString(nickNameBytes).TrimEnd('\0');
+            ushort initDateValue = BitConverter.ToUInt16(initDate, 0);
+            ushort writeDateValue = BitConverter.ToUInt16(writeDate, 0);
+            DateTime initDateTime = DateTimeFromTag(initDateValue);
+            DateTime writeDateTime = DateTimeFromTag(writeDateValue);
+            ushort writeCounterValue = BitConverter.ToUInt16(writeCounter, 0);
+
+            LogFinalData(titleId, appId, head, tail, finalID, nickName, initDateTime, writeDateTime, settingsValue, writeCounterValue, applicationAreas);
 
             VirtualAmiiboFile virtualAmiiboFile = new VirtualAmiiboFile
             {
                 FileVersion = 1,
                 TagUuid = uid,
-                AmiiboId = finalID
+                AmiiboId = finalID,
+                FirstWriteDate = initDateTime,
+                LastWriteDate = writeDateTime,
+                WriteCounter = writeCounterValue,
             };
-            ushort initDateValue = BitConverter.ToUInt16(initDate, 0);
-            ushort writeDateValue = BitConverter.ToUInt16(writeDate, 0);
-            DateTime initDateTime = DateTimeFromTag(initDateValue);
-            DateTime writeDateTime = DateTimeFromTag(writeDateValue);
-
-            Console.WriteLine($"Parsed Init Date: {initDateTime}");
-            Console.WriteLine($"Parsed Write Date: {writeDateTime}");
-
-            virtualAmiiboFile.FirstWriteDate = initDateTime;
-            virtualAmiiboFile.LastWriteDate = writeDateTime;
-            virtualAmiiboFile.WriteCounter = BitConverter.ToUInt16(writeCounter, 0);
-            VirtualAmiibo.SaveAmiiboFile(virtualAmiiboFile);
             VirtualAmiibo.applicationBytes = applicationAreas;
+
             return virtualAmiiboFile;
         }
 
-        public static uint CalculateCRC32(byte[] input)
+        private static void LogDebugData(byte[] uid, byte bcc0, byte bcc1)
         {
-            // Setup CRC 32 table
-            uint p0 = 0xEDB88320u | 0x80000000u;
-            uint[] u0 = new uint[0x100];
+            Console.WriteLine($"UID: {BitConverter.ToString(uid)}");
+            Console.WriteLine($"BCC0: 0x{bcc0:X2}, BCC1: 0x{bcc1:X2}");
+        }
 
-            for (uint i = 1; i < 0x100; i++)
+        private static void LogFinalData(byte[] titleId, byte[] appId, string head, string tail, string finalID, string nickName, DateTime initDateTime, DateTime writeDateTime, ushort settingsValue, ushort writeCounterValue, byte[] applicationAreas)
+        {
+            Console.WriteLine($"Title ID: 0x{BitConverter.ToString(titleId).Replace("-", "")}");
+            Console.WriteLine($"Application Program ID: 0x{BitConverter.ToString(appId).Replace("-", "")}");
+            Console.WriteLine($"Head: {head}");
+            Console.WriteLine($"Tail: {tail}");
+            Console.WriteLine($"Final ID: {finalID}");
+            Console.WriteLine($"Nickname: {nickName}");
+            Console.WriteLine($"Init Date: {initDateTime}");
+            Console.WriteLine($"Write Date: {writeDateTime}");
+            Console.WriteLine($"Settings: 0x{settingsValue:X4}");
+            Console.WriteLine($"Write Counter: {writeCounterValue}");
+            Console.WriteLine("Length of Application Areas: " + applicationAreas.Length);
+        }
+
+        private static uint CalculateCRC32(byte[] input)
+        {
+            uint[] table = new uint[256];
+            uint polynomial = 0xEDB88320;
+            for (uint i = 0; i < table.Length; ++i)
             {
-                uint t0 = i;
-                for (int j = 0; j < 8; j++)
+                uint crc = i;
+                for (int j = 0; j < 8; ++j)
                 {
-                    if ((t0 & 1) != 0)
-                    {
-                        t0 = (t0 >> 1) ^ p0;
-                    }
+                    if ((crc & 1) != 0)
+                        crc = (crc >> 1) ^ polynomial;
                     else
-                    {
-                        t0 >>= 1;
-                    }
+                        crc >>= 1;
                 }
-                u0[i] = t0;
+                table[i] = crc;
             }
 
-            // Calculate CRC32 from table
-            uint t = 0x0;
-            foreach (byte k in input)
+            uint result = 0xFFFFFFFF;
+            foreach (byte b in input)
             {
-                t = (t >> 8) ^ u0[(k ^ t) & 0xFF];
+                byte index = (byte)((result & 0xFF) ^ b);
+                result = (result >> 8) ^ table[index];
             }
-
-            return t ^ 0xFFFFFFFFu;
+            return ~result;
         }
 
         private static string GetKeyRetailBinPath()
@@ -245,9 +227,6 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
 
         public static bool IsPageEncrypted(int page)
         {
-            // 0-4 are not encrypted, 5-12 is encrypted, 13-39 is not encrypted,
-            // 40-129 is encrypted, and 130-134 is not encrypted.
-
             return (page >= 5 && page <= 12) || (page >= 40 && page <= 129);
         }
 
@@ -255,10 +234,14 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
         {
             try
             {
-                var day = value & 0x1F;
-                var month = (value >> 5) & 0x0F;
-                var year = (value >> 9) & 0x7F;
-                return new DateTime(1970 + year, month, day);
+                int day = value & 0x1F;
+                int month = (value >> 5) & 0x0F;
+                int year = (value >> 9) & 0x7F;
+
+                if (day == 0 || month == 0 || month > 12 || day > DateTime.DaysInMonth(2000 + year, month))
+                    throw new ArgumentOutOfRangeException();
+
+                return new DateTime(2000 + year, month, day);
             }
             catch
             {
