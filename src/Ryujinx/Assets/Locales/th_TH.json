@@ -27,6 +27,7 @@
   "MenuBarActions": "การดำเนินการ",
   "MenuBarOptionsSimulateWakeUpMessage": "จำลองข้อความปลุก",
   "MenuBarActionsScanAmiibo": "สแกนหา Amiibo",
+  "MenuBarActionsScanAmiiboBin": "Scan An Amiibo (From Bin)",
   "MenuBarTools": "_เครื่องมือ",
   "MenuBarToolsInstallFirmware": "ติดตั้งเฟิร์มแวร์",
   "MenuBarFileToolsInstallFirmwareFromFile": "ติดตั้งเฟิร์มแวร์จาก ไฟล์ XCI หรือ ไฟล์ ZIP",

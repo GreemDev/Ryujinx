@@ -1,11 +1,9 @@
 using Ryujinx.Common.Configuration;
+using Ryujinx.Common.Logging;
 using Ryujinx.HLE.HOS.Services.Nfc.Nfp;
 using Ryujinx.HLE.HOS.Services.Nfc.Nfp.NfpManager;
-using Ryujinx.HLE.HOS.Tamper;
 using System;
 using System.IO;
-using System.Text;
-using static LibHac.FsSystem.AesCtrCounterExtendedStorage;
 
 namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
 {
@@ -43,7 +41,6 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
             AmiiboDecrypter amiiboDecryptor = new AmiiboDecrypter(keyRetailBinPath);
             AmiiboDump amiiboDump = amiiboDecryptor.DecryptAmiiboDump(fileBytes);
 
-          
             byte[] titleId = new byte[8];
             byte[] usedCharacter = new byte[2];
             byte[] variation = new byte[2];
@@ -57,7 +54,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
             byte formData = 0;
             byte[] applicationAreas = new byte[216];
             byte[] dataFull = amiiboDump.GetData();
-            Console.WriteLine("Data Full Length: " + dataFull.Length);
+            Logger.Debug?.Print(LogClass.ServiceNfp, $"Data Full Length: {dataFull.Length}");
             byte[] uid = new byte[7];
             Array.Copy(dataFull, 0, uid, 0, 7);
 
@@ -74,11 +71,11 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
                 switch (page)
                 {
                     case 0: // Page 0 (UID + BCC0)
-                        Console.WriteLine("Page 0: UID and BCC0.");
+                        Logger.Debug?.Print(LogClass.ServiceNfp, "Page 0: UID and BCC0.");
                         break;
                     case 2: // Page 2 (BCC1 + Internal Value)
                         byte internalValue = pageData[1];
-                        Console.WriteLine($"Page 2: BCC1 + Internal Value 0x{internalValue:X2} (Expected 0x48).");
+                        Logger.Debug?.Print(LogClass.ServiceNfp, $"Page 2: BCC1 + Internal Value 0x{internalValue:X2} (Expected 0x48).");
                         break;
                     case 6:
                         // Bytes 0 and 1 are init date, bytes 2 and 3 are write date
@@ -141,7 +138,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
                 LastWriteDate = writeDateTime,
                 WriteCounter = writeCounterValue,
             };
-            if (writeCounterValue>0)
+            if (writeCounterValue > 0)
             {
                 VirtualAmiibo.applicationBytes = applicationAreas;
             }
@@ -150,7 +147,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
         }
         public static bool SaveBinFile(string inputFile, byte[] appData)
         {
-            Console.WriteLine("Saving bin file.");
+            Logger.Info?.Print(LogClass.ServiceNfp, "Saving bin file.");
             byte[] readBytes;
             try
             {
@@ -158,19 +155,19 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error reading file: {ex.Message}");
+                Logger.Error?.Print(LogClass.ServiceNfp, $"Error reading file: {ex.Message}");
                 return false;
             }
             string keyRetailBinPath = GetKeyRetailBinPath();
             if (string.IsNullOrEmpty(keyRetailBinPath))
             {
-                Console.WriteLine("Key retail path is empty.");
+                Logger.Error?.Print(LogClass.ServiceNfp, "Key retail path is empty.");
                 return false;
             }
 
             if (appData.Length != 216) // Ensure application area size is valid
             {
-                Console.WriteLine("Invalid application data length. Expected 216 bytes.");
+                Logger.Error?.Print(LogClass.ServiceNfp, "Invalid application data length. Expected 216 bytes.");
                 return false;
             }
 
@@ -180,7 +177,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
             byte[] oldData = amiiboDump.GetData();
             if (oldData.Length != 540) // Verify the expected length for NTAG215 tags
             {
-                Console.WriteLine("Invalid tag data length. Expected 540 bytes.");
+                Logger.Error?.Print(LogClass.ServiceNfp, "Invalid tag data length. Expected 540 bytes.");
                 return false;
             }
 
@@ -196,7 +193,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
 
             if (encryptedData == null || encryptedData.Length != readBytes.Length)
             {
-                Console.WriteLine("Failed to encrypt data correctly.");
+                Logger.Error?.Print(LogClass.ServiceNfp, "Failed to encrypt data correctly.");
                 return false;
             }
             inputFile = inputFile.Replace("_modified", string.Empty);
@@ -205,35 +202,85 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
             try
             {
                 File.WriteAllBytes(outputFilePath, encryptedData);
-                Console.WriteLine($"Modified Amiibo data saved to {outputFilePath}.");
+                Logger.Info?.Print(LogClass.ServiceNfp, $"Modified Amiibo data saved to {outputFilePath}.");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving file: {ex.Message}");
+                Logger.Error?.Print(LogClass.ServiceNfp, $"Error saving file: {ex.Message}");
                 return false;
             }
         }
+        public static bool SaveBinFile(string inputFile, string newNickName)
+        {
+            Logger.Info?.Print(LogClass.ServiceNfp, "Saving bin file.");
+            byte[] readBytes;
+            try
+            {
+                readBytes = File.ReadAllBytes(inputFile);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error?.Print(LogClass.ServiceNfp, $"Error reading file: {ex.Message}");
+                return false;
+            }
+            string keyRetailBinPath = GetKeyRetailBinPath();
+            if (string.IsNullOrEmpty(keyRetailBinPath))
+            {
+                Logger.Error?.Print(LogClass.ServiceNfp, "Key retail path is empty.");
+                return false;
+            }
 
+            AmiiboDecrypter amiiboDecryptor = new AmiiboDecrypter(keyRetailBinPath);
+            AmiiboDump amiiboDump = amiiboDecryptor.DecryptAmiiboDump(readBytes);
+            amiiboDump.AmiiboNickname = newNickName;
+            byte[] oldData = amiiboDump.GetData();
+            if (oldData.Length != 540) // Verify the expected length for NTAG215 tags
+            {
+                Logger.Error?.Print(LogClass.ServiceNfp, "Invalid tag data length. Expected 540 bytes.");
+                return false;
+            }
+            byte[] encryptedData = amiiboDecryptor.EncryptAmiiboDump(oldData).GetData();
+
+            if (encryptedData == null || encryptedData.Length != readBytes.Length)
+            {
+                Logger.Error?.Print(LogClass.ServiceNfp, "Failed to encrypt data correctly.");
+                return false;
+            }
+            inputFile = inputFile.Replace("_modified", string.Empty);
+            // Save the encrypted data to file or return it for saving externally
+            string outputFilePath = Path.Combine(Path.GetDirectoryName(inputFile), Path.GetFileNameWithoutExtension(inputFile) + "_modified.bin");
+            try
+            {
+                File.WriteAllBytes(outputFilePath, encryptedData);
+                Logger.Info?.Print(LogClass.ServiceNfp, $"Modified Amiibo data saved to {outputFilePath}.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error?.Print(LogClass.ServiceNfp, $"Error saving file: {ex.Message}");
+                return false;
+            }
+        }
         private static void LogDebugData(byte[] uid, byte bcc0, byte bcc1)
         {
-            Console.WriteLine($"UID: {BitConverter.ToString(uid)}");
-            Console.WriteLine($"BCC0: 0x{bcc0:X2}, BCC1: 0x{bcc1:X2}");
+            Logger.Debug?.Print(LogClass.ServiceNfp, $"UID: {BitConverter.ToString(uid)}");
+            Logger.Debug?.Print(LogClass.ServiceNfp, $"BCC0: 0x{bcc0:X2}, BCC1: 0x{bcc1:X2}");
         }
 
         private static void LogFinalData(byte[] titleId, byte[] appId, string head, string tail, string finalID, string nickName, DateTime initDateTime, DateTime writeDateTime, ushort settingsValue, ushort writeCounterValue, byte[] applicationAreas)
         {
-            Console.WriteLine($"Title ID: 0x{BitConverter.ToString(titleId).Replace("-", "")}");
-            Console.WriteLine($"Application Program ID: 0x{BitConverter.ToString(appId).Replace("-", "")}");
-            Console.WriteLine($"Head: {head}");
-            Console.WriteLine($"Tail: {tail}");
-            Console.WriteLine($"Final ID: {finalID}");
-            Console.WriteLine($"Nickname: {nickName}");
-            Console.WriteLine($"Init Date: {initDateTime}");
-            Console.WriteLine($"Write Date: {writeDateTime}");
-            Console.WriteLine($"Settings: 0x{settingsValue:X4}");
-            Console.WriteLine($"Write Counter: {writeCounterValue}");
-            Console.WriteLine("Length of Application Areas: " + applicationAreas.Length);
+            Logger.Debug?.Print(LogClass.ServiceNfp, $"Title ID: 0x{BitConverter.ToString(titleId).Replace("-", "")}");
+            Logger.Debug?.Print(LogClass.ServiceNfp, $"Application Program ID: 0x{BitConverter.ToString(appId).Replace("-", "")}");
+            Logger.Debug?.Print(LogClass.ServiceNfp, $"Head: {head}");
+            Logger.Debug?.Print(LogClass.ServiceNfp, $"Tail: {tail}");
+            Logger.Debug?.Print(LogClass.ServiceNfp, $"Final ID: {finalID}");
+            Logger.Debug?.Print(LogClass.ServiceNfp, $"Nickname: {nickName}");
+            Logger.Debug?.Print(LogClass.ServiceNfp, $"Init Date: {initDateTime}");
+            Logger.Debug?.Print(LogClass.ServiceNfp, $"Write Date: {writeDateTime}");
+            Logger.Debug?.Print(LogClass.ServiceNfp, $"Settings: 0x{settingsValue:X4}");
+            Logger.Debug?.Print(LogClass.ServiceNfp, $"Write Counter: {writeCounterValue}");
+            Logger.Debug?.Print(LogClass.ServiceNfp, "Length of Application Areas: " + applicationAreas.Length);
         }
 
         private static uint CalculateCRC32(byte[] input)

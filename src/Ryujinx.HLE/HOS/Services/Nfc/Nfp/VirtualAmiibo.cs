@@ -104,6 +104,11 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
         {
             VirtualAmiiboFile virtualAmiiboFile = LoadAmiiboFile(amiiboId);
             virtualAmiiboFile.NickName = newNickName;
+            if (inputBin != string.Empty)
+            {
+                AmiiboBinReader.SaveBinFile(inputBin, virtualAmiiboFile.NickName);
+                return;
+            }
             SaveAmiiboFile(virtualAmiiboFile);
         }
 

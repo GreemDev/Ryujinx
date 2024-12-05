@@ -1,8 +1,4 @@
-using System;
-using System.Linq;
 using System.IO;
-using System.Collections.Generic;
-using System.Security.Cryptography;
 
 namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
 {
