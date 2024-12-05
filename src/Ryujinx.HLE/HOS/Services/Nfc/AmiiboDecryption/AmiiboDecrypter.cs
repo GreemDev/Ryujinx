@@ -1,83 +1,36 @@
-using LibHac.Tools.FsSystem.NcaUtils;
-using Ryujinx.HLE.HOS.Services.Mii.Types;
-using Ryujinx.HLE.HOS.Services.Nfc.Nfp.NfpManager;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.IO;
+using System.Collections.Generic;
 using System.Security.Cryptography;
-using System.Text;
 
-namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
+namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
 {
     public class AmiiboDecrypter
     {
-        public readonly byte[] _hmacKey; // HMAC key
-        public readonly byte[] _aesKey;  // AES key
+        public AmiiboMasterKey DataKey { get; private set; }
+        public AmiiboMasterKey TagKey { get; private set; }
 
         public AmiiboDecrypter(string keyRetailBinPath)
         {
-            var keys = AmiiboMasterKey.FromCombinedBin(File.ReadAllBytes(keyRetailBinPath));
-            _hmacKey = keys.DataKey.HmacKey;
-            _aesKey = keys.DataKey.XorPad;
+            var combinedKeys = File.ReadAllBytes(keyRetailBinPath);
+            var keys = AmiiboMasterKey.FromCombinedBin(combinedKeys);
+            DataKey = keys.DataKey;
+            TagKey = keys.TagKey;
         }
 
-        public byte[] DecryptAmiiboData(byte[] encryptedData, byte[] counter)
+        public AmiiboDump DecryptAmiiboDump(byte[] encryptedDumpData)
         {
-            // Ensure the counter length matches the block size
-            if (counter.Length != 16)
-            {
-                throw new ArgumentException("Counter must be 16 bytes long for AES block size.");
-            }
+            // Initialize AmiiboDump with encrypted data
+            AmiiboDump amiiboDump = new AmiiboDump(encryptedDumpData, DataKey, TagKey, isLocked: true);
 
-            byte[] decryptedData = new byte[encryptedData.Length];
+            // Unlock (decrypt) the dump
+            amiiboDump.Unlock();
 
-            using (Aes aesAlg = Aes.Create())
-            {
-                aesAlg.Key = _aesKey;
-                aesAlg.Mode = CipherMode.ECB; // Use ECB mode to handle the counter encryption
-                aesAlg.Padding = PaddingMode.None;
+            // Optional: Verify HMACs
+            amiiboDump.VerifyHMACs();
 
-                using (var encryptor = aesAlg.CreateEncryptor())
-                {
-                    int blockSize = 16;
-                    byte[] encryptedCounter = new byte[blockSize];
-                    byte[] currentCounter = (byte[])counter.Clone();
-
-                    for (int i = 0; i < encryptedData.Length; i += blockSize)
-                    {
-                        // Encrypt the current counter block
-                        encryptor.TransformBlock(currentCounter, 0, blockSize, encryptedCounter, 0);
-
-                        // XOR the encrypted counter with the ciphertext to get the decrypted data
-                        for (int j = 0; j < blockSize && i + j < encryptedData.Length; j++)
-                        {
-                            decryptedData[i + j] = (byte)(encryptedData[i + j] ^ encryptedCounter[j]);
-                        }
-
-                        // Increment the counter for the next block
-                        IncrementCounter(currentCounter);
-                    }
-                }
-            }
-
-            return decryptedData;
-        }
-
-        public byte[] CalculateHMAC(byte[] data)
-        {
-            using (var hmac = new HMACSHA256(_hmacKey))
-            {
-                return hmac.ComputeHash(data);
-            }
-        }
-
-        public void IncrementCounter(byte[] counter)
-        {
-            for (int i = counter.Length - 1; i >= 0; i--)
-            {
-                if (++counter[i] != 0)
-                    break; // Stop if no overflow
-            }
+            return amiiboDump;
         }
     }
 }

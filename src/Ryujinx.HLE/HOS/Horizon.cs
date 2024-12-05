@@ -16,7 +16,8 @@ using Ryujinx.HLE.HOS.Services.Am.AppletAE.AllSystemAppletProxiesService.SystemA
 using Ryujinx.HLE.HOS.Services.Apm;
 using Ryujinx.HLE.HOS.Services.Caps;
 using Ryujinx.HLE.HOS.Services.Mii;
-using Ryujinx.HLE.HOS.Services.Nfc.Bin;
+using Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption;
+using Ryujinx.HLE.HOS.Services.Nfc.Nfp;
 using Ryujinx.HLE.HOS.Services.Nfc.Nfp.NfpManager;
 using Ryujinx.HLE.HOS.Services.Nv;
 using Ryujinx.HLE.HOS.Services.Nv.NvDrvServices.NvHostCtrl;
@@ -338,6 +339,10 @@ namespace Ryujinx.HLE.HOS
 
         public void ScanAmiibo(int nfpDeviceId, string amiiboId, bool useRandomUuid)
         {
+            if (VirtualAmiibo.applicationBytes.Length > 0)
+            {
+                VirtualAmiibo.applicationBytes = new byte[0];
+            }
             if (NfpDevices[nfpDeviceId].State == NfpDeviceState.SearchingForTag)
             {
                 NfpDevices[nfpDeviceId].State = NfpDeviceState.TagFound;
@@ -347,6 +352,10 @@ namespace Ryujinx.HLE.HOS
         }
         public void ScanAmiiboFromBin(string path)
         {
+            if (VirtualAmiibo.applicationBytes.Length > 0)
+            {
+                VirtualAmiibo.applicationBytes = new byte[0];
+            }
             byte[] encryptedData = File.ReadAllBytes(path);
             VirtualAmiiboFile newFile = AmiiboBinReader.ReadBinFile(encryptedData);
             if (SearchingForAmiibo(out int nfpDeviceId))

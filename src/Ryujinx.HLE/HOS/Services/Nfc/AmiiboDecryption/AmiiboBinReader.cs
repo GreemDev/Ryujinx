@@ -5,8 +5,9 @@ using Ryujinx.HLE.HOS.Tamper;
 using System;
 using System.IO;
 using System.Text;
+using static LibHac.FsSystem.AesCtrCounterExtendedStorage;
 
-namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
+namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
 {
     public class AmiiboBinReader
     {
@@ -40,22 +41,9 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
             }
 
             AmiiboDecrypter amiiboDecryptor = new AmiiboDecrypter(keyRetailBinPath);
-            byte[] decryptedFileBytes = amiiboDecryptor.DecryptAmiiboData(fileBytes, initialCounter);
+            AmiiboDump amiiboDump = amiiboDecryptor.DecryptAmiiboDump(fileBytes);
 
-            if (decryptedFileBytes.Length != totalBytes)
-            {
-                Array.Resize(ref decryptedFileBytes, totalBytes);
-            }
-
-            byte[] uid = new byte[7];
-            Array.Copy(fileBytes, 0, uid, 0, 7);
-
-            byte bcc0 = CalculateBCC0(uid);
-            byte bcc1 = CalculateBCC1(uid);
-
-            LogDebugData(uid, bcc0, bcc1);
-
-            byte[] nickNameBytes = new byte[20];
+          
             byte[] titleId = new byte[8];
             byte[] usedCharacter = new byte[2];
             byte[] variation = new byte[2];
@@ -68,75 +56,60 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
             byte[] settingsBytes = new byte[2];
             byte formData = 0;
             byte[] applicationAreas = new byte[216];
+            byte[] dataFull = amiiboDump.GetData();
+            Console.WriteLine("Data Full Length: " + dataFull.Length);
+            byte[] uid = new byte[7];
+            Array.Copy(dataFull, 0, uid, 0, 7);
 
-            for (int page = 0; page < totalPages; page++)
+            byte bcc0 = CalculateBCC0(uid);
+            byte bcc1 = CalculateBCC1(uid);
+            LogDebugData(uid, bcc0, bcc1);
+            for (int page = 0; page < 128; page++) // NTAG215 has 128 pages
             {
-                int pageStartIdx = page * pageSize;
+                int pageStartIdx = page * 4; // Each page is 4 bytes
                 byte[] pageData = new byte[4];
-                bool isEncrypted = IsPageEncrypted(page);
-                byte[] sourceBytes = isEncrypted ? decryptedFileBytes : fileBytes;
-                if (pageStartIdx + pageSize > sourceBytes.Length)
-                {
-                    break;
-                }
+                byte[] sourceBytes = dataFull;
                 Array.Copy(sourceBytes, pageStartIdx, pageData, 0, 4);
-
+                // Special handling for specific pages
                 switch (page)
                 {
-                    case 0:
+                    case 0: // Page 0 (UID + BCC0)
+                        Console.WriteLine("Page 0: UID and BCC0.");
                         break;
-
-                    case 2:
+                    case 2: // Page 2 (BCC1 + Internal Value)
                         byte internalValue = pageData[1];
+                        Console.WriteLine($"Page 2: BCC1 + Internal Value 0x{internalValue:X2} (Expected 0x48).");
                         break;
-
-                    case 5:
-                        Array.Copy(pageData, 0, settingsBytes, 0, 2);
-                        break;
-
                     case 6:
+                        // Bytes 0 and 1 are init date, bytes 2 and 3 are write date
                         Array.Copy(pageData, 0, initDate, 0, 2);
                         Array.Copy(pageData, 2, writeDate, 0, 2);
                         break;
-
-                    case >= 8 and <= 12:
-                        int nickNameOffset = (page - 8) * 4;
-                        Array.Copy(pageData, 0, nickNameBytes, nickNameOffset, 4);
-                        break;
-
                     case 21:
+                        // Bytes 0 and 1 are used character, bytes 2 and 3 are variation
                         Array.Copy(pageData, 0, usedCharacter, 0, 2);
                         Array.Copy(pageData, 2, variation, 0, 2);
                         break;
-
                     case 22:
+                        // Bytes 0 and 1 are amiibo ID, byte 2 is set ID, byte 3 is form data
                         Array.Copy(pageData, 0, amiiboID, 0, 2);
                         setID[0] = pageData[2];
                         formData = pageData[3];
                         break;
-
-                    case 40:
-                    case 41:
-                        int appIdOffset = (page - 40) * 4;
-                        Array.Copy(decryptedFileBytes, pageStartIdx, appId, appIdOffset, 4);
-                        break;
-
                     case 64:
                     case 65:
+                        // Extract title ID
                         int titleIdOffset = (page - 64) * 4;
-                        Array.Copy(sourceBytes, pageStartIdx, titleId, titleIdOffset, 4);
+                        Array.Copy(pageData, 0, titleId, titleIdOffset, 4);
                         break;
-
                     case 66:
+                        // Bytes 0 and 1 are write counter
                         Array.Copy(pageData, 0, writeCounter, 0, 2);
                         break;
-
-                    case >= 76 and <= 129:
+                    // Pages 76 to 127 are application areas
+                    case >= 76 and <= 127:
                         int appAreaOffset = (page - 76) * 4;
-                        if (appAreaOffset + 4 <= applicationAreas.Length)
-                        {
-                            Array.Copy(pageData, 0, applicationAreas, appAreaOffset, 4);
-                        }
+                        Array.Copy(pageData, 0, applicationAreas, appAreaOffset, 4);
                         break;
                 }
             }
@@ -150,13 +123,12 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
             string finalID = head + tail;
 
             ushort settingsValue = BitConverter.ToUInt16(settingsBytes, 0);
-            string nickName = Encoding.BigEndianUnicode.GetString(nickNameBytes).TrimEnd('\0');
             ushort initDateValue = BitConverter.ToUInt16(initDate, 0);
             ushort writeDateValue = BitConverter.ToUInt16(writeDate, 0);
             DateTime initDateTime = DateTimeFromTag(initDateValue);
             DateTime writeDateTime = DateTimeFromTag(writeDateValue);
             ushort writeCounterValue = BitConverter.ToUInt16(writeCounter, 0);
-
+            string nickName = amiiboDump.AmiiboNickname;
             LogFinalData(titleId, appId, head, tail, finalID, nickName, initDateTime, writeDateTime, settingsValue, writeCounterValue, applicationAreas);
 
             VirtualAmiiboFile virtualAmiiboFile = new VirtualAmiiboFile
@@ -164,11 +136,15 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
                 FileVersion = 1,
                 TagUuid = uid,
                 AmiiboId = finalID,
+                NickName = nickName,
                 FirstWriteDate = initDateTime,
                 LastWriteDate = writeDateTime,
                 WriteCounter = writeCounterValue,
             };
-            VirtualAmiibo.applicationBytes = applicationAreas;
+            if (writeCounterValue>0)
+            {
+                VirtualAmiibo.applicationBytes = applicationAreas;
+            }
 
             return virtualAmiiboFile;
         }
@@ -225,11 +201,10 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Bin
             return Path.Combine(AppDataManager.KeysDirPath, "key_retail.bin");
         }
 
-        public static bool IsPageEncrypted(int page)
+        public static bool HasKeyRetailBinPath()
         {
-            return (page >= 5 && page <= 12) || (page >= 40 && page <= 129);
+            return File.Exists(GetKeyRetailBinPath());
         }
-
         public static DateTime DateTimeFromTag(ushort value)
         {
             try

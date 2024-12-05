@@ -243,11 +243,11 @@
                     IsEnabled="{Binding IsAmiiboRequested}" />
                 <MenuItem
                     Name="ScanAmiiboMenuItemFromBin"
-                    AttachedToVisualTree="ScanAmiiboMenuItem_AttachedToVisualTree"
+                    AttachedToVisualTree="ScanBinAmiiboMenuItem_AttachedToVisualTree"
                     Click="OpenBinFile"
                     Header="{ext:Locale MenuBarActionsScanAmiiboBin}"
                     Icon="{ext:Icon mdi-cube-scan}"
-                    IsEnabled="{Binding IsAmiiboRequested}" />
+                    IsEnabled="{Binding IsBinAmiiboRequested}" />
                 <MenuItem
                     Command="{Binding TakeScreenshot}"
                     Header="{ext:Locale MenuBarFileToolsTakeScreenshot}"

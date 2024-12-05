@@ -28,7 +28,7 @@ using Ryujinx.HLE;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS;
 using Ryujinx.HLE.HOS.Services.Account.Acc;
-using Ryujinx.HLE.HOS.Services.Nfc.Bin;
+using Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption;
 using Ryujinx.HLE.UI;
 using Ryujinx.Input.HLE;
 using Ryujinx.UI.App.Common;
@@ -311,6 +311,16 @@ namespace Ryujinx.Ava.UI.ViewModels
         public bool IsAmiiboRequested
         {
             get => _isAmiiboRequested && _isGameRunning;
+            set
+            {
+                _isAmiiboRequested = value;
+
+                OnPropertyChanged();
+            }
+        }
+        public bool IsBinAmiiboRequested
+        {
+            get => IsAmiiboRequested && AmiiboBinReader.HasKeyRetailBinPath();
             set
             {
                 _isAmiiboRequested = value;
