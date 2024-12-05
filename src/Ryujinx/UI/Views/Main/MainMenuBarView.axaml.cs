@@ -3,7 +3,9 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Gommon;
+using LibHac.Common;
 using LibHac.Ncm;
+using LibHac.Ns;
 using LibHac.Tools.FsSystem.NcaUtils;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Helpers;
@@ -19,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Ryujinx.Ava.UI.Views.Main
 {
@@ -134,7 +137,22 @@ namespace Ryujinx.Ava.UI.Views.Main
                     Path = contentPath,
                 };
 
-                await ViewModel.LoadApplication(applicationData, ViewModel.IsFullScreen || ViewModel.StartGamesInFullscreen);
+                string name = "miiEdit";
+                string version = "1.0.0";
+                var nacpData = new BlitStruct<ApplicationControlProperty>(1);
+
+                //version buffer
+                Encoding.ASCII.GetBytes(version).AsSpan().CopyTo(nacpData.ByteSpan.Slice(0x3060));
+
+                //name and distributor buffer
+                //repeat once for each locale (the ApplicationControlProperty has 16 locales)
+                for (int i = 0; i < 0x10; i++)
+                {
+                    Encoding.ASCII.GetBytes(name).AsSpan().CopyTo(nacpData.ByteSpan.Slice(i * 0x300));
+                    "Ryujinx"u8.ToArray().AsSpan().CopyTo(nacpData.ByteSpan.Slice(i * 0x300 + 0x200));
+                }
+
+                await ViewModel.LoadApplication(applicationData, ViewModel.IsFullScreen || ViewModel.StartGamesInFullscreen, nacpData);
             }
         }
 

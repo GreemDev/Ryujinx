@@ -85,14 +85,14 @@ namespace Ryujinx.HLE.Loaders.Processes
             }
 
             bool isFirmware = ProgramId is >= 0x0100000000000819 and <= 0x010000000000081C;
-            bool isMiiEdit = ProgramId == 0x0100000000001009;
-            
+            bool isFirmwareApplication = ProgramId <= 0x0100000000007FFF;
+
             string name = !isFirmware
-                ? isMiiEdit ? "miiEdit from Firmware" : (!string.IsNullOrWhiteSpace(Name) ? Name : "<Unknown Name>")
+                ? (isFirmwareApplication ? "Firmware Applcation " : "") + (!string.IsNullOrWhiteSpace(Name) ? Name : "<Unknown Name>")
                 : "Firmware";
 
             // TODO: LibHac npdm currently doesn't support version field.
-            string version = !isFirmware && !isMiiEdit
+            string version = !isFirmware
                 ? (!string.IsNullOrWhiteSpace(DisplayVersion) ? DisplayVersion : "<Unknown Version>")
                 : device.System.ContentManager.GetCurrentFirmwareVersion()?.VersionString ?? "?";
 
