@@ -200,7 +200,6 @@ namespace Ryujinx.Ava.UI.Views.Main
 
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                
                 ViewModel.WindowState = WindowState.Normal;
 
                 Window.Arrange(new Rect(Window.Position.X, Window.Position.Y, windowWidthScaled, windowHeightScaled));
@@ -210,7 +209,7 @@ namespace Ryujinx.Ava.UI.Views.Main
         public async void CheckForUpdates(object sender, RoutedEventArgs e)
         {
             if (Updater.CanUpdate(true))
-                await Window.BeginUpdateAsync(true);
+                await Updater.BeginUpdateAsync(true);
         }
 
         public async void OpenXCITrimmerWindow(object sender, RoutedEventArgs e) => await XCITrimmerWindow.Show(ViewModel);
