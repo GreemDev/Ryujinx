@@ -84,11 +84,7 @@ namespace Ryujinx.HLE.Loaders.Processes
                 return false;
             }
 
-            bool isFirmware = ProgramId switch
-            {
-                >= 0x0100000000000819 and <= 0x010000000000081C => true,
-                _ => false
-            };
+            bool isFirmware = ProgramId is >= 0x0100000000000819 and <= 0x010000000000081C;
             bool isMiiEdit = ProgramId == 0x0100000000001009;
             
             string name = !isFirmware
