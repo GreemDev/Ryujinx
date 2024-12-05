@@ -32,5 +32,16 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
 
             return amiiboDump;
         }
+
+        public AmiiboDump EncryptAmiiboDump(byte[] decryptedDumpData)
+        {
+            // Initialize AmiiboDump with decrypted data
+            AmiiboDump amiiboDump = new AmiiboDump(decryptedDumpData, DataKey, TagKey, isLocked: false);
+
+            // Lock (encrypt) the dump
+            amiiboDump.Lock();
+
+            return amiiboDump;
+        }
     }
 }

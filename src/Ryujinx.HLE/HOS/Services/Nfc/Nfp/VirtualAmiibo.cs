@@ -4,6 +4,7 @@ using Ryujinx.Common.Utilities;
 using Ryujinx.Cpu;
 using Ryujinx.HLE.HOS.Services.Mii;
 using Ryujinx.HLE.HOS.Services.Mii.Types;
+using Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption;
 using Ryujinx.HLE.HOS.Services.Nfc.Nfp.NfpManager;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
     {
         public static uint _openedApplicationAreaId;
         public static byte[] applicationBytes = new byte[0];
+        public static string inputBin = string.Empty;
         private static readonly AmiiboJsonSerializerContext _serializerContext = AmiiboJsonSerializerContext.Default;
         public static byte[] GenerateUuid(string amiiboId, bool useRandomUuid)
         {
@@ -161,6 +163,11 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
 
         public static void SetApplicationArea(string amiiboId, byte[] applicationAreaData)
         {
+            if (inputBin != string.Empty)
+            {
+                AmiiboBinReader.SaveBinFile(inputBin, applicationAreaData);
+                return;
+            }
             VirtualAmiiboFile virtualAmiiboFile = LoadAmiiboFile(amiiboId);
 
             if (virtualAmiiboFile.ApplicationAreas.Exists(item => item.ApplicationAreaId == _openedApplicationAreaId))
@@ -220,6 +227,15 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
             JsonHelper.SerializeToFile(filePath, virtualAmiiboFile, _serializerContext.VirtualAmiiboFile);
         }
 
-        public static bool SaveFileExists(VirtualAmiiboFile virtualAmiiboFile) => File.Exists(Path.Join(AppDataManager.BaseDirPath, "system", "amiibo", $"{virtualAmiiboFile.AmiiboId}.json"));
+        public static bool SaveFileExists(VirtualAmiiboFile virtualAmiiboFile)
+        {
+            if (inputBin != string.Empty)
+            {
+                SaveAmiiboFile(virtualAmiiboFile);
+                return true;
+
+            }
+            return File.Exists(Path.Join(AppDataManager.BaseDirPath, "system", "amiibo", $"{virtualAmiiboFile.AmiiboId}.json"));
+        }
     }
 }

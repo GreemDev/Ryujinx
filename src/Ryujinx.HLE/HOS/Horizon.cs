@@ -342,6 +342,7 @@ namespace Ryujinx.HLE.HOS
             if (VirtualAmiibo.applicationBytes.Length > 0)
             {
                 VirtualAmiibo.applicationBytes = new byte[0];
+                VirtualAmiibo.inputBin = string.Empty;
             }
             if (NfpDevices[nfpDeviceId].State == NfpDeviceState.SearchingForTag)
             {
@@ -352,6 +353,7 @@ namespace Ryujinx.HLE.HOS
         }
         public void ScanAmiiboFromBin(string path)
         {
+            VirtualAmiibo.inputBin = path;
             if (VirtualAmiibo.applicationBytes.Length > 0)
             {
                 VirtualAmiibo.applicationBytes = new byte[0];

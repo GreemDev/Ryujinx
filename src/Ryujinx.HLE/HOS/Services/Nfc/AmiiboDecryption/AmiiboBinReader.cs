@@ -148,6 +148,72 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
 
             return virtualAmiiboFile;
         }
+        public static bool SaveBinFile(string inputFile, byte[] appData)
+        {
+            Console.WriteLine("Saving bin file.");
+            byte[] readBytes;
+            try
+            {
+                readBytes = File.ReadAllBytes(inputFile);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading file: {ex.Message}");
+                return false;
+            }
+            string keyRetailBinPath = GetKeyRetailBinPath();
+            if (string.IsNullOrEmpty(keyRetailBinPath))
+            {
+                Console.WriteLine("Key retail path is empty.");
+                return false;
+            }
+
+            if (appData.Length != 216) // Ensure application area size is valid
+            {
+                Console.WriteLine("Invalid application data length. Expected 216 bytes.");
+                return false;
+            }
+
+            AmiiboDecrypter amiiboDecryptor = new AmiiboDecrypter(keyRetailBinPath);
+            AmiiboDump amiiboDump = amiiboDecryptor.DecryptAmiiboDump(readBytes);
+
+            byte[] oldData = amiiboDump.GetData();
+            if (oldData.Length != 540) // Verify the expected length for NTAG215 tags
+            {
+                Console.WriteLine("Invalid tag data length. Expected 540 bytes.");
+                return false;
+            }
+
+            byte[] newData = new byte[oldData.Length];
+            Array.Copy(oldData, newData, oldData.Length);
+
+            // Replace application area with appData
+            int appAreaOffset = 76 * 4; // Starting page (76) times 4 bytes per page
+            Array.Copy(appData, 0, newData, appAreaOffset, appData.Length);
+
+            AmiiboDump encryptedDump = amiiboDecryptor.EncryptAmiiboDump(newData);
+            byte[] encryptedData = encryptedDump.GetData();
+
+            if (encryptedData == null || encryptedData.Length != readBytes.Length)
+            {
+                Console.WriteLine("Failed to encrypt data correctly.");
+                return false;
+            }
+            inputFile = inputFile.Replace("_modified", string.Empty);
+            // Save the encrypted data to file or return it for saving externally
+            string outputFilePath = Path.Combine(Path.GetDirectoryName(inputFile), Path.GetFileNameWithoutExtension(inputFile) + "_modified.bin");
+            try
+            {
+                File.WriteAllBytes(outputFilePath, encryptedData);
+                Console.WriteLine($"Modified Amiibo data saved to {outputFilePath}.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving file: {ex.Message}");
+                return false;
+            }
+        }
 
         private static void LogDebugData(byte[] uid, byte bcc0, byte bcc1)
         {
