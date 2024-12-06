@@ -126,18 +126,19 @@ namespace Ryujinx.Ava.UI.Views.Main
 
         public async void OpenMiiApplet(object sender, RoutedEventArgs e)
         {
-            string contentPath = ViewModel.ContentManager.GetInstalledContentPath(0x0100000000001009, StorageId.BuiltInSystem, NcaContentType.Program);
+            const string name = "miiEdit";
+            const ulong programId = 0x0100000000001009;
+            string contentPath = ViewModel.ContentManager.GetInstalledContentPath(programId, StorageId.BuiltInSystem, NcaContentType.Program);
 
             if (!string.IsNullOrEmpty(contentPath))
             {
                 ApplicationData applicationData = new()
                 {
-                    Name = "miiEdit",
-                    Id = 0x0100000000001009,
+                    Name = name,
+                    Id = programId,
                     Path = contentPath,
                 };
 
-                string name = "miiEdit";
                 string version = "1.0.0";
                 var nacpData = new BlitStruct<ApplicationControlProperty>(1);
 
