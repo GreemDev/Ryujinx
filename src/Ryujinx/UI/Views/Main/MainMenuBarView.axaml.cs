@@ -13,6 +13,7 @@ using Ryujinx.Ava.UI.ViewModels;
 using Ryujinx.Ava.UI.Windows;
 using Ryujinx.Common;
 using Ryujinx.Common.Utilities;
+using Ryujinx.HLE;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common;
 using Ryujinx.UI.Common.Configuration;
@@ -126,32 +127,22 @@ namespace Ryujinx.Ava.UI.Views.Main
 
         public async void OpenMiiApplet(object sender, RoutedEventArgs e)
         {
-            const string name = "miiEdit";
-            const ulong programId = 0x0100000000001009;
-            string contentPath = ViewModel.ContentManager.GetInstalledContentPath(programId, StorageId.BuiltInSystem, NcaContentType.Program);
+            const string AppletName = "miiEdit";
+            const ulong AppletProgramId = 0x0100000000001009;
+            const string AppletVersion = "1.0.0";
+            
+            string contentPath = ViewModel.ContentManager.GetInstalledContentPath(AppletProgramId, StorageId.BuiltInSystem, NcaContentType.Program);
 
             if (!string.IsNullOrEmpty(contentPath))
             {
                 ApplicationData applicationData = new()
                 {
-                    Name = name,
-                    Id = programId,
-                    Path = contentPath,
+                    Name = AppletName,
+                    Id = AppletProgramId,
+                    Path = contentPath
                 };
-
-                string version = "1.0.0";
-                var nacpData = new BlitStruct<ApplicationControlProperty>(1);
-
-                //version buffer
-                Encoding.ASCII.GetBytes(version).AsSpan().CopyTo(nacpData.ByteSpan.Slice(0x3060));
-
-                //name and distributor buffer
-                //repeat once for each locale (the ApplicationControlProperty has 16 locales)
-                for (int i = 0; i < 0x10; i++)
-                {
-                    Encoding.ASCII.GetBytes(name).AsSpan().CopyTo(nacpData.ByteSpan.Slice(i * 0x300));
-                    "Ryujinx"u8.ToArray().AsSpan().CopyTo(nacpData.ByteSpan.Slice(i * 0x300 + 0x200));
-                }
+                
+                var nacpData = StructHelpers.CreateCustomNacpData(AppletName, AppletVersion);
 
                 await ViewModel.LoadApplication(applicationData, ViewModel.IsFullScreen || ViewModel.StartGamesInFullscreen, nacpData);
             }
