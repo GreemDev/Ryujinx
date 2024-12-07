@@ -49,7 +49,7 @@ namespace Ryujinx.UI.Common.Helper
             }
         }
 
-        public static void SaveTitleUpdatesJson(VirtualFileSystem vfs, ulong applicationIdBase, List<(TitleUpdateModel, bool IsSelected)> updates)
+        public static void SaveTitleUpdatesJson(ulong applicationIdBase, List<(TitleUpdateModel, bool IsSelected)> updates)
         {
             var titleUpdateWindowData = new TitleUpdateMetadata
             {
