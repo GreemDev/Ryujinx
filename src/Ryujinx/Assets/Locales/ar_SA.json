@@ -27,6 +27,7 @@
   "MenuBarActions": "_الإجراءات",
   "MenuBarOptionsSimulateWakeUpMessage": "محاكاة رسالة الاستيقاظ",
   "MenuBarActionsScanAmiibo": "‫فحص Amiibo",
+  "MenuBarActionsScanAmiiboBin": "Scan An Amiibo (From Bin)",
   "MenuBarTools": "_الأدوات",
   "MenuBarToolsInstallFirmware": "تثبيت البرنامج الثابت",
   "MenuBarFileToolsInstallFirmwareFromFile": "تثبيت برنامج ثابت من XCI أو ZIP",

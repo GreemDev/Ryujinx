@@ -27,6 +27,7 @@
   "MenuBarActions": "_Δράσεις",
   "MenuBarOptionsSimulateWakeUpMessage": "Προσομοίωση Μηνύματος Αφύπνισης",
   "MenuBarActionsScanAmiibo": "Σάρωση Amiibo",
+  "MenuBarActionsScanAmiiboBin": "Scan An Amiibo (From Bin)",
   "MenuBarTools": "_Εργαλεία",
   "MenuBarToolsInstallFirmware": "Εγκατάσταση Firmware",
   "MenuBarFileToolsInstallFirmwareFromFile": "Εγκατάσταση Firmware από XCI ή ZIP",

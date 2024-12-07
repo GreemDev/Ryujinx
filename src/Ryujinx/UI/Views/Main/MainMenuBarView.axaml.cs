@@ -13,6 +13,7 @@ using Ryujinx.Ava.UI.ViewModels;
 using Ryujinx.Ava.UI.Windows;
 using Ryujinx.Common;
 using Ryujinx.Common.Utilities;
+using Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common;
 using Ryujinx.UI.Common.Configuration;
@@ -160,6 +161,9 @@ namespace Ryujinx.Ava.UI.Views.Main
         public async void OpenAmiiboWindow(object sender, RoutedEventArgs e)
             => await ViewModel.OpenAmiiboWindow();
 
+        public async void OpenBinFile(object sender, RoutedEventArgs e)
+            => await ViewModel.OpenBinFile();
+
         public async void OpenCheatManagerForCurrentApp(object sender, RoutedEventArgs e)
         {
             if (!ViewModel.IsGameRunning)
@@ -180,6 +184,12 @@ namespace Ryujinx.Ava.UI.Views.Main
         {
             if (sender is MenuItem)
                 ViewModel.IsAmiiboRequested = ViewModel.AppHost.Device.System.SearchingForAmiibo(out _);
+        }
+
+        private void ScanBinAmiiboMenuItem_AttachedToVisualTree(object sender, VisualTreeAttachmentEventArgs e)
+        {
+            if (sender is MenuItem)
+                ViewModel.IsBinAmiiboRequested = ViewModel.IsAmiiboRequested && AmiiboBinReader.HasKeyRetailBinPath();
         }
 
         private async void InstallFileTypes_Click(object sender, RoutedEventArgs e)

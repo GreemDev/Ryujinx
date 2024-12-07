@@ -27,6 +27,7 @@
   "MenuBarActions": "アクション(_A)",
   "MenuBarOptionsSimulateWakeUpMessage": "スリープ復帰メッセージをシミュレート",
   "MenuBarActionsScanAmiibo": "Amiibo をスキャン",
+  "MenuBarActionsScanAmiiboBin": "Scan An Amiibo (From Bin)",
   "MenuBarTools": "ツール(_T)",
   "MenuBarToolsInstallFirmware": "ファームウェアをインストール",
   "MenuBarFileToolsInstallFirmwareFromFile": "XCI または ZIP からファームウェアをインストール",

@@ -29,12 +29,14 @@ using Ryujinx.HLE;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS;
 using Ryujinx.HLE.HOS.Services.Account.Acc;
+using Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption;
 using Ryujinx.HLE.UI;
 using Ryujinx.Input.HLE;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common;
 using Ryujinx.UI.Common.Configuration;
 using Ryujinx.UI.Common.Helper;
+using Silk.NET.Vulkan;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -310,6 +312,16 @@ namespace Ryujinx.Ava.UI.ViewModels
         public bool IsAmiiboRequested
         {
             get => _isAmiiboRequested && _isGameRunning;
+            set
+            {
+                _isAmiiboRequested = value;
+
+                OnPropertyChanged();
+            }
+        }
+        public bool IsBinAmiiboRequested
+        {
+            get => IsAmiiboRequested && AmiiboBinReader.HasKeyRetailBinPath();
             set
             {
                 _isAmiiboRequested = value;
@@ -2060,6 +2072,32 @@ namespace Ryujinx.Ava.UI.ViewModels
                 }
             }
         }
+        public async Task OpenBinFile()
+        {
+            if (!IsAmiiboRequested)
+                return;
+
+            if (AppHost.Device.System.SearchingForAmiibo(out int deviceId))
+            {
+                var result = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+                {
+                    Title = LocaleManager.Instance[LocaleKeys.OpenFileDialogTitle],
+                    AllowMultiple = false,
+                    FileTypeFilter = new List<FilePickerFileType>
+                    {
+                        new(LocaleManager.Instance[LocaleKeys.AllSupportedFormats])
+                        {
+                            Patterns = new[] { "*.bin" },
+                        }
+                    }
+                });
+                if (result.Count > 0)
+                {
+                    AppHost.Device.System.ScanAmiiboFromBin(result[0].Path.LocalPath);
+                }
+            }
+        }
+
 
         public void ToggleFullscreen()
         {

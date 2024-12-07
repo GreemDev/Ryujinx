@@ -27,6 +27,7 @@
   "MenuBarActions": "_Дії",
   "MenuBarOptionsSimulateWakeUpMessage": "Симулювати повідомлення про пробудження",
   "MenuBarActionsScanAmiibo": "Сканувати Amiibo",
+  "MenuBarActionsScanAmiiboBin": "Scan An Amiibo (From Bin)",
   "MenuBarTools": "_Інструменти",
   "MenuBarToolsInstallFirmware": "Установити прошивку",
   "MenuBarFileToolsInstallFirmwareFromFile": "Установити прошивку з XCI або ZIP",
