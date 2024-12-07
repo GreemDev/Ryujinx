@@ -787,7 +787,7 @@
   "UpdateWindowBundledContentNotice": "Las actualizaciones agrupadas no pueden ser eliminadas, solamente deshabilitadas.",
   "CheatWindowHeading": "Cheats disponibles para {0} [{1}]",
   "BuildId": "Id de compilación:",
-  "DlcWindowHeading": "Contenido descargable disponible para {0} [{1}]",
+  "DlcWindowHeading": "{0} DLC(s) available",
   "DlcWindowDlcAddedMessage": "Se agregaron {0} nuevo(s) contenido(s) descargable(s)",
   "AutoloadDlcAddedMessage": "Se agregaron {0} nuevo(s) contenido(s) descargable(s)",
   "AutoloadDlcRemovedMessage": "Se eliminaron {0} contenido(s) descargable(s) faltantes",

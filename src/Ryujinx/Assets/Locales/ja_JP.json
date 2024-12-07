@@ -787,7 +787,7 @@
   "UpdateWindowBundledContentNotice": "Bundled updates cannot be removed, only disabled.",
   "CheatWindowHeading": "利用可能なチート {0} [{1}]",
   "BuildId": "ビルドID:",
-  "DlcWindowHeading": "利用可能な DLC {0} [{1}]",
+  "DlcWindowHeading": "{0} DLC(s) available",
   "DlcWindowDlcAddedMessage": "{0} new downloadable content(s) added",
   "AutoloadDlcAddedMessage": "{0} new downloadable content(s) added",
   "AutoloadDlcRemovedMessage": "{0} missing downloadable content(s) removed",

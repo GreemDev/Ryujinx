@@ -788,7 +788,7 @@
   "CheatWindowHeading": "Cheats disponibles pour {0} [{1}]",
   "BuildId": "BuildId :",
   "DlcWindowBundledContentNotice": "Les DLC inclus avec le jeu ne peuvent pas être supprimés mais peuvent être désactivés.",
-  "DlcWindowHeading": "{0} Contenu(s) téléchargeable(s)",
+  "DlcWindowHeading": "{0} DLC(s) available",
   "DlcWindowDlcAddedMessage": "{0} nouveau(x) contenu(s) téléchargeable(s) ajouté(s)",
   "AutoloadDlcAddedMessage": "{0} nouveau(x) contenu(s) téléchargeable(s) ajouté(s)",
   "AutoloadDlcRemovedMessage": "{0} contenu(s) téléchargeable(s) manquant(s) supprimé(s)",
