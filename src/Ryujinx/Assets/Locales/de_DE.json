@@ -788,7 +788,7 @@
   "CheatWindowHeading": "Cheats verfügbar für {0} [{1}]",
   "DlcWindowBundledContentNotice": "Bundled DLC cannot be removed, only disabled.",
   "BuildId": "BuildId:",
-  "DlcWindowHeading": "DLC verfügbar für {0} [{1}]",
+  "DlcWindowHeading": "{0} DLC(s) available",
   "DlcWindowDlcAddedMessage": "{0} new downloadable content(s) added",
   "AutoloadDlcAddedMessage": "{0} new downloadable content(s) added",
   "AutoloadDlcRemovedMessage": "{0} missing downloadable content(s) removed",

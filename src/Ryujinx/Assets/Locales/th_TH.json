@@ -788,7 +788,7 @@
   "CheatWindowHeading": "สูตรโกงมีให้สำหรับ {0} [{1}]",
   "BuildId": "รหัสการสร้าง:",
   "DlcWindowBundledContentNotice": "แพ็ค DLC ไม่สามารถลบทิ้งได้ สามารถปิดใช้งานได้เท่านั้น",
-  "DlcWindowHeading": "{0} DLC ที่สามารถดาวน์โหลดได้",
+  "DlcWindowHeading": "{0} DLC(s) available",
   "DlcWindowDlcAddedMessage": "{0} DLC ใหม่ที่เพิ่มเข้ามา",
   "AutoloadDlcAddedMessage": "{0} ใหม่ที่เพิ่มเข้ามา",
   "AutoloadDlcRemovedMessage": "{0} missing downloadable content(s) removed",
