@@ -788,7 +788,7 @@
   "CheatWindowHeading": "{0} için Hile mevcut [{1}]",
   "BuildId": "BuildId:",
   "DlcWindowBundledContentNotice": "Bundled DLC cannot be removed, only disabled.",
-  "DlcWindowHeading": "{0} Downloadable Content(s) available for {1} ({2})",
+  "DlcWindowHeading": "{0} DLC(s) available",
   "DlcWindowDlcAddedMessage": "{0} new downloadable content(s) added",
   "AutoloadDlcAddedMessage": "{0} new downloadable content(s) added",
   "AutoloadDlcRemovedMessage": "{0} missing downloadable content(s) removed",

@@ -802,7 +802,7 @@
   "CheatWindowHeading": "Коди доступні для {0} [{1}]",
   "BuildId": "ID збірки:",
   "DlcWindowBundledContentNotice": "Вбудований DLC не може бути видаленим, лише вимкненим.",
-  "DlcWindowHeading": "Вміст для завантаження, доступний для {1} ({2}): {0}",
+  "DlcWindowHeading": "{0} DLC(s) available",
   "DlcWindowDlcAddedMessage": "{0} новий завантажувальний вміст додано",
   "AutoloadDlcAddedMessage": "{0} новий завантажувальний вміст додано",
   "AutoloadDlcRemovedMessage": "{0} відсутній завантажуваний вміст видалено.",
