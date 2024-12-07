@@ -1082,11 +1082,10 @@ namespace Ryujinx.UI.App.Common
             var currentlySelected = TitleUpdates.Items.FindFirst(it =>
                 it.TitleUpdate.TitleIdBase == update.TitleIdBase && it.IsSelected);
 
-            var shouldSelect = !currentlySelected.HasValue ||
-                               currentlySelected.Value.TitleUpdate.Version < update.Version;
+            var shouldSelect = currentlySelected.Check(curr => curr.TitleUpdate.Version < update.Version);
 
             _titleUpdates.AddOrUpdate((update, shouldSelect));
-
+            
             if (currentlySelected.HasValue && shouldSelect)
             {
                 _titleUpdates.AddOrUpdate((currentlySelected.Value.TitleUpdate, false));
@@ -1478,7 +1477,7 @@ namespace Ryujinx.UI.App.Common
 
                 if (TryGetTitleUpdatesFromFile(application.Path, out var bundledUpdates))
                 {
-                    var savedUpdateLookup = savedUpdates.Select(update => update.Item1).ToHashSet();
+                    var savedUpdateLookup = savedUpdates.Select(update => update.Update).ToHashSet();
                     bool updatesChanged = false;
 
                     foreach (var update in bundledUpdates.OrderByDescending(bundled => bundled.Version))
@@ -1486,11 +1485,10 @@ namespace Ryujinx.UI.App.Common
                         if (!savedUpdateLookup.Contains(update))
                         {
                             bool shouldSelect = false;
-                            if (!selectedUpdate.HasValue || selectedUpdate.Value.Item1.Version < update.Version)
+                            if (selectedUpdate.Check(su => su.Update.Version < update.Version))
                             {
                                 shouldSelect = true;
-                                if (selectedUpdate)
-                                    _titleUpdates.AddOrUpdate((selectedUpdate.Value.Item1, false));
+                                _titleUpdates.AddOrUpdate((selectedUpdate.Value.Update, false));
                                 selectedUpdate = (update, true);
                             }
 
