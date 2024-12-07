@@ -1079,10 +1079,12 @@ namespace Ryujinx.UI.App.Common
 
         private bool AddAndAutoSelectUpdate(TitleUpdateModel update)
         {
+            if (update == null) return false;
+            
             var currentlySelected = TitleUpdates.Items.FindFirst(it =>
                 it.TitleUpdate.TitleIdBase == update.TitleIdBase && it.IsSelected);
 
-            var shouldSelect = currentlySelected.Check(curr => curr.TitleUpdate.Version < update.Version);
+            var shouldSelect = currentlySelected.Check(curr => curr.TitleUpdate?.Version < update.Version);
 
             _titleUpdates.AddOrUpdate((update, shouldSelect));
             
@@ -1485,7 +1487,7 @@ namespace Ryujinx.UI.App.Common
                         if (!savedUpdateLookup.Contains(update))
                         {
                             bool shouldSelect = false;
-                            if (selectedUpdate.Check(su => su.Update.Version < update.Version))
+                            if (selectedUpdate.Check(su => su.Update?.Version < update.Version))
                             {
                                 shouldSelect = true;
                                 _titleUpdates.AddOrUpdate((selectedUpdate.Value.Update, false));
