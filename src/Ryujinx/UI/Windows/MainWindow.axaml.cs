@@ -7,6 +7,7 @@ using Avalonia.Threading;
 using DynamicData;
 using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Windowing;
+using Gommon;
 using LibHac.Tools.FsSystem;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
@@ -38,6 +39,8 @@ namespace Ryujinx.Ava.UI.Windows
 {
     public partial class MainWindow : StyleableAppWindow
     {
+        internal static MainWindowViewModel MainWindowViewModel { get; private set; }
+        
         public MainWindowViewModel ViewModel { get; }
 
         internal readonly AvaHostUIHandler UiHandler;
@@ -73,7 +76,7 @@ namespace Ryujinx.Ava.UI.Windows
 
         public MainWindow()
         {
-            DataContext = ViewModel = new MainWindowViewModel
+            DataContext = ViewModel = MainWindowViewModel = new MainWindowViewModel
             {
                 Window = this
             };
@@ -385,10 +388,8 @@ namespace Ryujinx.Ava.UI.Windows
 
             if (ConfigurationState.Instance.CheckUpdatesOnStart && !CommandLineState.HideAvailableUpdates && Updater.CanUpdate())
             {
-                await this.BeginUpdateAsync()
-                    .ContinueWith(
-                        task => Logger.Error?.Print(LogClass.Application, $"Updater Error: {task.Exception}"), 
-                        TaskContinuationOptions.OnlyOnFaulted);
+                await Updater.BeginUpdateAsync()
+                    .Catch(task => Logger.Error?.Print(LogClass.Application, $"Updater Error: {task.Exception}"));
             }
         }
 

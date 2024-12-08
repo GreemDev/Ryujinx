@@ -1,16 +1,12 @@
-using ARMeilleure;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
-using Ryujinx.Common.Configuration.Hid.Controller;
 using Ryujinx.Common.Configuration.Hid.Keyboard;
 using Ryujinx.Common.Configuration.Multiplayer;
-using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.Vulkan;
 using Ryujinx.HLE;
 using Ryujinx.UI.Common.Configuration.System;
 using Ryujinx.UI.Common.Configuration.UI;
 using System;
-using System.Collections.Generic;
 
 namespace Ryujinx.UI.Common.Configuration
 {
@@ -21,10 +17,10 @@ namespace Ryujinx.UI.Common.Configuration
             if (Instance != null)
             {
                 throw new InvalidOperationException("Configuration is already initialized");
-                }
+            }
 
             Instance = new ConfigurationState();
-                }
+        }
 
         public ConfigurationFileFormat ToFileFormat()
         {
@@ -64,7 +60,9 @@ namespace Ryujinx.UI.Common.Configuration
                 ShowTitleBar = ShowTitleBar,
                 EnableHardwareAcceleration = EnableHardwareAcceleration,
                 HideCursor = HideCursor,
-                EnableVsync = Graphics.EnableVsync,
+                VSyncMode = Graphics.VSyncMode,
+                EnableCustomVSyncInterval = Graphics.EnableCustomVSyncInterval,
+                CustomVSyncInterval = Graphics.CustomVSyncInterval,
                 EnableShaderCache = Graphics.EnableShaderCache,
                 EnableTextureRecompression = Graphics.EnableTextureRecompression,
                 EnableMacroHLE = Graphics.EnableMacroHLE,
@@ -179,7 +177,9 @@ namespace Ryujinx.UI.Common.Configuration
             ShowTitleBar.Value = !OperatingSystem.IsWindows();
             EnableHardwareAcceleration.Value = true;
             HideCursor.Value = HideCursorMode.OnIdle;
-            Graphics.EnableVsync.Value = true;
+            Graphics.VSyncMode.Value = VSyncMode.Switch;
+            Graphics.CustomVSyncInterval.Value = 120;
+            Graphics.EnableCustomVSyncInterval.Value = false;
             Graphics.EnableShaderCache.Value = true;
             Graphics.EnableTextureRecompression.Value = false;
             Graphics.EnableMacroHLE.Value = true;
@@ -240,7 +240,7 @@ namespace Ryujinx.UI.Common.Configuration
             Hid.EnableMouse.Value = false;
             Hid.Hotkeys.Value = new KeyboardHotkeys
             {
-                ToggleVsync = Key.F1,
+                ToggleVSyncMode = Key.F1,
                 ToggleMute = Key.F2,
                 Screenshot = Key.F8,
                 ShowUI = Key.F4,
