@@ -27,7 +27,9 @@ namespace Ryujinx.Horizon.Sdk.Settings
             "es-419",
             "zh-Hans",
             "zh-Hant",
-            "pt-BR"
+            "pt-BR",
+            "sv",
+            "fi"
         };
 
         public Array8<byte> Value;

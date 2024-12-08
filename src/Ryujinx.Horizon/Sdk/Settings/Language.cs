@@ -20,5 +20,7 @@ namespace Ryujinx.Horizon.Sdk.Settings
         SimplifiedChinese,
         TraditionalChinese,
         BrazilianPortuguese,
+        Swedish,
+        Finnish,
     }
 }

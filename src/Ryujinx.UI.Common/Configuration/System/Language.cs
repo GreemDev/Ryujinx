@@ -24,5 +24,7 @@ namespace Ryujinx.UI.Common.Configuration.System
         SimplifiedChinese,
         TraditionalChinese,
         BrazilianPortuguese,
+        Swedish,
+        Finnish,
     }
 }
