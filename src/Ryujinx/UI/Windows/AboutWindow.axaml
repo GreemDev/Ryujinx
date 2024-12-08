@@ -165,7 +165,16 @@
                     Text="{ext:Locale AboutRyujinxMaintainersTitle}" />
                 <TextBlock
                     FontSize="10"
-                    Text="{Binding Developers}"
+                    Margin="0, 0, 0, 5"
+                    TextWrapping="Wrap"
+                    Text="{Binding Developers}"/>
+                <TextBlock
+                    FontSize="15"
+                    FontWeight="Bold"
+                    Text="{ext:Locale AboutRyujinxFormerMaintainersTitle}" />
+                <TextBlock
+                    FontSize="10"
+                    Text="{Binding FormerDevelopers}"
                     TextWrapping="Wrap" />
                 <Button
                     Padding="5"
