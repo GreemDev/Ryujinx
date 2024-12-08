@@ -149,7 +149,7 @@
   "SettingsTabSystemSystemTimeZone": "Zona horaria del sistema:",
   "SettingsTabSystemSystemTime": "Hora del sistema:",
   "SettingsTabSystemVSyncMode": "Sincronización vertical:",
-  "SettingsTabSystemEnableCustomVSyncInterval": "Activar tasa de refresco personalizda (Experimental)",
+  "SettingsTabSystemEnableCustomVSyncInterval": "Activar tasa de refresco personalizada (Experimental)",
   "SettingsTabSystemVSyncModeSwitch": "Switch",
   "SettingsTabSystemVSyncModeUnbounded": "Sin límite",
   "SettingsTabSystemVSyncModeCustom": "Tasa de refresco personalizada",
