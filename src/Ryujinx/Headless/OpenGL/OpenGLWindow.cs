@@ -7,7 +7,7 @@ using Ryujinx.Input.HLE;
 using System;
 using static SDL2.SDL;
 
-namespace Ryujinx.Headless.SDL2.OpenGL
+namespace Ryujinx.Headless
 {
     class OpenGLWindow : WindowBase
     {
