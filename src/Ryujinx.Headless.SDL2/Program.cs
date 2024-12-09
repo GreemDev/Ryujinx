@@ -45,7 +45,7 @@ using Key = Ryujinx.Common.Configuration.Hid.Key;
 
 namespace Ryujinx.Headless.SDL2
 {
-    class Program
+    public class Program
     {
         public static string Version { get; private set; }
 
@@ -64,7 +64,7 @@ namespace Ryujinx.Headless.SDL2
 
         private static readonly InputConfigJsonSerializerContext _serializerContext = new(JsonHelper.GetDefaultSerializerOptions());
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Version = ReleaseInformation.Version;
 

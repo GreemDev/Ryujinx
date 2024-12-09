@@ -55,6 +55,12 @@ namespace Ryujinx.Ava
 
             Initialize(args);
 
+            if (args[0] is "--no-gui" or "nogui")
+            {
+                Headless.SDL2.Program.Main(args.Skip(1).ToArray());
+                return 0;
+            }
+
             LoggerAdapter.Register();
 
             IconProvider.Current

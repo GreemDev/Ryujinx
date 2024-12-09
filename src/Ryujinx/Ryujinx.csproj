@@ -72,6 +72,7 @@
     <ProjectReference Include="..\Ryujinx.Audio.Backends.OpenAL\Ryujinx.Audio.Backends.OpenAL.csproj" />
     <ProjectReference Include="..\Ryujinx.Audio.Backends.SoundIo\Ryujinx.Audio.Backends.SoundIo.csproj" />
     <ProjectReference Include="..\Ryujinx.Common\Ryujinx.Common.csproj" />
+    <ProjectReference Include="..\Ryujinx.Headless.SDL2\Ryujinx.Headless.SDL2.csproj" />
     <ProjectReference Include="..\Ryujinx.HLE\Ryujinx.HLE.csproj" />
     <ProjectReference Include="..\ARMeilleure\ARMeilleure.csproj" />
     <ProjectReference Include="..\Ryujinx.Graphics.OpenGL\Ryujinx.Graphics.OpenGL.csproj" />
