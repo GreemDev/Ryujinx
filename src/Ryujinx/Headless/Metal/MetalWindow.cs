@@ -5,7 +5,7 @@ using SharpMetal.QuartzCore;
 using System.Runtime.Versioning;
 using static SDL2.SDL;
 
-namespace Ryujinx.Headless.SDL2.Metal
+namespace Ryujinx.Headless
 {
     [SupportedOSPlatform("macos")]
     class MetalWindow : WindowBase
