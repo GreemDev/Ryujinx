@@ -14,6 +14,7 @@ using Ryujinx.Common.GraphicsDriver;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.SystemInterop;
 using Ryujinx.Graphics.Vulkan.MoltenVK;
+using Ryujinx.Headless;
 using Ryujinx.SDL2.Common;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common;
@@ -57,7 +58,7 @@ namespace Ryujinx.Ava
 
             if (args[0] is "--no-gui" or "nogui")
             {
-                Headless.SDL2.Program.Main(args.Skip(1).ToArray());
+                HeadlessRyujinx.Initialize(args[1..]);
                 return 0;
             }
 
@@ -229,7 +230,7 @@ namespace Ryujinx.Ava
                 UseHardwareAcceleration = CommandLineState.OverrideHardwareAcceleration.Value;
         }
 
-        private static void PrintSystemInfo()
+        internal static void PrintSystemInfo()
         {
             Logger.Notice.Print(LogClass.Application, $"{RyujinxApp.FullAppName} Version: {Version}");
             SystemInfo.Gather().Print();
@@ -246,7 +247,7 @@ namespace Ryujinx.Ava
                     : $"Launch Mode: {AppDataManager.Mode}");
         }
 
-        private static void ProcessUnhandledException(object sender, Exception ex, bool isTerminating)
+        internal static void ProcessUnhandledException(object sender, Exception ex, bool isTerminating)
         {
             Logger.Log log = Logger.Error ?? Logger.Notice;
             string message = $"Unhandled exception caught: {ex}";
@@ -261,7 +262,7 @@ namespace Ryujinx.Ava
                 Exit();
         }
 
-        public static void Exit()
+        internal static void Exit()
         {
             DiscordIntegrationModule.Exit();
 

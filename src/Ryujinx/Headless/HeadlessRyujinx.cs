@@ -1,7 +1,12 @@
+using Avalonia.Threading;
 using CommandLine;
+using DiscordRPC;
 using Gommon;
 using LibHac.Tools.FsSystem;
 using Ryujinx.Audio.Backends.SDL2;
+using Ryujinx.Ava;
+using Ryujinx.Ava.Common.Locale;
+using Ryujinx.Ava.UI.Windows;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
@@ -22,9 +27,9 @@ using Ryujinx.Graphics.Metal;
 using Ryujinx.Graphics.OpenGL;
 using Ryujinx.Graphics.Vulkan;
 using Ryujinx.Graphics.Vulkan.MoltenVK;
-using Ryujinx.Headless.SDL2.Metal;
-using Ryujinx.Headless.SDL2.OpenGL;
-using Ryujinx.Headless.SDL2.Vulkan;
+using Ryujinx.Headless.Metal;
+using Ryujinx.Headless.OpenGL;
+using Ryujinx.Headless.Vulkan;
 using Ryujinx.HLE;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS;
@@ -33,22 +38,25 @@ using Ryujinx.Input;
 using Ryujinx.Input.HLE;
 using Ryujinx.Input.SDL2;
 using Ryujinx.SDL2.Common;
+using Ryujinx.UI.App.Common;
+using Ryujinx.UI.Common;
+using Ryujinx.UI.Common.Configuration;
+using Ryujinx.UI.Common.Helper;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 using ConfigGamepadInputId = Ryujinx.Common.Configuration.Hid.Controller.GamepadInputId;
 using ConfigStickInputId = Ryujinx.Common.Configuration.Hid.Controller.StickInputId;
 using Key = Ryujinx.Common.Configuration.Hid.Key;
 
-namespace Ryujinx.Headless.SDL2
+namespace Ryujinx.Headless
 {
-    public class Program
+    public class HeadlessRyujinx
     {
-        public static string Version { get; private set; }
-
         private static VirtualFileSystem _virtualFileSystem;
         private static ContentManager _contentManager;
         private static AccountManager _accountManager;
@@ -64,14 +72,63 @@ namespace Ryujinx.Headless.SDL2
 
         private static readonly InputConfigJsonSerializerContext _serializerContext = new(JsonHelper.GetDefaultSerializerOptions());
 
-        public static void Main(string[] args)
+        public static void Initialize(string[] args)
         {
-            Version = ReleaseInformation.Version;
+            // Ensure Discord presence timestamp begins at the absolute start of when Ryujinx is launched
+            DiscordIntegrationModule.StartedAt = Timestamps.Now;
 
+            // Delete backup files after updating.
+            Task.Run(Updater.CleanupUpdate);
+
+            // Hook unhandled exception and process exit events.
+            AppDomain.CurrentDomain.UnhandledException += (sender, e)
+                => Program.ProcessUnhandledException(sender, e.ExceptionObject as Exception, e.IsTerminating);
+            AppDomain.CurrentDomain.ProcessExit += (_, _) => Program.Exit();
+
+            // Setup base data directory.
+            AppDataManager.Initialize(CommandLineState.BaseDirPathArg);
+
+            // Set the delegate for localizing the word "never" in the UI
+            ApplicationData.LocalizedNever = () => LocaleManager.Instance[LocaleKeys.Never];
+
+            // Initialize the configuration.
+            ConfigurationState.Initialize();
+
+            // Initialize the logger system.
+            LoggerModule.Initialize();
+
+            // Initialize Discord integration.
+            DiscordIntegrationModule.Initialize();
+
+            // Initialize SDL2 driver
+            SDL2Driver.MainThreadDispatcher = action => Dispatcher.UIThread.InvokeAsync(action, DispatcherPriority.Input);
+
+            Program.ReloadConfig();
+
+            // Logging system information.
+            Program.PrintSystemInfo();
+
+            // Enable OGL multithreading on the driver, and some other flags.
+            DriverUtilities.InitDriverConfig(ConfigurationState.Instance.Graphics.BackendThreading == BackendThreading.Off);
+
+            // Check if keys exists.
+            if (!File.Exists(Path.Combine(AppDataManager.KeysDirPath, "prod.keys")))
+            {
+                if (!(AppDataManager.Mode == AppDataManager.LaunchMode.UserProfile && File.Exists(Path.Combine(AppDataManager.KeysDirPathUser, "prod.keys"))))
+                {
+                    Logger.Error?.Print(LogClass.Application, "Keys not found");
+                }
+            }
+            
+            Entrypoint(args);
+        }
+
+        public static void Entrypoint(string[] args)
+        {
             // Make process DPI aware for proper window sizing on high-res screens.
             ForceDpiAware.Windows();
 
-            Console.Title = $"Ryujinx Console {Version} (Headless SDL2)";
+            Console.Title = $"Ryujinx Console {Program.Version} (Headless SDL2)";
 
             if (OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
             {

@@ -1,5 +1,6 @@
 using Humanizer;
 using LibHac.Tools.Fs;
+using Ryujinx.Ava;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Logging;
@@ -26,7 +27,7 @@ using AntiAliasing = Ryujinx.Common.Configuration.AntiAliasing;
 using ScalingFilter = Ryujinx.Common.Configuration.ScalingFilter;
 using Switch = Ryujinx.HLE.Switch;
 
-namespace Ryujinx.Headless.SDL2
+namespace Ryujinx.Headless
 {
     abstract partial class WindowBase : IHostUIHandler, IDisposable
     {
@@ -318,7 +319,7 @@ namespace Ryujinx.Headless.SDL2
                             Device.VSyncMode.ToString(),
                             dockedMode,
                             Device.Configuration.AspectRatio.ToText(),
-                            $"Game: {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
+                            $"{Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
                             $"FIFO: {Device.Statistics.GetFifoPercent():0.00} %",
                             $"GPU: {_gpuDriverName}"));
 
