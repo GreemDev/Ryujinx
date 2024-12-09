@@ -1,6 +1,6 @@
 using Ryujinx.HLE.UI;
 
-namespace Ryujinx.Headless.SDL2
+namespace Ryujinx.Headless
 {
     internal class HeadlessHostUiTheme : IHostUITheme
     {

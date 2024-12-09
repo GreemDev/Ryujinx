@@ -2,12 +2,21 @@ using CommandLine;
 using Ryujinx.Common.Configuration;
 using Ryujinx.HLE;
 using Ryujinx.HLE.HOS.SystemState;
+using Ryujinx.UI.Common.Configuration;
 
-namespace Ryujinx.Headless.SDL2
+namespace Ryujinx.Headless
 {
     public class Options
     {
         // General
+
+        public void InheritMainConfig(ConfigurationState configurationState)
+        {
+            
+        }
+        
+        [Option("use-main-config", Required = false, Default = false, HelpText = "Use the settings from what was configured via the UI.")]
+        public bool InheritConfig { get; set; }
 
         [Option("root-data-dir", Required = false, HelpText = "Set the custom folder path for Ryujinx data.")]
         public string BaseDataDir { get; set; }

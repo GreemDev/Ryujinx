@@ -38,25 +38,10 @@
     <PackageReference Include="Ryujinx.Graphics.Vulkan.Dependencies.MoltenVK" Condition="'$(RuntimeIdentifier)' != 'linux-x64' AND '$(RuntimeIdentifier)' != 'linux-arm64' AND '$(RuntimeIdentifier)' != 'win-x64'" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="..\..\distribution\legal\THIRDPARTY.md">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <TargetPath>THIRDPARTY.md</TargetPath>
-    </Content>
-    <Content Include="..\..\LICENSE.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <TargetPath>LICENSE.txt</TargetPath>
-    </Content>
-  </ItemGroup>
-
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-x64' OR '$(RuntimeIdentifier)' == 'linux-arm64' OR ('$(RuntimeIdentifier)' == '' AND $([MSBuild]::IsOSPlatform('Linux')))">
     <Content Include="..\..\distribution\linux\Ryujinx.sh">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Ryujinx.bmp" />
   </ItemGroup>
 
   <!-- Due to .net core 3.1 embedded resource loading -->
