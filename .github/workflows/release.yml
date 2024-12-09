@@ -193,18 +193,7 @@ jobs:
             | Linux 64 bit | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-${{ steps.version_info.outputs.build_version }}-linux_x64.tar.gz |
             | Linux arm 64 bit | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-${{ steps.version_info.outputs.build_version }}-linux_arm64.tar.gz |
             | Macos | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-${{ steps.version_info.outputs.build_version }}-macos_universal.app.tar.gz |
-            
-            # NOGUI builds:
-            
-            These builds DO NOT HAVE A UI and should only be used in VERY SPECIFIC circumstances, if you don't know why you would want to have a build with NO UI, then use the regular build instead.
-
-            | Platform | Artifact |
-            |--|--|
-            | Windows 64 bit | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/nogui-ryujinx-${{ steps.version_info.outputs.build_version }}-win_x64.zip |
-            | Linux 64 bit | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/nogui-ryujinx-${{ steps.version_info.outputs.build_version }}-linux_x64.tar.gz |
-            | Linux arm 64 bit | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/nogui-ryujinx-${{ steps.version_info.outputs.build_version }}-linux_arm64.tar.gz |
-            | Macos | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/nogui-ryujinx-${{ steps.version_info.outputs.build_version }}-macos_universal.app.tar.gz |
-            
+          
             "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.version_info.outputs.prev_build_version }}...${{ steps.version_info.outputs.build_version }}"
           omitBodyDuringUpdate: true
           allowUpdates: true
@@ -280,17 +269,6 @@ jobs:
             | Linux 64 bit | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-${{ steps.version_info.outputs.build_version }}-linux_x64.tar.gz |
             | Linux arm 64 bit | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-${{ steps.version_info.outputs.build_version }}-linux_arm64.tar.gz |
             | Macos | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-${{ steps.version_info.outputs.build_version }}-macos_universal.app.tar.gz |
-            
-            # NOGUI builds:
-            
-            These builds DO NOT HAVE A UI and should only be used in VERY SPECIFIC circumstances, if you don't know why you would want to have a build with NO UI, then use the regular build instead.
-
-            | Platform | Artifact |
-            |--|--|
-            | Windows 64 bit | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/nogui-ryujinx-${{ steps.version_info.outputs.build_version }}-win_x64.zip |
-            | Linux 64 bit | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/nogui-ryujinx-${{ steps.version_info.outputs.build_version }}-linux_x64.tar.gz |
-            | Linux arm 64 bit | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/nogui-ryujinx-${{ steps.version_info.outputs.build_version }}-linux_arm64.tar.gz |
-            | Macos | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/nogui-ryujinx-${{ steps.version_info.outputs.build_version }}-macos_universal.app.tar.gz |
             
             "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.version_info.outputs.prev_build_version }}...${{ steps.version_info.outputs.build_version }}"
           omitBodyDuringUpdate: true
