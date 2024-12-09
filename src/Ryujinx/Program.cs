@@ -53,15 +53,15 @@ namespace Ryujinx.Ava
             }
 
             PreviewerDetached = true;
-
-            Initialize(args);
-
+            
             if (args[0] is "--no-gui" or "nogui")
             {
-                HeadlessRyujinx.Initialize(args[1..]);
+                HeadlessRyujinx.Entrypoint(args[1..]);
                 return 0;
             }
 
+            Initialize(args);
+            
             LoggerAdapter.Register();
 
             IconProvider.Current
@@ -114,9 +114,6 @@ namespace Ryujinx.Ava
                 => ProcessUnhandledException(sender, e.ExceptionObject as Exception, e.IsTerminating);
             AppDomain.CurrentDomain.ProcessExit += (_, _) => Exit();
 
-            // Setup base data directory.
-            AppDataManager.Initialize(CommandLineState.BaseDirPathArg);
-
             // Set the delegate for localizing the word "never" in the UI
             ApplicationData.LocalizedNever = () => LocaleManager.Instance[LocaleKeys.Never];
 
@@ -157,7 +154,7 @@ namespace Ryujinx.Ava
             }
         }
 
-        public static void ReloadConfig()
+        public static void ReloadConfig(string customConfigPath = null)
         {
             string localConfigurationPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ReleaseInformation.ConfigName);
             string appDataConfigurationPath = Path.Combine(AppDataManager.BaseDirPath, ReleaseInformation.ConfigName);
@@ -170,6 +167,10 @@ namespace Ryujinx.Ava
             else if (File.Exists(appDataConfigurationPath))
             {
                 ConfigurationPath = appDataConfigurationPath;
+            }
+            else if (File.Exists(customConfigPath))
+            {
+                ConfigurationPath = customConfigPath;
             }
 
             if (ConfigurationPath == null)
