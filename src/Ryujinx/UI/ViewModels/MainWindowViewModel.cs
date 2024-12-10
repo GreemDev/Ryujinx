@@ -10,6 +10,7 @@ using DynamicData;
 using DynamicData.Binding;
 using FluentAvalonia.UI.Controls;
 using LibHac.Common;
+using LibHac.Ns;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Input;
@@ -63,13 +64,14 @@ namespace Ryujinx.Ava.UI.ViewModels
         private string _searchText;
         private Timer _searchTimer;
         private string _dockedStatusText;
+        private string _vSyncModeText;
         private string _fifoStatusText;
         private string _gameStatusText;
         private string _volumeStatusText;
         private string _gpuStatusText;
         private string _shaderCountText;
         private bool _isAmiiboRequested;
-        private bool _showRightmostSeparator;
+        private bool _showShaderCompilationHint;
         private bool _isGameRunning;
         private bool _isFullScreen;
         private int _progressMaximum;
@@ -80,7 +82,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         private bool _showStatusSeparator;
         private Brush _progressBarForegroundColor;
         private Brush _progressBarBackgroundColor;
-        private Brush _vsyncColor;
+        private Brush _vSyncModeColor;
         private byte[] _selectedIcon;
         private bool _isAppletMenuActive;
         private int _statusBarProgressMaximum;
@@ -111,6 +113,8 @@ namespace Ryujinx.Ava.UI.ViewModels
         private WindowState _windowState;
         private double _windowWidth;
         private double _windowHeight;
+        private int _customVSyncInterval;
+        private int _customVSyncIntervalPercentageProxy;
 
         private bool _isActive;
         private bool _isSubMenuOpen;
@@ -145,6 +149,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
                 Volume = ConfigurationState.Instance.System.AudioVolume;
             }
+            CustomVSyncInterval = ConfigurationState.Instance.Graphics.CustomVSyncInterval.Value;
         }
 
         public void Initialize(
@@ -271,12 +276,12 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public bool ShowFirmwareStatus => !ShowLoadProgress;
 
-        public bool ShowRightmostSeparator
+        public bool ShowShaderCompilationHint
         {
-            get => _showRightmostSeparator;
+            get => _showShaderCompilationHint;
             set
             {
-                _showRightmostSeparator = value;
+                _showShaderCompilationHint = value;
 
                 OnPropertyChanged();
             }
@@ -397,7 +402,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public bool OpenDeviceSaveDirectoryEnabled => !SelectedApplication.ControlHolder.ByteSpan.IsZeros() && SelectedApplication.ControlHolder.Value.DeviceSaveDataSize > 0;
 
-        public bool TrimXCIEnabled => Ryujinx.Common.Utilities.XCIFileTrimmer.CanTrim(SelectedApplication.Path, new Common.XCIFileTrimmerMainWindowLog(this));
+        public bool TrimXCIEnabled => XCIFileTrimmer.CanTrim(SelectedApplication.Path, new XCITrimmerLog.MainWindow(this));
 
         public bool OpenBcatSaveDirectoryEnabled => !SelectedApplication.ControlHolder.ByteSpan.IsZeros() && SelectedApplication.ControlHolder.Value.BcatDeliveryCacheStorageSize > 0;
 
@@ -447,13 +452,83 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
         }
 
-        public Brush VsyncColor
+        public Brush VSyncModeColor
         {
-            get => _vsyncColor;
+            get => _vSyncModeColor;
             set
             {
-                _vsyncColor = value;
+                _vSyncModeColor = value;
 
+                OnPropertyChanged();
+            }
+        }
+
+        public bool ShowCustomVSyncIntervalPicker
+        {
+            get
+            {
+                if (_isGameRunning)
+                {
+                    return AppHost.Device.VSyncMode ==
+                           VSyncMode.Custom;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            set
+            {
+                OnPropertyChanged();
+            }
+        }
+
+        public int CustomVSyncIntervalPercentageProxy
+        {
+            get => _customVSyncIntervalPercentageProxy;
+            set
+            {
+                int newInterval = (int)((value / 100f) * 60);
+                _customVSyncInterval = newInterval;
+                _customVSyncIntervalPercentageProxy = value;
+                if (_isGameRunning)
+                {
+                    AppHost.Device.CustomVSyncInterval = newInterval;
+                    AppHost.Device.UpdateVSyncInterval();
+                }
+                OnPropertyChanged((nameof(CustomVSyncInterval)));
+                OnPropertyChanged((nameof(CustomVSyncIntervalPercentageText)));
+            }
+        }
+
+        public string CustomVSyncIntervalPercentageText
+        {
+            get
+            {
+                string text = CustomVSyncIntervalPercentageProxy.ToString() + "%";
+                return text;
+            }
+            set
+            {
+
+            }
+        }
+
+        public int CustomVSyncInterval
+        {
+            get => _customVSyncInterval;
+            set
+            {
+                _customVSyncInterval = value;
+                int newPercent = (int)((value / 60f) * 100);
+                _customVSyncIntervalPercentageProxy = newPercent;
+                if (_isGameRunning)
+                {
+                    AppHost.Device.CustomVSyncInterval = value;
+                    AppHost.Device.UpdateVSyncInterval();
+                }
+                OnPropertyChanged(nameof(CustomVSyncIntervalPercentageProxy));
+                OnPropertyChanged(nameof(CustomVSyncIntervalPercentageText));
                 OnPropertyChanged();
             }
         }
@@ -573,6 +648,17 @@ namespace Ryujinx.Ava.UI.ViewModels
             set
             {
                 _backendText = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public string VSyncModeText
+        {
+            get => _vSyncModeText;
+            set
+            {
+                _vSyncModeText = value;
 
                 OnPropertyChanged();
             }
@@ -1186,6 +1272,108 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
         }
 
+        private async Task HandleKeysInstallation(string filename)
+        {
+            try
+            {
+                string systemDirectory = AppDataManager.KeysDirPath;
+                if (AppDataManager.Mode == AppDataManager.LaunchMode.UserProfile && Directory.Exists(AppDataManager.KeysDirPathUser))
+                {
+                    systemDirectory = AppDataManager.KeysDirPathUser;
+                }
+
+                string dialogTitle = LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogKeysInstallerKeysInstallTitle);
+                string dialogMessage = LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogKeysInstallerKeysInstallMessage);
+
+                bool alreadyKesyInstalled = ContentManager.AreKeysAlredyPresent(systemDirectory);
+                if (alreadyKesyInstalled)
+                {
+                    dialogMessage += LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogKeysInstallerKeysInstallSubMessage);
+                }
+
+                dialogMessage += LocaleManager.Instance[LocaleKeys.DialogKeysInstallerKeysInstallConfirmMessage];
+
+                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(
+                    dialogTitle,
+                    dialogMessage,
+                    LocaleManager.Instance[LocaleKeys.InputDialogYes],
+                    LocaleManager.Instance[LocaleKeys.InputDialogNo],
+                    LocaleManager.Instance[LocaleKeys.RyujinxConfirm]);
+
+                UpdateWaitWindow waitingDialog = new(dialogTitle, LocaleManager.Instance[LocaleKeys.DialogKeysInstallerKeysInstallWaitMessage]);
+
+                if (result == UserResult.Yes)
+                {
+                    Logger.Info?.Print(LogClass.Application, $"Installing Keys");
+
+                    Thread thread = new(() =>
+                    {
+                        Dispatcher.UIThread.InvokeAsync(delegate
+                        {
+                            waitingDialog.Show();
+                        });
+
+                        try
+                        {
+                            ContentManager.InstallKeys(filename, systemDirectory);
+
+                            Dispatcher.UIThread.InvokeAsync(async delegate
+                            {
+                                waitingDialog.Close();
+
+                                string message = LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogKeysInstallerKeysInstallSuccessMessage);
+
+                                await ContentDialogHelper.CreateInfoDialog(
+                                    dialogTitle,
+                                    message,
+                                    LocaleManager.Instance[LocaleKeys.InputDialogOk],
+                                    string.Empty,
+                                    LocaleManager.Instance[LocaleKeys.RyujinxInfo]);
+
+                                Logger.Info?.Print(LogClass.Application, message);
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            Dispatcher.UIThread.InvokeAsync(async () =>
+                            {
+                                waitingDialog.Close();
+
+                                string message = ex.Message;
+                                if(ex is FormatException)
+                                {
+                                    message = LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogKeysInstallerKeysNotFoundErrorMessage, filename);
+                                }
+
+                                await ContentDialogHelper.CreateErrorDialog(message);
+                            });
+                        }
+                        finally
+                        {
+                            VirtualFileSystem.ReloadKeySet();
+                        }
+                    })
+                    {
+                        Name = "GUI.KeysInstallerThread",
+                    };
+
+                    thread.Start();
+                }
+            }
+            catch (MissingKeyException ex)
+            {
+                if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime)
+                {
+                    Logger.Error?.Print(LogClass.Application, ex.ToString());
+
+                    await UserErrorDialog.ShowUserErrorDialog(UserError.NoKeys);
+                }
+            }
+            catch (Exception ex)
+            {
+                await ContentDialogHelper.CreateErrorDialog(ex.Message);
+            }
+        }
         private void ProgressHandler<T>(T state, int current, int total) where T : Enum
         {
             Dispatcher.UIThread.Post(() =>
@@ -1292,24 +1480,25 @@ namespace Ryujinx.Ava.UI.ViewModels
             {
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    Application.Current!.Styles.TryGetResource(args.VSyncEnabled
-                        ? "VsyncEnabled"
-                        : "VsyncDisabled",
+                    Application.Current!.Styles.TryGetResource(args.VSyncMode,
                         Application.Current.ActualThemeVariant,
                         out object color);
 
                     if (color is Color clr)
                     {
-                        VsyncColor = new SolidColorBrush(clr);
+                        VSyncModeColor = new SolidColorBrush(clr);
                     }
 
+                    VSyncModeText = args.VSyncMode == "Custom" ? "Custom" : "VSync";
+                    ShowCustomVSyncIntervalPicker =
+                        args.VSyncMode == VSyncMode.Custom.ToString();
                     DockedStatusText = args.DockedMode;
                     AspectRatioStatusText = args.AspectRatio;
                     GameStatusText = args.GameStatus;
                     VolumeStatusText = args.VolumeStatus;
                     FifoStatusText = args.FifoStatus;
 
-                    ShaderCountText = (ShowRightmostSeparator = args.ShaderCount > 0)
+                    ShaderCountText = (ShowShaderCompilationHint = args.ShaderCount > 0)
                         ? $"{LocaleManager.Instance[LocaleKeys.CompilingShaders]}: {args.ShaderCount}"
                         : string.Empty;
 
@@ -1473,6 +1662,53 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
         }
 
+        public async Task InstallKeysFromFile()
+        {
+            var result = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                AllowMultiple = false,
+                FileTypeFilter = new List<FilePickerFileType>
+                {
+                    new(LocaleManager.Instance[LocaleKeys.FileDialogAllTypes])
+                    {
+                        Patterns = new[] { "*.keys", "*.zip" },
+                        AppleUniformTypeIdentifiers = new[] { "com.ryujinx.xci", "public.zip-archive" },
+                        MimeTypes = new[] { "application/keys", "application/zip" },
+                    },
+                    new("KEYS")
+                    {
+                        Patterns = new[] { "*.keys" },
+                        AppleUniformTypeIdentifiers = new[] { "com.ryujinx.xci" },
+                        MimeTypes = new[] { "application/keys" },
+                    },
+                    new("ZIP")
+                    {
+                        Patterns = new[] { "*.zip" },
+                        AppleUniformTypeIdentifiers = new[] { "public.zip-archive" },
+                        MimeTypes = new[] { "application/zip" },
+                    },
+                },
+            });
+
+            if (result.Count > 0)
+            {
+                await HandleKeysInstallation(result[0].Path.LocalPath);
+            }
+        }
+
+        public async Task InstallKeysFromFolder()
+        {
+            var result = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+            {
+                AllowMultiple = false,
+            });
+
+            if (result.Count > 0)
+            {
+                await HandleKeysInstallation(result[0].Path.LocalPath);
+            }
+        }
+
         public void OpenRyujinxFolder()
         {
             OpenHelper.OpenFolder(AppDataManager.BaseDirPath);
@@ -1493,6 +1729,27 @@ namespace Ryujinx.Ava.UI.ViewModels
             {
                 ConfigurationState.Instance.System.EnableDockedMode.Toggle();
             }
+        }
+
+        public void ToggleVSyncMode()
+        {
+            AppHost.VSyncModeToggle();
+            OnPropertyChanged(nameof(ShowCustomVSyncIntervalPicker));
+        }
+
+        public void VSyncModeSettingChanged()
+        {
+            if (_isGameRunning)
+            {
+                AppHost.Device.CustomVSyncInterval = ConfigurationState.Instance.Graphics.CustomVSyncInterval.Value;
+                AppHost.Device.UpdateVSyncInterval();
+            }
+
+            CustomVSyncInterval = ConfigurationState.Instance.Graphics.CustomVSyncInterval.Value;
+            OnPropertyChanged(nameof(ShowCustomVSyncIntervalPicker));
+            OnPropertyChanged(nameof(CustomVSyncIntervalPercentageProxy));
+            OnPropertyChanged(nameof(CustomVSyncIntervalPercentageText));
+            OnPropertyChanged(nameof(CustomVSyncInterval));
         }
 
         public async Task ExitCurrentState()
@@ -1641,7 +1898,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
         }
 
-        public async Task LoadApplication(ApplicationData application, bool startFullscreen = false)
+        public async Task LoadApplication(ApplicationData application, bool startFullscreen = false, BlitStruct<ApplicationControlProperty>? customNacpData = null)
         {
             if (AppHost != null)
             {
@@ -1679,7 +1936,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                 this,
                 TopLevel);
 
-            if (!await AppHost.LoadGuestApplication())
+            if (!await AppHost.LoadGuestApplication(customNacpData))
             {
                 AppHost.DisposeContext();
                 AppHost = null;
@@ -1908,7 +2165,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                 return;
             }
 
-            var trimmer = new XCIFileTrimmer(filename, new Common.XCIFileTrimmerMainWindowLog(this));
+            var trimmer = new XCIFileTrimmer(filename, new XCITrimmerLog.MainWindow(this));
 
             if (trimmer.CanBeTrimmed)
             {

@@ -6,8 +6,10 @@
     xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModel="clr-namespace:Ryujinx.Ava.UI.ViewModels"
-    Width="550"
-    Height="260"
+    MinWidth="550"
+    MinHeight="260"
+    MaxWidth="600"
+    MaxHeight="500"
     Margin="0,-12,0,0"
     d:DesignHeight="260"
     d:DesignWidth="550"
@@ -163,7 +165,16 @@
                     Text="{ext:Locale AboutRyujinxMaintainersTitle}" />
                 <TextBlock
                     FontSize="10"
-                    Text="{Binding Developers}"
+                    Margin="0, 0, 0, 5"
+                    TextWrapping="Wrap"
+                    Text="{Binding Developers}"/>
+                <TextBlock
+                    FontSize="15"
+                    FontWeight="Bold"
+                    Text="{ext:Locale AboutRyujinxFormerMaintainersTitle}" />
+                <TextBlock
+                    FontSize="10"
+                    Text="{Binding FormerDevelopers}"
                     TextWrapping="Wrap" />
                 <Button
                     Padding="5"
