@@ -3,7 +3,9 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Gommon;
+using LibHac.Common;
 using LibHac.Ncm;
+using LibHac.Ns;
 using LibHac.Tools.FsSystem.NcaUtils;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Helpers;
@@ -12,6 +14,7 @@ using Ryujinx.Ava.UI.Windows;
 using Ryujinx.Common;
 using Ryujinx.Common.Utilities;
 using Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption;
+using Ryujinx.HLE;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common;
 using Ryujinx.UI.Common.Configuration;
@@ -20,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Ryujinx.Ava.UI.Views.Main
 {
@@ -124,18 +128,24 @@ namespace Ryujinx.Ava.UI.Views.Main
 
         public async void OpenMiiApplet(object sender, RoutedEventArgs e)
         {
-            string contentPath = ViewModel.ContentManager.GetInstalledContentPath(0x0100000000001009, StorageId.BuiltInSystem, NcaContentType.Program);
+            const string AppletName = "miiEdit";
+            const ulong AppletProgramId = 0x0100000000001009;
+            const string AppletVersion = "1.0.0";
+            
+            string contentPath = ViewModel.ContentManager.GetInstalledContentPath(AppletProgramId, StorageId.BuiltInSystem, NcaContentType.Program);
 
             if (!string.IsNullOrEmpty(contentPath))
             {
                 ApplicationData applicationData = new()
                 {
-                    Name = "miiEdit",
-                    Id = 0x0100000000001009,
-                    Path = contentPath,
+                    Name = AppletName,
+                    Id = AppletProgramId,
+                    Path = contentPath
                 };
+                
+                var nacpData = StructHelpers.CreateCustomNacpData(AppletName, AppletVersion);
 
-                await ViewModel.LoadApplication(applicationData, ViewModel.IsFullScreen || ViewModel.StartGamesInFullscreen);
+                await ViewModel.LoadApplication(applicationData, ViewModel.IsFullScreen || ViewModel.StartGamesInFullscreen, nacpData);
             }
         }
 
@@ -210,7 +220,6 @@ namespace Ryujinx.Ava.UI.Views.Main
 
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                
                 ViewModel.WindowState = WindowState.Normal;
 
                 Window.Arrange(new Rect(Window.Position.X, Window.Position.Y, windowWidthScaled, windowHeightScaled));
@@ -220,7 +229,7 @@ namespace Ryujinx.Ava.UI.Views.Main
         public async void CheckForUpdates(object sender, RoutedEventArgs e)
         {
             if (Updater.CanUpdate(true))
-                await Window.BeginUpdateAsync(true);
+                await Updater.BeginUpdateAsync(true);
         }
 
         public async void OpenXCITrimmerWindow(object sender, RoutedEventArgs e) => await XCITrimmerWindow.Show(ViewModel);
