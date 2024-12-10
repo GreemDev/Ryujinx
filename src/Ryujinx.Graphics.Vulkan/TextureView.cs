@@ -23,8 +23,6 @@ namespace Ryujinx.Graphics.Vulkan
         private readonly Auto<DisposableImageView> _imageView2dArray;
         private Dictionary<Format, TextureView> _selfManagedViews;
 
-        private int _hazardUses;
-
         private readonly TextureCreateInfo _info;
 
         private HashTableSlim<RenderPassCacheKey, RenderPassHolder> _renderPasses;
@@ -62,7 +60,7 @@ namespace Ryujinx.Graphics.Vulkan
             gd.Textures.Add(this);
 
             var format = _gd.FormatCapabilities.ConvertToVkFormat(info.Format);
-            var usage = TextureStorage.GetImageUsage(info.Format, info.Target, gd.Capabilities);
+            var usage = TextureStorage.GetImageUsage(info.Format, info.Target, gd.Capabilities.SupportsShaderStorageImageMultisample);
             var levels = (uint)info.Levels;
             var layers = (uint)info.GetLayers();
 
@@ -1034,34 +1032,6 @@ namespace Ryujinx.Graphics.Vulkan
         public void SetStorage(BufferRange buffer)
         {
             throw new NotImplementedException();
-        }
-
-        public void PrepareForUsage(CommandBufferScoped cbs, PipelineStageFlags flags, List<TextureView> feedbackLoopHazards)
-        {
-            Storage.QueueWriteToReadBarrier(cbs, AccessFlags.ShaderReadBit, flags);
-
-            if (feedbackLoopHazards != null && Storage.IsBound(this))
-            {
-                feedbackLoopHazards.Add(this);
-                _hazardUses++;
-            }
-        }
-
-        public void ClearUsage(List<TextureView> feedbackLoopHazards)
-        {
-            if (_hazardUses != 0 && feedbackLoopHazards != null)
-            {
-                feedbackLoopHazards.Remove(this);
-                _hazardUses--;
-            }
-        }
-
-        public void DecrementHazardUses()
-        {
-            if (_hazardUses != 0)
-            {
-                _hazardUses--;
-            }
         }
 
         public (RenderPassHolder rpHolder, Auto<DisposableFramebuffer> framebuffer) GetPassAndFramebuffer(
