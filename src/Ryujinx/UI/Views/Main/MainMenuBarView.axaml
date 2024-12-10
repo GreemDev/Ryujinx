@@ -242,6 +242,13 @@
                     InputGesture="Ctrl + A"
                     IsEnabled="{Binding IsAmiiboRequested}" />
                 <MenuItem
+                    Name="ScanAmiiboMenuItemFromBin"
+                    AttachedToVisualTree="ScanBinAmiiboMenuItem_AttachedToVisualTree"
+                    Click="OpenBinFile"
+                    Header="{ext:Locale MenuBarActionsScanAmiiboBin}"
+                    Icon="{ext:Icon mdi-cube-scan}"
+                    IsEnabled="{Binding IsAmiiboBinRequested}" />
+                <MenuItem
                     Command="{Binding TakeScreenshot}"
                     Header="{ext:Locale MenuBarFileToolsTakeScreenshot}"
                     Icon="{ext:Icon mdi-monitor-screenshot}"

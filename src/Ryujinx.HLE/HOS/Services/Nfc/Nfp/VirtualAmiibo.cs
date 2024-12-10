@@ -4,6 +4,7 @@ using Ryujinx.Common.Utilities;
 using Ryujinx.Cpu;
 using Ryujinx.HLE.HOS.Services.Mii;
 using Ryujinx.HLE.HOS.Services.Mii.Types;
+using Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption;
 using Ryujinx.HLE.HOS.Services.Nfc.Nfp.NfpManager;
 using System;
 using System.Collections.Generic;
@@ -13,10 +14,11 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
 {
     static class VirtualAmiibo
     {
-        private static uint _openedApplicationAreaId;
-
+        public static uint _openedApplicationAreaId;
+        public static byte[] applicationBytes = new byte[0];
+        public static string inputBin = string.Empty;
+        public static string nickName = string.Empty;
         private static readonly AmiiboJsonSerializerContext _serializerContext = AmiiboJsonSerializerContext.Default;
-
         public static byte[] GenerateUuid(string amiiboId, bool useRandomUuid)
         {
             if (useRandomUuid)
@@ -68,6 +70,11 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
         {
             VirtualAmiiboFile amiiboFile = LoadAmiiboFile(amiiboId);
             string nickname = amiiboFile.NickName ?? "Ryujinx";
+            if (nickName != string.Empty)
+            {
+                nickname = nickName;
+                nickName = string.Empty;
+            }
             UtilityImpl utilityImpl = new(tickSource);
             CharInfo charInfo = new();
 
@@ -97,12 +104,22 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
         {
             VirtualAmiiboFile virtualAmiiboFile = LoadAmiiboFile(amiiboId);
             virtualAmiiboFile.NickName = newNickName;
+            if (inputBin != string.Empty)
+            {
+                AmiiboBinReader.SaveBinFile(inputBin, virtualAmiiboFile.NickName);
+                return;
+            }
             SaveAmiiboFile(virtualAmiiboFile);
         }
 
         public static bool OpenApplicationArea(string amiiboId, uint applicationAreaId)
         {
             VirtualAmiiboFile virtualAmiiboFile = LoadAmiiboFile(amiiboId);
+            if (applicationBytes.Length > 0)
+            {
+                _openedApplicationAreaId = applicationAreaId;
+                return true;
+            }
 
             if (virtualAmiiboFile.ApplicationAreas.Exists(item => item.ApplicationAreaId == applicationAreaId))
             {
@@ -116,6 +133,12 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
 
         public static byte[] GetApplicationArea(string amiiboId)
         {
+            if (applicationBytes.Length > 0)
+            {
+                byte[] bytes = applicationBytes;
+                applicationBytes = new byte[0];
+                return bytes;
+            }
             VirtualAmiiboFile virtualAmiiboFile = LoadAmiiboFile(amiiboId);
 
             foreach (VirtualAmiiboApplicationArea applicationArea in virtualAmiiboFile.ApplicationAreas)
@@ -151,6 +174,11 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
 
         public static void SetApplicationArea(string amiiboId, byte[] applicationAreaData)
         {
+            if (inputBin != string.Empty)
+            {
+                AmiiboBinReader.SaveBinFile(inputBin, applicationAreaData);
+                return;
+            }
             VirtualAmiiboFile virtualAmiiboFile = LoadAmiiboFile(amiiboId);
 
             if (virtualAmiiboFile.ApplicationAreas.Exists(item => item.ApplicationAreaId == _openedApplicationAreaId))
@@ -204,10 +232,21 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
             return virtualAmiiboFile;
         }
 
-        private static void SaveAmiiboFile(VirtualAmiiboFile virtualAmiiboFile)
+        public static void SaveAmiiboFile(VirtualAmiiboFile virtualAmiiboFile)
         {
             string filePath = Path.Join(AppDataManager.BaseDirPath, "system", "amiibo", $"{virtualAmiiboFile.AmiiboId}.json");
             JsonHelper.SerializeToFile(filePath, virtualAmiiboFile, _serializerContext.VirtualAmiiboFile);
+        }
+
+        public static bool SaveFileExists(VirtualAmiiboFile virtualAmiiboFile)
+        {
+            if (inputBin != string.Empty)
+            {
+                SaveAmiiboFile(virtualAmiiboFile);
+                return true;
+
+            }
+            return File.Exists(Path.Join(AppDataManager.BaseDirPath, "system", "amiibo", $"{virtualAmiiboFile.AmiiboId}.json"));
         }
     }
 }
