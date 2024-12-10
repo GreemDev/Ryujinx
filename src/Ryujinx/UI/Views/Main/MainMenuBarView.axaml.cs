@@ -170,7 +170,7 @@ namespace Ryujinx.Ava.UI.Views.Main
         private void ScanBinAmiiboMenuItem_AttachedToVisualTree(object sender, VisualTreeAttachmentEventArgs e)
         {
             if (sender is MenuItem)
-                ViewModel.IsBinAmiiboRequested = ViewModel.IsAmiiboRequested && AmiiboBinReader.HasKeyRetailBinPath();
+                ViewModel.IsAmiiboBinRequested = ViewModel.IsAmiiboRequested && AmiiboBinReader.HasKeyRetailBinPath();
         }
 
         private async void InstallFileTypes_Click(object sender, RoutedEventArgs e)

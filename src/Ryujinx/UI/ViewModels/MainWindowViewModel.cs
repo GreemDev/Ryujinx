@@ -72,6 +72,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         private string _gpuStatusText;
         private string _shaderCountText;
         private bool _isAmiiboRequested;
+        private bool _isAmiiboBinRequested;
         private bool _showRightmostSeparator;
         private bool _isGameRunning;
         private bool _isFullScreen;
@@ -318,17 +319,16 @@ namespace Ryujinx.Ava.UI.ViewModels
                 OnPropertyChanged();
             }
         }
-        public bool IsBinAmiiboRequested
+        public bool IsAmiiboBinRequested
         {
-            get => IsAmiiboRequested && AmiiboBinReader.HasKeyRetailBinPath();
+            get => _isAmiiboBinRequested && _isGameRunning;
             set
             {
-                _isAmiiboRequested = value;
+                _isAmiiboBinRequested = value;
 
                 OnPropertyChanged();
             }
         }
-
         public bool ShowLoadProgress
         {
             get => _showLoadProgress;
