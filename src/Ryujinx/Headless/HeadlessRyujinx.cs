@@ -160,7 +160,7 @@ namespace Ryujinx.Headless
             {
                 configurationPath = appDataConfigurationPath;
             }
-            else if (File.Exists(customConfigPath))
+            else if (customConfigPath != null && File.Exists(customConfigPath))
             {
                 configurationPath = customConfigPath;
             }
