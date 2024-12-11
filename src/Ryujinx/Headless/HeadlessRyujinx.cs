@@ -90,15 +90,6 @@ namespace Ryujinx.Headless
 
             // Logging system information.
             Program.PrintSystemInfo();
-
-            // Check if keys exists.
-            if (!File.Exists(Path.Combine(AppDataManager.KeysDirPath, "prod.keys")))
-            {
-                if (!(AppDataManager.Mode == AppDataManager.LaunchMode.UserProfile && File.Exists(Path.Combine(AppDataManager.KeysDirPathUser, "prod.keys"))))
-                {
-                    Logger.Error?.Print(LogClass.Application, "Keys not found");
-                }
-            }
         }
 
         public static void Entrypoint(string[] args)
@@ -426,6 +417,15 @@ namespace Ryujinx.Headless
                 option.InheritMainConfig(originalArgs, ConfigurationState.Instance, out _inputConfiguration);
             
             AppDataManager.Initialize(option.BaseDataDir);
+            
+            // Check if keys exists.
+            if (!File.Exists(Path.Combine(AppDataManager.KeysDirPath, "prod.keys")))
+            {
+                if (!(AppDataManager.Mode == AppDataManager.LaunchMode.UserProfile && File.Exists(Path.Combine(AppDataManager.KeysDirPathUser, "prod.keys"))))
+                {
+                    Logger.Error?.Print(LogClass.Application, "Keys not found");
+                }
+            }
             
             ReloadConfig();
             
