@@ -137,7 +137,7 @@ namespace Ryujinx.Headless
 
         private void SetWindowIcon()
         {
-            Stream iconStream = typeof(WindowBase).Assembly.GetManifestResourceStream("Ryujinx.Headless.SDL2.Ryujinx.bmp");
+            Stream iconStream = typeof(WindowBase).Assembly.GetManifestResourceStream("Ryujinx.Ryujinx.bmp");
             byte[] iconBytes = new byte[iconStream!.Length];
 
             if (iconStream.Read(iconBytes, 0, iconBytes.Length) != iconBytes.Length)
