@@ -87,8 +87,6 @@ namespace Ryujinx.Headless
             // Initialize Discord integration.
             DiscordIntegrationModule.Initialize();
 
-            ReloadConfig();
-
             // Logging system information.
             Program.PrintSystemInfo();
 
@@ -422,12 +420,14 @@ namespace Ryujinx.Headless
         static void Load(string[] originalArgs, Options option)
         {
             Initialize();
-
+            
             if (option.InheritConfig)
                 option.InheritMainConfig(originalArgs, ConfigurationState.Instance, out _inputConfiguration);
-
+            
             AppDataManager.Initialize(option.BaseDataDir);
-
+            
+            ReloadConfig();
+            
             _virtualFileSystem = VirtualFileSystem.CreateInstance();
             _libHacHorizonManager = new LibHacHorizonManager();
 

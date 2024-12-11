@@ -54,7 +54,7 @@ namespace Ryujinx.Ava
 
             PreviewerDetached = true;
             
-            if (args[0] is "--no-gui" or "nogui")
+            if (args.Length > 0 && args[0] is "--no-gui" or "nogui")
             {
                 HeadlessRyujinx.Entrypoint(args[1..]);
                 return 0;
