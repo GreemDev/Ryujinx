@@ -142,17 +142,17 @@ namespace Ryujinx.Headless
             string configurationPath = null;
             
             // Now load the configuration as the other subsystems are now registered
-            if (File.Exists(localConfigurationPath))
+            if (customConfigPath != null && File.Exists(customConfigPath))
+            {
+                configurationPath = customConfigPath;
+            } 
+            else if (File.Exists(localConfigurationPath))
             {
                 configurationPath = localConfigurationPath;
             }
             else if (File.Exists(appDataConfigurationPath))
             {
                 configurationPath = appDataConfigurationPath;
-            }
-            else if (customConfigPath != null && File.Exists(customConfigPath))
-            {
-                configurationPath = customConfigPath;
             }
 
             if (configurationPath == null)
@@ -412,11 +412,19 @@ namespace Ryujinx.Headless
         static void Load(string[] originalArgs, Options option)
         {
             Initialize();
-            
+
+            bool useLastUsedProfile = false;
+
             if (option.InheritConfig)
-                option.InheritMainConfig(originalArgs, ConfigurationState.Instance, out _inputConfiguration);
-            
+            {
+                option.InheritMainConfig(originalArgs, ConfigurationState.Instance, out _inputConfiguration,
+                    out useLastUsedProfile);
+            }
+
             AppDataManager.Initialize(option.BaseDataDir);
+            
+            if (useLastUsedProfile && AccountSaveDataManager.GetLastUsedUser().TryGet(out var profile))
+                option.UserProfile = profile.Name;
             
             // Check if keys exists.
             if (!File.Exists(Path.Combine(AppDataManager.KeysDirPath, "prod.keys")))

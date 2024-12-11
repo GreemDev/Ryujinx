@@ -134,7 +134,7 @@
     <EmbeddedResource Include="Assets\Icons\Controller_JoyConPair.svg" />
     <EmbeddedResource Include="Assets\Icons\Controller_JoyConRight.svg" />
     <EmbeddedResource Include="Assets\Icons\Controller_ProCon.svg" />
-    <EmbeddedResource Include="Headless\Ryujinx.bmp" />
+    <EmbeddedResource Include="Headless\Ryujinx.bmp" LogicalName="HeadlessLogo" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="Assets\locales.json" />

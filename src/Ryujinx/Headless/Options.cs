@@ -17,11 +17,10 @@ namespace Ryujinx.Headless
     {
         // General
 
-        public void InheritMainConfig(string[] originalArgs, ConfigurationState configurationState, out List<InputConfig> inputConfigs)
+        public void InheritMainConfig(string[] originalArgs, ConfigurationState configurationState, out List<InputConfig> inputConfigs, out bool needsProfileSet)
         {
-            if (NeedsOverride(nameof(UserProfile)) && AccountSaveDataManager.GetLastUsedUser().TryGet(out var profile))
-                UserProfile = profile.Name;
-            
+            needsProfileSet = NeedsOverride(nameof(UserProfile));
+
             if (NeedsOverride(nameof(IsFullscreen)))
                 IsFullscreen = configurationState.UI.StartFullscreen;
 
