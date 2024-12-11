@@ -1,7 +1,12 @@
+using Avalonia.Threading;
 using CommandLine;
+using DiscordRPC;
 using Gommon;
 using LibHac.Tools.FsSystem;
 using Ryujinx.Audio.Backends.SDL2;
+using Ryujinx.Ava;
+using Ryujinx.Ava.Common.Locale;
+using Ryujinx.Ava.UI.Windows;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
@@ -21,8 +26,6 @@ using Ryujinx.Graphics.Gpu.Shader;
 using Ryujinx.Graphics.OpenGL;
 using Ryujinx.Graphics.Vulkan;
 using Ryujinx.Graphics.Vulkan.MoltenVK;
-using Ryujinx.Headless.SDL2.OpenGL;
-using Ryujinx.Headless.SDL2.Vulkan;
 using Ryujinx.HLE;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS;
@@ -31,22 +34,25 @@ using Ryujinx.Input;
 using Ryujinx.Input.HLE;
 using Ryujinx.Input.SDL2;
 using Ryujinx.SDL2.Common;
+using Ryujinx.UI.App.Common;
+using Ryujinx.UI.Common;
+using Ryujinx.UI.Common.Configuration;
+using Ryujinx.UI.Common.Helper;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 using ConfigGamepadInputId = Ryujinx.Common.Configuration.Hid.Controller.GamepadInputId;
 using ConfigStickInputId = Ryujinx.Common.Configuration.Hid.Controller.StickInputId;
 using Key = Ryujinx.Common.Configuration.Hid.Key;
 
-namespace Ryujinx.Headless.SDL2
+namespace Ryujinx.Headless
 {
-    class Program
+    public class HeadlessRyujinx
     {
-        public static string Version { get; private set; }
-
         private static VirtualFileSystem _virtualFileSystem;
         private static ContentManager _contentManager;
         private static AccountManager _accountManager;
@@ -62,14 +68,46 @@ namespace Ryujinx.Headless.SDL2
 
         private static readonly InputConfigJsonSerializerContext _serializerContext = new(JsonHelper.GetDefaultSerializerOptions());
 
-        static void Main(string[] args)
+        public static void Initialize()
         {
-            Version = ReleaseInformation.Version;
+            // Ensure Discord presence timestamp begins at the absolute start of when Ryujinx is launched
+            DiscordIntegrationModule.StartedAt = Timestamps.Now;
 
+            // Delete backup files after updating.
+            Task.Run(Updater.CleanupUpdate);
+
+            // Hook unhandled exception and process exit events.
+            AppDomain.CurrentDomain.UnhandledException += (sender, e)
+                => Program.ProcessUnhandledException(sender, e.ExceptionObject as Exception, e.IsTerminating);
+            AppDomain.CurrentDomain.ProcessExit += (_, _) => Program.Exit();
+
+            // Initialize the configuration.
+            ConfigurationState.Initialize();
+
+            // Initialize Discord integration.
+            DiscordIntegrationModule.Initialize();
+
+            ReloadConfig();
+
+            // Logging system information.
+            Program.PrintSystemInfo();
+
+            // Check if keys exists.
+            if (!File.Exists(Path.Combine(AppDataManager.KeysDirPath, "prod.keys")))
+            {
+                if (!(AppDataManager.Mode == AppDataManager.LaunchMode.UserProfile && File.Exists(Path.Combine(AppDataManager.KeysDirPathUser, "prod.keys"))))
+                {
+                    Logger.Error?.Print(LogClass.Application, "Keys not found");
+                }
+            }
+        }
+
+        public static void Entrypoint(string[] args)
+        {
             // Make process DPI aware for proper window sizing on high-res screens.
             ForceDpiAware.Windows();
 
-            Console.Title = $"Ryujinx Console {Version} (Headless SDL2)";
+            Console.Title = $"Ryujinx Console {Program.Version} (Headless)";
 
             if (OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
             {
@@ -97,13 +135,60 @@ namespace Ryujinx.Headless.SDL2
             }
 
             Parser.Default.ParseArguments<Options>(args)
-                .WithParsed(Load)
+                .WithParsed(options => Load(args, options))
                 .WithNotParsed(errors =>
                 {
                     Logger.Error?.PrintMsg(LogClass.Application, "Error parsing command-line arguments:");
                     
                     errors.ForEach(err => Logger.Error?.PrintMsg(LogClass.Application, $" - {err.Tag}"));
                 });
+        }
+        
+        public static void ReloadConfig(string customConfigPath = null)
+        {
+            string localConfigurationPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ReleaseInformation.ConfigName);
+            string appDataConfigurationPath = Path.Combine(AppDataManager.BaseDirPath, ReleaseInformation.ConfigName);
+
+            string configurationPath = null;
+            
+            // Now load the configuration as the other subsystems are now registered
+            if (File.Exists(localConfigurationPath))
+            {
+                configurationPath = localConfigurationPath;
+            }
+            else if (File.Exists(appDataConfigurationPath))
+            {
+                configurationPath = appDataConfigurationPath;
+            }
+            else if (customConfigPath != null && File.Exists(customConfigPath))
+            {
+                configurationPath = customConfigPath;
+            }
+
+            if (configurationPath == null)
+            {
+                // No configuration, we load the default values and save it to disk
+                configurationPath = appDataConfigurationPath;
+                Logger.Notice.Print(LogClass.Application, $"No configuration file found. Saving default configuration to: {configurationPath}");
+
+                ConfigurationState.Instance.LoadDefault();
+                ConfigurationState.Instance.ToFileFormat().SaveConfig(configurationPath);
+            }
+            else
+            {
+                Logger.Notice.Print(LogClass.Application, $"Loading configuration from: {configurationPath}");
+
+                if (ConfigurationFileFormat.TryLoad(configurationPath, out ConfigurationFileFormat configurationFileFormat))
+                {
+                    ConfigurationState.Instance.Load(configurationFileFormat, configurationPath);
+                }
+                else
+                {
+                    Logger.Warning?.PrintMsg(LogClass.Application, $"Failed to load config! Loading the default config instead.\nFailed config location: {configurationPath}");
+
+                    ConfigurationState.Instance.LoadDefault();
+                }
+            }
         }
 
         private static InputConfig HandlePlayerConfiguration(string inputProfileName, string inputId, PlayerIndex index)
@@ -334,8 +419,13 @@ namespace Ryujinx.Headless.SDL2
             return config;
         }
 
-        static void Load(Options option)
+        static void Load(string[] originalArgs, Options option)
         {
+            Initialize();
+
+            if (option.InheritConfig)
+                option.InheritMainConfig(originalArgs, ConfigurationState.Instance, out _inputConfiguration);
+
             AppDataManager.Initialize(option.BaseDataDir);
 
             _virtualFileSystem = VirtualFileSystem.CreateInstance();
@@ -411,15 +501,18 @@ namespace Ryujinx.Headless.SDL2
                 }
             }
 
-            LoadPlayerConfiguration(option.InputProfile1Name, option.InputId1, PlayerIndex.Player1);
-            LoadPlayerConfiguration(option.InputProfile2Name, option.InputId2, PlayerIndex.Player2);
-            LoadPlayerConfiguration(option.InputProfile3Name, option.InputId3, PlayerIndex.Player3);
-            LoadPlayerConfiguration(option.InputProfile4Name, option.InputId4, PlayerIndex.Player4);
-            LoadPlayerConfiguration(option.InputProfile5Name, option.InputId5, PlayerIndex.Player5);
-            LoadPlayerConfiguration(option.InputProfile6Name, option.InputId6, PlayerIndex.Player6);
-            LoadPlayerConfiguration(option.InputProfile7Name, option.InputId7, PlayerIndex.Player7);
-            LoadPlayerConfiguration(option.InputProfile8Name, option.InputId8, PlayerIndex.Player8);
-            LoadPlayerConfiguration(option.InputProfileHandheldName, option.InputIdHandheld, PlayerIndex.Handheld);
+            if (!option.InheritConfig)
+            {
+                LoadPlayerConfiguration(option.InputProfile1Name, option.InputId1, PlayerIndex.Player1);
+                LoadPlayerConfiguration(option.InputProfile2Name, option.InputId2, PlayerIndex.Player2);
+                LoadPlayerConfiguration(option.InputProfile3Name, option.InputId3, PlayerIndex.Player3);
+                LoadPlayerConfiguration(option.InputProfile4Name, option.InputId4, PlayerIndex.Player4);
+                LoadPlayerConfiguration(option.InputProfile5Name, option.InputId5, PlayerIndex.Player5);
+                LoadPlayerConfiguration(option.InputProfile6Name, option.InputId6, PlayerIndex.Player6);
+                LoadPlayerConfiguration(option.InputProfile7Name, option.InputId7, PlayerIndex.Player7);
+                LoadPlayerConfiguration(option.InputProfile8Name, option.InputId8, PlayerIndex.Player8);
+                LoadPlayerConfiguration(option.InputProfileHandheldName, option.InputIdHandheld, PlayerIndex.Handheld);
+            }
 
             if (_inputConfiguration.Count == 0)
             {
@@ -431,7 +524,7 @@ namespace Ryujinx.Headless.SDL2
             Logger.SetEnable(LogLevel.Stub, !option.LoggingDisableStub);
             Logger.SetEnable(LogLevel.Info, !option.LoggingDisableInfo);
             Logger.SetEnable(LogLevel.Warning, !option.LoggingDisableWarning);
-            Logger.SetEnable(LogLevel.Error, option.LoggingEnableError);
+            Logger.SetEnable(LogLevel.Error, !option.LoggingDisableError);
             Logger.SetEnable(LogLevel.Trace, option.LoggingEnableTrace);
             Logger.SetEnable(LogLevel.Guest, !option.LoggingDisableGuest);
             Logger.SetEnable(LogLevel.AccessLog, option.LoggingEnableFsAccessLog);
