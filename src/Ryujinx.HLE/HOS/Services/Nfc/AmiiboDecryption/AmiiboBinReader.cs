@@ -140,9 +140,9 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
             };
             if (writeCounterValue > 0)
             {
-                VirtualAmiibo.applicationBytes = applicationAreas;
+                VirtualAmiibo.ApplicationBytes = applicationAreas;
             }
-            VirtualAmiibo.nickName = nickName;
+            VirtualAmiibo.NickName = nickName;
             return virtualAmiiboFile;
         }
         public static bool SaveBinFile(string inputFile, byte[] appData)

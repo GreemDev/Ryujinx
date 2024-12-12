@@ -74,7 +74,6 @@ namespace Ryujinx.Ava.UI.ViewModels
         private string _shaderCountText;
         private bool _isAmiiboRequested;
         private bool _isAmiiboBinRequested;
-        private bool _showRightmostSeparator;
         private bool _showShaderCompilationHint;
         private bool _isGameRunning;
         private bool _isFullScreen;
