@@ -3,6 +3,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Threading;
+using LibHac.Common;
+using LibHac.Ns;
 using LibHac.Tools.FsSystem;
 using Ryujinx.Audio.Backends.Dummy;
 using Ryujinx.Audio.Backends.OpenAL;
@@ -670,7 +672,7 @@ namespace Ryujinx.Ava
             _cursorState = CursorStates.ForceChangeCursor;
         }
 
-        public async Task<bool> LoadGuestApplication()
+        public async Task<bool> LoadGuestApplication(BlitStruct<ApplicationControlProperty>? customNacpData = null)
         {
             InitializeSwitchInstance();
             MainWindow.UpdateGraphicsConfig();
@@ -740,7 +742,7 @@ namespace Ryujinx.Ava
             {
                 Logger.Info?.Print(LogClass.Application, "Loading as Firmware Title (NCA).");
 
-                if (!Device.LoadNca(ApplicationPath))
+                if (!Device.LoadNca(ApplicationPath, customNacpData))
                 {
                     Device.Dispose();
 

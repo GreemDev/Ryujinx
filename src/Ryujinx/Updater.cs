@@ -74,14 +74,7 @@ namespace Ryujinx.Ava
                 _platformExt = $"linux_{arch}.tar.gz";
             }
 
-            Version newVersion;
-            Version currentVersion;
-
-            try
-            {
-                currentVersion = Version.Parse(Program.Version);
-            }
-            catch
+            if (!Version.TryParse(Program.Version, out Version currentVersion))
             {
                 Logger.Error?.Print(LogClass.Application, $"Failed to convert the current {App.FullAppName} version!");
 
@@ -164,11 +157,7 @@ namespace Ryujinx.Ava
                 return;
             }
 
-            try
-            {
-                newVersion = Version.Parse(_buildVer);
-            }
-            catch
+            if (!Version.TryParse(_buildVer, out Version newVersion))
             {
                 Logger.Error?.Print(LogClass.Application, $"Failed to convert the received {App.FullAppName} version from GitHub!");
 

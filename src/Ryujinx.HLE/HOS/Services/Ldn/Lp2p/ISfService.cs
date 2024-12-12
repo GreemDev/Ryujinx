@@ -24,6 +24,15 @@ namespace Ryujinx.HLE.HOS.Services.Ldn.Lp2p
             return ResultCode.Success;
         }
 
+        [CommandCmif(776)]
+        // DestroyGroup()
+        public ResultCode DestroyGroup(ServiceCtx context)
+        {
+            Logger.Stub?.PrintStub(LogClass.ServiceLdn);
+
+            return ResultCode.Success;
+        }
+
         [CommandCmif(1536)]
         // SendToOtherGroup(nn::lp2p::MacAddress, nn::lp2p::GroupId, s16, s16, u32, buffer<unknown, 0x21>)
         public ResultCode SendToOtherGroup(ServiceCtx context)
