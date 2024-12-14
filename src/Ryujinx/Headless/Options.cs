@@ -15,9 +15,7 @@ namespace Ryujinx.Headless
 {
     public class Options
     {
-        // General
-
-        public void InheritMainConfig(string[] originalArgs, ConfigurationState configurationState, out List<InputConfig> inputConfigs, out bool needsProfileSet)
+        public void InheritMainConfig(string[] originalArgs, ConfigurationState configurationState, out bool needsProfileSet)
         {
             needsProfileSet = NeedsOverride(nameof(UserProfile));
 
@@ -152,9 +150,6 @@ namespace Ryujinx.Headless
             
             if (NeedsOverride(nameof(IgnoreControllerApplet)))
                 IgnoreControllerApplet = configurationState.IgnoreApplet;
-
-
-            inputConfigs = configurationState.Hid.InputConfig;
             
             return;
             
@@ -163,6 +158,8 @@ namespace Ryujinx.Headless
             string OptionName(string propertyName) =>
                 typeof(Options)!.GetProperty(propertyName)!.GetCustomAttribute<OptionAttribute>()!.LongName;
         }
+        
+        // General
         
         [Option("use-main-config", Required = false, Default = false, HelpText = "Use the settings from what was configured via the UI.")]
         public bool InheritConfig { get; set; }

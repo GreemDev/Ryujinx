@@ -1,18 +1,9 @@
-using Avalonia.Threading;
 using CommandLine;
-using DiscordRPC;
 using Gommon;
-using LibHac.Tools.FsSystem;
-using Ryujinx.Audio.Backends.SDL2;
 using Ryujinx.Ava;
-using Ryujinx.Ava.Common.Locale;
-using Ryujinx.Ava.UI.Windows;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
-using Ryujinx.Common.Configuration.Hid.Controller;
-using Ryujinx.Common.Configuration.Hid.Controller.Motion;
-using Ryujinx.Common.Configuration.Hid.Keyboard;
 using Ryujinx.Common.GraphicsDriver;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.Logging.Targets;
@@ -20,11 +11,8 @@ using Ryujinx.Common.SystemInterop;
 using Ryujinx.Common.Utilities;
 using Ryujinx.Cpu;
 using Ryujinx.Graphics.GAL;
-using Ryujinx.Graphics.GAL.Multithreading;
 using Ryujinx.Graphics.Gpu;
 using Ryujinx.Graphics.Gpu.Shader;
-using Ryujinx.Graphics.OpenGL;
-using Ryujinx.Graphics.Vulkan;
 using Ryujinx.Graphics.Vulkan.MoltenVK;
 using Ryujinx.HLE;
 using Ryujinx.HLE.FileSystem;
@@ -34,24 +22,15 @@ using Ryujinx.Input;
 using Ryujinx.Input.HLE;
 using Ryujinx.Input.SDL2;
 using Ryujinx.SDL2.Common;
-using Ryujinx.UI.App.Common;
-using Ryujinx.UI.Common;
 using Ryujinx.UI.Common.Configuration;
-using Ryujinx.UI.Common.Helper;
-using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
 using System.Threading;
-using System.Threading.Tasks;
-using ConfigGamepadInputId = Ryujinx.Common.Configuration.Hid.Controller.GamepadInputId;
-using ConfigStickInputId = Ryujinx.Common.Configuration.Hid.Controller.StickInputId;
-using Key = Ryujinx.Common.Configuration.Hid.Key;
 
 namespace Ryujinx.Headless
 {
-    public class HeadlessRyujinx
+    public partial class HeadlessRyujinx
     {
         private static VirtualFileSystem _virtualFileSystem;
         private static ContentManager _contentManager;
@@ -62,34 +41,11 @@ namespace Ryujinx.Headless
         private static Switch _emulationContext;
         private static WindowBase _window;
         private static WindowsMultimediaTimerResolution _windowsMultimediaTimerResolution;
-        private static List<InputConfig> _inputConfiguration;
+        private static List<InputConfig> _inputConfiguration = [];
         private static bool _enableKeyboard;
         private static bool _enableMouse;
 
         private static readonly InputConfigJsonSerializerContext _serializerContext = new(JsonHelper.GetDefaultSerializerOptions());
-
-        public static void Initialize()
-        {
-            // Ensure Discord presence timestamp begins at the absolute start of when Ryujinx is launched
-            DiscordIntegrationModule.StartedAt = Timestamps.Now;
-
-            // Delete backup files after updating.
-            Task.Run(Updater.CleanupUpdate);
-
-            // Hook unhandled exception and process exit events.
-            AppDomain.CurrentDomain.UnhandledException += (sender, e)
-                => Program.ProcessUnhandledException(sender, e.ExceptionObject as Exception, e.IsTerminating);
-            AppDomain.CurrentDomain.ProcessExit += (_, _) => Program.Exit();
-
-            // Initialize the configuration.
-            ConfigurationState.Initialize();
-
-            // Initialize Discord integration.
-            DiscordIntegrationModule.Initialize();
-
-            // Logging system information.
-            Program.PrintSystemInfo();
-        }
 
         public static void Entrypoint(string[] args)
         {
@@ -180,234 +136,6 @@ namespace Ryujinx.Headless
             }
         }
 
-        private static InputConfig HandlePlayerConfiguration(string inputProfileName, string inputId, PlayerIndex index)
-        {
-            if (inputId == null)
-            {
-                if (index == PlayerIndex.Player1)
-                {
-                    Logger.Info?.Print(LogClass.Application, $"{index} not configured, defaulting to default keyboard.");
-
-                    // Default to keyboard
-                    inputId = "0";
-                }
-                else
-                {
-                    Logger.Info?.Print(LogClass.Application, $"{index} not configured");
-
-                    return null;
-                }
-            }
-
-            IGamepad gamepad = _inputManager.KeyboardDriver.GetGamepad(inputId);
-
-            bool isKeyboard = true;
-
-            if (gamepad == null)
-            {
-                gamepad = _inputManager.GamepadDriver.GetGamepad(inputId);
-                isKeyboard = false;
-
-                if (gamepad == null)
-                {
-                    Logger.Error?.Print(LogClass.Application, $"{index} gamepad not found (\"{inputId}\")");
-
-                    return null;
-                }
-            }
-
-            string gamepadName = gamepad.Name;
-
-            gamepad.Dispose();
-
-            InputConfig config;
-
-            if (inputProfileName == null || inputProfileName.Equals("default"))
-            {
-                if (isKeyboard)
-                {
-                    config = new StandardKeyboardInputConfig
-                    {
-                        Version = InputConfig.CurrentVersion,
-                        Backend = InputBackendType.WindowKeyboard,
-                        Id = null,
-                        ControllerType = ControllerType.JoyconPair,
-                        LeftJoycon = new LeftJoyconCommonConfig<Key>
-                        {
-                            DpadUp = Key.Up,
-                            DpadDown = Key.Down,
-                            DpadLeft = Key.Left,
-                            DpadRight = Key.Right,
-                            ButtonMinus = Key.Minus,
-                            ButtonL = Key.E,
-                            ButtonZl = Key.Q,
-                            ButtonSl = Key.Unbound,
-                            ButtonSr = Key.Unbound,
-                        },
-
-                        LeftJoyconStick = new JoyconConfigKeyboardStick<Key>
-                        {
-                            StickUp = Key.W,
-                            StickDown = Key.S,
-                            StickLeft = Key.A,
-                            StickRight = Key.D,
-                            StickButton = Key.F,
-                        },
-
-                        RightJoycon = new RightJoyconCommonConfig<Key>
-                        {
-                            ButtonA = Key.Z,
-                            ButtonB = Key.X,
-                            ButtonX = Key.C,
-                            ButtonY = Key.V,
-                            ButtonPlus = Key.Plus,
-                            ButtonR = Key.U,
-                            ButtonZr = Key.O,
-                            ButtonSl = Key.Unbound,
-                            ButtonSr = Key.Unbound,
-                        },
-
-                        RightJoyconStick = new JoyconConfigKeyboardStick<Key>
-                        {
-                            StickUp = Key.I,
-                            StickDown = Key.K,
-                            StickLeft = Key.J,
-                            StickRight = Key.L,
-                            StickButton = Key.H,
-                        },
-                    };
-                }
-                else
-                {
-                    bool isNintendoStyle = gamepadName.Contains("Nintendo");
-
-                    config = new StandardControllerInputConfig
-                    {
-                        Version = InputConfig.CurrentVersion,
-                        Backend = InputBackendType.GamepadSDL2,
-                        Id = null,
-                        ControllerType = ControllerType.JoyconPair,
-                        DeadzoneLeft = 0.1f,
-                        DeadzoneRight = 0.1f,
-                        RangeLeft = 1.0f,
-                        RangeRight = 1.0f,
-                        TriggerThreshold = 0.5f,
-                        LeftJoycon = new LeftJoyconCommonConfig<ConfigGamepadInputId>
-                        {
-                            DpadUp = ConfigGamepadInputId.DpadUp,
-                            DpadDown = ConfigGamepadInputId.DpadDown,
-                            DpadLeft = ConfigGamepadInputId.DpadLeft,
-                            DpadRight = ConfigGamepadInputId.DpadRight,
-                            ButtonMinus = ConfigGamepadInputId.Minus,
-                            ButtonL = ConfigGamepadInputId.LeftShoulder,
-                            ButtonZl = ConfigGamepadInputId.LeftTrigger,
-                            ButtonSl = ConfigGamepadInputId.Unbound,
-                            ButtonSr = ConfigGamepadInputId.Unbound,
-                        },
-
-                        LeftJoyconStick = new JoyconConfigControllerStick<ConfigGamepadInputId, ConfigStickInputId>
-                        {
-                            Joystick = ConfigStickInputId.Left,
-                            StickButton = ConfigGamepadInputId.LeftStick,
-                            InvertStickX = false,
-                            InvertStickY = false,
-                            Rotate90CW = false,
-                        },
-
-                        RightJoycon = new RightJoyconCommonConfig<ConfigGamepadInputId>
-                        {
-                            ButtonA = isNintendoStyle ? ConfigGamepadInputId.A : ConfigGamepadInputId.B,
-                            ButtonB = isNintendoStyle ? ConfigGamepadInputId.B : ConfigGamepadInputId.A,
-                            ButtonX = isNintendoStyle ? ConfigGamepadInputId.X : ConfigGamepadInputId.Y,
-                            ButtonY = isNintendoStyle ? ConfigGamepadInputId.Y : ConfigGamepadInputId.X,
-                            ButtonPlus = ConfigGamepadInputId.Plus,
-                            ButtonR = ConfigGamepadInputId.RightShoulder,
-                            ButtonZr = ConfigGamepadInputId.RightTrigger,
-                            ButtonSl = ConfigGamepadInputId.Unbound,
-                            ButtonSr = ConfigGamepadInputId.Unbound,
-                        },
-
-                        RightJoyconStick = new JoyconConfigControllerStick<ConfigGamepadInputId, ConfigStickInputId>
-                        {
-                            Joystick = ConfigStickInputId.Right,
-                            StickButton = ConfigGamepadInputId.RightStick,
-                            InvertStickX = false,
-                            InvertStickY = false,
-                            Rotate90CW = false,
-                        },
-
-                        Motion = new StandardMotionConfigController
-                        {
-                            MotionBackend = MotionInputBackendType.GamepadDriver,
-                            EnableMotion = true,
-                            Sensitivity = 100,
-                            GyroDeadzone = 1,
-                        },
-                        Rumble = new RumbleConfigController
-                        {
-                            StrongRumble = 1f,
-                            WeakRumble = 1f,
-                            EnableRumble = false,
-                        },
-                    };
-                }
-            }
-            else
-            {
-                string profileBasePath;
-
-                if (isKeyboard)
-                {
-                    profileBasePath = Path.Combine(AppDataManager.ProfilesDirPath, "keyboard");
-                }
-                else
-                {
-                    profileBasePath = Path.Combine(AppDataManager.ProfilesDirPath, "controller");
-                }
-
-                string path = Path.Combine(profileBasePath, inputProfileName + ".json");
-
-                if (!File.Exists(path))
-                {
-                    Logger.Error?.Print(LogClass.Application, $"Input profile \"{inputProfileName}\" not found for \"{inputId}\"");
-
-                    return null;
-                }
-
-                try
-                {
-                    config = JsonHelper.DeserializeFromFile(path, _serializerContext.InputConfig);
-                }
-                catch (JsonException)
-                {
-                    Logger.Error?.Print(LogClass.Application, $"Input profile \"{inputProfileName}\" parsing failed for \"{inputId}\"");
-
-                    return null;
-                }
-            }
-
-            config.Id = inputId;
-            config.PlayerIndex = index;
-
-            string inputTypeName = isKeyboard ? "Keyboard" : "Gamepad";
-
-            Logger.Info?.Print(LogClass.Application, $"{config.PlayerIndex} configured with {inputTypeName} \"{config.Id}\"");
-
-            // If both stick ranges are 0 (usually indicative of an outdated profile load) then both sticks will be set to 1.0.
-            if (config is StandardControllerInputConfig controllerConfig)
-            {
-                if (controllerConfig.RangeLeft <= 0.0f && controllerConfig.RangeRight <= 0.0f)
-                {
-                    controllerConfig.RangeLeft = 1.0f;
-                    controllerConfig.RangeRight = 1.0f;
-
-                    Logger.Info?.Print(LogClass.Application, $"{config.PlayerIndex} stick range reset. Save the profile now to update your configuration");
-                }
-            }
-
-            return config;
-        }
-
         static void Load(string[] originalArgs, Options option)
         {
             Initialize();
@@ -416,8 +144,7 @@ namespace Ryujinx.Headless
 
             if (option.InheritConfig)
             {
-                option.InheritMainConfig(originalArgs, ConfigurationState.Instance, out _inputConfiguration,
-                    out useLastUsedProfile);
+                option.InheritMainConfig(originalArgs, ConfigurationState.Instance, out useLastUsedProfile);
             }
 
             AppDataManager.Initialize(option.BaseDataDir);
@@ -450,7 +177,7 @@ namespace Ryujinx.Headless
 
             _inputManager = new InputManager(new SDL2KeyboardDriver(), new SDL2GamepadDriver());
 
-            GraphicsConfig.EnableShaderCache = true;
+            GraphicsConfig.EnableShaderCache = !option.DisableShaderCache;
 
             if (OperatingSystem.IsMacOS())
             {
@@ -461,15 +188,13 @@ namespace Ryujinx.Headless
                 }
             }
 
-            IGamepad gamepad;
-
             if (option.ListInputIds)
             {
                 Logger.Info?.Print(LogClass.Application, "Input Ids:");
 
                 foreach (string id in _inputManager.KeyboardDriver.GamepadsIds)
                 {
-                    gamepad = _inputManager.KeyboardDriver.GetGamepad(id);
+                    IGamepad gamepad = _inputManager.KeyboardDriver.GetGamepad(id);
 
                     Logger.Info?.Print(LogClass.Application, $"- {id} (\"{gamepad.Name}\")");
 
@@ -478,7 +203,7 @@ namespace Ryujinx.Headless
 
                 foreach (string id in _inputManager.GamepadDriver.GamepadsIds)
                 {
-                    gamepad = _inputManager.GamepadDriver.GetGamepad(id);
+                    IGamepad gamepad = _inputManager.GamepadDriver.GetGamepad(id);
 
                     Logger.Info?.Print(LogClass.Application, $"- {id} (\"{gamepad.Name}\")");
 
@@ -495,7 +220,7 @@ namespace Ryujinx.Headless
                 return;
             }
 
-            _inputConfiguration = new List<InputConfig>();
+            _inputConfiguration ??= [];
             _enableKeyboard = option.EnableKeyboard;
             _enableMouse = option.EnableMouse;
 
@@ -508,19 +233,17 @@ namespace Ryujinx.Headless
                     _inputConfiguration.Add(inputConfig);
                 }
             }
-
-            if (!option.InheritConfig)
-            {
-                LoadPlayerConfiguration(option.InputProfile1Name, option.InputId1, PlayerIndex.Player1);
-                LoadPlayerConfiguration(option.InputProfile2Name, option.InputId2, PlayerIndex.Player2);
-                LoadPlayerConfiguration(option.InputProfile3Name, option.InputId3, PlayerIndex.Player3);
-                LoadPlayerConfiguration(option.InputProfile4Name, option.InputId4, PlayerIndex.Player4);
-                LoadPlayerConfiguration(option.InputProfile5Name, option.InputId5, PlayerIndex.Player5);
-                LoadPlayerConfiguration(option.InputProfile6Name, option.InputId6, PlayerIndex.Player6);
-                LoadPlayerConfiguration(option.InputProfile7Name, option.InputId7, PlayerIndex.Player7);
-                LoadPlayerConfiguration(option.InputProfile8Name, option.InputId8, PlayerIndex.Player8);
-                LoadPlayerConfiguration(option.InputProfileHandheldName, option.InputIdHandheld, PlayerIndex.Handheld);
-            }
+            
+            LoadPlayerConfiguration(option.InputProfile1Name, option.InputId1, PlayerIndex.Player1);
+            LoadPlayerConfiguration(option.InputProfile2Name, option.InputId2, PlayerIndex.Player2); 
+            LoadPlayerConfiguration(option.InputProfile3Name, option.InputId3, PlayerIndex.Player3);
+            LoadPlayerConfiguration(option.InputProfile4Name, option.InputId4, PlayerIndex.Player4);
+            LoadPlayerConfiguration(option.InputProfile5Name, option.InputId5, PlayerIndex.Player5);
+            LoadPlayerConfiguration(option.InputProfile6Name, option.InputId6, PlayerIndex.Player6);
+            LoadPlayerConfiguration(option.InputProfile7Name, option.InputId7, PlayerIndex.Player7);
+            LoadPlayerConfiguration(option.InputProfile8Name, option.InputId8, PlayerIndex.Player8);
+            LoadPlayerConfiguration(option.InputProfileHandheldName, option.InputIdHandheld, PlayerIndex.Handheld);
+            
 
             if (_inputConfiguration.Count == 0)
             {
@@ -614,83 +337,6 @@ namespace Ryujinx.Headless
             return options.GraphicsBackend == GraphicsBackend.Vulkan
                 ? new VulkanWindow(_inputManager, options.LoggingGraphicsDebugLevel, options.AspectRatio, options.EnableMouse, options.HideCursorMode, options.IgnoreControllerApplet)
                 : new OpenGLWindow(_inputManager, options.LoggingGraphicsDebugLevel, options.AspectRatio, options.EnableMouse, options.HideCursorMode, options.IgnoreControllerApplet);
-        }
-
-        private static IRenderer CreateRenderer(Options options, WindowBase window)
-        {
-            if (options.GraphicsBackend == GraphicsBackend.Vulkan && window is VulkanWindow vulkanWindow)
-            {
-                string preferredGpuId = string.Empty;
-                Vk api = Vk.GetApi();
-
-                if (!string.IsNullOrEmpty(options.PreferredGPUVendor))
-                {
-                    string preferredGpuVendor = options.PreferredGPUVendor.ToLowerInvariant();
-                    var devices = VulkanRenderer.GetPhysicalDevices(api);
-
-                    foreach (var device in devices)
-                    {
-                        if (device.Vendor.ToLowerInvariant() == preferredGpuVendor)
-                        {
-                            preferredGpuId = device.Id;
-                            break;
-                        }
-                    }
-                }
-
-                return new VulkanRenderer(
-                    api,
-                    (instance, vk) => new SurfaceKHR((ulong)(vulkanWindow.CreateWindowSurface(instance.Handle))),
-                    vulkanWindow.GetRequiredInstanceExtensions,
-                    preferredGpuId);
-            }
-
-            return new OpenGLRenderer();
-        }
-
-        private static Switch InitializeEmulationContext(WindowBase window, IRenderer renderer, Options options)
-        {
-            BackendThreading threadingMode = options.BackendThreading;
-
-            bool threadedGAL = threadingMode == BackendThreading.On || (threadingMode == BackendThreading.Auto && renderer.PreferThreading);
-
-            if (threadedGAL)
-            {
-                renderer = new ThreadedRenderer(renderer);
-            }
-
-            HLEConfiguration configuration = new(_virtualFileSystem,
-                _libHacHorizonManager,
-                _contentManager,
-                _accountManager,
-                _userChannelPersistence,
-                renderer,
-                new SDL2HardwareDeviceDriver(),
-                options.DramSize,
-                window,
-                options.SystemLanguage,
-                options.SystemRegion,
-                options.VSyncMode,
-                !options.DisableDockedMode,
-                !options.DisablePTC,
-                options.EnableInternetAccess,
-                !options.DisableFsIntegrityChecks ? IntegrityCheckLevel.ErrorOnInvalid : IntegrityCheckLevel.None,
-                options.FsGlobalAccessLogMode,
-                options.SystemTimeOffset,
-                options.SystemTimeZone,
-                options.MemoryManagerMode,
-                options.IgnoreMissingServices,
-                options.AspectRatio,
-                options.AudioVolume,
-                options.UseHypervisor ?? true,
-                options.MultiplayerLanInterfaceId,
-                Common.Configuration.Multiplayer.MultiplayerMode.Disabled,
-                false,
-                string.Empty,
-                string.Empty,
-                options.CustomVSyncInterval);
-
-            return new Switch(configuration);
         }
 
         private static void ExecutionEntrypoint()
