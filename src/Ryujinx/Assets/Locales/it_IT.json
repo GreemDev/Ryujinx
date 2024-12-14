@@ -24,6 +24,7 @@
   "MenuBarActions": "_Azioni",
   "MenuBarOptionsSimulateWakeUpMessage": "Simula messaggio Wake-up",
   "MenuBarActionsScanAmiibo": "Scansiona un Amiibo",
+  "MenuBarActionsScanAmiiboBin": "Scan An Amiibo (From Bin)",
   "MenuBarTools": "_Strumenti",
   "MenuBarToolsInstallFirmware": "Installa firmware",
   "MenuBarFileToolsInstallFirmwareFromFile": "Installa un firmware da file XCI o ZIP",
