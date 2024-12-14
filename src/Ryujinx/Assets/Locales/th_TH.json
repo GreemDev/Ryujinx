@@ -76,6 +76,8 @@
   "GameListContextMenuCacheManagement": "จัดการแคช",
   "GameListContextMenuCacheManagementPurgePptc": "เพิ่มคิวการสร้าง PPTC ใหม่",
   "GameListContextMenuCacheManagementPurgePptcToolTip": "ให้ PPTC สร้างใหม่ในเวลาบูตเมื่อเปิดเกมครั้งถัดไป",
+  "GameListContextMenuCacheManagementNukePptc": "Purge PPTC cache",
+  "GameListContextMenuCacheManagementNukePptcToolTip": "Deletes Application's PPTC cache",
   "GameListContextMenuCacheManagementPurgeShaderCache": "ล้างแคช แสงเงา",
   "GameListContextMenuCacheManagementPurgeShaderCacheToolTip": "ลบแคช แสงเงา ของแอปพลิเคชัน",
   "GameListContextMenuCacheManagementOpenPptcDirectory": "เปิดไดเรกทอรี่ PPTC",
