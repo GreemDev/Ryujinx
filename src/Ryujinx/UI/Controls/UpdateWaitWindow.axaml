@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Ryujinx - Waiting"
     SizeToContent="WidthAndHeight"
-    WindowStartupLocation="CenterScreen"
+    WindowStartupLocation="CenterParent"
     CanResize="False"
     mc:Ignorable="d"
     Focusable="True">
