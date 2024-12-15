@@ -36,7 +36,8 @@
                         HorizontalAlignment="Center"
                         Spacing="10">
                         <Image
-                            Height="80"
+                            Height="90"
+                            Width="90"
                             Source="resm:Ryujinx.UI.Common.Resources.Logo_Ryujinx.png?assembly=Ryujinx.UI.Common"
                             HorizontalAlignment="Center"
                             IsHitTestVisible="True" />
