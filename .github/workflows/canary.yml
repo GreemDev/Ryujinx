@@ -66,7 +66,7 @@ jobs:
             | Linux arm 64 bit | [Canary Linux arm Artifact](https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-linux_arm64.tar.gz) |
             | macOS | [Canary macOS artifact](https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-macos_universal.app.tar.gz) |
             
-            **Full Changelog**: https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}/compare/Canary-${{ steps.version_info.outputs.prev_build_version }}...Canary-${{ steps.version_info.outputs.build_version }}
+            **Full Changelog**: https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_SOURCE_REPO }}/compare/Canary-${{ steps.version_info.outputs.prev_build_version }}...Canary-${{ steps.version_info.outputs.build_version }}
           omitBodyDuringUpdate: true
           owner: ${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}
           repo: ${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}
@@ -205,7 +205,7 @@ jobs:
             | Linux arm 64 bit | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-linux_arm64.tar.gz |
             | Macos | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-macos_universal.app.tar.gz |
             
-            "**Full Changelog**: https://github.com/${{ github.repository }}/compare/Canary-${{ steps.version_info.outputs.prev_build_version }}...Canary-${{ steps.version_info.outputs.build_version }}"
+            "**Full Changelog**: https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_SOURCE_REPO }}/compare/Canary-${{ steps.version_info.outputs.prev_build_version }}...Canary-${{ steps.version_info.outputs.build_version }}"
           omitBodyDuringUpdate: true
           allowUpdates: true
           replacesArtifacts: true
