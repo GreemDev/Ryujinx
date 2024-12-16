@@ -11,7 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Text.Json.Serialization.Metadata;
+using System.Text.Json.Serialization;
 using System.Text.Unicode;
 
 namespace Ryujinx.Ava.Common.Locale
@@ -160,8 +160,7 @@ namespace Ryujinx.Ava.Common.Locale
                 return null;
             }
 
-            JsonSerializerOptions helperOptions = JsonHelper.GetDefaultSerializerOptions();
-            LocalesJSON json = JsonHelper.Deserialize(fileData, (JsonTypeInfo<LocalesJSON>)helperOptions.GetTypeInfo(typeof(LocalesJSON)));
+            LocalesJSON json = JsonHelper.Deserialize(fileData, LocalesJSONContext.Default.LocalesJSON);
 
             foreach (LocalesEntry locale in json.Locales)
             {
@@ -211,12 +210,15 @@ namespace Ryujinx.Ava.Common.Locale
 
                 string location = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.GetDirectories("Assets")[0].GetFiles("locales.json")[0].FullName;
 
-                JsonSerializerOptions options = new JsonSerializerOptions
+                JsonSerializerOptions jsonOptions = new JsonSerializerOptions
                 {
                     WriteIndented = true,
                     Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
                 };
-                string jsonString = JsonSerializer.Serialize(json, options);//GetSubEventString(rootEvent, 0);
+
+                LocalesJSONContext context = new LocalesJSONContext(jsonOptions);
+
+                string jsonString = JsonHelper.Serialize(json, context.LocalesJSON);
 
                 using (StreamWriter sw = new StreamWriter(location))
                 {
@@ -241,4 +243,8 @@ namespace Ryujinx.Ava.Common.Locale
         public string ID { get; set; }
         public Dictionary<string, string> Translations { get; set; }
     }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(LocalesJSON))]
+    internal partial class LocalesJSONContext : JsonSerializerContext { }
 }
