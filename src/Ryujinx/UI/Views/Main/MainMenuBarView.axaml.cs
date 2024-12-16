@@ -55,7 +55,7 @@ namespace Ryujinx.Ava.UI.Views.Main
         {
             List<MenuItem> menuItems = new();
 
-            string localePath = "Ryujinx/Assets/Locales/locales.json";
+            string localePath = "Ryujinx/Assets/locales.json";
 
             string languageJson = EmbeddedResources.ReadAllText(localePath);
 

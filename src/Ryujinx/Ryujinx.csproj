@@ -111,7 +111,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Assets\Locales\locales.json" />
+    <None Remove="Assets\locales.json" />
     <None Remove="Assets\Styles\Styles.xaml" />
     <None Remove="Assets\Styles\Themes.xaml" />
     <None Remove="Assets\Icons\Controller_JoyConLeft.svg" />
@@ -121,7 +121,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Assets\Locales\locales.json" />
+    <EmbeddedResource Include="Assets\locales.json" />
     <EmbeddedResource Include="Assets\Styles\Styles.xaml" />
     <EmbeddedResource Include="Assets\Icons\Controller_JoyConLeft.svg" />
     <EmbeddedResource Include="Assets\Icons\Controller_JoyConPair.svg" />
@@ -129,6 +129,6 @@
     <EmbeddedResource Include="Assets\Icons\Controller_ProCon.svg" />
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="Assets\Locales\locales.json" />
+    <AdditionalFiles Include="Assets\locales.json" />
   </ItemGroup>
 </Project>

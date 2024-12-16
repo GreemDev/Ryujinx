@@ -144,7 +144,7 @@ namespace Ryujinx.Ava.Common.Locale
         private static Dictionary<LocaleKeys, string> LoadJsonLanguage(string languageCode)
         {
             var localeStrings = new Dictionary<LocaleKeys, string>();
-            string fileData = EmbeddedResources.ReadAllText($"Ryujinx/Assets/Locales/locales.json");
+            string fileData = EmbeddedResources.ReadAllText($"Ryujinx/Assets/locales.json");
 
             if (fileData == null)
             {
