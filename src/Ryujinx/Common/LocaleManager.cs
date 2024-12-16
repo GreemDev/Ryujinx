@@ -1,6 +1,7 @@
 using Ryujinx.Ava.UI.ViewModels;
 using Ryujinx.Common;
 using Ryujinx.Common.Logging;
+using Ryujinx.Common.Utilities;
 using Ryujinx.UI.Common.Configuration;
 using System;
 using System.Collections.Concurrent;
@@ -10,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using System.Text.Unicode;
 
 namespace Ryujinx.Ava.Common.Locale
@@ -158,7 +160,8 @@ namespace Ryujinx.Ava.Common.Locale
                 return null;
             }
 
-            LocalesJSON json = JsonSerializer.Deserialize<LocalesJSON>(fileData)!;
+            JsonSerializerOptions helperOptions = JsonHelper.GetDefaultSerializerOptions();
+            LocalesJSON json = JsonHelper.Deserialize(fileData, (JsonTypeInfo<LocalesJSON>)helperOptions.GetTypeInfo(typeof(LocalesJSON)));
 
             foreach (LocalesEntry locale in json.Locales)
             {
