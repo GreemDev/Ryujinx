@@ -10,6 +10,7 @@ using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Ava.UI.ViewModels;
 using Ryujinx.Ava.UI.Windows;
 using Ryujinx.Common;
+using Ryujinx.Common.Utilities;
 using Ryujinx.HLE;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common;
@@ -19,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 
 namespace Ryujinx.Ava.UI.Views.Main
 {
@@ -57,7 +59,8 @@ namespace Ryujinx.Ava.UI.Views.Main
 
             string languageJson = EmbeddedResources.ReadAllText(localePath);
 
-            LocalesJSON locales = JsonSerializer.Deserialize<LocalesJSON>(languageJson);
+            JsonSerializerOptions helperOptions = JsonHelper.GetDefaultSerializerOptions();
+            LocalesJSON locales = JsonHelper.Deserialize(languageJson, (JsonTypeInfo<LocalesJSON>)helperOptions.GetTypeInfo(typeof(LocalesJSON)));
 
             foreach (string language in locales.Languages)
             {
