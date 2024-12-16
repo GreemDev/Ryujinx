@@ -128,6 +128,7 @@
     <None Remove="Assets\Locales\th_TH.json" />
     <None Remove="Assets\Locales\tr_TR.json" />
     <None Remove="Assets\Locales\uk_UA.json" />
+    <None Remove="Assets\Locales\no_NO.json" />
     <None Remove="Assets\Locales\zh_CN.json" />
     <None Remove="Assets\Locales\zh_TW.json" />
     <None Remove="Assets\Styles\Styles.xaml" />
@@ -155,6 +156,7 @@
     <EmbeddedResource Include="Assets\Locales\th_TH.json" />
     <EmbeddedResource Include="Assets\Locales\tr_TR.json" />
     <EmbeddedResource Include="Assets\Locales\uk_UA.json" />
+    <EmbeddedResource Include="Assets\Locales\no_NO.json" />
     <EmbeddedResource Include="Assets\Locales\zh_CN.json" />
     <EmbeddedResource Include="Assets\Locales\zh_TW.json" />
     <EmbeddedResource Include="Assets\Styles\Styles.xaml" />
