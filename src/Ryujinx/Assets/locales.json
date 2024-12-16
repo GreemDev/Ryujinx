@@ -82,6 +82,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "Mii 편집 애플릿",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -89,8 +90,7 @@
         "tr_TR": "",
         "uk_UA": "Аплет для редагування Mii",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -370,6 +370,7 @@
         "it_IT": "Carica DLC Da una Cartella",
         "ja_JP": "",
         "ko_KR": "폴더에서 DLC 불러오기",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "Carregar DLC da Pasta",
         "ru_RU": "",
@@ -377,8 +378,7 @@
         "tr_TR": "",
         "uk_UA": "Завантажити DLC з теки",
         "zh_CN": "从文件夹加载DLC",
-        "zh_TW": "從資料夾中載入 DLC",
-        "no_NO": ""
+        "zh_TW": "從資料夾中載入 DLC"
       }
     },
     {
@@ -394,6 +394,7 @@
         "it_IT": "Carica Aggiornamenti Da una Cartella",
         "ja_JP": "",
         "ko_KR": "폴더에서 타이틀 업데이트 불러오기",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "Carregar Atualizações de Jogo da Pasta",
         "ru_RU": "",
@@ -401,8 +402,7 @@
         "tr_TR": "",
         "uk_UA": "Завантажити оновлення заголовків з теки",
         "zh_CN": "从文件夹加载游戏更新",
-        "zh_TW": "從資料夾中載入遊戲更新",
-        "no_NO": ""
+        "zh_TW": "從資料夾中載入遊戲更新"
       }
     },
     {
@@ -802,6 +802,7 @@
         "it_IT": "Installa Chiavi",
         "ja_JP": "",
         "ko_KR": "설치 키",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -809,8 +810,7 @@
         "tr_TR": "",
         "uk_UA": "",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -826,6 +826,7 @@
         "it_IT": "Installa Chiavi da file KEYS o ZIP",
         "ja_JP": "",
         "ko_KR": "키나 ZIP에서 키 설치",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -833,8 +834,7 @@
         "tr_TR": "",
         "uk_UA": "",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -850,6 +850,7 @@
         "it_IT": "Installa Chiavi da una Cartella",
         "ja_JP": "",
         "ko_KR": "디렉터리에서 키 설치",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -857,8 +858,7 @@
         "tr_TR": "",
         "uk_UA": "",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -946,6 +946,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "XCI 파일 트리머",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -953,8 +954,7 @@
         "tr_TR": "",
         "uk_UA": "Обрізати XCI файли",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -2338,6 +2338,7 @@
         "it_IT": "Controlla e Trimma i file XCI",
         "ja_JP": "",
         "ko_KR": "XCI 파일 확인 및 트림",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -2345,8 +2346,7 @@
         "tr_TR": "",
         "uk_UA": "Перевірка та Нарізка XCI Файлів",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -2362,6 +2362,7 @@
         "it_IT": "Controlla e Trimma i file XCI da Salvare Sullo Spazio del Disco",
         "ja_JP": "",
         "ko_KR": "디스크 공간을 절약하기 위해 XCI 파일 확인 및 트림",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -2369,8 +2370,7 @@
         "tr_TR": "",
         "uk_UA": "Перевірка та Нарізка XCI Файлів для збереження місця на диску",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -2434,6 +2434,7 @@
         "it_IT": "Trimmando i file XCI \u0027{0}\u0027",
         "ja_JP": "",
         "ko_KR": "XCI 파일 \u0027{0}\u0027 트리밍",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -2441,8 +2442,7 @@
         "tr_TR": "",
         "uk_UA": "Обрізано XCI Файлів \u0027{0}\u0027",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -2794,6 +2794,7 @@
         "it_IT": "Mostra barra del titolo (Richiede il riavvio)",
         "ja_JP": "",
         "ko_KR": "제목 표시줄 표시(다시 시작해야 함)",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -2801,8 +2802,7 @@
         "tr_TR": "",
         "uk_UA": "Показувати рядок заголовка (Потрібен перезапуск)",
         "zh_CN": "显示标题栏 (需要重启)",
-        "zh_TW": "顯示「標題列」 (需要重新開啟Ryujinx)",
-        "no_NO": ""
+        "zh_TW": "顯示「標題列」 (需要重新開啟Ryujinx)"
       }
     },
     {
@@ -2938,6 +2938,7 @@
         "it_IT": "Directory di Caricamento Automatico per DLC/Aggiornamenti",
         "ja_JP": "",
         "ko_KR": "DLC/업데이트 디렉터리 자동 불러오기",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "Carregar Automaticamente Diretórios de DLC/Atualizações",
         "ru_RU": "",
@@ -2945,8 +2946,7 @@
         "tr_TR": "",
         "uk_UA": "Автозавантаження каталогів DLC/Оновлень",
         "zh_CN": "自动加载DLC/游戏更新目录",
-        "zh_TW": "自動載入 DLC/遊戲更新資料夾",
-        "no_NO": ""
+        "zh_TW": "自動載入 DLC/遊戲更新資料夾"
       }
     },
     {
@@ -2962,6 +2962,7 @@
         "it_IT": "Aggiornamenti e DLC che collegano a file mancanti verranno disabilitati automaticamente",
         "ja_JP": "",
         "ko_KR": "누락된 파일을 참조하는 DLC 및 업데이트가 자동으로 언로드",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "DLCs e Atualizações que se referem a arquivos ausentes serão descarregadas automaticamente",
         "ru_RU": "",
@@ -2969,8 +2970,7 @@
         "tr_TR": "",
         "uk_UA": "DLC та Оновлення, які посилаються на відсутні файли, будуть автоматично вимкнуті.",
         "zh_CN": "DLC/游戏更新可自动加载和卸载",
-        "zh_TW": "遺失的 DLC 及遊戲更新檔案將會在自動載入中移除",
-        "no_NO": ""
+        "zh_TW": "遺失的 DLC 及遊戲更新檔案將會在自動載入中移除"
       }
     },
     {
@@ -3778,6 +3778,7 @@
         "it_IT": "Low-power PPTC",
         "ja_JP": "Low-power PPTC",
         "ko_KR": "저전력 PPTC 캐시",
+        "no_NO": "",
         "pl_PL": "Low-power PPTC",
         "pt_BR": "Low-power PPTC",
         "ru_RU": "Low-power PPTC",
@@ -3785,8 +3786,7 @@
         "tr_TR": "Low-power PPTC",
         "uk_UA": "Low-power PPTC",
         "zh_CN": "低功耗 PPTC 加载",
-        "zh_TW": "低功耗 PPTC",
-        "no_NO": ""
+        "zh_TW": "低功耗 PPTC"
       }
     },
     {
@@ -3994,6 +3994,7 @@
         "it_IT": "Usa layout di memoria alternativo (per sviluppatori)",
         "ja_JP": "DRAMサイズ:",
         "ko_KR": "DRAM 크기 :",
+        "no_NO": "",
         "pl_PL": "Użyj alternatywnego układu pamięci (Deweloperzy)",
         "pt_BR": "Tamanho da DRAM:",
         "ru_RU": "Использовать альтернативный макет памяти (для разработчиков)",
@@ -4001,8 +4002,7 @@
         "tr_TR": "Alternatif bellek düzeni kullan (Geliştirici)",
         "uk_UA": "Використовувати альтернативне розташування пам\u0027яті (для розробників)",
         "zh_CN": "使用开发机的内存布局（开发人员使用）",
-        "zh_TW": "使用替代的記憶體配置 (開發者專用)",
-        "no_NO": ""
+        "zh_TW": "使用替代的記憶體配置 (開發者專用)"
       }
     },
     {
@@ -4018,6 +4018,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "4GB",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -4025,8 +4026,7 @@
         "tr_TR": "",
         "uk_UA": "4Гб",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -4042,6 +4042,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "6GB",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -4049,8 +4050,7 @@
         "tr_TR": "",
         "uk_UA": "6Гб",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -4066,6 +4066,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "8GB",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -4073,8 +4074,7 @@
         "tr_TR": "",
         "uk_UA": "8Гб",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -4090,6 +4090,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "12GB",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -4097,8 +4098,7 @@
         "tr_TR": "",
         "uk_UA": "12Гб",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -4138,6 +4138,7 @@
         "it_IT": "Ignora l\u0027applet",
         "ja_JP": "アプレットを無視する",
         "ko_KR": "애플릿 무시",
+        "no_NO": "",
         "pl_PL": "Ignoruj ​​aplet",
         "pt_BR": "Ignorar applet",
         "ru_RU": "Игнорировать Апплет",
@@ -4145,8 +4146,7 @@
         "tr_TR": "",
         "uk_UA": "Ігнорувати Аплет",
         "zh_CN": "忽略小程序",
-        "zh_TW": "忽略小程式",
-        "no_NO": ""
+        "zh_TW": "忽略小程式"
       }
     },
     {
@@ -9970,6 +9970,7 @@
         "it_IT": "Cancellando",
         "ja_JP": "",
         "ko_KR": "취소하기",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -9977,8 +9978,7 @@
         "tr_TR": "",
         "uk_UA": "Скасування",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -9994,6 +9994,7 @@
         "it_IT": "Chiudi",
         "ja_JP": "",
         "ko_KR": "닫기",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -10001,8 +10002,7 @@
         "tr_TR": "",
         "uk_UA": "Закрити",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -10186,6 +10186,7 @@
         "it_IT": "Visualizza profilo",
         "ja_JP": "",
         "ko_KR": "프로필 보기",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -10193,8 +10194,7 @@
         "tr_TR": "",
         "uk_UA": "Показати профіль",
         "zh_CN": "预览配置文件",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -11242,6 +11242,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "변경 로그 보기",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -11249,8 +11250,7 @@
         "tr_TR": "",
         "uk_UA": "Показати список змін",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -11698,6 +11698,7 @@
         "it_IT": "Finestra XCI Trimmer",
         "ja_JP": "",
         "ko_KR": "XCI 트리머 창",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -11705,8 +11706,7 @@
         "tr_TR": "",
         "uk_UA": "",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -12394,6 +12394,7 @@
         "it_IT": "E\u0027 stato trovato un file di chiavi invalido \u0027 {0}",
         "ja_JP": "",
         "ko_KR": "{0}에서 잘못된 키 파일이 발견",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -12401,8 +12402,7 @@
         "tr_TR": "",
         "uk_UA": "",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -12418,6 +12418,7 @@
         "it_IT": "Installa Chavi",
         "ja_JP": "",
         "ko_KR": "설치 키",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -12425,8 +12426,7 @@
         "tr_TR": "",
         "uk_UA": "Встановлення Ключів",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -12442,6 +12442,7 @@
         "it_IT": "Un nuovo file di Chiavi sarà intallato.",
         "ja_JP": "",
         "ko_KR": "새로운 키 파일이 설치됩니다.",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -12449,8 +12450,7 @@
         "tr_TR": "",
         "uk_UA": "Новий файл Ключів буде встановлено",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -12466,6 +12466,7 @@
         "it_IT": "\n\nQuesto potrebbe sovrascrivere alcune delle Chiavi già installate.",
         "ja_JP": "",
         "ko_KR": "\n\n이로 인해 현재 설치된 키 중 일부가 대체될 수 있습니다.",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -12473,8 +12474,7 @@
         "tr_TR": "",
         "uk_UA": "\n\nЦе замінить собою поточні файли Ключів.",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -12490,6 +12490,7 @@
         "it_IT": "\n\nVuoi continuare?",
         "ja_JP": "",
         "ko_KR": "\n\n계속하시겠습니까?",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -12497,8 +12498,7 @@
         "tr_TR": "",
         "uk_UA": "\n\nВи хочете продовжити?",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -12514,6 +12514,7 @@
         "it_IT": "Installando le chiavi...",
         "ja_JP": "",
         "ko_KR": "키 설치 중...",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -12521,8 +12522,7 @@
         "tr_TR": "",
         "uk_UA": "Встановлення Ключів...",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -12538,6 +12538,7 @@
         "it_IT": "Nuovo file di chiavi installato con successo.",
         "ja_JP": "",
         "ko_KR": "새로운 키 파일이 성공적으로 설치되었습니다.",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -12545,8 +12546,7 @@
         "tr_TR": "",
         "uk_UA": "Нові ключі встановлено.",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -13546,6 +13546,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "이전 관리자 :",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -13553,8 +13554,7 @@
         "tr_TR": "",
         "uk_UA": "Минулі розробники:",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -14218,6 +14218,7 @@
         "it_IT": "Inserisci una directory di \u0022autoload\u0022 da aggiungere alla lista",
         "ja_JP": "",
         "ko_KR": "목록에 추가할 자동 불러오기 디렉터리를 입력",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "Insira um diretório de carregamento automático para adicionar à lista",
         "ru_RU": "",
@@ -14225,8 +14226,7 @@
         "tr_TR": "",
         "uk_UA": "Введіть шлях автозавантаження для додавання до списку",
         "zh_CN": "输入需要添加到列表中的自动加载目录",
-        "zh_TW": "輸入要新增到清單中的「自動載入 DLC/遊戲更新資料夾」",
-        "no_NO": ""
+        "zh_TW": "輸入要新增到清單中的「自動載入 DLC/遊戲更新資料夾」"
       }
     },
     {
@@ -14242,6 +14242,7 @@
         "it_IT": "Aggiungi una directory di \u0022autoload\u0022 alla lista",
         "ja_JP": "",
         "ko_KR": "목록에 자동 불러오기 디렉터리 추가",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "Adicionar um diretório de carregamento automático à lista",
         "ru_RU": "",
@@ -14249,8 +14250,7 @@
         "tr_TR": "",
         "uk_UA": "Додайте шлях автозавантаження для додавання до списку",
         "zh_CN": "添加一个自动加载目录到列表中",
-        "zh_TW": "新增「自動載入 DLC/遊戲更新資料夾」到清單中",
-        "no_NO": ""
+        "zh_TW": "新增「自動載入 DLC/遊戲更新資料夾」到清單中"
       }
     },
     {
@@ -14266,6 +14266,7 @@
         "it_IT": "Rimuovi la directory di autoload selezionata",
         "ja_JP": "",
         "ko_KR": "선택한 자동 불러오기 디렉터리 제거",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "Remover o diretório de carregamento automático selecionado",
         "ru_RU": "",
@@ -14273,8 +14274,7 @@
         "tr_TR": "",
         "uk_UA": "Видалити вибраний каталог автозавантаження",
         "zh_CN": "移除被选中的自动加载目录",
-        "zh_TW": "移除選取的「自動載入 DLC/遊戲更新資料夾」",
-        "no_NO": ""
+        "zh_TW": "移除選取的「自動載入 DLC/遊戲更新資料夾」"
       }
     },
     {
@@ -14578,6 +14578,7 @@
         "it_IT": "Carica il PPTC usando un terzo dei core.",
         "ja_JP": "",
         "ko_KR": "코어의 3분의 1을 사용하여 PPTC를 불러옵니다.",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "Carregar o PPTC usando um terço da quantidade de núcleos.",
         "ru_RU": "",
@@ -14585,8 +14586,7 @@
         "tr_TR": "",
         "uk_UA": "Завантажувати PPTC використовуючи третину від кількості ядер.",
         "zh_CN": "使用三分之一的核心数加载PPTC.",
-        "zh_TW": "使用 CPU 核心數量的三分之一載入 PPTC。",
-        "no_NO": ""
+        "zh_TW": "使用 CPU 核心數量的三分之一載入 PPTC。"
       }
     },
     {
@@ -14818,6 +14818,7 @@
         "it_IT": "La finestra di dialogo esterna \u0022Controller Applet\u0022 non apparirà se il gamepad viene disconnesso durante il gioco. Non ci sarà alcun prompt per chiudere la finestra di dialogo o impostare un nuovo controller. Una volta che il controller disconnesso in precedenza viene ricollegato, il gioco riprenderà automaticamente.",
         "ja_JP": "ゲームプレイ中にゲームパッドが切断された場合、外部ダイアログ「コントローラーアプレット」は表示されません。このダイアログを閉じるか、新しいコントローラーを設定するように求めるプロンプトは表示されません。以前に切断されたコントローラーが再接続されると、ゲームは自動的に再開されます。",
         "ko_KR": "게임 플레이 중에 게임패드 연결이 끊어지면 외부 대화 상자 \u0022컨트롤러 애플릿\u0022이 나타나지 않습니다. 대화 상자를 닫거나 새 컨트롤러를 설정하라는 메시지가 표시되지 않습니다. 이전에 연결이 끊어진 컨트롤러가 다시 연결되면 게임이 자동으로 다시 시작됩니다.",
+        "no_NO": "",
         "pl_PL": "Zewnętrzny dialog \u0022Controller Applet\u0022 nie pojawi się, jeśli gamepad zostanie odłączony podczas rozgrywki. Nie pojawi się monit o zamknięcie dialogu lub skonfigurowanie nowego kontrolera. Po ponownym podłączeniu poprzednio odłączonego kontrolera gra zostanie automatycznie wznowiona.",
         "pt_BR": "O diálogo externo \u0022Controller Applet\u0022 não aparecerá se o gamepad for desconectado durante o jogo. Não haverá prompt para fechar o diálogo ou configurar um novo controle. Assim que o controle desconectado anteriormente for reconectado, o jogo será retomado automaticamente.",
         "ru_RU": "Внешний диалог \u0022Апплет контроллера\u0022 не появится, если геймпад будет отключен во время игры. Не будет предложено закрыть диалог или настроить новый контроллер. После повторного подключения ранее отключенного контроллера игра автоматически возобновится.",
@@ -14825,8 +14826,7 @@
         "tr_TR": "Oyun sırasında oyun kumandasının bağlantısı kesilirse, harici \u0022Controller Applet\u0022 iletişim kutusu görünmez. İletişim kutusunu kapatma veya yeni bir kumanda ayarlama isteği olmaz. Daha önce bağlantısı kesilen kumanda tekrar bağlandığında oyun otomatik olarak devam eder.",
         "uk_UA": "Зовнішнє діалогове вікно \u0022Аплет контролера\u0022 не з’являтиметься, якщо геймпад буде від’єднано під час гри. Не буде запиту закрити діалогове вікно чи налаштувати новий контролер. Після повторного підключення раніше від’єднаного контролера гра автоматично відновиться.",
         "zh_CN": "如果游戏手柄在游戏过程中断开连接，则不会出现外部对话框“控制器小程序”。不会提示关闭对话框或设置新控制器。一旦先前断开连接的控制器重新连接，游戏将自动恢复。",
-        "zh_TW": "如果遊戲手把在遊戲過程中斷開連接，則外部對話方塊「控制器小程式」將不會出現。不會提示關閉對話方塊或設定新控制器。一旦先前斷開的控制器重新連接，遊戲將自動恢復。",
-        "no_NO": ""
+        "zh_TW": "如果遊戲手把在遊戲過程中斷開連接，則外部對話方塊「控制器小程式」將不會出現。不會提示關閉對話方塊或設定新控制器。一旦先前斷開的控制器重新連接，遊戲將自動恢復。"
       }
     },
     {
@@ -15370,15 +15370,15 @@
         "it_IT": "Apri un esploratore file per scegliere una o più cartelle dalle quali caricare DLC in massa",
         "ja_JP": "",
         "ko_KR": "파일 탐색기를 열어 DLC를 일괄 불러오기할 폴더를 하나 이상 선택",
+        "no_NO": "",
         "pl_PL": "",
+        "pt_BR": "",
         "ru_RU": "",
         "th_TH": "เปิดตัวสำรวจไฟล์เพื่อเลือกหนึ่งโฟลเดอร์ขึ้นไปเพื่อโหลด DLC จำนวนมาก",
         "tr_TR": "",
         "uk_UA": "Відкрийте провідник файлів, щоб вибрати одну або кілька папок для масового завантаження DLC",
         "zh_CN": "打开文件资源管理器以选择一个或多个文件夹来批量加载DLC。",
-        "zh_TW": "開啟檔案總管，選擇一個或多個資料夾來大量載入 DLC",
-        "no_NO": "",
-        "pt_BR": ""
+        "zh_TW": "開啟檔案總管，選擇一個或多個資料夾來大量載入 DLC"
       }
     },
     {
@@ -15394,6 +15394,7 @@
         "it_IT": "Apri un esploratore file per scegliere una o più cartelle dalle quali caricare aggiornamenti in massa",
         "ja_JP": "",
         "ko_KR": "파일 탐색기를 열어 하나 이상의 폴더를 선택하여 대량으로 타이틀 업데이트 불러오기",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "Abra o explorador de arquivos para selecionar uma ou mais pastas e carregar atualizações de jogo em massa.",
         "ru_RU": "",
@@ -15401,8 +15402,7 @@
         "tr_TR": "",
         "uk_UA": "Відкрийте провідник файлів, щоб вибрати одну або кілька папок для масового завантаження оновлень заголовків",
         "zh_CN": "打开文件资源管理器以选择一个或多个文件夹来批量加载游戏更新。",
-        "zh_TW": "開啟檔案總管，選擇一個或多個資料夾來大量載入遊戲更新",
-        "no_NO": ""
+        "zh_TW": "開啟檔案總管，選擇一個或多個資料夾來大量載入遊戲更新"
       }
     },
     {
@@ -16120,9 +16120,9 @@
         "ru_RU": "Пожалуйста, обновите Ryujinx через FlatHub.",
         "th_TH": "โปรดอัปเดต Ryujinx ผ่านช่องทาง FlatHub",
         "tr_TR": "Lütfen Ryujinx\u0027i FlatHub aracılığıyla güncelleyin.",
+        "uk_UA": "",
         "zh_CN": "请通过 FlatHub 更新 Ryujinx 模拟器。",
-        "zh_TW": "請透過 Flathub 更新 Ryujinx。",
-        "uk_UA": ""
+        "zh_TW": "請透過 Flathub 更新 Ryujinx。"
       }
     },
     {
@@ -16690,6 +16690,7 @@
         "it_IT": "Parziale",
         "ja_JP": "",
         "ko_KR": "일부",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -16697,8 +16698,7 @@
         "tr_TR": "",
         "uk_UA": "Часткові",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -16714,6 +16714,7 @@
         "it_IT": "Non Trimmato",
         "ja_JP": "",
         "ko_KR": "트리밍되지 않음",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -16721,8 +16722,7 @@
         "tr_TR": "",
         "uk_UA": "Необрізані",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -16738,6 +16738,7 @@
         "it_IT": "Trimmato",
         "ja_JP": "",
         "ko_KR": "트리밍됨",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -16745,8 +16746,7 @@
         "tr_TR": "",
         "uk_UA": "Обрізані",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -16762,6 +16762,7 @@
         "it_IT": "(Fallito)",
         "ja_JP": "",
         "ko_KR": "(실패)",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -16769,8 +16770,7 @@
         "tr_TR": "",
         "uk_UA": "(Невдача)",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -16786,6 +16786,7 @@
         "it_IT": "Salva {0:n0} Mb",
         "ja_JP": "",
         "ko_KR": "{0:n0} Mb 저장",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -16793,8 +16794,7 @@
         "tr_TR": "",
         "uk_UA": "Зберегти {0:n0} Мб",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -16810,6 +16810,7 @@
         "it_IT": "Salva {0:n0} Mb",
         "ja_JP": "",
         "ko_KR": "{0:n0}Mb 저장됨",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -16817,8 +16818,7 @@
         "tr_TR": "",
         "uk_UA": "Збережено {0:n0} Мб",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -16978,6 +16978,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "캐비닛 대화 상자",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -16985,8 +16986,7 @@
         "tr_TR": "",
         "uk_UA": "",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -17002,6 +17002,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "Amiibo의 새 이름 입력하기",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -17009,8 +17010,7 @@
         "tr_TR": "",
         "uk_UA": "Вкажіть Ваше нове ім\u0027я Amiibo",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -17026,6 +17026,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "지금 Amiibo를 스캔하세요.",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -17033,8 +17034,7 @@
         "tr_TR": "",
         "uk_UA": "Будь ласка, проскануйте Ваш Amiibo.",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18106,6 +18106,7 @@
         "it_IT": "Controlla e Trimma i file XCI ",
         "ja_JP": "",
         "ko_KR": "XCI 파일 확인 및 정리",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18113,8 +18114,7 @@
         "tr_TR": "",
         "uk_UA": "Перевірити та Обрізати XCI файл",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18130,6 +18130,7 @@
         "it_IT": "Questa funzionalita controllerà prima lo spazio libero e poi trimmerà il file XCI per liberare dello spazio.",
         "ja_JP": "",
         "ko_KR": "이 기능은 먼저 충분한 공간을 확보한 다음 XCI 파일을 트리밍하여 디스크 공간을 절약합니다.",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18137,8 +18138,7 @@
         "tr_TR": "",
         "uk_UA": "Ця функція спочатку перевірить вільний простір, а потім обрізатиме файл XCI для економії місця на диску.",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18154,6 +18154,7 @@
         "it_IT": "Dimensioni Attuali File: {0:n} MB\nDimensioni Dati Gioco: {1:n} MB\nRisparimio Spazio Disco: {2:n} MB",
         "ja_JP": "",
         "ko_KR": "현재 파일 크기 : {0:n}MB\n게임 데이터 크기 : {1:n}MB\n디스크 공간 절약 : {2:n}MB",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18161,8 +18162,7 @@
         "tr_TR": "",
         "uk_UA": "Поточний розмір файла: {0:n} MB\nРозмір файлів гри: {1:n} MB\nЕкономія місця: {2:n} MB",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18178,6 +18178,7 @@
         "it_IT": "Il file XCI non deve essere trimmato. Controlla i log per ulteriori dettagli",
         "ja_JP": "",
         "ko_KR": "XCI 파일은 트리밍할 필요가 없습니다. 자세한 내용은 로그를 확인",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18185,8 +18186,7 @@
         "tr_TR": "",
         "uk_UA": "XCI файл не потребує обрізання. Перевірте журнали для додаткової інформації",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18202,6 +18202,7 @@
         "it_IT": "Il file XCI non può essere untrimmato. Controlla i log per ulteriori dettagli",
         "ja_JP": "",
         "ko_KR": "XCI 파일은 트리밍을 해제할 수 없습니다. 자세한 내용은 로그를 확인",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18209,8 +18210,7 @@
         "tr_TR": "",
         "uk_UA": "XCI файл не може бути обрізаний. Перевірте журнали для додаткової інформації",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18226,6 +18226,7 @@
         "it_IT": "Il file XCI è in sola lettura e non può essere reso Scrivibile. Controlla i log per ulteriori dettagli",
         "ja_JP": "",
         "ko_KR": "XCI 파일은 읽기 전용이므로 쓰기 가능하게 만들 수 없습니다. 자세한 내용은 로그를 확인",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18233,8 +18234,7 @@
         "tr_TR": "",
         "uk_UA": "XCI файл Тільки для Читання і не може бути прочитаним. Перевірте журнали додаткової інформації",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18250,6 +18250,7 @@
         "it_IT": "Il file XCI ha cambiato dimensioni da quando è stato scansionato. Controlla che il file non stia venendo scritto da qualche altro programma e poi riprova.",
         "ja_JP": "",
         "ko_KR": "XCI 파일이 스캔된 후 크기가 변경되었습니다. 파일이 쓰여지고 있지 않은지 확인하고 다시 시도하세요.",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18257,8 +18258,7 @@
         "tr_TR": "",
         "uk_UA": "Розмір файлу XCI змінився з моменту сканування. Перевірте, чи не записується файл, та спробуйте знову",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18274,6 +18274,7 @@
         "it_IT": "Il file XCI ha dati nello spazio libero, non è sicuro effettuare il trimming",
         "ja_JP": "",
         "ko_KR": "XCI 파일에 여유 공간 영역에 데이터가 있으므로 트리밍하는 것이 안전하지 않음",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18281,8 +18282,7 @@
         "tr_TR": "",
         "uk_UA": "Файл XCI містить дані в зоні вільного простору, тому обрізка небезпечна",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18298,6 +18298,7 @@
         "it_IT": "Il file XCI contiene dati invlidi. Controlla i log per ulteriori dettagli",
         "ja_JP": "",
         "ko_KR": "XCI 파일에 유효하지 않은 데이터가 포함되어 있습니다. 자세한 내용은 로그를 확인",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18305,8 +18306,7 @@
         "tr_TR": "",
         "uk_UA": "XCI Файл містить недійсні дані. Перевірте журнали для додаткової інформації",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18322,6 +18322,7 @@
         "it_IT": "Il file XCI non può essere aperto per essere scritto. Controlla i log per ulteriori dettagli",
         "ja_JP": "",
         "ko_KR": "XCI 파일을 쓰기 위해 열 수 없습니다. 자세한 내용은 로그를 확인",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18329,8 +18330,7 @@
         "tr_TR": "",
         "uk_UA": "XCI Файл файл не вдалося відкрити для запису. Перевірте журнали для додаткової інформації",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18346,6 +18346,7 @@
         "it_IT": "Trimming del file XCI fallito",
         "ja_JP": "",
         "ko_KR": "XCI 파일 트리밍에 실패",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18353,8 +18354,7 @@
         "tr_TR": "",
         "uk_UA": "Не вдалося обрізати файл XCI",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18370,6 +18370,7 @@
         "it_IT": "Operazione Cancellata",
         "ja_JP": "",
         "ko_KR": "작업이 취소됨",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18377,8 +18378,7 @@
         "tr_TR": "",
         "uk_UA": "Операція перервана",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18394,6 +18394,7 @@
         "it_IT": "Nessuna operazione è stata effettuata",
         "ja_JP": "",
         "ko_KR": "작업이 수행되지 않음",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18401,8 +18402,7 @@
         "tr_TR": "",
         "uk_UA": "Операція не проводилася",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18538,6 +18538,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "XCI 파일 트리머",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18545,8 +18546,7 @@
         "tr_TR": "",
         "uk_UA": "Обрізка XCI Файлів",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18562,6 +18562,7 @@
         "it_IT": "{0} di {1} Titolo(i) Selezionati",
         "ja_JP": "",
         "ko_KR": "{1}개 타이틀 중 {0}개 선택됨",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18569,8 +18570,7 @@
         "tr_TR": "",
         "uk_UA": "{0} з {1} тайтл(ів) обрано",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18586,6 +18586,7 @@
         "it_IT": "{0} of {1} Titolo(i) Selezionati ({2} visualizzato)",
         "ja_JP": "",
         "ko_KR": "{1}개 타이틀 중 {0}개 선택됨({2}개 표시됨)",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18593,8 +18594,7 @@
         "tr_TR": "",
         "uk_UA": "{0} з {1} тайтл(ів) обрано ({2} відображається)",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18610,6 +18610,7 @@
         "it_IT": "Trimming {0} Titolo(i)...",
         "ja_JP": "",
         "ko_KR": "{0}개의 타이틀을 트리밍 중...",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18617,8 +18618,7 @@
         "tr_TR": "",
         "uk_UA": "Обрізка {0} тайтл(ів)...",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18634,6 +18634,7 @@
         "it_IT": "Untrimming {0} Titolo(i)...",
         "ja_JP": "",
         "ko_KR": "{0}개의 타이틀을 트리밍 해제 중...",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18641,8 +18642,7 @@
         "tr_TR": "",
         "uk_UA": "Необрізаних {0} тайтл(ів)...",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18658,6 +18658,7 @@
         "it_IT": "Fallito",
         "ja_JP": "",
         "ko_KR": "실패",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18665,8 +18666,7 @@
         "tr_TR": "",
         "uk_UA": "Невдача",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18682,6 +18682,7 @@
         "it_IT": "Potenziali Salvataggi",
         "ja_JP": "",
         "ko_KR": "잠재적 비용 절감",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18689,8 +18690,7 @@
         "tr_TR": "",
         "uk_UA": "Потенційна економія",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18706,6 +18706,7 @@
         "it_IT": "Effettivi Salvataggi",
         "ja_JP": "",
         "ko_KR": "실제 비용 절감",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18713,8 +18714,7 @@
         "tr_TR": "",
         "uk_UA": "Зекономлено",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18730,6 +18730,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18737,8 +18738,7 @@
         "tr_TR": "",
         "uk_UA": "{0:n0} Мб",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18754,6 +18754,7 @@
         "it_IT": "Seleziona Visualizzati",
         "ja_JP": "",
         "ko_KR": "표시됨 선택",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18761,8 +18762,7 @@
         "tr_TR": "",
         "uk_UA": "Вибрати показане",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18778,6 +18778,7 @@
         "it_IT": "Deselziona Visualizzati",
         "ja_JP": "",
         "ko_KR": "표시됨 선택 취소",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18785,8 +18786,7 @@
         "tr_TR": "",
         "uk_UA": "Скасувати вибір показаного",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18802,6 +18802,7 @@
         "it_IT": "Titolo",
         "ja_JP": "",
         "ko_KR": "타이틀",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18809,8 +18810,7 @@
         "tr_TR": "",
         "uk_UA": "Заголовок",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18826,6 +18826,7 @@
         "it_IT": "Salvataggio Spazio",
         "ja_JP": "",
         "ko_KR": "공간 절약s",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18833,8 +18834,7 @@
         "tr_TR": "",
         "uk_UA": "Економія місця",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18850,6 +18850,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "트림",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18857,8 +18858,7 @@
         "tr_TR": "",
         "uk_UA": "Обрізка",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18874,6 +18874,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "언트림",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -18881,8 +18882,7 @@
         "tr_TR": "",
         "uk_UA": "Зшивання",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -18898,6 +18898,7 @@
         "it_IT": "{0} aggiornamento/i aggiunto/i",
         "ja_JP": "",
         "ko_KR": "{0}개의 새 업데이트가 추가됨",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "{0} nova(s) atualização(ões) adicionada(s)",
         "ru_RU": "",
@@ -18905,8 +18906,7 @@
         "tr_TR": "",
         "uk_UA": "{0} нове оновлення додано",
         "zh_CN": "{0} 个更新被添加",
-        "zh_TW": "已加入 {0} 個遊戲更新",
-        "no_NO": ""
+        "zh_TW": "已加入 {0} 個遊戲更新"
       }
     },
     {
@@ -18922,6 +18922,7 @@
         "it_IT": "Gli aggiornamenti inclusi non possono essere eliminati, ma solo disattivati",
         "ja_JP": "",
         "ko_KR": "번들 업데이트는 제거할 수 없으며, 비활성화만 가능합니다.",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "Atualizações incorporadas não podem ser removidas, apenas desativadas.",
         "ru_RU": "",
@@ -18929,8 +18930,7 @@
         "tr_TR": "",
         "uk_UA": "Вбудовані оновлення не можуть бути видалені, лише вимкнені.",
         "zh_CN": "游戏整合的更新无法移除，可尝试禁用。",
-        "zh_TW": "附帶的遊戲更新只能被停用而無法被刪除。",
-        "no_NO": ""
+        "zh_TW": "附帶的遊戲更新只能被停用而無法被刪除。"
       }
     },
     {
@@ -18988,10 +18988,13 @@
         "de_DE": "",
         "el_GR": "",
         "en_US": "Bundled DLC cannot be removed, only disabled.",
+        "es_ES": "",
         "fr_FR": "Les DLC inclus avec le jeu ne peuvent pas être supprimés mais peuvent être désactivés.",
         "he_IL": "",
         "it_IT": "i DLC \u0022impacchettati\u0022 non possono essere rimossi, ma solo disabilitati.",
+        "ja_JP": "",
         "ko_KR": "번들 DLC는 제거할 수 없으며 비활성화만 가능합니다.",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "DLCs incorporadas não podem ser removidas, apenas desativadas.",
         "ru_RU": "",
@@ -18999,10 +19002,7 @@
         "tr_TR": "",
         "uk_UA": "Вбудований DLC не може бути видаленим, лише вимкненим.",
         "zh_CN": "游戏整合的DLC无法移除，可尝试禁用。",
-        "zh_TW": "附帶的 DLC 只能被停用而無法被刪除。",
-        "es_ES": "",
-        "ja_JP": "",
-        "no_NO": ""
+        "zh_TW": "附帶的 DLC 只能被停用而無法被刪除。"
       }
     },
     {
@@ -19042,6 +19042,7 @@
         "it_IT": "{0} nuovo/i contenuto/i scaricabile/i aggiunto/i",
         "ja_JP": "",
         "ko_KR": "{0}개의 새로운 내려받기 가능한 콘텐츠가 추가됨",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "{0} novo(s) conteúdo(s) para download adicionado(s)",
         "ru_RU": "",
@@ -19049,8 +19050,7 @@
         "tr_TR": "",
         "uk_UA": "{0} нового завантажувального вмісту додано",
         "zh_CN": "{0} 个DLC被添加",
-        "zh_TW": "已加入 {0} 個 DLC",
-        "no_NO": ""
+        "zh_TW": "已加入 {0} 個 DLC"
       }
     },
     {
@@ -19066,6 +19066,7 @@
         "it_IT": "{0} contenuto/i scaricabile/i aggiunto/i",
         "ja_JP": "",
         "ko_KR": "{0}개의 새로운 내려받기 가능한 콘텐츠가 추가됨",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "{0} novo(s) conteúdo(s) para download adicionado(s)",
         "ru_RU": "",
@@ -19073,8 +19074,7 @@
         "tr_TR": "",
         "uk_UA": "{0} нового завантажувального вмісту додано",
         "zh_CN": "{0} 个DLC被添加",
-        "zh_TW": "已加入 {0} 個 DLC",
-        "no_NO": ""
+        "zh_TW": "已加入 {0} 個 DLC"
       }
     },
     {
@@ -19090,6 +19090,7 @@
         "it_IT": "{0} contenuto/i scaricabile/i mancante/i rimosso/i",
         "ja_JP": "",
         "ko_KR": "{0}개의 내려받기 가능한 콘텐츠가 제거됨",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "{0} conteúdo(s) para download ausente(s) removido(s)",
         "ru_RU": "",
@@ -19097,8 +19098,7 @@
         "tr_TR": "",
         "uk_UA": "{0} відсутнього завантажувального вмісту видалено",
         "zh_CN": "{0} 个失效的DLC已移除",
-        "zh_TW": "已刪除 {0} 個遺失的 DLC",
-        "no_NO": ""
+        "zh_TW": "已刪除 {0} 個遺失的 DLC"
       }
     },
     {
@@ -19114,6 +19114,7 @@
         "it_IT": "{0} aggiornamento/i aggiunto/i",
         "ja_JP": "",
         "ko_KR": "{0}개의 새 업데이트가 추가됨",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "{0} nova(s) atualização(ões) adicionada(s)",
         "ru_RU": "",
@@ -19121,8 +19122,7 @@
         "tr_TR": "",
         "uk_UA": "{0} нових оновлень додано",
         "zh_CN": "{0} 个游戏更新被添加",
-        "zh_TW": "已加入 {0} 個遊戲更新",
-        "no_NO": ""
+        "zh_TW": "已加入 {0} 個遊戲更新"
       }
     },
     {
@@ -19138,6 +19138,7 @@
         "it_IT": "{0} aggiornamento/i mancante/i rimosso/i",
         "ja_JP": "",
         "ko_KR": "누락된 업데이트 {0}개 삭제",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "{0} atualização(ões) ausente(s) removida(s)",
         "ru_RU": "",
@@ -19145,8 +19146,7 @@
         "tr_TR": "",
         "uk_UA": "{0} відсутніх оновлень видалено",
         "zh_CN": "{0} 个失效的游戏更新已移除",
-        "zh_TW": "已刪除 {0} 個遺失的遊戲更新",
-        "no_NO": ""
+        "zh_TW": "已刪除 {0} 個遺失的遊戲更新"
       }
     },
     {
@@ -19210,6 +19210,7 @@
         "it_IT": "Continua",
         "ja_JP": "",
         "ko_KR": "계속",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -19217,8 +19218,7 @@
         "tr_TR": "",
         "uk_UA": "Продовжити",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -20866,6 +20866,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -20873,8 +20874,7 @@
         "tr_TR": "",
         "uk_UA": "",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -20890,6 +20890,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "P2P 네트워크 호스팅 비활성화(대기 시간이 늘어날 수 있음)",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -20897,8 +20898,7 @@
         "tr_TR": "",
         "uk_UA": "Вимкнути хостинг P2P мережі (може збільшити затримку)",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -20914,6 +20914,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "P2P 네트워크 호스팅을 비활성화하면 피어가 직접 연결하지 않고 마스터 서버를 통해 프록시합니다.",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -20921,8 +20922,7 @@
         "tr_TR": "",
         "uk_UA": "Вимкнути хостинг P2P мережі, піри будуть підключатися через майстер-сервер замість прямого з\u0027єднання з вами.",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -20938,6 +20938,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "네트워크 암호 문구 :",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -20945,8 +20946,7 @@
         "tr_TR": "",
         "uk_UA": "Мережевий пароль:",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -20962,6 +20962,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "귀하는 귀하와 동일한 암호를 사용하는 호스팅 게임만 볼 수 있습니다.",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -20969,8 +20970,7 @@
         "tr_TR": "",
         "uk_UA": "Ви зможете бачити лише ті ігри, які мають такий самий пароль, як і у вас.",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -20986,6 +20986,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "Ryujinx-\u003C8 hex chars\u003E 형식으로 암호를 입력하세요. 귀하는 귀하와 동일한 암호를 사용하는 호스팅 게임만 볼 수 있습니다.",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -20993,8 +20994,7 @@
         "tr_TR": "",
         "uk_UA": "Введіть пароль у форматі Ryujinx-\u003C8 символів\u003E. Ви зможете бачити лише ті ігри, які мають такий самий пароль, як і у вас.",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -21010,6 +21010,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "(일반)",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -21017,8 +21018,7 @@
         "tr_TR": "",
         "uk_UA": "(публічний)",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -21034,6 +21034,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "무작위 생성",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -21041,8 +21042,7 @@
         "tr_TR": "",
         "uk_UA": "Згенерувати випадкову",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -21058,6 +21058,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "다른 플레이어와 공유할 수 있는 새로운 암호 문구를 생성합니다.",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -21065,8 +21066,7 @@
         "tr_TR": "",
         "uk_UA": "Генерує новий пароль, яким можна поділитися з іншими гравцями.",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -21082,6 +21082,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "지우기",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -21089,8 +21090,7 @@
         "tr_TR": "",
         "uk_UA": "Очистити",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -21106,6 +21106,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "현재 암호를 지우고 공용 네트워크로 돌아갑니다.",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -21113,8 +21114,7 @@
         "tr_TR": "",
         "uk_UA": "Очищає поточну пароль, повертаючись до публічної мережі.",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
@@ -21130,6 +21130,7 @@
         "it_IT": "",
         "ja_JP": "",
         "ko_KR": "유효하지 않은 암호입니다! \u0022Ryujinx-\u003C8 hex chars\u003E\u0022 형식이어야 합니다.",
+        "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
@@ -21137,18 +21138,16 @@
         "tr_TR": "",
         "uk_UA": "Невірний пароль! Має бути в форматі \u0022Ryujinx-\u003C8 символів\u003E\u0022",
         "zh_CN": "",
-        "zh_TW": "",
-        "no_NO": ""
+        "zh_TW": ""
       }
     },
     {
       "ID": "SettingsTabSystemVSyncMode",
       "Translations": {
-        "en_US": "VSync:",
-        "uk_UA": "Вертикальна синхронізація (VSync):",
         "ar_SA": "",
         "de_DE": "",
         "el_GR": "",
+        "en_US": "VSync:",
         "es_ES": "",
         "fr_FR": "",
         "he_IL": "",
@@ -21161,6 +21160,7 @@
         "ru_RU": "",
         "th_TH": "",
         "tr_TR": "",
+        "uk_UA": "Вертикальна синхронізація (VSync):",
         "zh_CN": "",
         "zh_TW": ""
       }
@@ -21168,11 +21168,10 @@
     {
       "ID": "SettingsTabSystemEnableCustomVSyncInterval",
       "Translations": {
-        "en_US": "Enable custom refresh rate (Experimental)",
-        "uk_UA": "Увімкнути користувацьку частоту оновлення (Експериментально)",
         "ar_SA": "",
         "de_DE": "",
         "el_GR": "",
+        "en_US": "Enable custom refresh rate (Experimental)",
         "es_ES": "",
         "fr_FR": "",
         "he_IL": "",
@@ -21185,6 +21184,7 @@
         "ru_RU": "",
         "th_TH": "",
         "tr_TR": "",
+        "uk_UA": "Увімкнути користувацьку частоту оновлення (Експериментально)",
         "zh_CN": "",
         "zh_TW": ""
       }
@@ -21192,11 +21192,10 @@
     {
       "ID": "SettingsTabSystemVSyncModeSwitch",
       "Translations": {
-        "en_US": "Switch",
-        "uk_UA": "",
         "ar_SA": "",
         "de_DE": "",
         "el_GR": "",
+        "en_US": "Switch",
         "es_ES": "",
         "fr_FR": "",
         "he_IL": "",
@@ -21209,6 +21208,7 @@
         "ru_RU": "",
         "th_TH": "",
         "tr_TR": "",
+        "uk_UA": "",
         "zh_CN": "",
         "zh_TW": ""
       }
@@ -21216,11 +21216,10 @@
     {
       "ID": "SettingsTabSystemVSyncModeUnbounded",
       "Translations": {
-        "en_US": "Unbounded",
-        "uk_UA": "Безмежна",
         "ar_SA": "",
         "de_DE": "",
         "el_GR": "",
+        "en_US": "Unbounded",
         "es_ES": "",
         "fr_FR": "",
         "he_IL": "",
@@ -21233,6 +21232,7 @@
         "ru_RU": "",
         "th_TH": "",
         "tr_TR": "",
+        "uk_UA": "Безмежна",
         "zh_CN": "",
         "zh_TW": ""
       }
@@ -21240,11 +21240,10 @@
     {
       "ID": "SettingsTabSystemVSyncModeCustom",
       "Translations": {
-        "en_US": "Custom Refresh Rate",
-        "uk_UA": "Користувацька",
         "ar_SA": "",
         "de_DE": "",
         "el_GR": "",
+        "en_US": "Custom Refresh Rate",
         "es_ES": "",
         "fr_FR": "",
         "he_IL": "",
@@ -21257,6 +21256,7 @@
         "ru_RU": "",
         "th_TH": "",
         "tr_TR": "",
+        "uk_UA": "Користувацька",
         "zh_CN": "",
         "zh_TW": ""
       }
@@ -21264,11 +21264,10 @@
     {
       "ID": "SettingsTabSystemVSyncModeTooltip",
       "Translations": {
-        "en_US": "Emulated Vertical Sync. \u0027Switch\u0027 emulates the Switch\u0027s refresh rate of 60Hz. \u0027Unbounded\u0027 is an unbounded refresh rate.",
-        "uk_UA": "Емульована вертикальна синхронізація. \u0027Switch\u0027 емулює частоту оновлення Switch 60 Гц. \u0027Безмежна\u0027 — частота оновлення не матиме обмежень.",
         "ar_SA": "",
         "de_DE": "",
         "el_GR": "",
+        "en_US": "Emulated Vertical Sync. \u0027Switch\u0027 emulates the Switch\u0027s refresh rate of 60Hz. \u0027Unbounded\u0027 is an unbounded refresh rate.",
         "es_ES": "",
         "fr_FR": "",
         "he_IL": "",
@@ -21281,6 +21280,7 @@
         "ru_RU": "",
         "th_TH": "",
         "tr_TR": "",
+        "uk_UA": "Емульована вертикальна синхронізація. \u0027Switch\u0027 емулює частоту оновлення Switch 60 Гц. \u0027Безмежна\u0027 — частота оновлення не матиме обмежень.",
         "zh_CN": "",
         "zh_TW": ""
       }
@@ -21288,11 +21288,10 @@
     {
       "ID": "SettingsTabSystemVSyncModeTooltipCustom",
       "Translations": {
-        "en_US": "Emulated Vertical Sync. \u0027Switch\u0027 emulates the Switch\u0027s refresh rate of 60Hz. \u0027Unbounded\u0027 is an unbounded refresh rate. \u0027Custom\u0027 emulates the specified custom refresh rate.",
-        "uk_UA": "Емульована вертикальна синхронізація. \u0027Switch\u0027 емулює частоту оновлення Switch 60 Гц. \u0027Безмежна\u0027 — частота оновлення не матиме обмежень. \u0027Користувацька\u0027 емулює вказану користувацьку частоту оновлення.",
         "ar_SA": "",
         "de_DE": "",
         "el_GR": "",
+        "en_US": "Emulated Vertical Sync. \u0027Switch\u0027 emulates the Switch\u0027s refresh rate of 60Hz. \u0027Unbounded\u0027 is an unbounded refresh rate. \u0027Custom\u0027 emulates the specified custom refresh rate.",
         "es_ES": "",
         "fr_FR": "",
         "he_IL": "",
@@ -21305,6 +21304,7 @@
         "ru_RU": "",
         "th_TH": "",
         "tr_TR": "",
+        "uk_UA": "Емульована вертикальна синхронізація. \u0027Switch\u0027 емулює частоту оновлення Switch 60 Гц. \u0027Безмежна\u0027 — частота оновлення не матиме обмежень. \u0027Користувацька\u0027 емулює вказану користувацьку частоту оновлення.",
         "zh_CN": "",
         "zh_TW": ""
       }
@@ -21312,11 +21312,10 @@
     {
       "ID": "SettingsTabSystemEnableCustomVSyncIntervalTooltip",
       "Translations": {
-        "en_US": "Allows the user to specify an emulated refresh rate. In some titles, this may speed up or slow down the rate of gameplay logic. In other titles, it may allow for capping FPS at some multiple of the refresh rate, or lead to unpredictable behavior. This is an experimental feature, with no guarantees for how gameplay will be affected. \n\nLeave OFF if unsure.",
-        "uk_UA": "Дозволяє користувачу вказати емульовану частоту оновлення. У деяких іграх це може прискорити або сповільнити логіку гри. У інших іграх це може дозволити обмежити FPS на певні кратні частоти оновлення або призвести до непередбачуваної поведінки. Це експериментальна функція, без гарантій того, як це вплине на ігровий процес. \n\nЗалиште ВИМКНЕНИМ, якщо не впевнені.",
         "ar_SA": "",
         "de_DE": "",
         "el_GR": "",
+        "en_US": "Allows the user to specify an emulated refresh rate. In some titles, this may speed up or slow down the rate of gameplay logic. In other titles, it may allow for capping FPS at some multiple of the refresh rate, or lead to unpredictable behavior. This is an experimental feature, with no guarantees for how gameplay will be affected. \n\nLeave OFF if unsure.",
         "es_ES": "",
         "fr_FR": "",
         "he_IL": "",
@@ -21329,6 +21328,7 @@
         "ru_RU": "",
         "th_TH": "",
         "tr_TR": "",
+        "uk_UA": "Дозволяє користувачу вказати емульовану частоту оновлення. У деяких іграх це може прискорити або сповільнити логіку гри. У інших іграх це може дозволити обмежити FPS на певні кратні частоти оновлення або призвести до непередбачуваної поведінки. Це експериментальна функція, без гарантій того, як це вплине на ігровий процес. \n\nЗалиште ВИМКНЕНИМ, якщо не впевнені.",
         "zh_CN": "",
         "zh_TW": ""
       }
@@ -21336,11 +21336,10 @@
     {
       "ID": "SettingsTabSystemCustomVSyncIntervalValueTooltip",
       "Translations": {
-        "en_US": "The custom refresh rate target value.",
-        "uk_UA": "Цільове значення користувацької частоти оновлення.",
         "ar_SA": "",
         "de_DE": "",
         "el_GR": "",
+        "en_US": "The custom refresh rate target value.",
         "es_ES": "",
         "fr_FR": "",
         "he_IL": "",
@@ -21353,6 +21352,7 @@
         "ru_RU": "",
         "th_TH": "",
         "tr_TR": "",
+        "uk_UA": "Цільове значення користувацької частоти оновлення.",
         "zh_CN": "",
         "zh_TW": ""
       }
@@ -21360,11 +21360,10 @@
     {
       "ID": "SettingsTabSystemCustomVSyncIntervalSliderTooltip",
       "Translations": {
-        "en_US": "The custom refresh rate, as a percentage of the normal Switch refresh rate.",
-        "uk_UA": "Користувацька частота оновлення, як відсоток від стандартної частоти оновлення Switch.",
         "ar_SA": "",
         "de_DE": "",
         "el_GR": "",
+        "en_US": "The custom refresh rate, as a percentage of the normal Switch refresh rate.",
         "es_ES": "",
         "fr_FR": "",
         "he_IL": "",
@@ -21377,6 +21376,7 @@
         "ru_RU": "",
         "th_TH": "",
         "tr_TR": "",
+        "uk_UA": "Користувацька частота оновлення, як відсоток від стандартної частоти оновлення Switch.",
         "zh_CN": "",
         "zh_TW": ""
       }
@@ -21384,11 +21384,10 @@
     {
       "ID": "SettingsTabSystemCustomVSyncIntervalPercentage",
       "Translations": {
-        "en_US": "Custom Refresh Rate %:",
-        "uk_UA": "Користувацька частота оновлення %:",
         "ar_SA": "",
         "de_DE": "",
         "el_GR": "",
+        "en_US": "Custom Refresh Rate %:",
         "es_ES": "",
         "fr_FR": "",
         "he_IL": "",
@@ -21401,6 +21400,7 @@
         "ru_RU": "",
         "th_TH": "",
         "tr_TR": "",
+        "uk_UA": "Користувацька частота оновлення %:",
         "zh_CN": "",
         "zh_TW": ""
       }
@@ -21408,11 +21408,10 @@
     {
       "ID": "SettingsTabSystemCustomVSyncIntervalValue",
       "Translations": {
-        "en_US": "Custom Refresh Rate Value:",
-        "uk_UA": "Значення користувацька частота оновлення:",
         "ar_SA": "",
         "de_DE": "",
         "el_GR": "",
+        "en_US": "Custom Refresh Rate Value:",
         "es_ES": "",
         "fr_FR": "",
         "he_IL": "",
@@ -21425,6 +21424,7 @@
         "ru_RU": "",
         "th_TH": "",
         "tr_TR": "",
+        "uk_UA": "Значення користувацька частота оновлення:",
         "zh_CN": "",
         "zh_TW": ""
       }
@@ -21432,10 +21432,10 @@
     {
       "ID": "SettingsTabSystemCustomVSyncInterval",
       "Translations": {
-        "en_US": "Interval",
         "ar_SA": "",
         "de_DE": "",
         "el_GR": "",
+        "en_US": "Interval",
         "es_ES": "",
         "fr_FR": "",
         "he_IL": "",
@@ -21456,11 +21456,10 @@
     {
       "ID": "SettingsTabHotkeysToggleVSyncModeHotkey",
       "Translations": {
-        "en_US": "Toggle VSync mode:",
-        "uk_UA": "Перемкнути VSync режим:",
         "ar_SA": "",
         "de_DE": "",
         "el_GR": "",
+        "en_US": "Toggle VSync mode:",
         "es_ES": "",
         "fr_FR": "",
         "he_IL": "",
@@ -21473,6 +21472,7 @@
         "ru_RU": "",
         "th_TH": "",
         "tr_TR": "",
+        "uk_UA": "Перемкнути VSync режим:",
         "zh_CN": "",
         "zh_TW": ""
       }
@@ -21480,11 +21480,10 @@
     {
       "ID": "SettingsTabHotkeysIncrementCustomVSyncIntervalHotkey",
       "Translations": {
-        "en_US": "Raise custom refresh rate",
-        "uk_UA": "Підвищити користувацьку частоту оновлення",
         "ar_SA": "",
         "de_DE": "",
         "el_GR": "",
+        "en_US": "Raise custom refresh rate",
         "es_ES": "",
         "fr_FR": "",
         "he_IL": "",
@@ -21497,6 +21496,7 @@
         "ru_RU": "",
         "th_TH": "",
         "tr_TR": "",
+        "uk_UA": "Підвищити користувацьку частоту оновлення",
         "zh_CN": "",
         "zh_TW": ""
       }
@@ -21504,11 +21504,10 @@
     {
       "ID": "SettingsTabHotkeysDecrementCustomVSyncIntervalHotkey",
       "Translations": {
-        "en_US": "Lower custom refresh rate",
-        "uk_UA": "Понизити користувацьку частоту оновлення",
         "ar_SA": "",
         "de_DE": "",
         "el_GR": "",
+        "en_US": "Lower custom refresh rate",
         "es_ES": "",
         "fr_FR": "",
         "he_IL": "",
@@ -21521,6 +21520,7 @@
         "ru_RU": "",
         "th_TH": "",
         "tr_TR": "",
+        "uk_UA": "Понизити користувацьку частоту оновлення",
         "zh_CN": "",
         "zh_TW": ""
       }
