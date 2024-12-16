@@ -882,7 +882,7 @@
   "MultiplayerMode": "Modus:",
   "MultiplayerModeTooltip": "Endre LDN flerspillermodus.\n\nLdnMitm vil endre lokal trådløst/lokal spillfunksjonalitet i spill som skal fungere som om den var LAN, noe som tillater lokal, samme nettverk forbindelser med andre Ryujinx instanser og hacket Nintendo Switch konsoller som har installert ldn_mitm-modulen.\n\nFlerspiller krever at alle spillerne er på samme versjon (dvs. Super Smash Bros. Ultimat v13.0.1 kan ikke koble til v13.0.0).\n\nForlat DEAKTIVERT hvis usikker.",
   "MultiplayerModeDisabled": "Deaktivert",
-  "MultiplayerModeLdnMitm": "ldn_mitm"
+  "MultiplayerModeLdnMitm": "ldn_mitm",
   "MultiplayerModeLdnRyu": "RyuLDN",
   "MultiplayerDisableP2P": "Deaktiver P2P Network Hosting (kan øke ventetiden)",
   "MultiplayerDisableP2PTooltip": "Deaktiver P2P-nettverkshosting, peers vil proxy gjennom hovedserveren i stedet for å koble til deg direkte.",
