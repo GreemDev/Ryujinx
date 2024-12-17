@@ -13,10 +13,10 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);._*</DefaultItemExcludes>
   </PropertyGroup>
 
-  <UsingTask TaskName="Ryujinx.BuildValidationTasks.LocaleValidationTask" AssemblyFile="..\Ryujinx.BuildValidationTasks\bin\debug\netstandard2.0\Ryujinx.BuildValidationTasks.dll" />
-
-  <Target Name="LocalesJsonValidation" BeforeTargets="BeforeBuild">
-    <LocaleValidationTask />
+  <Target Name="BuildValidationProj" BeforeTargets="BeforeBuild">
+    <MSBuild Projects="..\Ryujinx.BuildValidationTasks\Ryujinx.BuildValidationTasks.csproj" Targets="Build">
+    </MSBuild>
+    <Message Text="TEST" Importance="high"/>
   </Target>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
