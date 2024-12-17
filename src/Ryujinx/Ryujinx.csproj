@@ -13,7 +13,7 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);._*</DefaultItemExcludes>
   </PropertyGroup>
 
-  <UsingTask TaskName="Ryujinx.BuildValidationTasks.LocaleValidationTask" AssemblyFile="$(ProjectDir)..\Ryujinx.BuildValidationTasks\bin\debug\netstandard2.0\Ryujinx.BuildValidationTasks.dll" />
+  <UsingTask TaskName="Ryujinx.BuildValidationTasks.LocaleValidationTask" AssemblyFile="..\Ryujinx.BuildValidationTasks\bin\debug\netstandard2.0\Ryujinx.BuildValidationTasks.dll" />
 
   <Target Name="LocalesJsonValidation" BeforeTargets="BeforeBuild">
     <LocaleValidationTask />
