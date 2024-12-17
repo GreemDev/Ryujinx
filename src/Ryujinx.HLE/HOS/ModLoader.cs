@@ -403,7 +403,7 @@ namespace Ryujinx.HLE.HOS
         }
 
         // Assumes searchDirPaths don't overlap
-        private static void CollectMods(Dictionary<ulong, ModCache> modCaches, PatchCache patches, params string[] searchDirPaths)
+        private static void CollectMods(Dictionary<ulong, ModCache> modCaches, PatchCache patches, params ReadOnlySpan<string> searchDirPaths)
         {
             static bool IsPatchesDir(string name) => StrEquals(AmsNsoPatchDir, name) ||
                                                      StrEquals(AmsNroPatchDir, name) ||
@@ -453,7 +453,7 @@ namespace Ryujinx.HLE.HOS
             patches.Initialized = true;
         }
 
-        public void CollectMods(IEnumerable<ulong> applications, params string[] searchDirPaths)
+        public void CollectMods(IEnumerable<ulong> applications, params ReadOnlySpan<string> searchDirPaths)
         {
             Clear();
 
@@ -755,12 +755,18 @@ namespace Ryujinx.HLE.HOS
                 patches[i] = new MemPatch();
             }
 
-            var buildIds = programs.Select(p => p switch
+            var buildIds = new List<string>(programs.Length);
+
+            foreach (IExecutable p in programs)
             {
-                NsoExecutable nso => Convert.ToHexString(nso.BuildId.ItemsRo.ToArray()).TrimEnd('0'),
-                NroExecutable nro => Convert.ToHexString(nro.Header.BuildId).TrimEnd('0'),
-                _ => string.Empty,
-            }).ToList();
+                var buildId = p switch
+                {
+                    NsoExecutable nso => Convert.ToHexString(nso.BuildId.ItemsRo.ToArray()).TrimEnd('0'),
+                    NroExecutable nro => Convert.ToHexString(nro.Header.BuildId).TrimEnd('0'),
+                    _ => string.Empty,
+                };
+                buildIds.Add(buildId);
+            }
 
             int GetIndex(string buildId) => buildIds.FindIndex(id => id == buildId); // O(n) but list is small
 
