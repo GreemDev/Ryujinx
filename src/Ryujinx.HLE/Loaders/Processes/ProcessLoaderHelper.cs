@@ -231,7 +231,7 @@ namespace Ryujinx.HLE.Loaders.Processes
             ulong programId,
             byte programIndex,
             byte[] arguments = null,
-            params IExecutable[] executables)
+            params ReadOnlySpan<IExecutable> executables)
         {
             context.Device.System.ServiceTable.WaitServicesReady();
 
