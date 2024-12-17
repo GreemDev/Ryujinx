@@ -14,7 +14,10 @@ namespace Ryujinx.BuildValidationTasks
         {
             string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
 
-            path = new FileInfo(path).Directory.Parent.Parent.Parent.Parent.GetDirectories("Ryujinx")[0].GetDirectories("Assets")[0].GetFiles("locales.json")[0].FullName;
+            path = path.Split(new string[] { "src" }, StringSplitOptions.None)[0];
+
+
+            path = new FileInfo(path).Directory.GetDirectories("src")[0].GetDirectories("Ryujinx")[0].GetDirectories("Assets")[0].GetFiles("locales.json")[0].FullName;
 
             string data;
 
