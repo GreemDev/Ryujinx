@@ -222,6 +222,12 @@ namespace Ryujinx.Ava.UI.Views.Main
                 await Updater.BeginUpdateAsync(true);
         }
 
+        private void MenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem { Tag: string url })
+                OpenHelper.OpenUrl(url);
+        }
+
         public async void OpenXCITrimmerWindow(object sender, RoutedEventArgs e) => await XCITrimmerWindow.Show(ViewModel);
 
         public async void OpenAboutWindow(object sender, RoutedEventArgs e) => await AboutWindow.Show();
