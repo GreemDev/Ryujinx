@@ -139,6 +139,11 @@ namespace Ryujinx.HLE.HOS.Services.Am.AppletOE.ApplicationProxyService.Applicati
             int supportedLanguages = (int)context.Device.Processes.ActiveApplication.ApplicationControlProperties.SupportedLanguageFlag;
             int firstSupported = BitOperations.TrailingZeroCount(supportedLanguages);
 
+            string desiredLanguageString = Convert.ToString(desiredLanguageCode, 32);
+            Logger.Info?.Print(LogClass.ServiceAm, $"System desired {desiredLanguageString}");
+            string supportedLanguagesString = Convert.ToString(supportedLanguages, 32);
+            Logger.Info?.Print(LogClass.ServiceAm, $"Application support {supportedLanguagesString}");
+
             if (firstSupported > (int)TitleLanguage.BrazilianPortuguese)
             {
                 Logger.Warning?.Print(LogClass.ServiceAm, "Application has zero supported languages");
