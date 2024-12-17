@@ -13,6 +13,12 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);._*</DefaultItemExcludes>
   </PropertyGroup>
 
+  <UsingTask TaskName="Ryujinx.BuildValidationTasks.LocaleValidationTask" AssemblyFile="$(ProjectDir)..\Ryujinx.BuildValidationTasks\bin\debug\netstandard2.0\Ryujinx.BuildValidationTasks.dll" />
+
+  <Target Name="LocalesJsonValidation" BeforeTargets="BeforeBuild">
+    <LocaleValidationTask />
+  </Target>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
     <Exec Command="codesign --entitlements '$(ProjectDir)..\..\distribution\macos\entitlements.xml' -f -s $(SigningCertificate) '$(TargetDir)$(TargetName)'" />
   </Target>
@@ -60,6 +66,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ryujinx.Audio.Backends.SDL2\Ryujinx.Audio.Backends.SDL2.csproj" />
+    <ProjectReference Include="..\Ryujinx.BuildValidationTasks\Ryujinx.BuildValidationTasks.csproj" />
     <ProjectReference Include="..\Ryujinx.Graphics.Vulkan\Ryujinx.Graphics.Vulkan.csproj" />
     <ProjectReference Include="..\Ryujinx.Input\Ryujinx.Input.csproj" />
     <ProjectReference Include="..\Ryujinx.Input.SDL2\Ryujinx.Input.SDL2.csproj" />

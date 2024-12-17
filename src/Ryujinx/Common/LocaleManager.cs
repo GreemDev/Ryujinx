@@ -152,8 +152,6 @@ namespace Ryujinx.Ava.Common.Locale
             var localeStrings = new Dictionary<LocaleKeys, string>();
             string fileData = EmbeddedResources.ReadAllText($"Ryujinx/Assets/locales.json");
 
-            bool invalidLocalesJson = false; //does the locales.json contain all the languages in all the locales?
-
             if (fileData == null)
             {
                 // We were unable to find file for that language code.
@@ -167,12 +165,7 @@ namespace Ryujinx.Ava.Common.Locale
                 if (locale.Translations.Count != json.Languages.Count)
                 {
                     Logger.Error?.Print(LogClass.UI, $"Locale key {{{locale.ID}}} is missing languages!");
-                    invalidLocalesJson = true;
-#if DEBUG
-                    break;
-#else
                     throw new Exception("Missing locale data!");
-#endif
                 }
 
                 if (Enum.TryParse<LocaleKeys>(locale.ID, out var localeKey))
@@ -187,45 +180,6 @@ namespace Ryujinx.Ava.Common.Locale
                         localeStrings[localeKey] = val;
                     }
                 }
-            }
-
-            if (invalidLocalesJson)
-            {
-                for (int i = 0; i < json.Locales.Count; i++)
-                {
-                    LocalesEntry locale = json.Locales[i];
-
-                    foreach (string language in json.Languages)
-                    {
-                        if (!locale.Translations.ContainsKey(language))
-                        {
-                            locale.Translations.Add(language, "");
-                            Logger.Warning?.Print(LogClass.UI, $"Added {{{language}}} to Locale {{{locale.ID}}}");
-                        }
-                    }
-
-                    locale.Translations = locale.Translations.OrderBy(pair => pair.Key).ToDictionary(pair => pair.Key, pair => pair.Value);
-                    json.Locales[i] = locale;
-                }
-
-                string location = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.GetDirectories("Assets")[0].GetFiles("locales.json")[0].FullName;
-
-                JsonSerializerOptions jsonOptions = new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
-                };
-
-                LocalesJSONContext context = new LocalesJSONContext(jsonOptions);
-
-                string jsonString = JsonHelper.Serialize(json, context.LocalesJSON);
-
-                using (StreamWriter sw = new StreamWriter(location))
-                {
-                    sw.Write(jsonString);
-                }
-
-                throw new Exception("Missing locale data! (missing locale data has been added, please rebuild the project)");
             }
 
             return localeStrings;
