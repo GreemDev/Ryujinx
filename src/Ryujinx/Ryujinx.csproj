@@ -16,7 +16,6 @@
   <Target Name="BuildValidationProj" BeforeTargets="BeforeBuild">
     <MSBuild Projects="..\Ryujinx.BuildValidationTasks\Ryujinx.BuildValidationTasks.csproj" Targets="Build">
     </MSBuild>
-    <Message Text="TEST" Importance="high"/>
   </Target>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
