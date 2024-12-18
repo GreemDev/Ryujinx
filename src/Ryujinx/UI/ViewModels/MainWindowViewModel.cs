@@ -125,7 +125,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         public IEnumerable<LdnGameData> LastLdnGameData;
 
         public static readonly Bitmap IconBitmap =
-            new(Assembly.GetAssembly(typeof(ConfigurationState))!.GetManifestResourceStream("Ryujinx.UI.Common.Resources.Logo_Ryujinx.png")!);
+            new(Assembly.GetAssembly(typeof(ConfigurationState))!.GetManifestResourceStream("Ryujinx.UI.Common.Resources.Logo_Thiccjinx.png")!);
 
         public MainWindow Window { get; init; }
 
