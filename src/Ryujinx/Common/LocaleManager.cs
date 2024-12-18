@@ -158,7 +158,7 @@ namespace Ryujinx.Ava.Common.Locale
                 return null;
             }
 
-            LocalesJSON json = JsonHelper.Deserialize(fileData, LocalesJSONContext.Default.LocalesJSON);
+            LocalesJson json = JsonHelper.Deserialize(fileData, LocalesJsonContext.Default.LocalesJSON);
 
             foreach (LocalesEntry locale in json.Locales)
             {
@@ -186,7 +186,7 @@ namespace Ryujinx.Ava.Common.Locale
         }
     }
 
-    public struct LocalesJSON
+    public struct LocalesJson
     {
         public List<string> Languages { get; set; }
         public List<LocalesEntry> Locales { get; set; }
@@ -199,6 +199,6 @@ namespace Ryujinx.Ava.Common.Locale
     }
 
     [JsonSourceGenerationOptions(WriteIndented = true)]
-    [JsonSerializable(typeof(LocalesJSON))]
-    internal partial class LocalesJSONContext : JsonSerializerContext { }
+    [JsonSerializable(typeof(LocalesJson))]
+    internal partial class LocalesJsonContext : JsonSerializerContext { }
 }
