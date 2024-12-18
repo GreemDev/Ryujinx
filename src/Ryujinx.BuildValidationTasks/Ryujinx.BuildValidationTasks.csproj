@@ -13,7 +13,6 @@
   <UsingTask TaskName="Ryujinx.BuildValidationTasks.LocaleValidationTask" TaskFactory="TaskHostFactory" AssemblyFile="$(OutDir)Ryujinx.BuildValidationTasks.dll" />
 
   <Target Name="LocalesJsonValidation" AfterTargets="AfterRebuild">
-    <Message Text="Validate Json" Importance="high"/>
     <LocaleValidationTask />
   </Target>
 
