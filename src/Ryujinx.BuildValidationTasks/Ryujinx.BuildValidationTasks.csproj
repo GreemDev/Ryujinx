@@ -5,12 +5,20 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <IsPublishable>False</IsPublishable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <IsPublishable>False</IsPublishable>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Build.Utilities.Core" />
     <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
 
-  <UsingTask TaskName="Ryujinx.BuildValidationTasks.LocaleValidationTask" TaskFactory="TaskHostFactory" AssemblyFile="$(ProjectDir)bin\$(Configuration)\netstandard2.0\Ryujinx.BuildValidationTasks.dll"/>
+  <UsingTask TaskName="Ryujinx.BuildValidationTasks.LocaleValidationTask" TaskFactory="TaskHostFactory" AssemblyFile="$(ProjectDir)bin\$(Configuration)\netstandard2.0\Ryujinx.BuildValidationTasks.dll" />
 
   <Target Name="LocalesJsonValidation" AfterTargets="AfterBuild">
     <LocaleValidationTask />
