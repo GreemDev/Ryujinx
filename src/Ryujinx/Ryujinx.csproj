@@ -14,6 +14,7 @@
   </PropertyGroup>
 
   <Target Name="BuildValidationProj" BeforeTargets="BeforeBuild">
+    <Message Text="TEST" Importance="high"/>
     <MSBuild Projects="..\Ryujinx.BuildValidationTasks\Ryujinx.BuildValidationTasks.csproj" Targets="Build">
     </MSBuild>
   </Target>
