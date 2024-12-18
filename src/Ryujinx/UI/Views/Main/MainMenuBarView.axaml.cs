@@ -58,7 +58,7 @@ namespace Ryujinx.Ava.UI.Views.Main
 
             string languageJson = EmbeddedResources.ReadAllText(localePath);
 
-            LocalesJson locales = JsonHelper.Deserialize(languageJson, LocalesJsonContext.Default.LocalesJSON);
+            LocalesJson locales = JsonHelper.Deserialize(languageJson, LocalesJsonContext.Default.LocalesJson);
 
             foreach (string language in locales.Languages)
             {
