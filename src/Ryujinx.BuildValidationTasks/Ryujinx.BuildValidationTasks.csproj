@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <IsPublish Condition="'$(IsPublish)' == ''">False</IsPublish>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,10 +12,17 @@
     <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
 
+  <Target Name="SetIsPublish" BeforeTargets="BeforePublish">
+    <PropertyGroup>
+      <IsPublish Condition="'$(IsPublish)' != ''">True</IsPublish>
+    </PropertyGroup>
+  </Target>
+
   <UsingTask TaskName="Ryujinx.BuildValidationTasks.LocaleValidationTask" TaskFactory="TaskHostFactory" AssemblyFile="$(OutDir)Ryujinx.BuildValidationTasks.dll" />
 
   <Target Name="LocalesJsonValidation" AfterTargets="AfterBuild">
-    <LocaleValidationTask />
+    <Message Text="IsPublish: $(IsPublish)" Importance="high"/>
+    <LocaleValidationTask Condition="'$(IsPublish)' != 'True'"/>
   </Target>
 
 </Project>
