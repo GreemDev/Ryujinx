@@ -11,7 +11,7 @@
     <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
 
-  <UsingTask TaskName="Ryujinx.BuildValidationTasks.LocaleValidationTask" TaskFactory="TaskHostFactory" AssemblyFile="$(TargetDir)Ryujinx.BuildValidationTasks.dll" />
+  <UsingTask TaskName="Ryujinx.BuildValidationTasks.LocaleValidationTask" TaskFactory="TaskHostFactory" AssemblyFile="$(OutDir)Ryujinx.BuildValidationTasks.dll" />
 
   <Target Name="LocalesJsonValidation" AfterTargets="AfterBuild">
     <LocaleValidationTask />
