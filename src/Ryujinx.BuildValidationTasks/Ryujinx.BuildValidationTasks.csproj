@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,7 +10,7 @@
     <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
 
-  <UsingTask TaskName="Ryujinx.BuildValidationTasks.LocaleValidationTask" AssemblyFile="$(ProjectDir)bin\$(Configuration)\netstandard2.0\Ryujinx.BuildValidationTasks.dll"/>
+  <UsingTask TaskName="Ryujinx.BuildValidationTasks.LocaleValidationTask" TaskFactory="TaskHostFactory" AssemblyFile="$(ProjectDir)bin\$(Configuration)\netstandard2.0\Ryujinx.BuildValidationTasks.dll"/>
 
   <Target Name="LocalesJsonValidation" AfterTargets="AfterBuild">
     <LocaleValidationTask />
