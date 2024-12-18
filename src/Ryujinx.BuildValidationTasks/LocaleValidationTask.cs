@@ -26,7 +26,7 @@ namespace Ryujinx.BuildValidationTasks
                 data = sr.ReadToEnd();
             }
 
-            LocalesJSON json = JsonConvert.DeserializeObject<LocalesJSON>(data);
+            LocalesJson json = JsonConvert.DeserializeObject<LocalesJson>(data);
 
             for (int i = 0; i < json.Locales.Count; i++)
             {
@@ -55,7 +55,7 @@ namespace Ryujinx.BuildValidationTasks
             return true;
         }
 
-        struct LocalesJSON
+        struct LocalesJson
         {
             public List<string> Languages { get; set; }
             public List<LocalesEntry> Locales { get; set; }
