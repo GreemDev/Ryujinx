@@ -18,5 +18,7 @@ namespace Ryujinx.HLE.HOS.SystemState
         TraditionalChinese,
         SimplifiedChinese,
         BrazilianPortuguese,
+        Swedish,
+        Finnish,
     }
 }
