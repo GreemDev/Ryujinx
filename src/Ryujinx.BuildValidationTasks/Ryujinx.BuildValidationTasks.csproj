@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RuntimeIdentifiers>win-x64;linux-x64;linux-arm64;osx-x64;osx-arm64</RuntimeIdentifiers>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
@@ -13,7 +12,8 @@
 
   <UsingTask TaskName="Ryujinx.BuildValidationTasks.LocaleValidationTask" TaskFactory="TaskHostFactory" AssemblyFile="$(OutDir)Ryujinx.BuildValidationTasks.dll" />
 
-  <Target Name="LocalesJsonValidation" AfterTargets="AfterBuild">
+  <Target Name="LocalesJsonValidation" AfterTargets="AfterRebuild">
+    <Message Text="Validate Json" Importance="high"/>
     <LocaleValidationTask />
   </Target>
 
