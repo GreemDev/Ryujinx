@@ -1,6 +1,6 @@
 using System;
 
-namespace Ryujinx.Headless.SDL2
+namespace Ryujinx.Headless
 {
     class StatusUpdatedEventArgs(
         string vSyncMode,

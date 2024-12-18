@@ -43,6 +43,7 @@
     <PackageReference Include="Avalonia.Markup.Xaml.Loader" />
     <PackageReference Include="Avalonia.Svg" />
     <PackageReference Include="Avalonia.Svg.Skia" />
+    <PackageReference Include="CommandLineParser" />
     <PackageReference Include="DynamicData" />
     <PackageReference Include="FluentAvaloniaUI" />
     <PackageReference Include="Projektanker.Icons.Avalonia" />
@@ -162,6 +163,7 @@
     <EmbeddedResource Include="Assets\Icons\Controller_JoyConPair.svg" />
     <EmbeddedResource Include="Assets\Icons\Controller_JoyConRight.svg" />
     <EmbeddedResource Include="Assets\Icons\Controller_ProCon.svg" />
+    <EmbeddedResource Include="Headless\Ryujinx.bmp" LogicalName="HeadlessLogo" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="Assets\Locales\en_US.json" />
