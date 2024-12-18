@@ -158,7 +158,7 @@ namespace Ryujinx.Ava.Common.Locale
                 return null;
             }
 
-            LocalesJson json = JsonHelper.Deserialize(fileData, LocalesJsonContext.Default.LocalesJSON);
+            LocalesJson json = JsonHelper.Deserialize(fileData, LocalesJsonContext.Default.LocalesJson);
 
             foreach (LocalesEntry locale in json.Locales)
             {
