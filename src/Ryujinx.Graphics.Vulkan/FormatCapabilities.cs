@@ -68,7 +68,7 @@ namespace Ryujinx.Graphics.Vulkan
             _optimalTable = new FormatFeatureFlags[totalFormats];
         }
 
-        public bool BufferFormatsSupport(FormatFeatureFlags flags, params Format[] formats)
+        public bool BufferFormatsSupport(FormatFeatureFlags flags, params ReadOnlySpan<Format> formats)
         {
             foreach (Format format in formats)
             {
@@ -81,7 +81,7 @@ namespace Ryujinx.Graphics.Vulkan
             return true;
         }
 
-        public bool OptimalFormatsSupport(FormatFeatureFlags flags, params Format[] formats)
+        public bool OptimalFormatsSupport(FormatFeatureFlags flags, params ReadOnlySpan<Format> formats)
         {
             foreach (Format format in formats)
             {
