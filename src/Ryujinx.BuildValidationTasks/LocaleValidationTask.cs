@@ -14,10 +14,16 @@ namespace Ryujinx.BuildValidationTasks
         {
             string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
 
-            path = path.Split(new string[] { "src" }, StringSplitOptions.None)[0];
-
-
-            path = new FileInfo(path).Directory.GetDirectories("src")[0].GetDirectories("Ryujinx")[0].GetDirectories("Assets")[0].GetFiles("locales.json")[0].FullName;
+            if (path.Split(new string[] { "src" }, StringSplitOptions.None).Length == 1 )
+            {
+                //i assume that we are in a build directory in the solution dir
+                path = new FileInfo(path).Directory.Parent.GetDirectories("src")[0].GetDirectories("Ryujinx")[0].GetDirectories("Assets")[0].GetFiles("locales.json")[0].FullName;
+            }
+            else
+            {
+                path = path.Split(new string[] { "src" }, StringSplitOptions.None)[0];
+                path = new FileInfo(path).Directory.GetDirectories("src")[0].GetDirectories("Ryujinx")[0].GetDirectories("Assets")[0].GetFiles("locales.json")[0].FullName;
+            }
 
             string data;
 
