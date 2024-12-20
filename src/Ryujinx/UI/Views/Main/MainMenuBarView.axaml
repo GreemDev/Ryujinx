@@ -247,6 +247,7 @@
                     Click="OpenBinFile"
                     Header="{ext:Locale MenuBarActionsScanAmiiboBin}"
                     Icon="{ext:Icon mdi-cube-scan}"
+                    IsVisible="{Binding CanScanAmiiboBinaries}"
                     IsEnabled="{Binding IsAmiiboBinRequested}" />
                 <MenuItem
                     Command="{Binding TakeScreenshot}"
