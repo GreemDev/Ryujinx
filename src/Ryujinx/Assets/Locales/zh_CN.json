@@ -27,6 +27,7 @@
   "MenuBarActions": "操作(_A)",
   "MenuBarOptionsSimulateWakeUpMessage": "模拟唤醒消息",
   "MenuBarActionsScanAmiibo": "扫描 Amiibo",
+  "MenuBarActionsScanAmiiboBin": "Scan An Amiibo (From Bin)",
   "MenuBarTools": "工具(_T)",
   "MenuBarToolsInstallFirmware": "安装系统固件",
   "MenuBarFileToolsInstallFirmwareFromFile": "从 XCI 或 ZIP 文件中安装系统固件",
