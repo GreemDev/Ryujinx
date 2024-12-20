@@ -41,7 +41,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
                 fileBytes = newFileBytes;
             }
 
-            AmiiboDecrypter amiiboDecryptor = new AmiiboDecrypter(keyRetailBinPath);
+            AmiiboDecryptor amiiboDecryptor = new(keyRetailBinPath);
             AmiiboDump amiiboDump = amiiboDecryptor.DecryptAmiiboDump(fileBytes);
 
             byte[] titleId = new byte[8];
@@ -182,7 +182,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
                 readBytes = newFileBytes;
             }
 
-            AmiiboDecrypter amiiboDecryptor = new AmiiboDecrypter(keyRetailBinPath);
+            AmiiboDecryptor amiiboDecryptor = new AmiiboDecryptor(keyRetailBinPath);
             AmiiboDump amiiboDump = amiiboDecryptor.DecryptAmiiboDump(readBytes);
 
             byte[] oldData = amiiboDump.GetData();
@@ -250,7 +250,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
                 readBytes = newFileBytes;
             }
 
-            AmiiboDecrypter amiiboDecryptor = new AmiiboDecrypter(keyRetailBinPath);
+            AmiiboDecryptor amiiboDecryptor = new AmiiboDecryptor(keyRetailBinPath);
             AmiiboDump amiiboDump = amiiboDecryptor.DecryptAmiiboDump(readBytes);
             amiiboDump.AmiiboNickname = newNickName;
             byte[] oldData = amiiboDump.GetData();

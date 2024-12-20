@@ -2,12 +2,12 @@ using System.IO;
 
 namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
 {
-    public class AmiiboDecrypter
+    public class AmiiboDecryptor
     {
         public AmiiboMasterKey DataKey { get; private set; }
         public AmiiboMasterKey TagKey { get; private set; }
 
-        public AmiiboDecrypter(string keyRetailBinPath)
+        public AmiiboDecryptor(string keyRetailBinPath)
         {
             var combinedKeys = File.ReadAllBytes(keyRetailBinPath);
             var keys = AmiiboMasterKey.FromCombinedBin(combinedKeys);
@@ -18,7 +18,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
         public AmiiboDump DecryptAmiiboDump(byte[] encryptedDumpData)
         {
             // Initialize AmiiboDump with encrypted data
-            AmiiboDump amiiboDump = new AmiiboDump(encryptedDumpData, DataKey, TagKey, isLocked: true);
+            AmiiboDump amiiboDump = new(encryptedDumpData, DataKey, TagKey, isLocked: true);
 
             // Unlock (decrypt) the dump
             amiiboDump.Unlock();
@@ -32,7 +32,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
         public AmiiboDump EncryptAmiiboDump(byte[] decryptedDumpData)
         {
             // Initialize AmiiboDump with decrypted data
-            AmiiboDump amiiboDump = new AmiiboDump(decryptedDumpData, DataKey, TagKey, isLocked: false);
+            AmiiboDump amiiboDump = new(decryptedDumpData, DataKey, TagKey, isLocked: false);
 
             // Lock (encrypt) the dump
             amiiboDump.Lock();
