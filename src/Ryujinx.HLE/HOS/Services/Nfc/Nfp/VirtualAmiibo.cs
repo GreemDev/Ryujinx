@@ -9,6 +9,7 @@ using Ryujinx.HLE.HOS.Services.Nfc.Nfp.NfpManager;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
 {
@@ -121,7 +122,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
                 return true;
             }
 
-            if (virtualAmiiboFile.ApplicationAreas.Exists(item => item.ApplicationAreaId == applicationAreaId))
+            if (virtualAmiiboFile.ApplicationAreas.Any(item => item.ApplicationAreaId == applicationAreaId))
             {
                 OpenedApplicationAreaId = applicationAreaId;
 
@@ -156,7 +157,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
         {
             VirtualAmiiboFile virtualAmiiboFile = LoadAmiiboFile(amiiboId);
 
-            if (virtualAmiiboFile.ApplicationAreas.Exists(item => item.ApplicationAreaId == applicationAreaId))
+            if (virtualAmiiboFile.ApplicationAreas.Any(item => item.ApplicationAreaId == applicationAreaId))
             {
                 return false;
             }
@@ -181,7 +182,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
             }
             VirtualAmiiboFile virtualAmiiboFile = LoadAmiiboFile(amiiboId);
 
-            if (virtualAmiiboFile.ApplicationAreas.Exists(item => item.ApplicationAreaId == OpenedApplicationAreaId))
+            if (virtualAmiiboFile.ApplicationAreas.Any(item => item.ApplicationAreaId == OpenedApplicationAreaId))
             {
                 for (int i = 0; i < virtualAmiiboFile.ApplicationAreas.Count; i++)
                 {
