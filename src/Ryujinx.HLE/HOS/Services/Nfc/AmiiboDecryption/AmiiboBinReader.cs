@@ -33,9 +33,12 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
             const int pageSize = 4;
             const int totalBytes = totalPages * pageSize;
 
-            if (fileBytes.Length < totalBytes)
+            if (fileBytes.Length == 532)
             {
-                return new VirtualAmiiboFile();
+                // add 8 bytes to the end of the file
+                byte[] newFileBytes = new byte[totalBytes];
+                Array.Copy(fileBytes, newFileBytes, fileBytes.Length);
+                fileBytes = newFileBytes;
             }
 
             AmiiboDecrypter amiiboDecryptor = new AmiiboDecrypter(keyRetailBinPath);
@@ -171,6 +174,14 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
                 return false;
             }
 
+            if (readBytes.Length == 532)
+            {
+                // add 8 bytes to the end of the file
+                byte[] newFileBytes = new byte[540];
+                Array.Copy(readBytes, newFileBytes, readBytes.Length);
+                readBytes = newFileBytes;
+            }
+
             AmiiboDecrypter amiiboDecryptor = new AmiiboDecrypter(keyRetailBinPath);
             AmiiboDump amiiboDump = amiiboDecryptor.DecryptAmiiboDump(readBytes);
 
@@ -229,6 +240,14 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
             {
                 Logger.Error?.Print(LogClass.ServiceNfp, "Key retail path is empty.");
                 return false;
+            }
+
+            if (readBytes.Length == 532)
+            {
+                // add 8 bytes to the end of the file
+                byte[] newFileBytes = new byte[540];
+                Array.Copy(readBytes, newFileBytes, readBytes.Length);
+                readBytes = newFileBytes;
             }
 
             AmiiboDecrypter amiiboDecryptor = new AmiiboDecrypter(keyRetailBinPath);
