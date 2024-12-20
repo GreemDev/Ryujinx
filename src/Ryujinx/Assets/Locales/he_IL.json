@@ -27,6 +27,7 @@
   "MenuBarActions": "_פעולות",
   "MenuBarOptionsSimulateWakeUpMessage": "דמה הודעת השכמה",
   "MenuBarActionsScanAmiibo": "סרוק אמיבו",
+  "MenuBarActionsScanAmiiboBin": "Scan An Amiibo (From Bin)",
   "MenuBarTools": "_כלים",
   "MenuBarToolsInstallFirmware": "התקן קושחה",
   "MenuBarFileToolsInstallFirmwareFromFile": "התקן קושחה מקובץ- ZIP/XCI",

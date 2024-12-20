@@ -27,6 +27,7 @@
   "MenuBarActions": "_Eylemler",
   "MenuBarOptionsSimulateWakeUpMessage": "Uyandırma Mesajı Simüle Et",
   "MenuBarActionsScanAmiibo": "Bir Amiibo Tara",
+  "MenuBarActionsScanAmiiboBin": "Scan An Amiibo (From Bin)",
   "MenuBarTools": "_Araçlar",
   "MenuBarToolsInstallFirmware": "Yazılım Yükle",
   "MenuBarFileToolsInstallFirmwareFromFile": "XCI veya ZIP'ten Yazılım Yükle",
