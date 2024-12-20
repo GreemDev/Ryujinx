@@ -38,6 +38,7 @@ namespace Ryujinx.Graphics.Vulkan
         internal KhrSwapchain SwapchainApi { get; private set; }
         internal ExtConditionalRendering ConditionalRenderingApi { get; private set; }
         internal ExtExtendedDynamicState ExtendedDynamicStateApi { get; private set; }
+        internal ExtExtendedDynamicState2 ExtendedDynamicState2Api { get; private set; }
         internal KhrPushDescriptor PushDescriptorApi { get; private set; }
         internal ExtTransformFeedback TransformFeedbackApi { get; private set; }
         internal KhrDrawIndirectCount DrawIndirectCountApi { get; private set; }
@@ -93,6 +94,7 @@ namespace Ryujinx.Graphics.Vulkan
         internal bool IsIntelArc { get; private set; }
         internal bool IsQualcommProprietary { get; private set; }
         internal bool IsMoltenVk { get; private set; }
+        internal bool SupportsMTL31 { get; private set; }
         internal bool IsTBDR { get; private set; }
         internal bool IsSharedMemory { get; private set; }
 
@@ -118,6 +120,8 @@ namespace Ryujinx.Graphics.Vulkan
             // Any device running on MacOS is using MoltenVK, even Intel and AMD vendors.
             if (IsMoltenVk = OperatingSystem.IsMacOS())
                 MVKInitialization.Initialize();
+
+            SupportsMTL31 = OperatingSystem.IsMacOSVersionAtLeast(14);
         }
 
         public static VulkanRenderer Create(
@@ -138,6 +142,11 @@ namespace Ryujinx.Graphics.Vulkan
             if (Api.TryGetDeviceExtension(_instance.Instance, _device, out ExtExtendedDynamicState extendedDynamicStateApi))
             {
                 ExtendedDynamicStateApi = extendedDynamicStateApi;
+            }
+
+            if (Api.TryGetDeviceExtension(_instance.Instance, _device, out ExtExtendedDynamicState2 extendedDynamicState2Api))
+            {
+                ExtendedDynamicState2Api = extendedDynamicState2Api;
             }
 
             if (Api.TryGetDeviceExtension(_instance.Instance, _device, out KhrPushDescriptor pushDescriptorApi))
@@ -234,6 +243,11 @@ namespace Ryujinx.Graphics.Vulkan
                 SType = StructureType.PhysicalDevicePrimitiveTopologyListRestartFeaturesExt,
             };
 
+            PhysicalDeviceExtendedDynamicState2FeaturesEXT featuresExtendedDynamicState2 = new()
+            {
+                SType = StructureType.PhysicalDeviceExtendedDynamicState2FeaturesExt,
+            };
+
             PhysicalDeviceRobustness2FeaturesEXT featuresRobustness2 = new()
             {
                 SType = StructureType.PhysicalDeviceRobustness2FeaturesExt,
@@ -272,6 +286,12 @@ namespace Ryujinx.Graphics.Vulkan
             if (_physicalDevice.IsDeviceExtensionPresent("VK_EXT_primitive_topology_list_restart"))
             {
                 features2.PNext = &featuresPrimitiveTopologyListRestart;
+            }
+
+            if (_physicalDevice.IsDeviceExtensionPresent(ExtExtendedDynamicState2.ExtensionName))
+            {
+                featuresExtendedDynamicState2.PNext = features2.PNext;
+                features2.PNext = &featuresExtendedDynamicState2;
             }
 
             if (_physicalDevice.IsDeviceExtensionPresent("VK_EXT_robustness2"))
@@ -407,6 +427,10 @@ namespace Ryujinx.Graphics.Vulkan
                 properties.Limits.FramebufferDepthSampleCounts &
                 properties.Limits.FramebufferStencilSampleCounts;
 
+            // Temporarily disable this, can be added back at a later date, make it easy to re-enable. 
+            // Disabled because currently causing Device Lost error on NVIDIA. 
+            featuresExtendedDynamicState2.ExtendedDynamicState2PatchControlPoints = false;
+
             Capabilities = new HardwareCapabilities(
                 _physicalDevice.IsDeviceExtensionPresent("VK_EXT_index_type_uint8"),
                 supportsCustomBorderColor,
@@ -423,6 +447,8 @@ namespace Ryujinx.Graphics.Vulkan
                 features2.Features.ShaderStorageImageMultisample,
                 _physicalDevice.IsDeviceExtensionPresent(ExtConditionalRendering.ExtensionName),
                 _physicalDevice.IsDeviceExtensionPresent(ExtExtendedDynamicState.ExtensionName),
+                featuresExtendedDynamicState2,
+                _physicalDevice.PhysicalDeviceProperties.Limits.MaxTessellationPatchSize,
                 features2.Features.MultiViewport && !(IsMoltenVk && Vendor == Vendor.Amd), // Workaround for AMD on MoltenVK issue
                 featuresRobustness2.NullDescriptor || IsMoltenVk,
                 supportsPushDescriptors && !IsMoltenVk,
@@ -438,6 +464,7 @@ namespace Ryujinx.Graphics.Vulkan
                 _physicalDevice.IsDeviceExtensionPresent("VK_NV_viewport_array2"),
                 _physicalDevice.IsDeviceExtensionPresent(ExtExternalMemoryHost.ExtensionName),
                 supportsDepthClipControl && featuresDepthClipControl.DepthClipControl,
+                _physicalDevice.PhysicalDeviceFeatures.WideLines,
                 supportsAttachmentFeedbackLoop && featuresAttachmentFeedbackLoop.AttachmentFeedbackLoopLayout,
                 supportsDynamicAttachmentFeedbackLoop && featuresDynamicAttachmentFeedbackLoop.AttachmentFeedbackLoopDynamicState,
                 propertiesSubgroup.SubgroupSize,
@@ -773,6 +800,10 @@ namespace Ryujinx.Graphics.Vulkan
                 supportsViewportSwizzle: false,
                 supportsIndirectParameters: true,
                 supportsDepthClipControl: Capabilities.SupportsDepthClipControl,
+                supportsExtendedDynamicState: Capabilities.SupportsExtendedDynamicState,
+                supportsExtendedDynamicState2: Capabilities.SupportsExtendedDynamicState2.ExtendedDynamicState2,
+                supportsLogicOpDynamicState: Capabilities.SupportsExtendedDynamicState2.ExtendedDynamicState2LogicOp,
+                supportsPatchControlPointsDynamicState: Capabilities.SupportsExtendedDynamicState2.ExtendedDynamicState2PatchControlPoints,
                 uniformBufferSetIndex: PipelineBase.UniformSetIndex,
                 storageBufferSetIndex: PipelineBase.StorageSetIndex,
                 textureSetIndex: PipelineBase.TextureSetIndex,
