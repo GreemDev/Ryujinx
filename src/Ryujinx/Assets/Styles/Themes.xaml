@@ -8,7 +8,6 @@
             <Color x:Key="DataGridSelectionColor">#FF00FABB</Color>
             <Color x:Key="ThemeContentBackgroundColor">#FFF0F0F0</Color>
             <Color x:Key="ThemeControlBorderColor">#FFd6d6d6</Color>
-            <Color x:Key="SystemChromeWhiteColor">#FFFFFFFF</Color>
             <Color x:Key="ThemeForegroundColor">#FF000000</Color>
             <Color x:Key="MenuFlyoutPresenterBorderColor">#C1C1C1</Color>
             <Color x:Key="AppListBackgroundColor">#b3ffffff</Color>
@@ -26,7 +25,6 @@
             <Color x:Key="DataGridSelectionColor">#FF00FABB</Color>
             <Color x:Key="ThemeContentBackgroundColor">#dedede</Color>
             <Color x:Key="ThemeControlBorderColor">#c2c2c2</Color>
-            <Color x:Key="SystemChromeWhiteColor">#FFFFFFFF</Color>
             <Color x:Key="ThemeForegroundColor">#FF000000</Color>
             <Color x:Key="MenuFlyoutPresenterBorderColor">#C1C1C1</Color>
             <Color x:Key="AppListBackgroundColor">#b3ffffff</Color>
@@ -44,7 +42,6 @@
             <Color x:Key="DataGridSelectionColor">#FF00FABB</Color>
             <Color x:Key="ThemeContentBackgroundColor">#FF2D2D2D</Color>
             <Color x:Key="ThemeControlBorderColor">#FF505050</Color>
-            <Color x:Key="SystemChromeWhiteColor">#FFFFFFFF</Color>
             <Color x:Key="ThemeForegroundColor">#FFFFFFFF</Color>
             <Color x:Key="MenuFlyoutPresenterBorderColor">#3D3D3D</Color>
             <Color x:Key="AppListBackgroundColor">#0FFFFFFF</Color>
