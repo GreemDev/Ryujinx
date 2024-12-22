@@ -160,8 +160,7 @@ namespace Ryujinx.Ava.Common.Locale
             {
                 if (locale.Translations.Count != _localeData.Value.Languages.Count)
                 {
-                    Logger.Error?.Print(LogClass.UI, $"Locale key {{{locale.ID}}} is missing languages!");
-                    throw new Exception("Missing locale data!");
+                    throw new Exception($"Locale key {{{locale.ID}}} is missing languages! Has {locale.Translations.Count} translations, expected {_localeData.Value.Languages.Count}!");
                 }
 
                 if (!Enum.TryParse<LocaleKeys>(locale.ID, out var localeKey))
