@@ -329,7 +329,11 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
         }
 
+        //private DateTimeOffset _currentDate;
+        //private TimeSpan _currentTime;
+
         public DateTimeOffset CurrentDate { get; set; }
+
         public TimeSpan CurrentTime { get; set; }
 
         internal AvaloniaList<TimeZone> TimeZones { get; set; }
@@ -451,6 +455,18 @@ namespace Ryujinx.Ava.UI.ViewModels
                                 _gpuIds.IndexOf(ConfigurationState.Instance.Graphics.PreferredGpu) : 0;
 
             Dispatcher.UIThread.Post(() => OnPropertyChanged(nameof(PreferredGpuIndex)));
+        }
+
+        public void MatchSystemTime()
+        {
+            var dto = DateTimeOffset.Now;
+
+            CurrentDate = new DateTimeOffset(dto.Year, dto.Month, dto.Day, 0, 0, 0, dto.Offset);
+            
+            CurrentTime = dto.TimeOfDay;
+            
+            OnPropertyChanged(nameof(CurrentDate));
+            OnPropertyChanged(nameof(CurrentTime));
         }
 
         public async Task LoadTimeZones()
