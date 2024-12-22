@@ -3766,6 +3766,30 @@
       }
     },
     {
+      "ID": "SettingsTabSystemSystemTimeMatch",
+      "Translations": {
+        "ar_SA": "",
+        "de_DE": "",
+        "el_GR": "",
+        "en_US": "Match PC Time",
+        "es_ES": "",
+        "fr_FR": "",
+        "he_IL": "",
+        "it_IT": "",
+        "ja_JP": "",
+        "ko_KR": "",
+        "no_NO": "",
+        "pl_PL": "",
+        "pt_BR": "",
+        "ru_RU": "",
+        "th_TH": "",
+        "tr_TR": "",
+        "uk_UA": "",
+        "zh_CN": "",
+        "zh_TW": ""
+      }
+    },
+    {
       "ID": "SettingsTabSystemEnablePptc",
       "Translations": {
         "ar_SA": "PPTC (ذاكرة التخزين المؤقت للترجمة المستمرة)",
@@ -14539,6 +14563,30 @@
         "uk_UA": "Змінити час системи",
         "zh_CN": "更改系统时间",
         "zh_TW": "變更系統時鐘"
+      }
+    },
+    {
+      "ID": "MatchTimeTooltip",
+      "Translations": {
+        "ar_SA": "",
+        "de_DE": "",
+        "el_GR": "",
+        "en_US": "Change System Time to match your PC's time.",
+        "es_ES": "",
+        "fr_FR": "",
+        "he_IL": "",
+        "it_IT": "",
+        "ja_JP": "",
+        "ko_KR": "",
+        "no_NO": "",
+        "pl_PL": "",
+        "pt_BR": "",
+        "ru_RU": "",
+        "th_TH": "",
+        "tr_TR": "",
+        "uk_UA": "",
+        "zh_CN": "",
+        "zh_TW": ""
       }
     },
     {

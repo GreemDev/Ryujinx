@@ -329,9 +329,6 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
         }
 
-        //private DateTimeOffset _currentDate;
-        //private TimeSpan _currentTime;
-
         public DateTimeOffset CurrentDate { get; set; }
 
         public TimeSpan CurrentTime { get; set; }
