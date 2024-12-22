@@ -16174,30 +16174,6 @@
       }
     },
     {
-      "ID": "DialogUpdaterFlatpakNotSupportedMessage",
-      "Translations": {
-        "ar_SA": "الرجاء تحديث ريوجينكس عبر فلات هاب.",
-        "de_DE": "Bitte aktualisiere Ryujinx über FlatHub",
-        "el_GR": "Παρακαλούμε ενημερώστε το Ryujinx μέσω FlatHub.",
-        "en_US": "Please update Ryujinx via FlatHub.",
-        "es_ES": "Por favor, actualiza Ryujinx a través de FlatHub.",
-        "fr_FR": "Merci de mettre à jour Ryujinx via FlatHub.",
-        "he_IL": "בבקשה עדכן את ריוג'ינקס דרך פלאטהב.",
-        "it_IT": "Aggiorna Ryujinx tramite FlatHub.",
-        "ja_JP": "FlatHub を使用して Ryujinx をアップデートしてください.",
-        "ko_KR": "FlatHub를 통해 Ryujinx를 업데이트하세요.",
-        "no_NO": "Vennligst oppdater Ryujinx via FlatHub.",
-        "pl_PL": "Zaktualizuj Ryujinx przez FlatHub.",
-        "pt_BR": "Por favor, atualize o Ryujinx pelo FlatHub.",
-        "ru_RU": "Пожалуйста, обновите Ryujinx через FlatHub.",
-        "th_TH": "โปรดอัปเดต Ryujinx ผ่านช่องทาง FlatHub",
-        "tr_TR": "Lütfen Ryujinx'i FlatHub aracılığıyla güncelleyin.",
-        "uk_UA": "",
-        "zh_CN": "请通过 FlatHub 更新 Ryujinx 模拟器。",
-        "zh_TW": "請透過 Flathub 更新 Ryujinx。"
-      }
-    },
-    {
       "ID": "UpdaterDisabledWarningTitle",
       "Translations": {
         "ar_SA": "المحدث معطل!",
