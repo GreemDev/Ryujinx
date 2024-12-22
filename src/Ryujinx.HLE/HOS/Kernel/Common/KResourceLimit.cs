@@ -15,7 +15,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Common
         private readonly long[] _current2;
         private readonly long[] _peak;
 
-        private readonly object _lock = new();
+        private readonly Lock _lock = new();
 
         private readonly LinkedList<KThread> _waitingThreads;
 

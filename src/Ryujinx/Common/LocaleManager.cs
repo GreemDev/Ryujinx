@@ -1,3 +1,4 @@
+using Gommon;
 using Ryujinx.Ava.UI.ViewModels;
 using Ryujinx.Common;
 using Ryujinx.Common.Logging;
@@ -7,12 +8,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text.Encodings.Web;
-using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.Unicode;
 
 namespace Ryujinx.Ava.Common.Locale
 {
@@ -147,39 +143,33 @@ namespace Ryujinx.Ava.Common.Locale
             LocaleChanged?.Invoke();
         }
 
+        #nullable enable
+
+        private static LocalesJson? _localeData;
+        
+        #nullable disable
+
         private static Dictionary<LocaleKeys, string> LoadJsonLanguage(string languageCode)
         {
             var localeStrings = new Dictionary<LocaleKeys, string>();
-            string fileData = EmbeddedResources.ReadAllText($"Ryujinx/Assets/locales.json");
 
-            if (fileData == null)
+            _localeData ??= EmbeddedResources.ReadAllText("Ryujinx/Assets/locales.json")
+                .Into(it => JsonHelper.Deserialize(it, LocalesJsonContext.Default.LocalesJson));
+
+            foreach (LocalesEntry locale in _localeData.Value.Locales)
             {
-                // We were unable to find file for that language code.
-                return null;
-            }
-
-            LocalesJson json = JsonHelper.Deserialize(fileData, LocalesJsonContext.Default.LocalesJson);
-
-            foreach (LocalesEntry locale in json.Locales)
-            {
-                if (locale.Translations.Count != json.Languages.Count)
+                if (locale.Translations.Count != _localeData.Value.Languages.Count)
                 {
-                    Logger.Error?.Print(LogClass.UI, $"Locale key {{{locale.ID}}} is missing languages!");
-                    throw new Exception("Missing locale data!");
+                    throw new Exception($"Locale key {{{locale.ID}}} is missing languages! Has {locale.Translations.Count} translations, expected {_localeData.Value.Languages.Count}!");
                 }
 
-                if (Enum.TryParse<LocaleKeys>(locale.ID, out var localeKey))
-                {
-                    if (locale.Translations.TryGetValue(languageCode, out string val) && val != "")
-                    {
-                        localeStrings[localeKey] = val;
-                    }
-                    else
-                    {
-                        locale.Translations.TryGetValue("en_US", out val);
-                        localeStrings[localeKey] = val;
-                    }
-                }
+                if (!Enum.TryParse<LocaleKeys>(locale.ID, out var localeKey))
+                    continue;
+
+                localeStrings[localeKey] =
+                    locale.Translations.TryGetValue(languageCode, out string val) && val != string.Empty
+                        ? val
+                        : locale.Translations[DefaultLanguageCode];
             }
 
             return localeStrings;
@@ -200,5 +190,5 @@ namespace Ryujinx.Ava.Common.Locale
 
     [JsonSourceGenerationOptions(WriteIndented = true)]
     [JsonSerializable(typeof(LocalesJson))]
-    internal partial class LocalesJsonContext : JsonSerializerContext { }
+    internal partial class LocalesJsonContext : JsonSerializerContext;
 }

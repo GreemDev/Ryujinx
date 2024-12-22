@@ -2424,25 +2424,25 @@
     {
       "ID": "StatusBarSystemVersion",
       "Translations": {
-        "ar_SA": "إصدار النظام: {0}",
-        "de_DE": "Systemversion: {0}",
-        "el_GR": "Έκδοση Συστήματος: {0}",
-        "en_US": "System Version: {0}",
-        "es_ES": "Versión del sistema: {0}",
+        "ar_SA": "",
+        "de_DE": "",
+        "el_GR": "",
+        "en_US": "Firmware Version: {0}",
+        "es_ES": "",
         "fr_FR": "Version du Firmware: {0}",
-        "he_IL": "גרסת מערכת: {0}",
-        "it_IT": "Versione di sistema: {0}",
-        "ja_JP": "システムバージョン: {0}",
-        "ko_KR": "시스템 버전 : {0}",
-        "no_NO": "System versjon: {0}",
-        "pl_PL": "Wersja systemu: {0}",
+        "he_IL": "",
+        "it_IT": "",
+        "ja_JP": "",
+        "ko_KR": "",
+        "no_NO": "",
+        "pl_PL": "",
         "pt_BR": "Versão do firmware: {0}",
         "ru_RU": "Версия прошивки: {0}",
-        "th_TH": "เวอร์ชั่นของระบบ: {0}",
-        "tr_TR": "Sistem Sürümü: {0}",
-        "uk_UA": "Версія системи: {0}",
+        "th_TH": "",
+        "tr_TR": "",
+        "uk_UA": "",
         "zh_CN": "系统固件版本：{0}",
-        "zh_TW": "系統版本: {0}"
+        "zh_TW": ""
       }
     },
     {
@@ -3763,6 +3763,30 @@
         "uk_UA": "Час системи:",
         "zh_CN": "系统时钟：",
         "zh_TW": "系統時鐘:"
+      }
+    },
+    {
+      "ID": "SettingsTabSystemSystemTimeMatch",
+      "Translations": {
+        "ar_SA": "",
+        "de_DE": "",
+        "el_GR": "",
+        "en_US": "Match PC Time",
+        "es_ES": "",
+        "fr_FR": "",
+        "he_IL": "",
+        "it_IT": "",
+        "ja_JP": "",
+        "ko_KR": "",
+        "no_NO": "",
+        "pl_PL": "",
+        "pt_BR": "",
+        "ru_RU": "",
+        "th_TH": "",
+        "tr_TR": "",
+        "uk_UA": "",
+        "zh_CN": "",
+        "zh_TW": ""
       }
     },
     {
@@ -14539,6 +14563,30 @@
         "uk_UA": "Змінити час системи",
         "zh_CN": "更改系统时间",
         "zh_TW": "變更系統時鐘"
+      }
+    },
+    {
+      "ID": "MatchTimeTooltip",
+      "Translations": {
+        "ar_SA": "",
+        "de_DE": "",
+        "el_GR": "",
+        "en_US": "Change System Time to match your PC's date & time.",
+        "es_ES": "",
+        "fr_FR": "",
+        "he_IL": "",
+        "it_IT": "",
+        "ja_JP": "",
+        "ko_KR": "",
+        "no_NO": "",
+        "pl_PL": "",
+        "pt_BR": "",
+        "ru_RU": "",
+        "th_TH": "",
+        "tr_TR": "",
+        "uk_UA": "",
+        "zh_CN": "",
+        "zh_TW": ""
       }
     },
     {
