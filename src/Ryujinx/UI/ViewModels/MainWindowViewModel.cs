@@ -2015,7 +2015,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
             else
             {
-                LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.StatusBarSystemVersion, "0.0");
+                LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.StatusBarSystemVersion, "NaN");
             }
 
             IsAppletMenuActive = hasApplet;
