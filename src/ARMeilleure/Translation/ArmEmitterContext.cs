@@ -54,7 +54,7 @@ namespace ARMeilleure.Translation
         public bool HasPtc { get; }
         public Aarch32Mode Mode { get; }
 
-        private int _ifThenBlockStateIndex = 0;
+        private int _ifThenBlockStateIndex;
         private Condition[] _ifThenBlockState = Array.Empty<Condition>();
         public bool IsInIfThenBlock => _ifThenBlockStateIndex < _ifThenBlockState.Length;
         public Condition CurrentIfThenBlockCond => _ifThenBlockState[_ifThenBlockStateIndex];

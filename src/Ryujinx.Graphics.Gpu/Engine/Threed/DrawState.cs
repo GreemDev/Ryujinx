@@ -61,7 +61,7 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
         /// <summary>
         /// Index buffer data streamer for inline index buffer updates, such as those used in legacy OpenGL.
         /// </summary>
-        public IbStreamer IbStreamer = new();
+        public IbStreamer IbStreamer;
 
         /// <summary>
         /// If the vertex shader is emulated on compute, this should be set to the compute program, otherwise it should be null.

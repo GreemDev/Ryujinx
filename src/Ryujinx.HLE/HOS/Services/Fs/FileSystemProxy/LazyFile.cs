@@ -10,7 +10,7 @@ namespace Ryujinx.HLE.HOS.Services.Fs.FileSystemProxy
     {
         private readonly LibHac.Fs.Fsa.IFileSystem _fs;
         private readonly string _filePath;
-        private readonly UniqueRef<LibHac.Fs.Fsa.IFile> _fileReference = new();
+        private readonly UniqueRef<LibHac.Fs.Fsa.IFile> _fileReference;
         private readonly FileInfo _fileInfo;
 
         public LazyFile(string filePath, string prefix, LibHac.Fs.Fsa.IFileSystem fs)

@@ -22,25 +22,25 @@ namespace Ryujinx.HLE.HOS.Services.Am.AppletAE.AllSystemAppletProxiesService.Sys
         private int _fatalSectionCount;
 
         // TODO: Set this when the game goes in suspension (go back to home menu ect), we currently don't support that so we can keep it set to 0.
-        private readonly ulong _accumulatedSuspendedTickValue = 0;
+        private readonly ulong _accumulatedSuspendedTickValue;
 
         // TODO: Determine where those fields are used.
 #pragma warning disable IDE0052 // Remove unread private member
-        private bool _screenShotPermission = false;
-        private bool _operationModeChangedNotification = false;
-        private bool _performanceModeChangedNotification = false;
-        private bool _restartMessageEnabled = false;
-        private bool _outOfFocusSuspendingEnabled = false;
-        private bool _handlesRequestToDisplay = false;
+        private bool _screenShotPermission;
+        private bool _operationModeChangedNotification;
+        private bool _performanceModeChangedNotification;
+        private bool _restartMessageEnabled;
+        private bool _outOfFocusSuspendingEnabled;
+        private bool _handlesRequestToDisplay;
 #pragma warning restore IDE0052
-        private bool _autoSleepDisabled = false;
+        private bool _autoSleepDisabled;
 #pragma warning disable IDE0052 // Remove unread private member
-        private bool _albumImageTakenNotificationEnabled = false;
-        private bool _recordVolumeMuted = false;
+        private bool _albumImageTakenNotificationEnabled;
+        private bool _recordVolumeMuted;
 
-        private uint _screenShotImageOrientation = 0;
+        private uint _screenShotImageOrientation;
 #pragma warning restore IDE0052
-        private uint _idleTimeDetectionExtension = 0;
+        private uint _idleTimeDetectionExtension;
 
         public ISelfController(ServiceCtx context, ulong pid)
         {

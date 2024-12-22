@@ -186,7 +186,7 @@ namespace Ryujinx.HLE.HOS.Services.Sockets.Bsd.Impl
             }
         }
 
-        bool hasEmittedBlockingWarning = false;
+        bool hasEmittedBlockingWarning;
 
         public LinuxError Receive(out int receiveSize, Span<byte> buffer, BsdSocketFlags flags)
         {

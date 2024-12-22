@@ -29,7 +29,7 @@ namespace Ryujinx.Graphics.OpenGL
 
         private readonly Sync _sync;
 
-        public uint ProgramCount { get; set; } = 0;
+        public uint ProgramCount { get; set; }
 
         public event EventHandler<ScreenCaptureImageInfo> ScreenCaptured;
 

@@ -6,7 +6,7 @@ namespace ARMeilleure
     public static class Optimizations
     {
         // low-core count PPTC
-        public static bool LowPower { get; set; } = false;
+        public static bool LowPower { get; set; }
 
         public static bool FastFP { get; set; } = true;
 

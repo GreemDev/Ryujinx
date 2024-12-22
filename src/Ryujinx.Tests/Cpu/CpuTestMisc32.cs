@@ -57,9 +57,9 @@ namespace Ryujinx.Tests.Cpu
 
         private const int RndCnt = 2;
 
-        private static readonly bool _noZeros = false;
-        private static readonly bool _noInfs = false;
-        private static readonly bool _noNaNs = false;
+        private static readonly bool _noZeros;
+        private static readonly bool _noInfs;
+        private static readonly bool _noNaNs;
 
         [Test, Pairwise]
         public void Vmsr_Vcmp_Vmrs([ValueSource(nameof(_1S_F_))] ulong a,

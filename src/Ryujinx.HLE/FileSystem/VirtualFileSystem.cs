@@ -38,7 +38,7 @@ namespace Ryujinx.HLE.FileSystem
 
         private readonly ConcurrentDictionary<ulong, Stream> _romFsByPid;
 
-        private static bool _isInitialized = false;
+        private static bool _isInitialized;
 
         public static VirtualFileSystem CreateInstance()
         {

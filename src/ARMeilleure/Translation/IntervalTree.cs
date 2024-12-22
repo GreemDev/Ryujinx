@@ -14,8 +14,8 @@ namespace ARMeilleure.Translation
 
         private const bool Black = true;
         private const bool Red = false;
-        private IntervalTreeNode<TK, TV> _root = null;
-        private int _count = 0;
+        private IntervalTreeNode<TK, TV> _root;
+        private int _count;
 
         public int Count => _count;
 
@@ -709,9 +709,9 @@ namespace ARMeilleure.Translation
     class IntervalTreeNode<TK, TV>
     {
         public bool Color = true;
-        public IntervalTreeNode<TK, TV> Left = null;
-        public IntervalTreeNode<TK, TV> Right = null;
-        public IntervalTreeNode<TK, TV> Parent = null;
+        public IntervalTreeNode<TK, TV> Left;
+        public IntervalTreeNode<TK, TV> Right;
+        public IntervalTreeNode<TK, TV> Parent;
 
         /// <summary>
         /// The start of the range.

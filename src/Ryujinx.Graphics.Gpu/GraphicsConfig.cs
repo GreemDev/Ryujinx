@@ -66,12 +66,12 @@ namespace Ryujinx.Graphics.Gpu
         /// <summary>
         /// Enables or disables recompression of compressed textures that are not natively supported by the host.
         /// </summary>
-        public static bool EnableTextureRecompression = false;
+        public static bool EnableTextureRecompression;
 
         /// <summary>
         /// Enables or disables color space passthrough, if available.
         /// </summary>
-        public static bool EnableColorSpacePassthrough = false;
+        public static bool EnableColorSpacePassthrough;
     }
 #pragma warning restore CA2211
 }

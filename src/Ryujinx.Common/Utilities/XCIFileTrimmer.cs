@@ -70,8 +70,8 @@ namespace Ryujinx.Common.Utilities
         private BinaryReader _binaryReader;
         private long _offsetB, _dataSizeB, _cartSizeB, _fileSizeB;
         private bool _fileOK = true;
-        private bool _freeSpaceChecked = false;
-        private bool _freeSpaceValid = false;
+        private bool _freeSpaceChecked;
+        private bool _freeSpaceValid;
 
         public enum OperationOutcome
         {

@@ -30,7 +30,7 @@ namespace Ryujinx.HLE.HOS.Services.Hid
         };
 
         internal NpadJoyHoldType JoyHold { get; set; }
-        internal bool SixAxisActive = false; // TODO: link to hidserver when implemented
+        internal bool SixAxisActive; // TODO: link to hidserver when implemented
         internal ControllerType SupportedStyleSets { get; set; }
 
         public Dictionary<PlayerIndex, ConcurrentQueue<(VibrationValue, VibrationValue)>> RumbleQueues = new();

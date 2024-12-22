@@ -34,7 +34,7 @@ namespace Ryujinx.HLE.HOS.Applets
         private SoftwareKeyboardState _foregroundState = SoftwareKeyboardState.Uninitialized;
         private volatile InlineKeyboardState _backgroundState = InlineKeyboardState.Uninitialized;
 
-        private bool _isBackground = false;
+        private bool _isBackground;
 
         private AppletSession _normalSession;
         private AppletSession _interactiveSession;
@@ -53,14 +53,14 @@ namespace Ryujinx.HLE.HOS.Applets
         private byte[] _transferMemory;
 
         private string _textValue = string.Empty;
-        private int _cursorBegin = 0;
+        private int _cursorBegin;
         private Encoding _encoding = Encoding.Unicode;
         private KeyboardResult _lastResult = KeyboardResult.NotSet;
 
-        private IDynamicTextInputHandler _dynamicTextInputHandler = null;
-        private SoftwareKeyboardRenderer _keyboardRenderer = null;
-        private NpadReader _npads = null;
-        private bool _canAcceptController = false;
+        private IDynamicTextInputHandler _dynamicTextInputHandler;
+        private SoftwareKeyboardRenderer _keyboardRenderer;
+        private NpadReader _npads;
+        private bool _canAcceptController;
         private KeyboardInputMode _inputMode = KeyboardInputMode.ControllerAndKeyboard;
 
         private readonly Lock _lock = new();

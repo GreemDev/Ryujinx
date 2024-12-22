@@ -13,7 +13,7 @@ namespace ARMeilleure.Decoders
             Cond = (Condition)((uint)opCode >> 28);
         }
 
-        public bool IsThumb { get; protected init; } = false;
+        public bool IsThumb { get; protected init; }
 
         public uint GetPc()
         {

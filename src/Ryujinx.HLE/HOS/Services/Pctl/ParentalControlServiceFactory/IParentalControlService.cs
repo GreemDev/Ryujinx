@@ -15,11 +15,11 @@ namespace Ryujinx.HLE.HOS.Services.Pctl.ParentalControlServiceFactory
         private int[] _ratingAge;
 
         // TODO: Find where they are set.
-        private readonly bool _restrictionEnabled = false;
-        private readonly bool _featuresRestriction = false;
-        private bool _freeCommunicationEnabled = false;
+        private readonly bool _restrictionEnabled;
+        private readonly bool _featuresRestriction;
+        private bool _freeCommunicationEnabled;
         private readonly bool _stereoVisionRestrictionConfigurable = true;
-        private bool _stereoVisionRestriction = false;
+        private bool _stereoVisionRestriction;
 #pragma warning restore IDE0052, CS0414
 
         public IParentalControlService(ServiceCtx context, ulong pid, bool withInitialize, int permissionFlag)

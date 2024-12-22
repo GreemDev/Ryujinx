@@ -55,7 +55,7 @@ namespace Ryujinx.Graphics.GAL.Multithreading
         private int _refProducerPtr;
         private int _refConsumerPtr;
 
-        public uint ProgramCount { get; set; } = 0;
+        public uint ProgramCount { get; set; }
 
         private Action _interruptAction;
         private readonly Lock _interruptLock = new();

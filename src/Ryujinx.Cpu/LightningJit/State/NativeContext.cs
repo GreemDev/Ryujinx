@@ -21,7 +21,7 @@ namespace Ryujinx.Cpu.LightningJit.State
             public int Running;
         }
 
-        private static NativeCtxStorage _dummyStorage = new();
+        private static NativeCtxStorage _dummyStorage;
 
         private readonly IJitMemoryBlock _block;
 

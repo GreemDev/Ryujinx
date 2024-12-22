@@ -146,9 +146,9 @@ namespace ARMeilleure.CodeGen.RegisterAllocators
             }
         }
 
-        private Queue<Operation> _fillQueue = null;
-        private Queue<Operation> _spillQueue = null;
-        private ParallelCopy _parallelCopy = null;
+        private Queue<Operation> _fillQueue;
+        private Queue<Operation> _spillQueue;
+        private ParallelCopy _parallelCopy;
 
         public bool HasCopy { get; private set; }
 

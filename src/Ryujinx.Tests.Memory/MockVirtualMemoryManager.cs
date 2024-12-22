@@ -10,7 +10,7 @@ namespace Ryujinx.Tests.Memory
     {
         public bool UsesPrivateAllocations => false;
 
-        public bool NoMappings = false;
+        public bool NoMappings;
 
         public event Action<ulong, ulong, MemoryPermission> OnProtect;
 

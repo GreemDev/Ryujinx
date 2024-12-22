@@ -60,13 +60,13 @@ namespace Ryujinx.Graphics.Gpu.Memory
         /// <remarks>
         /// This is null until at least one modification occurs.
         /// </remarks>
-        private BufferModifiedRangeList _modifiedRanges = null;
+        private BufferModifiedRangeList _modifiedRanges;
 
         /// <summary>
         /// A structure that is used to flush buffer data back to a host mapped buffer for cached readback.
         /// Only used if the buffer data is explicitly owned by device local memory.
         /// </summary>
-        private BufferPreFlush _preFlush = null;
+        private BufferPreFlush _preFlush;
 
         /// <summary>
         /// Usage tracking state that determines what type of backing the buffer should use.

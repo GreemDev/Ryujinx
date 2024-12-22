@@ -24,15 +24,15 @@ namespace Ryujinx.HLE.HOS.Applets.SoftwareKeyboard
 
         private readonly Lock _bufferLock = new();
 
-        private RenderingSurfaceInfo _surfaceInfo = null;
+        private RenderingSurfaceInfo _surfaceInfo;
         private SKImageInfo _imageInfo;
-        private SKSurface _surface = null;
-        private byte[] _bufferData = null;
+        private SKSurface _surface;
+        private byte[] _bufferData;
 
-        private readonly SKBitmap _ryujinxLogo = null;
-        private readonly SKBitmap _padAcceptIcon = null;
-        private readonly SKBitmap _padCancelIcon = null;
-        private readonly SKBitmap _keyModeIcon = null;
+        private readonly SKBitmap _ryujinxLogo;
+        private readonly SKBitmap _padAcceptIcon;
+        private readonly SKBitmap _padCancelIcon;
+        private readonly SKBitmap _keyModeIcon;
 
         private readonly float _textBoxOutlineWidth;
         private readonly float _padPressedPenWidth;

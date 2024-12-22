@@ -40,7 +40,7 @@ namespace Ryujinx.HLE.HOS.Services
         private KProcess _selfProcess;
         private KThread _selfThread;
         private KEvent _wakeEvent;
-        private int _wakeHandle = 0;
+        private int _wakeHandle;
 
         private readonly ReaderWriterLockSlim _handleLock = new();
         private readonly Dictionary<int, IpcService> _sessions = new();
@@ -52,7 +52,7 @@ namespace Ryujinx.HLE.HOS.Services
         private readonly MemoryStream _responseDataStream;
         private readonly BinaryWriter _responseDataWriter;
 
-        private int _isDisposed = 0;
+        private int _isDisposed;
 
         public ManualResetEvent InitDone { get; }
         public string Name { get; }

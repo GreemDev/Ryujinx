@@ -30,7 +30,7 @@ namespace Ryujinx.HLE
         public IHostUIHandler UIHandler { get; }
 
         public VSyncMode VSyncMode { get; set; } = VSyncMode.Switch;
-        public bool CustomVSyncIntervalEnabled { get; set; } = false;
+        public bool CustomVSyncIntervalEnabled { get; set; }
         public int CustomVSyncInterval { get; set; }
 
         public long TargetVSyncInterval { get; set; } = 60;

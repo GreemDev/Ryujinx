@@ -11,7 +11,7 @@ namespace Ryujinx.HLE.HOS.Services.Hid.Irs
     [Service("irs")]
     class IIrSensorServer : IpcService
     {
-        private int _irsensorSharedMemoryHandle = 0;
+        private int _irsensorSharedMemoryHandle;
 
         public IIrSensorServer(ServiceCtx context) { }
 

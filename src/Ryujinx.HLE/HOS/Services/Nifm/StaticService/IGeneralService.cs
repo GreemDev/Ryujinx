@@ -13,9 +13,9 @@ namespace Ryujinx.HLE.HOS.Services.Nifm.StaticService
     {
         private readonly GeneralServiceDetail _generalServiceDetail;
 
-        private IPInterfaceProperties _targetPropertiesCache = null;
-        private UnicastIPAddressInformation _targetAddressInfoCache = null;
-        private string _cacheChosenInterface = null;
+        private IPInterfaceProperties _targetPropertiesCache;
+        private UnicastIPAddressInformation _targetAddressInfoCache;
+        private string _cacheChosenInterface;
 
         public IGeneralService()
         {

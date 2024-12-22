@@ -60,8 +60,8 @@ namespace Ryujinx.Memory.Tracking
         private readonly MemoryTracking _tracking;
         private bool _disposed;
 
-        private int _checkCount = 0;
-        private int _volatileCount = 0;
+        private int _checkCount;
+        private int _volatileCount;
         private bool _volatile;
 
         internal MemoryPermission RequiredPermission

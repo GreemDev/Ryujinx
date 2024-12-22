@@ -34,7 +34,7 @@ namespace Ryujinx.Headless.SDL2
         protected const int DefaultHeight = 720;
         private const int TargetFps = 60;
         private SDL_WindowFlags DefaultFlags = SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI | SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL_WindowFlags.SDL_WINDOW_INPUT_FOCUS | SDL_WindowFlags.SDL_WINDOW_SHOWN;
-        private SDL_WindowFlags FullscreenFlag = 0;
+        private SDL_WindowFlags FullscreenFlag;
 
         private static readonly ConcurrentQueue<Action> _mainThreadActions = new();
 

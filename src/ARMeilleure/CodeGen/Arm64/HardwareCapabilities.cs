@@ -119,8 +119,8 @@ namespace ARMeilleure.CodeGen.Arm64
             Sve2p1 = 1UL << 36,
         }
 
-        public static LinuxFeatureFlagsHwCap LinuxFeatureInfoHwCap { get; } = 0;
-        public static LinuxFeatureFlagsHwCap2 LinuxFeatureInfoHwCap2 { get; } = 0;
+        public static LinuxFeatureFlagsHwCap LinuxFeatureInfoHwCap { get; }
+        public static LinuxFeatureFlagsHwCap2 LinuxFeatureInfoHwCap2 { get; }
 
         #endregion
 
@@ -167,7 +167,7 @@ namespace ARMeilleure.CodeGen.Arm64
             Sha256 = 1 << 8,
         }
 
-        public static MacOsFeatureFlags MacOsFeatureInfo { get; } = 0;
+        public static MacOsFeatureFlags MacOsFeatureInfo { get; }
 
         #endregion
 

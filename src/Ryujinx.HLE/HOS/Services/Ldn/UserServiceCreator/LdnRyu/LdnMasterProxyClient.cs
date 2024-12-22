@@ -22,7 +22,7 @@ namespace Ryujinx.HLE.HOS.Services.Ldn.UserServiceCreator.LdnRyu
     {
         public bool NeedsRealId => true;
 
-        private static InitializeMessage InitializeMemory = new InitializeMessage();
+        private static InitializeMessage InitializeMemory;
 
         private const int InactiveTimeout = 6000;
         private const int FailureTimeout = 4000;

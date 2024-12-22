@@ -12,7 +12,7 @@ namespace Ryujinx.HLE.HOS.Services.Ldn.UserServiceCreator
         private readonly IUserLocalCommunicationService _parent;
 
         public NetworkInfo NetworkInfo;
-        public Array8<NodeLatestUpdate> LatestUpdates = new();
+        public Array8<NodeLatestUpdate> LatestUpdates;
         public bool Connected { get; private set; }
 
         public ProxyConfig Config => _parent.NetworkClient.Config;

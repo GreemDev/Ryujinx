@@ -9,7 +9,7 @@ namespace Ryujinx.HLE.HOS.Tamper
         private readonly IOperation _entryPoint;
 
         public string Name { get; }
-        public bool TampersCodeMemory { get; set; } = false;
+        public bool TampersCodeMemory { get; set; }
         public ITamperedProcess Process { get; }
         public bool IsEnabled { get; set; }
 

@@ -8,15 +8,15 @@ namespace Ryujinx.HLE.HOS.Applets.SoftwareKeyboard
     internal class SoftwareKeyboardUIState
     {
         public string InputText = string.Empty;
-        public int CursorBegin = 0;
-        public int CursorEnd = 0;
-        public bool AcceptPressed = false;
-        public bool CancelPressed = false;
-        public bool OverwriteMode = false;
+        public int CursorBegin;
+        public int CursorEnd;
+        public bool AcceptPressed;
+        public bool CancelPressed;
+        public bool OverwriteMode;
         public bool TypingEnabled = true;
         public bool ControllerEnabled = true;
-        public int TextBoxBlinkCounter = 0;
+        public int TextBoxBlinkCounter;
 
-        public RenderingSurfaceInfo SurfaceInfo = null;
+        public RenderingSurfaceInfo SurfaceInfo;
     }
 }

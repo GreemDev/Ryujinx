@@ -21,7 +21,7 @@ namespace Ryujinx.Graphics.OpenGL.Queries
         private readonly CounterQueue _queue;
         private readonly BufferedQuery _counter;
 
-        private bool _hostAccessReserved = false;
+        private bool _hostAccessReserved;
         private int _refCount = 1; // Starts with a reference from the counter queue.
 
         private readonly Lock _lock = new();

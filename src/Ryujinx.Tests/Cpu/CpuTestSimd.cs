@@ -1251,9 +1251,9 @@ namespace Ryujinx.Tests.Cpu
 
         private const int RndCnt = 2;
 
-        private static readonly bool _noZeros = false;
-        private static readonly bool _noInfs = false;
-        private static readonly bool _noNaNs = false;
+        private static readonly bool _noZeros;
+        private static readonly bool _noInfs;
+        private static readonly bool _noNaNs;
 
         [Test, Pairwise, Description("ABS <V><d>, <V><n>")]
         public void Abs_S_D([Values(0u)] uint rd,

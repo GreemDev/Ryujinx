@@ -4,7 +4,7 @@ namespace Ryujinx.HLE.HOS.Services.Apm
     {
         public PerformanceState() { }
 
-        public bool CpuOverclockEnabled = false;
+        public bool CpuOverclockEnabled;
 
         public PerformanceMode PerformanceMode = PerformanceMode.Default;
         public CpuBoostMode CpuBoostMode = CpuBoostMode.Disabled;

@@ -34,7 +34,7 @@ namespace Ryujinx.Common.PreciseSleep
         /// <summary>
         /// Set to true to disable timepoint realignment.
         /// </summary>
-        public bool Precise { get; set; } = false;
+        public bool Precise { get; set; }
 
         public long AdjustTimePoint(long timePoint, long timeoutNs)
         {

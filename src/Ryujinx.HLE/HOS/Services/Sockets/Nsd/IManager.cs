@@ -18,7 +18,7 @@ namespace Ryujinx.HLE.HOS.Services.Sockets.Nsd
         private readonly FqdnResolver _fqdnResolver;
 #pragma warning restore IDE0052
 
-        private readonly bool _isInitialized = false;
+        private readonly bool _isInitialized;
 
         public IManager(ServiceCtx context)
         {

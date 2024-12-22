@@ -19,10 +19,10 @@ namespace Ryujinx.Tests.Cpu
         protected static ulong DataBaseAddress = CodeBaseAddress + Size;
 #pragma warning restore CA2211
 
-        private static readonly bool _ignoreFpcrFz = false;
-        private static readonly bool _ignoreFpcrDn = false;
+        private static readonly bool _ignoreFpcrFz;
+        private static readonly bool _ignoreFpcrDn;
 
-        private static readonly bool _ignoreAllExceptFpsrQc = false;
+        private static readonly bool _ignoreAllExceptFpsrQc;
 
         private ulong _currAddress;
 

@@ -15,10 +15,10 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
 
         // State associated with direct uniform buffer updates.
         // This state is used to attempt to batch together consecutive updates.
-        private ulong _ubBeginCpuAddress = 0;
-        private ulong _ubFollowUpAddress = 0;
-        private ulong _ubByteCount = 0;
-        private int _ubIndex = 0;
+        private ulong _ubBeginCpuAddress;
+        private ulong _ubFollowUpAddress;
+        private ulong _ubByteCount;
+        private int _ubIndex;
         private readonly int[] _ubData = new int[UniformDataCacheSize];
 
         /// <summary>

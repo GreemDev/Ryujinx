@@ -111,9 +111,9 @@ namespace ARMeilleure.CodeGen.X86
 
         public static FeatureFlags1Edx FeatureInfo1Edx { get; }
         public static FeatureFlags1Ecx FeatureInfo1Ecx { get; }
-        public static FeatureFlags7Ebx FeatureInfo7Ebx { get; } = 0;
-        public static FeatureFlags7Ecx FeatureInfo7Ecx { get; } = 0;
-        public static Xcr0FlagsEax Xcr0InfoEax { get; } = 0;
+        public static FeatureFlags7Ebx FeatureInfo7Ebx { get; }
+        public static FeatureFlags7Ecx FeatureInfo7Ecx { get; }
+        public static Xcr0FlagsEax Xcr0InfoEax { get; }
 
         public static bool SupportsSse => FeatureInfo1Edx.HasFlag(FeatureFlags1Edx.Sse);
         public static bool SupportsSse2 => FeatureInfo1Edx.HasFlag(FeatureFlags1Edx.Sse2);

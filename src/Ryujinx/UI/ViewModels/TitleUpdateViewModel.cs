@@ -26,7 +26,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         private AvaloniaList<TitleUpdateModel> _titleUpdates = new();
         private AvaloniaList<object> _views = new();
         private object _selectedUpdate = new TitleUpdateViewNoUpdateSentinal();
-        private bool _showBundledContentNotice = false;
+        private bool _showBundledContentNotice;
 
         public AvaloniaList<TitleUpdateModel> TitleUpdates
         {

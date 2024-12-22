@@ -16,7 +16,7 @@ namespace Ryujinx.HLE.HOS.Services.Ldn.UserServiceCreator.LdnRyu
         private readonly int _headerSize = Marshal.SizeOf<LdnHeader>();
 
         private readonly byte[] _buffer = new byte[MaxPacketSize];
-        private int _bufferEnd = 0;
+        private int _bufferEnd;
 
         // Client Packets.
         public event Action<LdnHeader, InitializeMessage> Initialize;
