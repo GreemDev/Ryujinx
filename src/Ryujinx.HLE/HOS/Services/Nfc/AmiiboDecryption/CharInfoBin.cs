@@ -206,13 +206,10 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
             return Encoding.Unicode.GetString(data, offset, length * 2);
         }
 
-        public CharInfo ConvertToCharInfo()
+        public CharInfo ConvertToCharInfo(CharInfo Info)
         {
-            CharInfo Info = new CharInfo();
-            UInt128 CreateId = BitConverter.ToUInt128(CreateID, 0);
-            Info.CreateId = new CreateId(CreateId);
-            Info.Build = 64;
-            Info.Type = 0;
+            //UInt128 CreateId = BitConverter.ToUInt128(CreateID, 0);
+            //Info.CreateId = new CreateId(CreateId);
             Info.Nickname = Nickname.FromString(MiiName);
             Info.FavoriteColor = (byte)FavoriteColor;
             Info.Gender = IsMale ? Gender.Male : Gender.Female;

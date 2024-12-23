@@ -35,7 +35,10 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
             byte[] newMiiBytes = new byte[92];
             Array.Copy(MiiBytes, 0, newMiiBytes, 0, 92);
             CharInfoBin charInfoBin = CharInfoBin.Parse(newMiiBytes);
-            CharInfo charInfo = charInfoBin.ConvertToCharInfo();
+            UtilityImpl utilityImpl = new UtilityImpl(tickSource);
+            CharInfo Info = new();
+            Info.SetFromStoreData(StoreData.BuildDefault(utilityImpl, 0));
+            CharInfo charInfo = charInfoBin.ConvertToCharInfo(Info);
             info.MiiCharInfo = charInfo;
             return info;
         }
