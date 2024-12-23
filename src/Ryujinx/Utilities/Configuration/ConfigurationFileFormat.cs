@@ -352,6 +352,11 @@ namespace Ryujinx.Ava.Utilities.Configuration
         public bool StartFullscreen { get; set; }
 
         /// <summary>
+        /// Start games with UI hidden
+        /// </summary>
+        public bool StartNoUI { get; set; }
+
+        /// <summary>
         /// Show console window
         /// </summary>
         public bool ShowConsole { get; set; }
