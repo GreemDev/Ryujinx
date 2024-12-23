@@ -16,9 +16,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
     static class VirtualAmiibo
     {
         public static uint OpenedApplicationAreaId;
-        public static byte[] ApplicationBytes = Array.Empty<byte>();
-        public static string InputBin = string.Empty;
-        public static string NickName = string.Empty;
+        public static VirtualAmiiboBinFile VirtualAmiiboBinFile = null;
         private static readonly AmiiboJsonSerializerContext _serializerContext = AmiiboJsonSerializerContext.Default;
         public static byte[] GenerateUuid(string amiiboId, bool useRandomUuid)
         {
@@ -69,13 +67,12 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
 
         public static RegisterInfo GetRegisterInfo(ITickSource tickSource, string amiiboId, string userName)
         {
+            if (VirtualAmiiboBinFile!=null)
+            {
+                return VirtualAmiiboBinFile.GetRegisterInfo(tickSource);
+            }
             VirtualAmiiboFile amiiboFile = LoadAmiiboFile(amiiboId);
             string nickname = amiiboFile.NickName ?? "Ryujinx";
-            if (NickName != string.Empty)
-            {
-                nickname = NickName;
-                NickName = string.Empty;
-            }
             UtilityImpl utilityImpl = new(tickSource);
             CharInfo charInfo = new();
 
@@ -103,20 +100,20 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
 
         public static void UpdateNickName(string amiiboId, string newNickName)
         {
-            VirtualAmiiboFile virtualAmiiboFile = LoadAmiiboFile(amiiboId);
-            virtualAmiiboFile.NickName = newNickName;
-            if (InputBin != string.Empty)
+            if (VirtualAmiiboBinFile != null)
             {
-                AmiiboBinReader.SaveBinFile(InputBin, virtualAmiiboFile.NickName);
+                VirtualAmiiboBinFile.UpdateNickName(newNickName);
                 return;
             }
+            VirtualAmiiboFile virtualAmiiboFile = LoadAmiiboFile(amiiboId);
+            virtualAmiiboFile.NickName = newNickName;
             SaveAmiiboFile(virtualAmiiboFile);
         }
 
         public static bool OpenApplicationArea(string amiiboId, uint applicationAreaId)
         {
             VirtualAmiiboFile virtualAmiiboFile = LoadAmiiboFile(amiiboId);
-            if (ApplicationBytes.Length > 0)
+            if (VirtualAmiiboBinFile != null)
             {
                 OpenedApplicationAreaId = applicationAreaId;
                 return true;
@@ -134,11 +131,9 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
 
         public static byte[] GetApplicationArea(string amiiboId)
         {
-            if (ApplicationBytes.Length > 0)
+            if (VirtualAmiiboBinFile != null)
             {
-                byte[] bytes = ApplicationBytes;
-                ApplicationBytes = Array.Empty<byte>();
-                return bytes;
+                return VirtualAmiiboBinFile.ApplicationBytes;
             }
             VirtualAmiiboFile virtualAmiiboFile = LoadAmiiboFile(amiiboId);
 
@@ -175,9 +170,9 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
 
         public static void SetApplicationArea(string amiiboId, byte[] applicationAreaData)
         {
-            if (InputBin != string.Empty)
+            if (VirtualAmiiboBinFile != null)
             {
-                AmiiboBinReader.SaveBinFile(InputBin, applicationAreaData);
+                VirtualAmiiboBinFile.UpdateApplicationArea(applicationAreaData);
                 return;
             }
             VirtualAmiiboFile virtualAmiiboFile = LoadAmiiboFile(amiiboId);
@@ -241,11 +236,9 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
 
         public static bool SaveFileExists(VirtualAmiiboFile virtualAmiiboFile)
         {
-            if (InputBin != string.Empty)
+            if (VirtualAmiiboBinFile != null)
             {
-                SaveAmiiboFile(virtualAmiiboFile);
-                return true;
-
+                return VirtualAmiiboBinFile.SaveFile();
             }
             return File.Exists(Path.Join(AppDataManager.BaseDirPath, "system", "amiibo", $"{virtualAmiiboFile.AmiiboId}.json"));
         }

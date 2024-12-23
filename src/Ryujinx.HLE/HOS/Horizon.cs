@@ -339,10 +339,9 @@ namespace Ryujinx.HLE.HOS
 
         public void ScanAmiibo(int nfpDeviceId, string amiiboId, bool useRandomUuid)
         {
-            if (VirtualAmiibo.ApplicationBytes.Length > 0)
+            if (VirtualAmiibo.VirtualAmiiboBinFile != null)
             {
-                VirtualAmiibo.ApplicationBytes = Array.Empty<byte>();
-                VirtualAmiibo.InputBin = string.Empty;
+                VirtualAmiibo.VirtualAmiiboBinFile.SaveFile();
             }
             if (NfpDevices[nfpDeviceId].State == NfpDeviceState.SearchingForTag)
             {
@@ -353,13 +352,7 @@ namespace Ryujinx.HLE.HOS
         }
         public void ScanAmiiboFromBin(string path)
         {
-            VirtualAmiibo.InputBin = path;
-            if (VirtualAmiibo.ApplicationBytes.Length > 0)
-            {
-                VirtualAmiibo.ApplicationBytes = Array.Empty<byte>();
-            }
-            byte[] encryptedData = File.ReadAllBytes(path);
-            VirtualAmiiboFile newFile = AmiiboBinReader.ReadBinFile(encryptedData);
+            VirtualAmiiboFile newFile = AmiiboBinReader.ReadBinFile(path);
             if (SearchingForAmiibo(out int nfpDeviceId))
             {
                 NfpDevices[nfpDeviceId].State = NfpDeviceState.TagFound;
