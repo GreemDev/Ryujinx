@@ -127,6 +127,9 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public IEnumerable<LdnGameData> LastLdnGameData;
 
+        // The UI specifically uses a thicker bordered variant of the icon to avoid crunching out the border at lower resolutions.
+        // For an example of this, download canary 1.2.95, then open the settings menu, and look at the icon in the top-left.
+        // The border gets reduced to colored pixels in the 4 corners.
         public static readonly Bitmap IconBitmap =
             new(Assembly.GetAssembly(typeof(ConfigurationState))!.GetManifestResourceStream("Ryujinx.UI.Common.Resources.Logo_Thiccjinx.png")!);
 
@@ -330,6 +333,9 @@ namespace Ryujinx.Ava.UI.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        public bool CanScanAmiiboBinaries => AmiiboBinReader.HasAmiiboKeyFile;
+        
         public bool ShowLoadProgress
         {
             get => _showLoadProgress;
@@ -417,8 +423,6 @@ namespace Ryujinx.Ava.UI.ViewModels
         public bool TrimXCIEnabled => XCIFileTrimmer.CanTrim(SelectedApplication.Path, new XCITrimmerLog.MainWindow(this));
 
         public bool OpenBcatSaveDirectoryEnabled => !SelectedApplication.ControlHolder.ByteSpan.IsZeros() && SelectedApplication.ControlHolder.Value.BcatDeliveryCacheStorageSize > 0;
-
-        public bool CreateShortcutEnabled => !ReleaseInformation.IsFlatHubBuild;
 
         public string LoadHeading
         {
@@ -2009,7 +2013,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
             else
             {
-                LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.StatusBarSystemVersion, "0.0");
+                LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.StatusBarSystemVersion, "NaN");
             }
 
             IsAppletMenuActive = hasApplet;
