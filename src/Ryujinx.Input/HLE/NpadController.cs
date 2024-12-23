@@ -560,7 +560,7 @@ namespace Ryujinx.Input.HLE
 
                     _gamepad.Rumble(low, high, uint.MaxValue);
 
-                    Logger.Info?.Print(LogClass.Hid, $"Effect for {controllerConfig.PlayerIndex} " +
+                    Logger.Debug.Print(LogClass.Hid, $"Effect for {controllerConfig.PlayerIndex} " +
                         $"L.low.amp={leftVibrationValue.AmplitudeLow}, " +
                         $"L.high.amp={leftVibrationValue.AmplitudeHigh}, " +
                         $"R.low.amp={rightVibrationValue.AmplitudeLow}, " +
