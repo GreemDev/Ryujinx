@@ -124,6 +124,7 @@ namespace Ryujinx.UI.Common.Configuration
                 ApplicationSort = UI.ApplicationSort,
                 IsAscendingOrder = UI.IsAscendingOrder,
                 StartFullscreen = UI.StartFullscreen,
+                StartNoUI = UI.StartNoUI,
                 ShowConsole = UI.ShowConsole,
                 EnableKeyboard = Hid.EnableKeyboard,
                 EnableMouse = Hid.EnableMouse,
@@ -230,6 +231,7 @@ namespace Ryujinx.UI.Common.Configuration
             UI.ApplicationSort.Value = 0;
             UI.IsAscendingOrder.Value = true;
             UI.StartFullscreen.Value = false;
+            UI.StartNoUI.Value = false;
             UI.ShowConsole.Value = true;
             UI.WindowStartup.WindowSizeWidth.Value = 1280;
             UI.WindowStartup.WindowSizeHeight.Value = 760;

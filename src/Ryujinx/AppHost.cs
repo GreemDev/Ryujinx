@@ -1049,6 +1049,14 @@ namespace Ryujinx.Ava
                 }
             });
 
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (_viewModel.StartGamesWithoutUI)
+                {
+                    _viewModel.ShowMenuAndStatusBar = false;
+                }
+            });
+
             _renderer = Device.Gpu.Renderer is ThreadedRenderer tr ? tr.BaseRenderer : Device.Gpu.Renderer;
 
             _renderer.ScreenCaptured += Renderer_ScreenCaptured;

@@ -638,6 +638,15 @@ namespace Ryujinx.UI.Common.Configuration
                 configurationFileUpdated = true;
             }
 
+            if (configurationFileFormat.Version < 58)
+            {
+                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 17.");
+
+                configurationFileFormat.StartNoUI = false;
+
+                configurationFileUpdated = true;
+            }
+
             Logger.EnableFileLog.Value = configurationFileFormat.EnableFileLog;
             Graphics.ResScale.Value = configurationFileFormat.ResScale;
             Graphics.ResScaleCustom.Value = configurationFileFormat.ResScaleCustom;
@@ -719,6 +728,7 @@ namespace Ryujinx.UI.Common.Configuration
             UI.GridSize.Value = configurationFileFormat.GridSize;
             UI.ApplicationSort.Value = configurationFileFormat.ApplicationSort;
             UI.StartFullscreen.Value = configurationFileFormat.StartFullscreen;
+            UI.StartNoUI.Value = configurationFileFormat.StartNoUI;
             UI.ShowConsole.Value = configurationFileFormat.ShowConsole;
             UI.WindowStartup.WindowSizeWidth.Value = configurationFileFormat.WindowStartup.WindowSizeWidth;
             UI.WindowStartup.WindowSizeHeight.Value = configurationFileFormat.WindowStartup.WindowSizeHeight;
