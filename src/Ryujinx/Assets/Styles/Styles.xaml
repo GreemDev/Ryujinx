@@ -66,7 +66,7 @@
     </Style>
     <Style Selector="Border.settings">
         <Setter Property="Background"
-                Value="{DynamicResource ThemeControlBorderColor}" />
+                Value="{DynamicResource ThemeDarkColor}" />
         <Setter Property="BorderBrush"
                 Value="{DynamicResource MenuFlyoutPresenterBorderColor}" />
         <Setter Property="BorderThickness"
