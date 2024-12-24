@@ -62,11 +62,6 @@ namespace Ryujinx.Ava.UI.Renderer
                         KnownGreatMetalTitles.ContainsIgnoreCase(titleId) 
                             ? new EmbeddedWindowMetal() 
                             : new EmbeddedWindowVulkan();
-
-                    string backendText = EmbeddedWindow is EmbeddedWindowVulkan ? "Vulkan" : "Metal";
-                    
-                    Logger.Info?.PrintMsg(LogClass.Gpu, $"Auto: Using {backendText}");
-                    
                     break;
                 case GraphicsBackend.OpenGl:
                     EmbeddedWindow = new EmbeddedWindowOpenGL();
@@ -78,6 +73,16 @@ namespace Ryujinx.Ava.UI.Renderer
                     EmbeddedWindow = new EmbeddedWindowVulkan(); 
                     break;
             }
+            
+            string backendText = EmbeddedWindow switch
+            {
+                EmbeddedWindowVulkan => "Vulkan",
+                EmbeddedWindowOpenGL => "OpenGL",
+                EmbeddedWindowMetal => "Metal",
+                _ => throw new NotImplementedException()
+            };
+                    
+            Logger.Info?.PrintMsg(LogClass.Gpu, $"Backend ({ConfigurationState.Instance.Graphics.GraphicsBackend.Value}): {backendText}");
 
             Initialize();
         }
