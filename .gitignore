@@ -19,6 +19,9 @@ build/
 AppDir/
 publish_appimage/
 
+# Validation project assemblies folder
+/src/Ryujinx.BuildValidationTasks/temp_assemblies
+
 # Enable "build/" folder in the NuGet Packages folder since NuGet packages use it for MSBuild targets
 !packages/*/build/
 
