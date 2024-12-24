@@ -98,6 +98,9 @@ namespace Ryujinx.Ava.UI.Windows
             StatusBarHeight = StatusBarView.StatusBar.MinHeight;
             MenuBarHeight = MenuBar.MinHeight;
 
+            ApplicationList.DataContext = DataContext;
+            ApplicationGrid.DataContext = DataContext;
+
             SetWindowSizePosition();
 
             if (Program.PreviewerDetached)

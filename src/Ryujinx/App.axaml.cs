@@ -32,6 +32,9 @@ namespace Ryujinx.Ava
             .ApplicationLifetime.Cast<IClassicDesktopStyleApplicationLifetime>()
             .MainWindow.Cast<MainWindow>();
 
+        public static IClassicDesktopStyleApplicationLifetime DesktopLifetime => Current!
+            .ApplicationLifetime.Cast<IClassicDesktopStyleApplicationLifetime>();
+
         public static void SetTaskbarProgress(TaskBarProgressBarState state) => MainWindow.PlatformFeatures.SetTaskBarProgressBarState(state);
         public static void SetTaskbarProgressValue(ulong current, ulong total) => MainWindow.PlatformFeatures.SetTaskBarProgressBarValue(current, total);
         public static void SetTaskbarProgressValue(long current, long total) => SetTaskbarProgressValue(Convert.ToUInt64(current), Convert.ToUInt64(total));
