@@ -915,16 +915,19 @@ namespace Ryujinx.Ava
             IRenderer renderer;
             GraphicsBackend backend = ConfigurationState.Instance.Graphics.GraphicsBackend;
 
-            if (backend == GraphicsBackend.Vulkan || (backend == GraphicsBackend.Auto && !ShouldInitMetal))
+            if (ShouldInitMetal)
+            {
+#pragma warning disable CA1416 This call site is reachable on all platforms
+                // The condition does a check for Mac, on top of checking if it's an ARM Mac. This isn't a problem.
+                renderer = new MetalRenderer((RendererHost.EmbeddedWindow as EmbeddedWindowMetal)!.CreateSurface);
+#pragma warning restore CA1416
+            }
+            else if (backend == GraphicsBackend.Vulkan || (backend == GraphicsBackend.Auto && !ShouldInitMetal))
             {
                 renderer = VulkanRenderer.Create(
                     ConfigurationState.Instance.Graphics.PreferredGpu,
                     (RendererHost.EmbeddedWindow as EmbeddedWindowVulkan)!.CreateSurface,
                     VulkanHelper.GetRequiredInstanceExtensions);
-            }
-            else if (ShouldInitMetal)
-            {
-                renderer = new MetalRenderer((RendererHost.EmbeddedWindow as EmbeddedWindowMetal).CreateSurface);
             }
             else
             {
