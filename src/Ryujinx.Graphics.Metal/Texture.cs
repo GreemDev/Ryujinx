@@ -14,7 +14,7 @@ namespace Ryujinx.Graphics.Metal
         private readonly MTLDevice _device;
 
         public MTLTexture MTLTexture;
-        public TextureCreateInfo Info => Info;
+        public TextureCreateInfo Info => _info;
         public int Width => Info.Width;
         public int Height => Info.Height;
 
@@ -46,9 +46,20 @@ namespace Ryujinx.Graphics.Metal
 
         public void CopyTo(ITexture destination, int firstLayer, int firstLevel)
         {
+            MTLBlitCommandEncoder blitCommandEncoder;
+
+            if (_pipeline.CurrentEncoder is MTLBlitCommandEncoder encoder)
+            {
+                blitCommandEncoder = encoder;
+            }
+            else
+            {
+                blitCommandEncoder = _pipeline.BeginBlitPass();
+            }
+
             if (destination is Texture destinationTexture)
             {
-                _pipeline.BlitCommandEncoder.CopyFromTexture(
+                blitCommandEncoder.CopyFromTexture(
                     MTLTexture,
                     (ulong)firstLayer,
                     (ulong)firstLevel,
@@ -62,9 +73,20 @@ namespace Ryujinx.Graphics.Metal
 
         public void CopyTo(ITexture destination, int srcLayer, int dstLayer, int srcLevel, int dstLevel)
         {
+            MTLBlitCommandEncoder blitCommandEncoder;
+
+            if (_pipeline.CurrentEncoder is MTLBlitCommandEncoder encoder)
+            {
+                blitCommandEncoder = encoder;
+            }
+            else
+            {
+                blitCommandEncoder = _pipeline.BeginBlitPass();
+            }
+
             if (destination is Texture destinationTexture)
             {
-                _pipeline.BlitCommandEncoder.CopyFromTexture(
+                blitCommandEncoder.CopyFromTexture(
                     MTLTexture,
                     (ulong)srcLayer,
                     (ulong)srcLevel,
@@ -111,25 +133,83 @@ namespace Ryujinx.Graphics.Metal
 
         public void SetData(SpanOrArray<byte> data, int layer, int level)
         {
-            throw new NotImplementedException();
+            MTLBlitCommandEncoder blitCommandEncoder;
+
+            if (_pipeline.CurrentEncoder is MTLBlitCommandEncoder encoder)
+            {
+                blitCommandEncoder = encoder;
+            }
+            else
+            {
+                blitCommandEncoder = _pipeline.BeginBlitPass();
+            }
+
+            ulong bytesPerRow = (ulong)Info.GetMipStride(level);
+            ulong bytesPerImage = 0;
+            if (MTLTexture.TextureType == MTLTextureType.Type3D)
+            {
+                bytesPerImage = bytesPerRow * (ulong)Info.Height;
+            }
+
+            unsafe
+            {
+                var dataSpan = data.Span;
+                var mtlBuffer = _device.NewBuffer((ulong)dataSpan.Length, MTLResourceOptions.ResourceStorageModeShared);
+                var bufferSpan = new Span<byte>(mtlBuffer.Contents.ToPointer(), dataSpan.Length);
+                dataSpan.CopyTo(bufferSpan);
+
+                blitCommandEncoder.CopyFromBuffer(
+                    mtlBuffer,
+                    0,
+                    bytesPerRow,
+                    bytesPerImage,
+                    new MTLSize { width = MTLTexture.Width, height = MTLTexture.Height },
+                    MTLTexture,
+                    (ulong)layer,
+                    (ulong)level,
+                    new MTLOrigin()
+                );
+            }
         }
 
-        public unsafe void SetData(SpanOrArray<byte> data, int layer, int level, Rectangle<int> region)
+        public void SetData(SpanOrArray<byte> data, int layer, int level, Rectangle<int> region)
         {
-            // TODO: Figure out bytesPerRow
-            // For an ordinary or packed pixel format, the stride, in bytes, between rows of source data.
-            // For a compressed pixel format, the stride is the number of bytes from the beginning of one row of blocks to the beginning of the next.
-            if (MTLTexture.IsSparse)
-            ulong bytesPerRow = 0;
-            var mtlRegion = new MTLRegion
-            {
-                origin = new MTLOrigin { x = (ulong)region.X, y = (ulong)region.Y },
-                size = new MTLSize { width = (ulong)region.Width, height = (ulong)region.Height },
-            };
+            MTLBlitCommandEncoder blitCommandEncoder;
 
-            fixed (byte* pData = data.Span)
+            if (_pipeline.CurrentEncoder is MTLBlitCommandEncoder encoder)
             {
-                MTLTexture.ReplaceRegion(mtlRegion, (ulong)level, (ulong)layer, new IntPtr(pData), bytesPerRow, 0);
+                blitCommandEncoder = encoder;
+            }
+            else
+            {
+                blitCommandEncoder = _pipeline.BeginBlitPass();
+            }
+
+            ulong bytesPerRow = (ulong)Info.GetMipStride(level);
+            ulong bytesPerImage = 0;
+            if (MTLTexture.TextureType == MTLTextureType.Type3D)
+            {
+                bytesPerImage = bytesPerRow * (ulong)Info.Height;
+            }
+
+            unsafe
+            {
+                var dataSpan = data.Span;
+                var mtlBuffer = _device.NewBuffer((ulong)dataSpan.Length, MTLResourceOptions.ResourceStorageModeShared);
+                var bufferSpan = new Span<byte>(mtlBuffer.Contents.ToPointer(), dataSpan.Length);
+                dataSpan.CopyTo(bufferSpan);
+
+                blitCommandEncoder.CopyFromBuffer(
+                    mtlBuffer,
+                    0,
+                    bytesPerRow,
+                    bytesPerImage,
+                    new MTLSize { width = (ulong)region.Width, height = (ulong)region.Height },
+                    MTLTexture,
+                    (ulong)layer,
+                    (ulong)level,
+                    new MTLOrigin { x = (ulong)region.X, y = (ulong)region.Y }
+                );
             }
         }
 
