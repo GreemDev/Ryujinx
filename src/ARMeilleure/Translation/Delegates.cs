@@ -9,7 +9,7 @@ namespace ARMeilleure.Translation
 {
     static class Delegates
     {
-        public static bool TryGetDelegateFuncPtrByIndex(int index, out IntPtr funcPtr)
+        public static bool TryGetDelegateFuncPtrByIndex(int index, out nint funcPtr)
         {
             if (index >= 0 && index < _delegates.Count)
             {
@@ -25,7 +25,7 @@ namespace ARMeilleure.Translation
             }
         }
 
-        public static IntPtr GetDelegateFuncPtrByIndex(int index)
+        public static nint GetDelegateFuncPtrByIndex(int index)
         {
             if (index < 0 || index >= _delegates.Count)
             {
@@ -35,7 +35,7 @@ namespace ARMeilleure.Translation
             return _delegates.Values[index].FuncPtr; // O(1).
         }
 
-        public static IntPtr GetDelegateFuncPtr(MethodInfo info)
+        public static nint GetDelegateFuncPtr(MethodInfo info)
         {
             ArgumentNullException.ThrowIfNull(info);
 
@@ -65,7 +65,7 @@ namespace ARMeilleure.Translation
             return index;
         }
 
-        private static void SetDelegateInfo(Delegate dlg, IntPtr funcPtr)
+        private static void SetDelegateInfo(Delegate dlg, nint funcPtr)
         {
             string key = GetKey(dlg.Method);
 

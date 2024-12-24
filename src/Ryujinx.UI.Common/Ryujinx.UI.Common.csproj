@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefaultItemExcludes>$(DefaultItemExcludes);._*</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,9 +18,7 @@
     <None Remove="Resources\Logo_Amiibo.png" />
     <None Remove="Resources\Logo_Discord.png" />
     <None Remove="Resources\Logo_GitHub.png" />
-    <None Remove="Resources\Logo_Patreon.png" />
     <None Remove="Resources\Logo_Ryujinx.png" />
-    <None Remove="Resources\Logo_Twitter.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,14 +33,11 @@
     <EmbeddedResource Include="Resources\Icon_XCI.png" />
     <EmbeddedResource Include="Resources\Logo_Amiibo.png" />
     <EmbeddedResource Include="Resources\Logo_Ryujinx.png" />
+    <EmbeddedResource Include="Resources\Logo_Thiccjinx.png" />
     <EmbeddedResource Include="Resources\Logo_Discord_Dark.png" />
     <EmbeddedResource Include="Resources\Logo_Discord_Light.png" />
     <EmbeddedResource Include="Resources\Logo_GitHub_Dark.png" />
     <EmbeddedResource Include="Resources\Logo_GitHub_Light.png" />
-    <EmbeddedResource Include="Resources\Logo_Patreon_Dark.png" />
-    <EmbeddedResource Include="Resources\Logo_Patreon_Light.png" />
-    <EmbeddedResource Include="Resources\Logo_Twitter_Dark.png" />
-    <EmbeddedResource Include="Resources\Logo_Twitter_Light.png" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-x64' OR '$(RuntimeIdentifier)' == 'linux-arm64' OR '$(RuntimeIdentifier)' == ''">
@@ -56,6 +51,7 @@
 
   <ItemGroup>
     <PackageReference Include="DiscordRichPresence" />
+    <PackageReference Include="DynamicData" />
     <PackageReference Include="securifybv.ShellLink" />
   </ItemGroup>
 

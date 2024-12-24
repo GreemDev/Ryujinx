@@ -90,7 +90,7 @@ namespace Ryujinx.Graphics.Vulkan.MoltenVK
         public Bool32 SemaphoreUseMTLFence;
         public MVKVkSemaphoreSupportStyle SemaphoreSupportStyle;
         public MVKConfigAutoGPUCaptureScope AutoGPUCaptureScope;
-        public IntPtr AutoGPUCaptureOutputFilepath;
+        public nint AutoGPUCaptureOutputFilepath;
         public Bool32 Texture1DAs2D;
         public Bool32 PreallocateDescriptors;
         public Bool32 UseCommandPooling;

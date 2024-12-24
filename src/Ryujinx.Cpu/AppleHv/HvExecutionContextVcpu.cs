@@ -10,9 +10,9 @@ namespace Ryujinx.Cpu.AppleHv
     class HvExecutionContextVcpu : IHvExecutionContext
     {
         private static readonly MemoryBlock _setSimdFpRegFuncMem;
-        private delegate HvResult SetSimdFpReg(ulong vcpu, HvSimdFPReg reg, in V128 value, IntPtr funcPtr);
+        private delegate HvResult SetSimdFpReg(ulong vcpu, HvSimdFPReg reg, in V128 value, nint funcPtr);
         private static readonly SetSimdFpReg _setSimdFpReg;
-        private static readonly IntPtr _setSimdFpRegNativePtr;
+        private static readonly nint _setSimdFpRegNativePtr;
 
         static HvExecutionContextVcpu()
         {
@@ -25,7 +25,7 @@ namespace Ryujinx.Cpu.AppleHv
 
             _setSimdFpReg = Marshal.GetDelegateForFunctionPointer<SetSimdFpReg>(_setSimdFpRegFuncMem.Pointer);
 
-            if (NativeLibrary.TryLoad(HvApi.LibraryName, out IntPtr hvLibHandle))
+            if (NativeLibrary.TryLoad(HvApi.LibraryName, out nint hvLibHandle))
             {
                 _setSimdFpRegNativePtr = NativeLibrary.GetExport(hvLibHandle, nameof(HvApi.hv_vcpu_set_simd_fp_reg));
             }

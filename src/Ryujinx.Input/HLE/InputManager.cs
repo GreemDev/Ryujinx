@@ -2,17 +2,12 @@ using System;
 
 namespace Ryujinx.Input.HLE
 {
-    public class InputManager : IDisposable
+    public class InputManager(IGamepadDriver keyboardDriver, IGamepadDriver gamepadDriver)
+        : IDisposable
     {
-        public IGamepadDriver KeyboardDriver { get; private set; }
-        public IGamepadDriver GamepadDriver { get; private set; }
+        public IGamepadDriver KeyboardDriver { get; } = keyboardDriver;
+        public IGamepadDriver GamepadDriver { get; } = gamepadDriver;
         public IGamepadDriver MouseDriver { get; private set; }
-
-        public InputManager(IGamepadDriver keyboardDriver, IGamepadDriver gamepadDriver)
-        {
-            KeyboardDriver = keyboardDriver;
-            GamepadDriver = gamepadDriver;
-        }
 
         public void SetMouseDriver(IGamepadDriver mouseDriver)
         {

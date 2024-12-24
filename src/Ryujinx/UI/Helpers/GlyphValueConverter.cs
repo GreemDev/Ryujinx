@@ -14,6 +14,7 @@ namespace Ryujinx.Ava.UI.Helpers
             { Glyph.List, char.ConvertFromUtf32((int)Symbol.List) },
             { Glyph.Grid, char.ConvertFromUtf32((int)Symbol.ViewAll) },
             { Glyph.Chip, char.ConvertFromUtf32(59748) },
+            { Glyph.Important, char.ConvertFromUtf32((int)Symbol.Important) },
         };
 
         public GlyphValueConverter(string key)
@@ -21,22 +22,11 @@ namespace Ryujinx.Ava.UI.Helpers
             _key = key;
         }
 
-        public string this[string key]
-        {
-            get
-            {
-                if (_glyphs.TryGetValue(Enum.Parse<Glyph>(key), out var val))
-                {
-                    return val;
-                }
+        public string this[string key] =>
+            _glyphs.TryGetValue(Enum.Parse<Glyph>(key), out var val)
+                ? val
+                : string.Empty;
 
-                return string.Empty;
-            }
-        }
-
-        public override object ProvideValue(IServiceProvider serviceProvider)
-        {
-            return this[_key];
-        }
+        public override object ProvideValue(IServiceProvider serviceProvider) => this[_key];
     }
 }

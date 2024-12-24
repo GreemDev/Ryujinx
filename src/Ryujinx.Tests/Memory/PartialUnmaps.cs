@@ -1,3 +1,5 @@
+using ARMeilleure.Common;
+using ARMeilleure.Memory;
 using ARMeilleure.Signal;
 using ARMeilleure.Translation;
 using NUnit.Framework;
@@ -53,7 +55,10 @@ namespace Ryujinx.Tests.Memory
         private static void EnsureTranslator()
         {
             // Create a translator, as one is needed to register the signal handler or emit methods.
-            _translator ??= new Translator(new JitMemoryAllocator(), new MockMemoryManager(), true);
+            _translator ??= new Translator(
+                new JitMemoryAllocator(), 
+                new MockMemoryManager(), 
+                AddressTable<ulong>.CreateForArm(true, MemoryManagerType.SoftwarePageTable));
         }
 
         [Test]
@@ -237,7 +242,7 @@ namespace Ryujinx.Tests.Memory
                 mainMemory.MapView(backing, 0, 0, vaSize);
 
                 var writeFunc = TestMethods.GenerateDebugNativeWriteLoop();
-                IntPtr writePtr = mainMemory.GetPointer(vaSize - 0x1000, 4);
+                nint writePtr = mainMemory.GetPointer(vaSize - 0x1000, 4);
 
                 Thread testThread = new(() =>
                 {
@@ -330,7 +335,7 @@ namespace Ryujinx.Tests.Memory
 
             fixed (void* localMap = &state.LocalCounts)
             {
-                var getOrReserve = TestMethods.GenerateDebugThreadLocalMapGetOrReserve((IntPtr)localMap);
+                var getOrReserve = TestMethods.GenerateDebugThreadLocalMapGetOrReserve((nint)localMap);
 
                 for (int i = 0; i < ThreadLocalMap<int>.MapSize; i++)
                 {

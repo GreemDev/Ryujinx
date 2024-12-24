@@ -4,23 +4,18 @@ namespace Ryujinx.Common
 {
     public static class BitUtils
     {
-        public static T AlignUp<T>(T value, T size)
-            where T : IBinaryInteger<T>
-        {
-            return (value + (size - T.One)) & -size;
-        }
+        public static T AlignUp<T>(T value, T size) where T : IBinaryInteger<T>
+            => (value + (size - T.One)) & -size;
 
-        public static T AlignDown<T>(T value, T size)
-            where T : IBinaryInteger<T>
-        {
-            return value & -size;
-        }
+        public static T AlignDown<T>(T value, T size) where T : IBinaryInteger<T>
+            => value & -size;
 
-        public static T DivRoundUp<T>(T value, T dividend)
-            where T : IBinaryInteger<T>
-        {
-            return (value + (dividend - T.One)) / dividend;
-        }
+        public static T DivRoundUp<T>(T value, T dividend) where T : IBinaryInteger<T>
+            => (value + (dividend - T.One)) / dividend;
+
+        public static int Pow2RoundDown(int value) => BitOperations.IsPow2(value) ? value : Pow2RoundUp(value) >> 1;
+
+        public static long ReverseBits64(long value) => (long)ReverseBits64((ulong)value);
 
         public static int Pow2RoundUp(int value)
         {
@@ -33,16 +28,6 @@ namespace Ryujinx.Common
             value |= (value >> 16);
 
             return ++value;
-        }
-
-        public static int Pow2RoundDown(int value)
-        {
-            return BitOperations.IsPow2(value) ? value : Pow2RoundUp(value) >> 1;
-        }
-
-        public static long ReverseBits64(long value)
-        {
-            return (long)ReverseBits64((ulong)value);
         }
 
         private static ulong ReverseBits64(ulong value)

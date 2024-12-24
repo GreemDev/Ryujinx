@@ -76,9 +76,7 @@ namespace Ryujinx.Graphics.Vulkan
             }
         }
 
-        internal int FindSuitableMemoryTypeIndex(
-            uint memoryTypeBits,
-            MemoryPropertyFlags flags)
+        internal int FindSuitableMemoryTypeIndex(uint memoryTypeBits, MemoryPropertyFlags flags)
         {
             for (int i = 0; i < _physicalDevice.PhysicalDeviceMemoryProperties.MemoryTypeCount; i++)
             {

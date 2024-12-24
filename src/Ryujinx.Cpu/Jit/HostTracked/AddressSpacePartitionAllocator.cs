@@ -11,7 +11,7 @@ namespace Ryujinx.Cpu.Jit.HostTracked
         private readonly AddressSpacePartitionAllocator _owner;
         private readonly PrivateMemoryAllocatorImpl<AddressSpacePartitionAllocator.Block>.Allocation _allocation;
 
-        public IntPtr Pointer => (IntPtr)((ulong)_allocation.Block.Memory.Pointer + _allocation.Offset);
+        public nint Pointer => (nint)((ulong)_allocation.Block.Memory.Pointer + _allocation.Offset);
 
         public bool IsValid => _owner != null;
 
@@ -43,7 +43,7 @@ namespace Ryujinx.Cpu.Jit.HostTracked
             _allocation.Block.Memory.Reprotect(_allocation.Offset + offset, size, permission, throwOnFail);
         }
 
-        public IntPtr GetPointer(ulong offset, ulong size)
+        public nint GetPointer(ulong offset, ulong size)
         {
             return _allocation.Block.Memory.GetPointer(_allocation.Offset + offset, size);
         }
@@ -115,6 +115,9 @@ namespace Ryujinx.Cpu.Jit.HostTracked
             }
 
             private readonly AddressIntrusiveRedBlackTree<Mapping> _mappingTree;
+            
+            // type is not Lock due to the unique usage of this mechanism,
+            // an arbitrary object is used as the lock passed in by constructor.
             private readonly object _lock;
 
             public Block(MemoryTracking tracking, Func<ulong, ulong> readPtCallback, MemoryBlock memory, ulong size, object locker) : base(memory, size)
@@ -174,6 +177,9 @@ namespace Ryujinx.Cpu.Jit.HostTracked
 
         private readonly MemoryTracking _tracking;
         private readonly Func<ulong, ulong> _readPtCallback;
+        
+        // type is not Lock due to the unique usage of this mechanism,
+        // an arbitrary object is used as the lock passed in by constructor.
         private readonly object _lock;
 
         public AddressSpacePartitionAllocator(

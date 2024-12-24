@@ -735,14 +735,26 @@ namespace Ryujinx.Audio.Renderer.Server
             }
         }
 
-        private void GenerateCompressorEffect(uint bufferOffset, CompressorEffect effect, int nodeId)
+        private void GenerateCompressorEffect(uint bufferOffset, CompressorEffect effect, int nodeId, int effectId)
         {
             Debug.Assert(effect.Type == EffectType.Compressor);
+
+            Memory<EffectResultState> dspResultState;
+
+            if (effect.Parameter.StatisticsEnabled)
+            {
+                dspResultState = _effectContext.GetDspStateMemory(effectId);
+            }
+            else
+            {
+                dspResultState = Memory<EffectResultState>.Empty;
+            }
 
             _commandBuffer.GenerateCompressorEffect(
                 bufferOffset,
                 effect.Parameter,
                 effect.State,
+                dspResultState,
                 effect.IsEnabled,
                 nodeId);
         }
@@ -795,7 +807,7 @@ namespace Ryujinx.Audio.Renderer.Server
                     GenerateCaptureEffect(mix.BufferOffset, (CaptureBufferEffect)effect, nodeId);
                     break;
                 case EffectType.Compressor:
-                    GenerateCompressorEffect(mix.BufferOffset, (CompressorEffect)effect, nodeId);
+                    GenerateCompressorEffect(mix.BufferOffset, (CompressorEffect)effect, nodeId, effectId);
                     break;
                 default:
                     throw new NotImplementedException($"Unsupported effect type {effect.Type}");

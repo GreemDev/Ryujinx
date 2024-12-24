@@ -184,15 +184,16 @@ namespace Ryujinx.Audio.Renderer.Server.Splitter
         /// Update the splitter destination data from user parameter.
         /// </summary>
         /// <param name="parameter">The user parameter.</param>
-        public void Update<T>(in T parameter) where T : ISplitterDestinationInParameter
+        /// <param name="isPrevVolumeResetSupported">Indicates that the audio renderer revision in use supports explicitly resetting the volume.</param>
+        public void Update<T>(in T parameter, bool isPrevVolumeResetSupported) where T : ISplitterDestinationInParameter
         {
             if (Unsafe.IsNullRef(ref _v2))
             {
-                _v1.Update(parameter);
+                _v1.Update(parameter, isPrevVolumeResetSupported);
             }
             else
             {
-                _v2.Update(parameter);
+                _v2.Update(parameter, isPrevVolumeResetSupported);
             }
         }
 

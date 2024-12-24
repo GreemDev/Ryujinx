@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace Ryujinx.Cpu.Signal
 {
@@ -14,7 +15,7 @@ namespace Ryujinx.Cpu.Signal
         public int IsActive;
         public nuint RangeAddress;
         public nuint RangeEndAddress;
-        public IntPtr ActionPointer;
+        public nint ActionPointer;
     }
 
     [InlineArray(NativeSignalHandlerGenerator.MaxTrackedRanges)]
@@ -54,12 +55,12 @@ namespace Ryujinx.Cpu.Signal
 
     static class NativeSignalHandler
     {
-        private static readonly IntPtr _handlerConfig;
-        private static IntPtr _signalHandlerPtr;
+        private static readonly nint _handlerConfig;
+        private static nint _signalHandlerPtr;
 
         private static MemoryBlock _codeBlock;
 
-        private static readonly object _lock = new();
+        private static readonly Lock _lock = new();
         private static bool _initialized;
 
         static NativeSignalHandler()
@@ -70,7 +71,7 @@ namespace Ryujinx.Cpu.Signal
             config = new SignalHandlerConfig();
         }
 
-        public static void InitializeSignalHandler(Func<IntPtr, IntPtr, IntPtr> customSignalHandlerFactory = null)
+        public static void InitializeSignalHandler(Func<nint, nint, nint> customSignalHandlerFactory = null)
         {
             if (_initialized)
             {
@@ -111,7 +112,7 @@ namespace Ryujinx.Cpu.Signal
 
                     if (customSignalHandlerFactory != null)
                     {
-                        _signalHandlerPtr = customSignalHandlerFactory(IntPtr.Zero, _signalHandlerPtr);
+                        _signalHandlerPtr = customSignalHandlerFactory(nint.Zero, _signalHandlerPtr);
                     }
 
                     WindowsSignalHandlerRegistration.RegisterExceptionHandler(_signalHandlerPtr);
@@ -121,7 +122,7 @@ namespace Ryujinx.Cpu.Signal
             }
         }
 
-        private static IntPtr MapCode(ReadOnlySpan<byte> code)
+        private static nint MapCode(ReadOnlySpan<byte> code)
         {
             Debug.Assert(_codeBlock == null);
 
@@ -139,7 +140,7 @@ namespace Ryujinx.Cpu.Signal
             return ref Unsafe.AsRef<SignalHandlerConfig>((void*)_handlerConfig);
         }
 
-        public static bool AddTrackedRegion(nuint address, nuint endAddress, IntPtr action)
+        public static bool AddTrackedRegion(nuint address, nuint endAddress, nint action)
         {
             Span<SignalHandlerRange> ranges = GetConfigRef().Ranges;
 

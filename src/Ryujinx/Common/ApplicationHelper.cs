@@ -68,7 +68,7 @@ namespace Ryujinx.Ava.Common
                     Logger.Warning?.Print(LogClass.Application, "No control file was found for this game. Using a dummy one instead. This may cause inaccuracies in some games.");
                 }
 
-                Uid user = new((ulong)_accountManager.LastOpenedUser.UserId.High, (ulong)_accountManager.LastOpenedUser.UserId.Low);
+                Uid user = _accountManager.LastOpenedUser.UserId.ToLibHacUid();
 
                 result = _horizonClient.Fs.EnsureApplicationSaveData(out _, new ApplicationId(titleId), in control, in user);
                 if (result.IsFailure())
@@ -141,24 +141,12 @@ namespace Ryujinx.Ava.Common
             }
         }
 
-        public static async Task ExtractSection(IStorageProvider storageProvider, NcaSectionType ncaSectionType, string titleFilePath, string titleName, int programIndex = 0)
+        public static void ExtractSection(string destination, NcaSectionType ncaSectionType, string titleFilePath, string titleName, int programIndex = 0)
         {
-            var result = await storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
-            {
-                Title = LocaleManager.Instance[LocaleKeys.FolderDialogExtractTitle],
-                AllowMultiple = false,
-            });
-
-            if (result.Count == 0)
-            {
-                return;
-            }
-
-            var destination = result[0].Path.LocalPath;
             var cancellationToken = new CancellationTokenSource();
 
             UpdateWaitWindow waitingDialog = new(
-                LocaleManager.Instance[LocaleKeys.DialogNcaExtractionTitle],
+                App.FormatTitle(LocaleKeys.DialogNcaExtractionTitle),
                 LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogNcaExtractionMessage, ncaSectionType, Path.GetFileName(titleFilePath)),
                 cancellationToken);
 
@@ -172,11 +160,11 @@ namespace Ryujinx.Ava.Common
                 Nca patchNca = null;
 
                 string extension = Path.GetExtension(titleFilePath).ToLower();
-                if (extension == ".nsp" || extension == ".pfs0" || extension == ".xci")
+                if (extension is ".nsp" or ".pfs0" or ".xci")
                 {
                     IFileSystem pfs;
 
-                    if (extension == ".xci")
+                    if (extension is ".xci")
                     {
                         pfs = new Xci(_virtualFileSystem.KeySet, file.AsStorage()).OpenPartition(XciPartitionType.Secure);
                     }
@@ -194,7 +182,7 @@ namespace Ryujinx.Ava.Common
                         pfs.OpenFile(ref ncaFile.Ref, fileEntry.FullPath.ToU8Span(), OpenMode.Read).ThrowIfFailure();
 
                         Nca nca = new(_virtualFileSystem.KeySet, ncaFile.Get.AsStorage());
-                        if (nca.Header.ContentType == NcaContentType.Program)
+                        if (nca.Header.ContentType is NcaContentType.Program)
                         {
                             int dataIndex = Nca.GetSectionIndexFromType(NcaSectionType.Data, NcaContentType.Program);
                             if (nca.SectionExists(NcaSectionType.Data) && nca.Header.GetFsHeader(dataIndex).IsPatchSection())
@@ -208,12 +196,12 @@ namespace Ryujinx.Ava.Common
                         }
                     }
                 }
-                else if (extension == ".nca")
+                else if (extension is ".nca")
                 {
                     mainNca = new Nca(_virtualFileSystem.KeySet, file.AsStorage());
                 }
 
-                if (mainNca == null)
+                if (mainNca is null)
                 {
                     Logger.Error?.Print(LogClass.Application, "Extraction failure. The main NCA was not present in the selected file");
 
@@ -232,7 +220,7 @@ namespace Ryujinx.Ava.Common
                     : IntegrityCheckLevel.None;
 
                 (Nca updatePatchNca, _) = mainNca.GetUpdateData(_virtualFileSystem, checkLevel, programIndex, out _);
-                if (updatePatchNca != null)
+                if (updatePatchNca is not null)
                 {
                     patchNca = updatePatchNca;
                 }
@@ -242,7 +230,7 @@ namespace Ryujinx.Ava.Common
                 try
                 {
                     bool sectionExistsInPatch = false;
-                    if (patchNca != null)
+                    if (patchNca is not null)
                     {
                         sectionExistsInPatch = patchNca.CanOpenSection(index);
                     }
@@ -281,7 +269,7 @@ namespace Ryujinx.Ava.Common
                             Dispatcher.UIThread.Post(waitingDialog.Close);
 
                             NotificationHelper.Show(
-                                LocaleManager.Instance[LocaleKeys.DialogNcaExtractionTitle],
+                                App.FormatTitle(LocaleKeys.DialogNcaExtractionTitle),
                                 $"{titleName}\n\n{LocaleManager.Instance[LocaleKeys.DialogNcaExtractionSuccessMessage]}",
                                 NotificationType.Information);
                         }
@@ -307,6 +295,23 @@ namespace Ryujinx.Ava.Common
                 IsBackground = true,
             };
             extractorThread.Start();
+        }
+
+
+        public static async Task ExtractSection(IStorageProvider storageProvider, NcaSectionType ncaSectionType, string titleFilePath, string titleName, int programIndex = 0)
+        {
+            var result = await storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+            {
+                Title = LocaleManager.Instance[LocaleKeys.FolderDialogExtractTitle],
+                AllowMultiple = false,
+            });
+
+            if (result.Count == 0)
+            {
+                return;
+            }
+
+            ExtractSection(result[0].Path.LocalPath, ncaSectionType, titleFilePath, titleName, programIndex);
         }
 
         public static (Result? result, bool canceled) CopyDirectory(FileSystemClient fs, string sourcePath, string destPath, CancellationToken token)

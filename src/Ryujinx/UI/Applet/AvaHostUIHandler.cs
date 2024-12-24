@@ -7,8 +7,10 @@ using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Ava.UI.Windows;
 using Ryujinx.HLE;
 using Ryujinx.HLE.HOS.Applets;
+using Ryujinx.HLE.HOS.Applets.SoftwareKeyboard;
 using Ryujinx.HLE.HOS.Services.Am.AppletOE.ApplicationProxyService.ApplicationProxy.Types;
 using Ryujinx.HLE.UI;
+using Ryujinx.UI.Common.Configuration;
 using System;
 using System.Threading;
 
@@ -32,6 +34,9 @@ namespace Ryujinx.Ava.UI.Applet
             ManualResetEvent dialogCloseEvent = new(false);
 
             bool okPressed = false;
+
+            if (ConfigurationState.Instance.IgnoreApplet)
+                return false;
 
             Dispatcher.UIThread.InvokeAsync(async () =>
             {
@@ -66,9 +71,9 @@ namespace Ryujinx.Ava.UI.Applet
                     UserResult response = await ContentDialogHelper.ShowDeferredContentDialog(_parent,
                        title,
                        message,
-                       "",
+                       string.Empty,
                        LocaleManager.Instance[LocaleKeys.DialogOpenSettingsWindowLabel],
-                       "",
+                       string.Empty,
                        LocaleManager.Instance[LocaleKeys.SettingsButtonClose],
                        (int)Symbol.Important,
                        deferEvent,
@@ -116,18 +121,18 @@ namespace Ryujinx.Ava.UI.Applet
 
             bool okPressed = false;
             bool error = false;
-            string inputText = args.InitialText ?? "";
+            string inputText = args.InitialText ?? string.Empty;
 
             Dispatcher.UIThread.InvokeAsync(async () =>
             {
                 try
                 {
                     _parent.ViewModel.AppHost.NpadManager.BlockInputUpdates();
-                    var response = await SwkbdAppletDialog.ShowInputDialog(LocaleManager.Instance[LocaleKeys.SoftwareKeyboard], args);
+                    (UserResult result, string userInput) = await SwkbdAppletDialog.ShowInputDialog(LocaleManager.Instance[LocaleKeys.SoftwareKeyboard], args);
 
-                    if (response.Result == UserResult.Ok)
+                    if (result == UserResult.Ok)
                     {
-                        inputText = response.Input;
+                        inputText = userInput;
                         okPressed = true;
                     }
                 }
@@ -151,6 +156,55 @@ namespace Ryujinx.Ava.UI.Applet
             return error || okPressed;
         }
 
+        public bool DisplayCabinetDialog(out string userText)
+        {
+            ManualResetEvent dialogCloseEvent = new(false);
+            bool okPressed = false;
+            string inputText = "My Amiibo";
+            Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                try
+                {
+                    _parent.ViewModel.AppHost.NpadManager.BlockInputUpdates();
+                    SoftwareKeyboardUIArgs args = new SoftwareKeyboardUIArgs();
+                    args.KeyboardMode = KeyboardMode.Default;
+                    args.InitialText = "Ryujinx";
+                    args.StringLengthMin = 1;
+                    args.StringLengthMax = 25;
+                    (UserResult result, string userInput) = await SwkbdAppletDialog.ShowInputDialog(LocaleManager.Instance[LocaleKeys.CabinetDialog], args);
+                    if (result == UserResult.Ok)
+                    {
+                        inputText = userInput;
+                        okPressed = true;
+                    }
+                }
+                finally
+                {
+                    dialogCloseEvent.Set();
+                }
+            });
+            dialogCloseEvent.WaitOne();
+            _parent.ViewModel.AppHost.NpadManager.UnblockInputUpdates();
+            userText = inputText;
+            return okPressed;
+        }
+
+        public void DisplayCabinetMessageDialog()
+        {
+            ManualResetEvent dialogCloseEvent = new(false);
+            Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                dialogCloseEvent.Set();
+                await ContentDialogHelper.CreateInfoDialog(LocaleManager.Instance[LocaleKeys.CabinetScanDialog],
+                string.Empty,
+                LocaleManager.Instance[LocaleKeys.InputDialogOk],
+                string.Empty,
+                LocaleManager.Instance[LocaleKeys.CabinetTitle]);
+            });
+            dialogCloseEvent.WaitOne();
+        }
+
+
         public void ExecuteProgram(Switch device, ProgramSpecifyKind kind, ulong value)
         {
             device.Configuration.UserChannelPersistence.ExecuteProgram(kind, value);
@@ -171,12 +225,12 @@ namespace Ryujinx.Ava.UI.Applet
                     {
                         Title = title,
                         WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                        Width = 400,
+                        Width = 400
                     };
 
                     object response = await msgDialog.Run();
 
-                    if (response != null && buttons != null && buttons.Length > 1 && (int)response != buttons.Length - 1)
+                    if (response != null && buttons is { Length: > 1 } && (int)response != buttons.Length - 1)
                     {
                         showDetails = true;
                     }
@@ -198,9 +252,6 @@ namespace Ryujinx.Ava.UI.Applet
             return showDetails;
         }
 
-        public IDynamicTextInputHandler CreateDynamicTextInputHandler()
-        {
-            return new AvaloniaDynamicTextInputHandler(_parent);
-        }
+        public IDynamicTextInputHandler CreateDynamicTextInputHandler() => new AvaloniaDynamicTextInputHandler(_parent);
     }
 }

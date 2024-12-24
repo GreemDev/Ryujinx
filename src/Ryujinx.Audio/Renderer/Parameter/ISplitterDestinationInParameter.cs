@@ -29,6 +29,11 @@ namespace Ryujinx.Audio.Renderer.Parameter
         bool IsUsed { get; }
 
         /// <summary>
+        /// Set to true to force resetting the previous mix volumes.
+        /// </summary>
+        bool ResetPrevVolume { get; }
+
+        /// <summary>
         /// Mix buffer volumes.
         /// </summary>
         /// <remarks>Used when a splitter id is specified in the mix.</remarks>

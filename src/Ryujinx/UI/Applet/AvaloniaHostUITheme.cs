@@ -5,25 +5,15 @@ using System;
 
 namespace Ryujinx.Ava.UI.Applet
 {
-    class AvaloniaHostUITheme : IHostUITheme
+    class AvaloniaHostUITheme(MainWindow parent) : IHostUITheme
     {
-        public AvaloniaHostUITheme(MainWindow parent)
-        {
-            FontFamily = OperatingSystem.IsWindows() && OperatingSystem.IsWindowsVersionAtLeast(10, 0, 22000) ? "Segoe UI Variable" : parent.FontFamily.Name;
-            DefaultBackgroundColor = BrushToThemeColor(parent.Background);
-            DefaultForegroundColor = BrushToThemeColor(parent.Foreground);
-            DefaultBorderColor = BrushToThemeColor(parent.BorderBrush);
-            SelectionBackgroundColor = BrushToThemeColor(parent.ViewControls.SearchBox.SelectionBrush);
-            SelectionForegroundColor = BrushToThemeColor(parent.ViewControls.SearchBox.SelectionForegroundBrush);
-        }
+        public string FontFamily { get; } = OperatingSystem.IsWindows() && OperatingSystem.IsWindowsVersionAtLeast(10, 0, 22000) ? "Segoe UI Variable" : parent.FontFamily.Name;
 
-        public string FontFamily { get; }
-
-        public ThemeColor DefaultBackgroundColor { get; }
-        public ThemeColor DefaultForegroundColor { get; }
-        public ThemeColor DefaultBorderColor { get; }
-        public ThemeColor SelectionBackgroundColor { get; }
-        public ThemeColor SelectionForegroundColor { get; }
+        public ThemeColor DefaultBackgroundColor { get; } = BrushToThemeColor(parent.Background);
+        public ThemeColor DefaultForegroundColor { get; } = BrushToThemeColor(parent.Foreground);
+        public ThemeColor DefaultBorderColor { get; } = BrushToThemeColor(parent.BorderBrush);
+        public ThemeColor SelectionBackgroundColor { get; } = BrushToThemeColor(parent.ViewControls.SearchBox.SelectionBrush);
+        public ThemeColor SelectionForegroundColor { get; } = BrushToThemeColor(parent.ViewControls.SearchBox.SelectionForegroundBrush);
 
         private static ThemeColor BrushToThemeColor(IBrush brush)
         {

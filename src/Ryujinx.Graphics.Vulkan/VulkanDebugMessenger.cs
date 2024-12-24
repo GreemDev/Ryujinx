@@ -95,7 +95,7 @@ namespace Ryujinx.Graphics.Vulkan
             DebugUtilsMessengerCallbackDataEXT* pCallbackData,
             void* pUserData)
         {
-            var msg = Marshal.PtrToStringAnsi((IntPtr)pCallbackData->PMessage);
+            var msg = Marshal.PtrToStringAnsi((nint)pCallbackData->PMessage);
 
             if (messageSeverity.HasFlag(DebugUtilsMessageSeverityFlagsEXT.ErrorBitExt))
             {

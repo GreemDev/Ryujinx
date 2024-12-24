@@ -45,7 +45,7 @@ namespace Ryujinx.Graphics.Texture
             if (subsetCount == 0)
             {
                 // Mode is invalid, the spec mandates that hardware fills the block with
-                // a opaque black color.
+                // an opaque black color.
                 for (int ty = 0; ty < h; ty++)
                 {
                     int baseOffs = ty * width;

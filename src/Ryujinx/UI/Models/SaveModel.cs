@@ -5,6 +5,7 @@ using Ryujinx.Ava.UI.Windows;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common.Helper;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace Ryujinx.Ava.UI.Models
 
         public ulong SaveId { get; }
         public ProgramId TitleId { get; }
-        public string TitleIdString => $"{TitleId.Value:X16}";
+        public string TitleIdString => TitleId.ToString();
         public UserId UserId { get; }
         public bool InGameList { get; }
         public string Title { get; }
@@ -46,7 +47,7 @@ namespace Ryujinx.Ava.UI.Models
             TitleId = info.ProgramId;
             UserId = info.UserId;
 
-            var appData = MainWindow.MainWindowViewModel.Applications.FirstOrDefault(x => x.IdString.ToUpper() == TitleIdString);
+            var appData = MainWindow.MainWindowViewModel.Applications.FirstOrDefault(x => x.IdString.Equals(TitleIdString, StringComparison.OrdinalIgnoreCase));
 
             InGameList = appData != null;
 

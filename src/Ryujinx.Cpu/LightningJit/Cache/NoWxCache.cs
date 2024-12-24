@@ -4,6 +4,7 @@ using Ryujinx.Memory;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Ryujinx.Cpu.LightningJit.Cache
 {
@@ -23,7 +24,7 @@ namespace Ryujinx.Cpu.LightningJit.Cache
             private readonly CacheMemoryAllocator _cacheAllocator;
 
             public CacheMemoryAllocator Allocator => _cacheAllocator;
-            public IntPtr Pointer => _region.Block.Pointer;
+            public nint Pointer => _region.Block.Pointer;
 
             public MemoryCache(IJitMemoryAllocator allocator, ulong size)
             {
@@ -104,16 +105,16 @@ namespace Ryujinx.Cpu.LightningJit.Cache
         private readonly MemoryCache _sharedCache;
         private readonly MemoryCache _localCache;
         private readonly PageAlignedRangeList _pendingMap;
-        private readonly object _lock;
+        private readonly Lock _lock = new();
 
         class ThreadLocalCacheEntry
         {
             public readonly int Offset;
             public readonly int Size;
-            public readonly IntPtr FuncPtr;
+            public readonly nint FuncPtr;
             private int _useCount;
 
-            public ThreadLocalCacheEntry(int offset, int size, IntPtr funcPtr)
+            public ThreadLocalCacheEntry(int offset, int size, nint funcPtr)
             {
                 Offset = offset;
                 Size = size;
@@ -137,12 +138,11 @@ namespace Ryujinx.Cpu.LightningJit.Cache
             _sharedCache = new(allocator, SharedCacheSize);
             _localCache = new(allocator, LocalCacheSize);
             _pendingMap = new(_sharedCache.ReprotectAsRx, RegisterFunction);
-            _lock = new();
         }
 
-        public unsafe IntPtr Map(IntPtr framePointer, ReadOnlySpan<byte> code, ulong guestAddress, ulong guestSize)
+        public unsafe nint Map(nint framePointer, ReadOnlySpan<byte> code, ulong guestAddress, ulong guestSize)
         {
-            if (TryGetThreadLocalFunction(guestAddress, out IntPtr funcPtr))
+            if (TryGetThreadLocalFunction(guestAddress, out nint funcPtr))
             {
                 return funcPtr;
             }
@@ -167,7 +167,7 @@ namespace Ryujinx.Cpu.LightningJit.Cache
             }
         }
 
-        public unsafe IntPtr MapPageAligned(ReadOnlySpan<byte> code)
+        public unsafe nint MapPageAligned(ReadOnlySpan<byte> code)
         {
             lock (_lock)
             {
@@ -179,7 +179,7 @@ namespace Ryujinx.Cpu.LightningJit.Cache
 
                 Debug.Assert((funcOffset & ((int)MemoryBlock.GetPageSize() - 1)) == 0);
 
-                IntPtr funcPtr = _sharedCache.Pointer + funcOffset;
+                nint funcPtr = _sharedCache.Pointer + funcOffset;
                 code.CopyTo(new Span<byte>((void*)funcPtr, code.Length));
 
                 _sharedCache.ReprotectAsRx(funcOffset, sizeAligned);
@@ -188,7 +188,7 @@ namespace Ryujinx.Cpu.LightningJit.Cache
             }
         }
 
-        private bool TryGetThreadLocalFunction(ulong guestAddress, out IntPtr funcPtr)
+        private bool TryGetThreadLocalFunction(ulong guestAddress, out nint funcPtr)
         {
             if ((_threadLocalCache ??= new()).TryGetValue(guestAddress, out var entry))
             {
@@ -209,12 +209,12 @@ namespace Ryujinx.Cpu.LightningJit.Cache
                 return true;
             }
 
-            funcPtr = IntPtr.Zero;
+            funcPtr = nint.Zero;
 
             return false;
         }
 
-        private void ClearThreadLocalCache(IntPtr framePointer)
+        private void ClearThreadLocalCache(nint framePointer)
         {
             // Try to delete functions that are already on the shared cache
             // and no longer being executed.
@@ -296,14 +296,14 @@ namespace Ryujinx.Cpu.LightningJit.Cache
             _threadLocalCache = null;
         }
 
-        private unsafe IntPtr AddThreadLocalFunction(ReadOnlySpan<byte> code, ulong guestAddress)
+        private unsafe nint AddThreadLocalFunction(ReadOnlySpan<byte> code, ulong guestAddress)
         {
             int alignedSize = BitUtils.AlignUp(code.Length, (int)MemoryBlock.GetPageSize());
             int funcOffset = _localCache.Allocate(alignedSize);
 
             Debug.Assert((funcOffset & (int)(MemoryBlock.GetPageSize() - 1)) == 0);
 
-            IntPtr funcPtr = _localCache.Pointer + funcOffset;
+            nint funcPtr = _localCache.Pointer + funcOffset;
             code.CopyTo(new Span<byte>((void*)funcPtr, code.Length));
 
             (_threadLocalCache ??= new()).Add(guestAddress, new(funcOffset, code.Length, funcPtr));

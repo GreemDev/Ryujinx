@@ -5,6 +5,7 @@ using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Ryujinx.Graphics.Vulkan
 {
@@ -13,13 +14,13 @@ namespace Ryujinx.Graphics.Vulkan
         private readonly struct HostMemoryAllocation
         {
             public readonly Auto<MemoryAllocation> Allocation;
-            public readonly IntPtr Pointer;
+            public readonly nint Pointer;
             public readonly ulong Size;
 
             public ulong Start => (ulong)Pointer;
             public ulong End => (ulong)Pointer + Size;
 
-            public HostMemoryAllocation(Auto<MemoryAllocation> allocation, IntPtr pointer, ulong size)
+            public HostMemoryAllocation(Auto<MemoryAllocation> allocation, nint pointer, ulong size)
             {
                 Allocation = allocation;
                 Pointer = pointer;
@@ -31,7 +32,7 @@ namespace Ryujinx.Graphics.Vulkan
         private readonly Vk _api;
         private readonly ExtExternalMemoryHost _hostMemoryApi;
         private readonly Device _device;
-        private readonly object _lock = new();
+        private readonly Lock _lock = new();
 
         private readonly List<HostMemoryAllocation> _allocations;
         private readonly IntervalTree<ulong, HostMemoryAllocation> _allocationTree;
@@ -50,7 +51,7 @@ namespace Ryujinx.Graphics.Vulkan
         public unsafe bool TryImport(
             MemoryRequirements requirements,
             MemoryPropertyFlags flags,
-            IntPtr pointer,
+            nint pointer,
             ulong size)
         {
             lock (_lock)
@@ -139,7 +140,7 @@ namespace Ryujinx.Graphics.Vulkan
             return true;
         }
 
-        public (Auto<MemoryAllocation>, ulong) GetExistingAllocation(IntPtr pointer, ulong size)
+        public (Auto<MemoryAllocation>, ulong) GetExistingAllocation(nint pointer, ulong size)
         {
             lock (_lock)
             {

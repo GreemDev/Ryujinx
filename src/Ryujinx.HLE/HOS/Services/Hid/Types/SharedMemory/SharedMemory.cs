@@ -1,5 +1,6 @@
 using Ryujinx.Common.Memory;
 using Ryujinx.HLE.HOS.Services.Hid.Types.SharedMemory.Common;
+using Ryujinx.HLE.HOS.Services.Hid.Types.SharedMemory.DebugMouse;
 using Ryujinx.HLE.HOS.Services.Hid.Types.SharedMemory.DebugPad;
 using Ryujinx.HLE.HOS.Services.Hid.Types.SharedMemory.Keyboard;
 using Ryujinx.HLE.HOS.Services.Hid.Types.SharedMemory.Mouse;
@@ -44,6 +45,12 @@ namespace Ryujinx.HLE.HOS.Services.Hid.Types.SharedMemory
         /// </summary>
         [FieldOffset(0x9A00)]
         public Array10<NpadState> Npads;
+        
+        /// <summary>
+        /// Debug mouse.
+        /// </summary>
+        [FieldOffset(0x3DC00)]
+        public RingLifo<DebugMouseState> DebugMouse;
 
         public static SharedMemory Create()
         {

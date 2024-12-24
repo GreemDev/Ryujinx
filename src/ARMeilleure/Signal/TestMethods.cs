@@ -16,7 +16,7 @@ namespace ARMeilleure.Signal
     {
         public delegate bool DebugPartialUnmap();
         public delegate int DebugThreadLocalMapGetOrReserve(int threadId, int initialState);
-        public delegate void DebugNativeWriteLoop(IntPtr nativeWriteLoopPtr, IntPtr writePtr);
+        public delegate void DebugNativeWriteLoop(nint nativeWriteLoopPtr, nint writePtr);
 
         public static DebugPartialUnmap GenerateDebugPartialUnmap()
         {
@@ -35,7 +35,7 @@ namespace ARMeilleure.Signal
             return Compiler.Compile(cfg, argTypes, OperandType.I32, CompilerOptions.HighCq, RuntimeInformation.ProcessArchitecture).Map<DebugPartialUnmap>();
         }
 
-        public static DebugThreadLocalMapGetOrReserve GenerateDebugThreadLocalMapGetOrReserve(IntPtr structPtr)
+        public static DebugThreadLocalMapGetOrReserve GenerateDebugThreadLocalMapGetOrReserve(nint structPtr)
         {
             EmitterContext context = new();
 

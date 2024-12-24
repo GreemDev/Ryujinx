@@ -23,7 +23,7 @@ namespace Ryujinx.HLE.HOS.Services.Time.TimeZone
     {
         private const long TimeZoneBinaryTitleId = 0x010000000000080E;
 
-        private const string TimeZoneSystemTitleMissingErrorMessage = "TimeZoneBinary system title not found! TimeZone conversions will not work, provide the system archive to fix this error. (See https://github.com/Ryujinx/Ryujinx/wiki/Ryujinx-Setup-&-Configuration-Guide#initial-setup-continued---installation-of-firmware for more information)";
+        private const string TimeZoneSystemTitleMissingErrorMessage = "TimeZoneBinary system title not found! TimeZone conversions will not work, provide the system archive to fix this error.";
 
         private VirtualFileSystem _virtualFileSystem;
         private IntegrityCheckLevel _fsIntegrityCheckLevel;

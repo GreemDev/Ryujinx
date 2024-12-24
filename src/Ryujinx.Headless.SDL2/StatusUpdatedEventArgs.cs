@@ -2,23 +2,20 @@ using System;
 
 namespace Ryujinx.Headless.SDL2
 {
-    class StatusUpdatedEventArgs : EventArgs
+    class StatusUpdatedEventArgs(
+        string vSyncMode,
+        string dockedMode,
+        string aspectRatio,
+        string gameStatus,
+        string fifoStatus,
+        string gpuName)
+        : EventArgs
     {
-        public bool VSyncEnabled;
-        public string DockedMode;
-        public string AspectRatio;
-        public string GameStatus;
-        public string FifoStatus;
-        public string GpuName;
-
-        public StatusUpdatedEventArgs(bool vSyncEnabled, string dockedMode, string aspectRatio, string gameStatus, string fifoStatus, string gpuName)
-        {
-            VSyncEnabled = vSyncEnabled;
-            DockedMode = dockedMode;
-            AspectRatio = aspectRatio;
-            GameStatus = gameStatus;
-            FifoStatus = fifoStatus;
-            GpuName = gpuName;
-        }
+        public string VSyncMode = vSyncMode;
+        public string DockedMode = dockedMode;
+        public string AspectRatio = aspectRatio;
+        public string GameStatus = gameStatus;
+        public string FifoStatus = fifoStatus;
+        public string GpuName = gpuName;
     }
 }

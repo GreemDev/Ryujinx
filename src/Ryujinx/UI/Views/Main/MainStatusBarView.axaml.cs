@@ -2,7 +2,10 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Windows;
+using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.UI.Common.Configuration;
@@ -26,33 +29,33 @@ namespace Ryujinx.Ava.UI.Views.Main
             if (VisualRoot is MainWindow window)
             {
                 Window = window;
+                DataContext = window.ViewModel;
+                LocaleManager.Instance.LocaleChanged += () => Dispatcher.UIThread.Post(() =>
+                {
+                    if (Window.ViewModel.EnableNonGameRunningControls)
+                        Window.LoadApplications();
+                });
             }
-
-            DataContext = Window.ViewModel;
         }
 
-        private void VsyncStatus_PointerReleased(object sender, PointerReleasedEventArgs e)
+        private void VSyncMode_PointerReleased(object sender, PointerReleasedEventArgs e)
         {
-            Window.ViewModel.AppHost.ToggleVSync();
-
-            Logger.Info?.Print(LogClass.Application, $"VSync toggled to: {Window.ViewModel.AppHost.Device.EnableDeviceVsync}");
+            Window.ViewModel.ToggleVSyncMode();
+            Logger.Info?.Print(LogClass.Application, $"VSync Mode toggled to: {Window.ViewModel.AppHost.Device.VSyncMode}");
         }
 
         private void DockedStatus_PointerReleased(object sender, PointerReleasedEventArgs e)
         {
-            ConfigurationState.Instance.System.EnableDockedMode.Value = !ConfigurationState.Instance.System.EnableDockedMode.Value;
+            ConfigurationState.Instance.System.EnableDockedMode.Toggle();
         }
 
         private void AspectRatioStatus_OnClick(object sender, RoutedEventArgs e)
         {
             AspectRatio aspectRatio = ConfigurationState.Instance.Graphics.AspectRatio.Value;
-            ConfigurationState.Instance.Graphics.AspectRatio.Value = (int)aspectRatio + 1 > Enum.GetNames(typeof(AspectRatio)).Length - 1 ? AspectRatio.Fixed4x3 : aspectRatio + 1;
+            ConfigurationState.Instance.Graphics.AspectRatio.Value = (int)aspectRatio + 1 > Enum.GetNames<AspectRatio>().Length - 1 ? AspectRatio.Fixed4x3 : aspectRatio + 1;
         }
 
-        private void Refresh_OnClick(object sender, RoutedEventArgs e)
-        {
-            Window.LoadApplications();
-        }
+        private void Refresh_OnClick(object sender, RoutedEventArgs e) => Window.LoadApplications();
 
         private void VolumeStatus_OnPointerWheelChanged(object sender, PointerWheelEventArgs e)
         {

@@ -26,7 +26,7 @@ namespace Ryujinx.Ava.UI.Applet
         public static SvgImage JoyconLeftImage => GetResource(JoyConLeftResource);
         public static SvgImage JoyconRightImage => GetResource(JoyConRightResource);
 
-        public string PlayerCount { get; set; } = "";
+        public string PlayerCount { get; set; } = string.Empty;
         public bool SupportsProController { get; set; }
         public bool SupportsLeftJoycon { get; set; }
         public bool SupportsRightJoycon { get; set; }
@@ -37,14 +37,9 @@ namespace Ryujinx.Ava.UI.Applet
 
         public ControllerAppletDialog(MainWindow mainWindow, ControllerAppletUIArgs args)
         {
-            if (args.PlayerCountMin == args.PlayerCountMax)
-            {
-                PlayerCount = args.PlayerCountMin.ToString();
-            }
-            else
-            {
-                PlayerCount = $"{args.PlayerCountMin} - {args.PlayerCountMax}";
-            }
+            PlayerCount = args.PlayerCountMin == args.PlayerCountMax
+                ? args.PlayerCountMin.ToString()
+                : $"{args.PlayerCountMin} - {args.PlayerCountMax}";
 
             SupportsProController = (args.SupportedStyles & ControllerType.ProController) != 0;
             SupportsLeftJoycon = (args.SupportedStyles & ControllerType.JoyconLeft) != 0;

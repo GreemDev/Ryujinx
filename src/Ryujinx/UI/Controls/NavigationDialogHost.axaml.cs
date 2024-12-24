@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
+using Gommon;
 using LibHac;
 using LibHac.Common;
 using LibHac.Fs;
@@ -46,48 +47,40 @@ namespace Ryujinx.Ava.UI.Controls
             LoadProfiles();
 
             if (contentManager.GetCurrentFirmwareVersion() != null)
-            {
-                Task.Run(() =>
-                {
-                    UserFirmwareAvatarSelectorViewModel.PreloadAvatars(contentManager, virtualFileSystem);
-                });
-            }
+                Task.Run(() => UserFirmwareAvatarSelectorViewModel.PreloadAvatars(contentManager, virtualFileSystem));
+
             InitializeComponent();
         }
 
         public void GoBack()
         {
             if (ContentFrame.BackStack.Count > 0)
-            {
                 ContentFrame.GoBack();
-            }
 
             LoadProfiles();
         }
 
         public void Navigate(Type sourcePageType, object parameter)
-        {
-            ContentFrame.Navigate(sourcePageType, parameter);
-        }
+            => ContentFrame.Navigate(sourcePageType, parameter);
 
-        public static async Task Show(AccountManager ownerAccountManager, ContentManager ownerContentManager,
-            VirtualFileSystem ownerVirtualFileSystem, HorizonClient ownerHorizonClient)
+        public static async Task Show(
+            AccountManager ownerAccountManager,
+            ContentManager ownerContentManager,
+            VirtualFileSystem ownerVirtualFileSystem,
+            HorizonClient ownerHorizonClient)
         {
             var content = new NavigationDialogHost(ownerAccountManager, ownerContentManager, ownerVirtualFileSystem, ownerHorizonClient);
             ContentDialog contentDialog = new()
             {
                 Title = LocaleManager.Instance[LocaleKeys.UserProfileWindowTitle],
-                PrimaryButtonText = "",
-                SecondaryButtonText = "",
-                CloseButtonText = "",
+                PrimaryButtonText = string.Empty,
+                SecondaryButtonText = string.Empty,
+                CloseButtonText = string.Empty,
                 Content = content,
-                Padding = new Thickness(0),
+                Padding = new Thickness(0)
             };
 
-            contentDialog.Closed += (sender, args) =>
-            {
-                content.ViewModel.Dispose();
-            };
+            contentDialog.Closed += (_, _) => content.ViewModel.Dispose();
 
             Style footer = new(x => x.Name("DialogSpace").Child().OfType<Border>());
             footer.Setters.Add(new Setter(IsVisibleProperty, false));
@@ -109,12 +102,9 @@ namespace Ryujinx.Ava.UI.Controls
             ViewModel.Profiles.Clear();
             ViewModel.LostProfiles.Clear();
 
-            var profiles = AccountManager.GetAllUsers().OrderBy(x => x.Name);
-
-            foreach (var profile in profiles)
-            {
-                ViewModel.Profiles.Add(new UserProfile(profile, this));
-            }
+            AccountManager.GetAllUsers()
+                .OrderBy(x => x.Name)
+                .ForEach(profile => ViewModel.Profiles.Add(new UserProfile(profile, this)));
 
             var saveDataFilter = SaveDataFilter.Make(programId: default, saveType: SaveDataType.Account, default, saveDataId: default, index: default);
 
@@ -148,7 +138,7 @@ namespace Ryujinx.Ava.UI.Controls
 
             foreach (var account in lostAccounts)
             {
-                ViewModel.LostProfiles.Add(new UserProfile(new HLE.HOS.Services.Account.Acc.UserProfile(account, "", null), this));
+                ViewModel.LostProfiles.Add(new UserProfile(new HLE.HOS.Services.Account.Acc.UserProfile(account, string.Empty, null), this));
             }
 
             ViewModel.Profiles.Add(new BaseModel());
@@ -165,25 +155,22 @@ namespace Ryujinx.Ava.UI.Controls
 
                 if (profile == null)
                 {
-                    static async void Action()
-                    {
-                        await ContentDialogHelper.CreateErrorDialog(LocaleManager.Instance[LocaleKeys.DialogUserProfileDeletionWarningMessage]);
-                    }
-
-                    Dispatcher.UIThread.Post(Action);
+                    _ = Dispatcher.UIThread.InvokeAsync(async () 
+                        => await ContentDialogHelper.CreateErrorDialog(
+                            LocaleManager.Instance[LocaleKeys.DialogUserProfileDeletionWarningMessage]));
 
                     return;
-                }
+                    }
 
                 AccountManager.OpenUser(profile.UserId);
             }
 
             var result = await ContentDialogHelper.CreateConfirmationDialog(
                 LocaleManager.Instance[LocaleKeys.DialogUserProfileDeletionConfirmMessage],
-                "",
+                string.Empty,
                 LocaleManager.Instance[LocaleKeys.InputDialogYes],
                 LocaleManager.Instance[LocaleKeys.InputDialogNo],
-                "");
+                string.Empty);
 
             if (result == UserResult.Yes)
             {

@@ -11,6 +11,7 @@ using Silk.NET.Vulkan.Extensions.KHR;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Format = Ryujinx.Graphics.GAL.Format;
 using PrimitiveTopology = Ryujinx.Graphics.GAL.PrimitiveTopology;
 using SamplerCreateInfo = Ryujinx.Graphics.GAL.SamplerCreateInfo;
@@ -26,6 +27,8 @@ namespace Ryujinx.Graphics.Vulkan
         private WindowBase _window;
 
         private bool _initialized;
+
+        public uint ProgramCount { get; set; } = 0;
 
         internal FormatCapabilities FormatCapabilities { get; private set; }
         internal HardwareCapabilities Capabilities;
@@ -43,8 +46,8 @@ namespace Ryujinx.Graphics.Vulkan
         internal uint QueueFamilyIndex { get; private set; }
         internal Queue Queue { get; private set; }
         internal Queue BackgroundQueue { get; private set; }
-        internal object BackgroundQueueLock { get; private set; }
-        internal object QueueLock { get; private set; }
+        internal Lock BackgroundQueueLock { get; private set; }
+        internal Lock QueueLock { get; private set; }
 
         internal MemoryAllocator MemoryAllocator { get; private set; }
         internal HostMemoryAllocator HostMemoryAllocator { get; private set; }
@@ -102,24 +105,26 @@ namespace Ryujinx.Graphics.Vulkan
 
         public event EventHandler<ScreenCaptureImageInfo> ScreenCaptured;
 
-        public VulkanRenderer(Vk api, Func<Instance, Vk, SurfaceKHR> surfaceFunc, Func<string[]> requiredExtensionsFunc, string preferredGpuId)
+        public VulkanRenderer(Vk api, Func<Instance, Vk, SurfaceKHR> getSurface, Func<string[]> requiredExtensionsFunc, string preferredGpuId)
         {
-            _getSurface = surfaceFunc;
+            _getSurface = getSurface;
             _getRequiredExtensions = requiredExtensionsFunc;
             _preferredGpuId = preferredGpuId;
             Api = api;
-            Shaders = new HashSet<ShaderCollection>();
-            Textures = new HashSet<ITexture>();
-            Samplers = new HashSet<SamplerHolder>();
+            Shaders = [];
+            Textures = [];
+            Samplers = [];
 
-            if (OperatingSystem.IsMacOS())
-            {
+            // Any device running on MacOS is using MoltenVK, even Intel and AMD vendors.
+            if (IsMoltenVk = OperatingSystem.IsMacOS())
                 MVKInitialization.Initialize();
-
-                // Any device running on MacOS is using MoltenVK, even Intel and AMD vendors.
-                IsMoltenVk = true;
-            }
         }
+
+        public static VulkanRenderer Create(
+            string preferredGpuId,
+            Func<Instance, Vk, SurfaceKHR> getSurface,
+            Func<string[]> getRequiredExtensions
+        ) => new(Vk.GetApi(), getSurface, getRequiredExtensions, preferredGpuId);
 
         private unsafe void LoadFeatures(uint maxQueueCount, uint queueFamilyIndex)
         {
@@ -159,7 +164,7 @@ namespace Ryujinx.Graphics.Vulkan
             {
                 Api.GetDeviceQueue(_device, queueFamilyIndex, 1, out var backgroundQueue);
                 BackgroundQueue = backgroundQueue;
-                BackgroundQueueLock = new object();
+                BackgroundQueueLock = new();
             }
 
             PhysicalDeviceProperties2 properties2 = new()
@@ -363,7 +368,7 @@ namespace Ryujinx.Graphics.Vulkan
 
             fixed (byte* deviceName = properties.DeviceName)
             {
-                GpuRenderer = Marshal.PtrToStringAnsi((IntPtr)deviceName);
+                GpuRenderer = Marshal.PtrToStringAnsi((nint)deviceName);
             }
 
             GpuVersion = $"Vulkan v{ParseStandardVulkanVersion(properties.ApiVersion)}, Driver v{ParseDriverVersion(ref properties)}";
@@ -492,7 +497,7 @@ namespace Ryujinx.Graphics.Vulkan
 
             Api.GetDeviceQueue(_device, queueFamilyIndex, 0, out var queue);
             Queue = queue;
-            QueueLock = new object();
+            QueueLock = new();
 
             LoadFeatures(maxQueueCount, queueFamilyIndex);
 
@@ -544,6 +549,8 @@ namespace Ryujinx.Graphics.Vulkan
 
         public IProgram CreateProgram(ShaderSource[] sources, ShaderInfo info)
         {
+            ProgramCount++;
+
             bool isCompute = sources.Length == 1 && sources[0].Stage == ShaderStage.Compute;
 
             if (info.State.HasValue || isCompute)

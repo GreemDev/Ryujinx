@@ -3,19 +3,11 @@ using System.Threading;
 
 namespace Ryujinx.Common
 {
-    public class ObjectPool<T>
+    public class ObjectPool<T>(Func<T> factory, int size)
         where T : class
     {
         private T _firstItem;
-        private readonly T[] _items;
-
-        private readonly Func<T> _factory;
-
-        public ObjectPool(Func<T> factory, int size)
-        {
-            _items = new T[size - 1];
-            _factory = factory;
-        }
+        private readonly T[] _items = new T[size - 1];
 
         public T Allocate()
         {
@@ -43,7 +35,7 @@ namespace Ryujinx.Common
                 }
             }
 
-            return _factory();
+            return factory();
         }
 
         public void Release(T obj)

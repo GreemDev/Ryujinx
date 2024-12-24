@@ -25,9 +25,12 @@ namespace Ryujinx.Ava.UI.Applet
         {
             _parent = parent;
 
-            (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyPressed += AvaloniaDynamicTextInputHandler_KeyPressed;
-            (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyRelease += AvaloniaDynamicTextInputHandler_KeyRelease;
-            (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).TextInput += AvaloniaDynamicTextInputHandler_TextInput;
+            if (_parent.InputManager.KeyboardDriver is AvaloniaKeyboardDriver avaloniaKeyboardDriver)
+            {
+                avaloniaKeyboardDriver.KeyPressed += AvaloniaDynamicTextInputHandler_KeyPressed;
+                avaloniaKeyboardDriver.KeyRelease += AvaloniaDynamicTextInputHandler_KeyRelease;
+                avaloniaKeyboardDriver.TextInput += AvaloniaDynamicTextInputHandler_TextInput;
+            }
 
             _hiddenTextBox = _parent.HiddenTextBox;
 
@@ -44,7 +47,7 @@ namespace Ryujinx.Ava.UI.Applet
             TextChangedEvent?.Invoke(text ?? string.Empty, _hiddenTextBox.SelectionStart, _hiddenTextBox.SelectionEnd, false);
         }
 
-        private void SelectionChanged(int selection)
+        private void SelectionChanged(int _)
         {
             TextChangedEvent?.Invoke(_hiddenTextBox.Text ?? string.Empty, _hiddenTextBox.SelectionStart, _hiddenTextBox.SelectionEnd, false);
         }
@@ -102,14 +105,8 @@ namespace Ryujinx.Ava.UI.Applet
 
         public bool TextProcessingEnabled
         {
-            get
-            {
-                return Volatile.Read(ref _canProcessInput);
-            }
-            set
-            {
-                Volatile.Write(ref _canProcessInput, value);
-            }
+            get => Volatile.Read(ref _canProcessInput);
+            set => Volatile.Write(ref _canProcessInput, value);
         }
 
         public event DynamicTextChangedHandler TextChangedEvent;
@@ -118,9 +115,12 @@ namespace Ryujinx.Ava.UI.Applet
 
         public void Dispose()
         {
-            (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyPressed -= AvaloniaDynamicTextInputHandler_KeyPressed;
-            (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyRelease -= AvaloniaDynamicTextInputHandler_KeyRelease;
-            (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).TextInput -= AvaloniaDynamicTextInputHandler_TextInput;
+            if (_parent.InputManager.KeyboardDriver is AvaloniaKeyboardDriver avaloniaKeyboardDriver)
+            {
+                avaloniaKeyboardDriver.KeyPressed -= AvaloniaDynamicTextInputHandler_KeyPressed;
+                avaloniaKeyboardDriver.KeyRelease -= AvaloniaDynamicTextInputHandler_KeyRelease;
+                avaloniaKeyboardDriver.TextInput -= AvaloniaDynamicTextInputHandler_TextInput;
+            }
 
             _textChangedSubscription?.Dispose();
             _selectionStartChangedSubscription?.Dispose();
@@ -135,23 +135,19 @@ namespace Ryujinx.Ava.UI.Applet
             });
         }
 
-        public void SetText(string text, int cursorBegin)
-        {
+        public void SetText(string text, int cursorBegin) =>
             Dispatcher.UIThread.Post(() =>
             {
                 _hiddenTextBox.Text = text;
                 _hiddenTextBox.CaretIndex = cursorBegin;
             });
-        }
 
-        public void SetText(string text, int cursorBegin, int cursorEnd)
-        {
+        public void SetText(string text, int cursorBegin, int cursorEnd) =>
             Dispatcher.UIThread.Post(() =>
             {
                 _hiddenTextBox.Text = text;
                 _hiddenTextBox.SelectionStart = cursorBegin;
                 _hiddenTextBox.SelectionEnd = cursorEnd;
             });
-        }
     }
 }

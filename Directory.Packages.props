@@ -10,17 +10,22 @@
     <PackageVersion Include="Avalonia.Markup.Xaml.Loader" Version="11.0.10" />
     <PackageVersion Include="Avalonia.Svg" Version="11.0.0.18" />
     <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.18" />
+    <PackageVersion Include="Microsoft.Build.Framework" Version="17.11.4" />
+    <PackageVersion Include="Microsoft.Build.Utilities.Core" Version="17.12.6" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageVersion Include="Projektanker.Icons.Avalonia" Version="9.4.0" />
+    <PackageVersion Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.4.0"/>
+    <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.4.0"/>
     <PackageVersion Include="CommandLineParser" Version="2.9.1" />
     <PackageVersion Include="Concentus" Version="2.2.0" />
     <PackageVersion Include="DiscordRichPresence" Version="1.2.1.24" />
     <PackageVersion Include="DynamicData" Version="9.0.4" />
     <PackageVersion Include="FluentAvaloniaUI" Version="2.0.5" />
-    <PackageVersion Include="GtkSharp.Dependencies" Version="1.1.1" />
-    <PackageVersion Include="GtkSharp.Dependencies.osx" Version="0.0.5" />
+    <PackageVersion Include="Humanizer" Version="2.14.1" />
     <PackageVersion Include="LibHac" Version="0.19.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2" />
-    <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.0.1" />
+    <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.1.2" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageVersion Include="MsgPack.Cli" Version="1.0.1" />
@@ -31,11 +36,12 @@
     <PackageVersion Include="OpenTK.Graphics" Version="4.8.2" />
     <PackageVersion Include="OpenTK.Audio.OpenAL" Version="4.8.2" />
     <PackageVersion Include="OpenTK.Windowing.GraphicsLibraryFramework" Version="4.8.2" />
+    <PackageVersion Include="Open.NAT.Core" Version="2.1.0.5" />
     <PackageVersion Include="Ryujinx.Audio.OpenAL.Dependencies" Version="1.21.0.1" />
     <PackageVersion Include="Ryujinx.Graphics.Nvdec.Dependencies" Version="5.0.3-build14" />
     <PackageVersion Include="Ryujinx.Graphics.Vulkan.Dependencies.MoltenVK" Version="1.2.0" />
-    <PackageVersion Include="Ryujinx.GtkSharp" Version="3.24.24.59-ryujinx" />
     <PackageVersion Include="Ryujinx.SDL2-CS" Version="2.30.0-build32" />
+    <PackageVersion Include="Gommon" Version="2.6.8" />
     <PackageVersion Include="securifybv.ShellLink" Version="0.1.0" />
     <PackageVersion Include="shaderc.net" Version="0.1.0" />
     <PackageVersion Include="SharpMetal" Version="1.0.0-preview20" />
@@ -46,8 +52,8 @@
     <PackageVersion Include="SkiaSharp" Version="2.88.7" />
     <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="2.88.7" />
     <PackageVersion Include="SPB" Version="0.0.4-build32" />
-    <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
-    <PackageVersion Include="System.Management" Version="8.0.0" />
+    <PackageVersion Include="System.IO.Hashing" Version="9.0.0" />
+    <PackageVersion Include="System.Management" Version="9.0.0" />
     <PackageVersion Include="UnicornEngine.Unicorn" Version="2.0.2-rc1-fb78016" />
   </ItemGroup>
 </Project>

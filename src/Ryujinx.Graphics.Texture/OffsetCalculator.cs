@@ -15,7 +15,7 @@ namespace Ryujinx.Graphics.Texture
 
         private readonly BlockLinearLayout _layoutConverter;
 
-        // Variables for built in iteration.
+        // Variables for built-in iteration.
         private int _yPart;
 
         public OffsetCalculator(
@@ -73,69 +73,50 @@ namespace Ryujinx.Graphics.Texture
         public int GetOffset(int x, int y)
         {
             if (_isLinear)
-            {
                 return x * _bytesPerPixel + y * _stride;
-            }
-            else
-            {
-                return _layoutConverter.GetOffset(x, y, 0);
-            }
+
+            return _layoutConverter.GetOffset(x, y, 0);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetOffset(int x)
         {
             if (_isLinear)
-            {
                 return x * _bytesPerPixel + _yPart;
-            }
-            else
-            {
-                return _layoutConverter.GetOffset(x);
-            }
+
+            return _layoutConverter.GetOffset(x);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetOffsetWithLineOffset64(int x)
         {
             if (_isLinear)
-            {
                 return x + _yPart;
-            }
-            else
-            {
-                return _layoutConverter.GetOffsetWithLineOffset64(x);
-            }
+
+            return _layoutConverter.GetOffsetWithLineOffset64(x);
         }
 
         public (int offset, int size) GetRectangleRange(int x, int y, int width, int height)
         {
-            if (_isLinear)
-            {
-                int start = y * Math.Abs(_stride) + x * _bytesPerPixel;
-                int end = (y + height - 1) * Math.Abs(_stride) + (x + width) * _bytesPerPixel;
-                return (y * _stride + x * _bytesPerPixel, end - start);
-            }
-            else
-            {
+            if (!_isLinear)
                 return _layoutConverter.GetRectangleRange(x, y, width, height);
-            }
+
+            int start = y * Math.Abs(_stride) + x * _bytesPerPixel;
+            int end = (y + height - 1) * Math.Abs(_stride) + (x + width) * _bytesPerPixel;
+            return (y * _stride + x * _bytesPerPixel, end - start);
         }
 
         public bool LayoutMatches(OffsetCalculator other)
         {
             if (_isLinear)
-            {
                 return other._isLinear &&
                        _width == other._width &&
                        _height == other._height &&
                        _stride == other._stride &&
                        _bytesPerPixel == other._bytesPerPixel;
-            }
-            else
-            {
-                return !other._isLinear && _layoutConverter.LayoutMatches(other._layoutConverter);
-            }
+
+
+            return !other._isLinear && _layoutConverter.LayoutMatches(other._layoutConverter);
         }
     }
 }

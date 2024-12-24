@@ -583,11 +583,20 @@ namespace Ryujinx.Audio.Renderer.Server
             }
         }
 
-        public void GenerateCompressorEffect(uint bufferOffset, CompressorParameter parameter, Memory<CompressorState> state, bool isEnabled, int nodeId)
+        /// <summary>
+        /// Generate a new <see cref="CompressorCommand"/>.
+        /// </summary>
+        /// <param name="bufferOffset">The target buffer offset.</param>
+        /// <param name="parameter">The compressor parameter.</param>
+        /// <param name="state">The compressor state.</param>
+        /// <param name="effectResultState">The DSP effect result state.</param>
+        /// <param name="isEnabled">Set to true if the effect should be active.</param>
+        /// <param name="nodeId">The node id associated to this command.</param>
+        public void GenerateCompressorEffect(uint bufferOffset, CompressorParameter parameter, Memory<CompressorState> state, Memory<EffectResultState> effectResultState, bool isEnabled, int nodeId)
         {
             if (parameter.IsChannelCountValid())
             {
-                CompressorCommand command = new(bufferOffset, parameter, state, isEnabled, nodeId);
+                CompressorCommand command = new(bufferOffset, parameter, state, effectResultState, isEnabled, nodeId);
 
                 command.EstimatedProcessingTime = _commandProcessingTimeEstimator.Estimate(command);
 

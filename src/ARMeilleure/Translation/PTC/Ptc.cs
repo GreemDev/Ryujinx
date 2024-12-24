@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -29,7 +30,7 @@ namespace ARMeilleure.Translation.PTC
         private const string OuterHeaderMagicString = "PTCohd\0\0";
         private const string InnerHeaderMagicString = "PTCihd\0\0";
 
-        private const uint InternalVersion = 6950; //! To be incremented manually for each change to the ARMeilleure project.
+        private const uint InternalVersion = 6997; //! To be incremented manually for each change to the ARMeilleure project.
 
         private const string ActualDir = "0";
         private const string BackupDir = "1";
@@ -40,6 +41,7 @@ namespace ARMeilleure.Translation.PTC
         public static readonly Symbol PageTableSymbol = new(SymbolType.Special, 1);
         public static readonly Symbol CountTableSymbol = new(SymbolType.Special, 2);
         public static readonly Symbol DispatchStubSymbol = new(SymbolType.Special, 3);
+        public static readonly Symbol FunctionTableSymbol = new(SymbolType.Special, 4);
 
         private const byte FillingByte = 0x00;
         private const CompressionLevel SaveCompressionLevel = CompressionLevel.Fastest;
@@ -57,7 +59,7 @@ namespace ARMeilleure.Translation.PTC
 
         private readonly ManualResetEvent _waitEvent;
 
-        private readonly object _lock;
+        private readonly Lock _lock = new();
 
         private bool _disposed;
 
@@ -87,8 +89,6 @@ namespace ARMeilleure.Translation.PTC
 
             _waitEvent = new ManualResetEvent(true);
 
-            _lock = new object();
-
             _disposed = false;
 
             TitleIdText = TitleIdTextDefault;
@@ -100,7 +100,7 @@ namespace ARMeilleure.Translation.PTC
             Disable();
         }
 
-        public void Initialize(string titleIdText, string displayVersion, bool enabled, MemoryManagerType memoryMode)
+        public void Initialize(string titleIdText, string displayVersion, bool enabled, MemoryManagerType memoryMode, string cacheSelector)
         {
             Wait();
 
@@ -126,6 +126,8 @@ namespace ARMeilleure.Translation.PTC
             DisplayVersion = !string.IsNullOrEmpty(displayVersion) ? displayVersion : DisplayVersionDefault;
             _memoryMode = memoryMode;
 
+            Logger.Info?.Print(LogClass.Ptc, $"PPTC (v{InternalVersion}) Profile: {DisplayVersion}-{cacheSelector}");
+
             string workPathActual = Path.Combine(AppDataManager.GamesDirPath, TitleIdText, "cache", "cpu", ActualDir);
             string workPathBackup = Path.Combine(AppDataManager.GamesDirPath, TitleIdText, "cache", "cpu", BackupDir);
 
@@ -139,8 +141,8 @@ namespace ARMeilleure.Translation.PTC
                 Directory.CreateDirectory(workPathBackup);
             }
 
-            CachePathActual = Path.Combine(workPathActual, DisplayVersion);
-            CachePathBackup = Path.Combine(workPathBackup, DisplayVersion);
+            CachePathActual = Path.Combine(workPathActual, DisplayVersion) + "-" + cacheSelector;
+            CachePathBackup = Path.Combine(workPathBackup, DisplayVersion) + "-" + cacheSelector;
 
             PreLoad();
             Profiler.PreLoad();
@@ -268,11 +270,11 @@ namespace ARMeilleure.Translation.PTC
                     return false;
                 }
 
-                IntPtr intPtr = IntPtr.Zero;
+                nint intPtr = nint.Zero;
 
                 try
                 {
-                    intPtr = Marshal.AllocHGlobal(new IntPtr(outerHeader.UncompressedStreamSize));
+                    intPtr = Marshal.AllocHGlobal(new nint(outerHeader.UncompressedStreamSize));
 
                     using UnmanagedMemoryStream stream = new((byte*)intPtr.ToPointer(), outerHeader.UncompressedStreamSize, outerHeader.UncompressedStreamSize, FileAccess.ReadWrite);
                     try
@@ -309,7 +311,7 @@ namespace ARMeilleure.Translation.PTC
                     ReadOnlySpan<byte> infosBytes = new(stream.PositionPointer, innerHeader.InfosLength);
                     stream.Seek(innerHeader.InfosLength, SeekOrigin.Current);
 
-                    Hash128 infosHash = XXHash128.ComputeHash(infosBytes);
+                    Hash128 infosHash = Hash128.ComputeHash(infosBytes);
 
                     if (innerHeader.InfosHash != infosHash)
                     {
@@ -321,7 +323,7 @@ namespace ARMeilleure.Translation.PTC
                     ReadOnlySpan<byte> codesBytes = (int)innerHeader.CodesLength > 0 ? new(stream.PositionPointer, (int)innerHeader.CodesLength) : ReadOnlySpan<byte>.Empty;
                     stream.Seek(innerHeader.CodesLength, SeekOrigin.Current);
 
-                    Hash128 codesHash = XXHash128.ComputeHash(codesBytes);
+                    Hash128 codesHash = Hash128.ComputeHash(codesBytes);
 
                     if (innerHeader.CodesHash != codesHash)
                     {
@@ -333,7 +335,7 @@ namespace ARMeilleure.Translation.PTC
                     ReadOnlySpan<byte> relocsBytes = new(stream.PositionPointer, innerHeader.RelocsLength);
                     stream.Seek(innerHeader.RelocsLength, SeekOrigin.Current);
 
-                    Hash128 relocsHash = XXHash128.ComputeHash(relocsBytes);
+                    Hash128 relocsHash = Hash128.ComputeHash(relocsBytes);
 
                     if (innerHeader.RelocsHash != relocsHash)
                     {
@@ -345,7 +347,7 @@ namespace ARMeilleure.Translation.PTC
                     ReadOnlySpan<byte> unwindInfosBytes = new(stream.PositionPointer, innerHeader.UnwindInfosLength);
                     stream.Seek(innerHeader.UnwindInfosLength, SeekOrigin.Current);
 
-                    Hash128 unwindInfosHash = XXHash128.ComputeHash(unwindInfosBytes);
+                    Hash128 unwindInfosHash = Hash128.ComputeHash(unwindInfosBytes);
 
                     if (innerHeader.UnwindInfosHash != unwindInfosHash)
                     {
@@ -373,7 +375,7 @@ namespace ARMeilleure.Translation.PTC
                 }
                 finally
                 {
-                    if (intPtr != IntPtr.Zero)
+                    if (intPtr != nint.Zero)
                     {
                         Marshal.FreeHGlobal(intPtr);
                     }
@@ -455,11 +457,11 @@ namespace ARMeilleure.Translation.PTC
 
             outerHeader.SetHeaderHash();
 
-            IntPtr intPtr = IntPtr.Zero;
+            nint intPtr = nint.Zero;
 
             try
             {
-                intPtr = Marshal.AllocHGlobal(new IntPtr(outerHeader.UncompressedStreamSize));
+                intPtr = Marshal.AllocHGlobal(new nint(outerHeader.UncompressedStreamSize));
 
                 using UnmanagedMemoryStream stream = new((byte*)intPtr.ToPointer(), outerHeader.UncompressedStreamSize, outerHeader.UncompressedStreamSize, FileAccess.ReadWrite);
                 stream.Seek((long)Unsafe.SizeOf<InnerHeader>(), SeekOrigin.Begin);
@@ -478,10 +480,10 @@ namespace ARMeilleure.Translation.PTC
 
                 Debug.Assert(stream.Position == stream.Length);
 
-                innerHeader.InfosHash = XXHash128.ComputeHash(infosBytes);
-                innerHeader.CodesHash = XXHash128.ComputeHash(codesBytes);
-                innerHeader.RelocsHash = XXHash128.ComputeHash(relocsBytes);
-                innerHeader.UnwindInfosHash = XXHash128.ComputeHash(unwindInfosBytes);
+                innerHeader.InfosHash = Hash128.ComputeHash(infosBytes);
+                innerHeader.CodesHash = Hash128.ComputeHash(codesBytes);
+                innerHeader.RelocsHash = Hash128.ComputeHash(relocsBytes);
+                innerHeader.UnwindInfosHash = Hash128.ComputeHash(unwindInfosBytes);
 
                 innerHeader.SetHeaderHash();
 
@@ -513,7 +515,7 @@ namespace ARMeilleure.Translation.PTC
             }
             finally
             {
-                if (intPtr != IntPtr.Zero)
+                if (intPtr != nint.Zero)
                 {
                     Marshal.FreeHGlobal(intPtr);
                 }
@@ -664,7 +666,7 @@ namespace ARMeilleure.Translation.PTC
 
             foreach (RelocEntry relocEntry in relocEntries)
             {
-                IntPtr? imm = null;
+                nint? imm = null;
                 Symbol symbol = relocEntry.Symbol;
 
                 if (symbol.Type == SymbolType.FunctionTable)
@@ -675,7 +677,7 @@ namespace ARMeilleure.Translation.PTC
                     {
                         unsafe
                         {
-                            imm = (IntPtr)Unsafe.AsPointer(ref translator.FunctionTable.GetValue(guestAddress));
+                            imm = (nint)Unsafe.AsPointer(ref translator.FunctionTable.GetValue(guestAddress));
                         }
                     }
                 }
@@ -683,7 +685,7 @@ namespace ARMeilleure.Translation.PTC
                 {
                     int index = (int)symbol.Value;
 
-                    if (Delegates.TryGetDelegateFuncPtrByIndex(index, out IntPtr funcPtr))
+                    if (Delegates.TryGetDelegateFuncPtrByIndex(index, out nint funcPtr))
                     {
                         imm = funcPtr;
                     }
@@ -698,12 +700,16 @@ namespace ARMeilleure.Translation.PTC
 
                     unsafe
                     {
-                        imm = (IntPtr)Unsafe.AsPointer(ref callCounter.Value);
+                        imm = (nint)Unsafe.AsPointer(ref callCounter.Value);
                     }
                 }
                 else if (symbol == DispatchStubSymbol)
                 {
                     imm = translator.Stubs.DispatchStub;
+                }
+                else if (symbol == FunctionTableSymbol)
+                {
+                    imm = translator.FunctionTable.Base;
                 }
 
                 if (imm == null)
@@ -744,7 +750,7 @@ namespace ARMeilleure.Translation.PTC
             bool highCq)
         {
             var cFunc = new CompiledFunction(code, unwindInfo, RelocInfo.Empty);
-            var gFunc = cFunc.MapWithPointer<GuestFunction>(out IntPtr gFuncPointer);
+            var gFunc = cFunc.MapWithPointer<GuestFunction>(out nint gFuncPointer);
 
             return new TranslatedFunction(gFunc, gFuncPointer, callCounter, guestSize, highCq);
         }
@@ -795,10 +801,15 @@ namespace ARMeilleure.Translation.PTC
                 return;
             }
 
+
+
             int degreeOfParallelism = Environment.ProcessorCount;
 
+            if (Optimizations.LowPower)
+                degreeOfParallelism /= 3;
+
             // If there are enough cores lying around, we leave one alone for other tasks.
-            if (degreeOfParallelism > 4)
+            if (degreeOfParallelism > 4 && !Optimizations.LowPower)
             {
                 degreeOfParallelism--;
             }
@@ -843,17 +854,15 @@ namespace ARMeilleure.Translation.PTC
                 }
             }
 
-            List<Thread> threads = new();
 
-            for (int i = 0; i < degreeOfParallelism; i++)
-            {
-                Thread thread = new(TranslateFuncs)
-                {
-                    IsBackground = true,
-                };
-
-                threads.Add(thread);
-            }
+            List<Thread> threads = Enumerable.Range(0, degreeOfParallelism)
+                .Select(idx => 
+                    new Thread(TranslateFuncs)
+                    {
+                        IsBackground = true, 
+                        Name = "Ptc.TranslateThread." + idx 
+                    }
+                ).ToList();
 
             Stopwatch sw = Stopwatch.StartNew();
 
@@ -880,6 +889,7 @@ namespace ARMeilleure.Translation.PTC
             Thread preSaveThread = new(PreSave)
             {
                 IsBackground = true,
+                Name = "Ptc.DiskWriter"
             };
             preSaveThread.Start();
         }
@@ -907,7 +917,7 @@ namespace ARMeilleure.Translation.PTC
 
         public static Hash128 ComputeHash(IMemoryManager memory, ulong address, ulong guestSize)
         {
-            return XXHash128.ComputeHash(memory.GetSpan(address, checked((int)(guestSize))));
+            return Hash128.ComputeHash(memory.GetSpan(address, checked((int)(guestSize))));
         }
 
         public void WriteCompiledFunction(ulong address, ulong guestSize, Hash128 hash, bool highCq, CompiledFunction compiledFunc)
@@ -1036,14 +1046,14 @@ namespace ARMeilleure.Translation.PTC
             {
                 Span<OuterHeader> spanHeader = MemoryMarshal.CreateSpan(ref this, 1);
 
-                HeaderHash = XXHash128.ComputeHash(MemoryMarshal.AsBytes(spanHeader)[..(Unsafe.SizeOf<OuterHeader>() - Unsafe.SizeOf<Hash128>())]);
+                HeaderHash = Hash128.ComputeHash(MemoryMarshal.AsBytes(spanHeader)[..(Unsafe.SizeOf<OuterHeader>() - Unsafe.SizeOf<Hash128>())]);
             }
 
             public bool IsHeaderValid()
             {
                 Span<OuterHeader> spanHeader = MemoryMarshal.CreateSpan(ref this, 1);
 
-                return XXHash128.ComputeHash(MemoryMarshal.AsBytes(spanHeader)[..(Unsafe.SizeOf<OuterHeader>() - Unsafe.SizeOf<Hash128>())]) == HeaderHash;
+                return Hash128.ComputeHash(MemoryMarshal.AsBytes(spanHeader)[..(Unsafe.SizeOf<OuterHeader>() - Unsafe.SizeOf<Hash128>())]) == HeaderHash;
             }
         }
 
@@ -1071,14 +1081,14 @@ namespace ARMeilleure.Translation.PTC
             {
                 Span<InnerHeader> spanHeader = MemoryMarshal.CreateSpan(ref this, 1);
 
-                HeaderHash = XXHash128.ComputeHash(MemoryMarshal.AsBytes(spanHeader)[..(Unsafe.SizeOf<InnerHeader>() - Unsafe.SizeOf<Hash128>())]);
+                HeaderHash = Hash128.ComputeHash(MemoryMarshal.AsBytes(spanHeader)[..(Unsafe.SizeOf<InnerHeader>() - Unsafe.SizeOf<Hash128>())]);
             }
 
             public bool IsHeaderValid()
             {
                 Span<InnerHeader> spanHeader = MemoryMarshal.CreateSpan(ref this, 1);
 
-                return XXHash128.ComputeHash(MemoryMarshal.AsBytes(spanHeader)[..(Unsafe.SizeOf<InnerHeader>() - Unsafe.SizeOf<Hash128>())]) == HeaderHash;
+                return Hash128.ComputeHash(MemoryMarshal.AsBytes(spanHeader)[..(Unsafe.SizeOf<InnerHeader>() - Unsafe.SizeOf<Hash128>())]) == HeaderHash;
             }
         }
 

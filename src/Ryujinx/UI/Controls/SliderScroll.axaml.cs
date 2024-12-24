@@ -10,20 +10,7 @@ namespace Ryujinx.Ava.UI.Controls
 
         protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
         {
-            var newValue = Value + e.Delta.Y * TickFrequency;
-
-            if (newValue < Minimum)
-            {
-                Value = Minimum;
-            }
-            else if (newValue > Maximum)
-            {
-                Value = Maximum;
-            }
-            else
-            {
-                Value = newValue;
-            }
+            Value = Math.Clamp(Value + e.Delta.Y * TickFrequency, Minimum, Maximum);
 
             e.Handled = true;
         }

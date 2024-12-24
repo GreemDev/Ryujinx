@@ -7,11 +7,11 @@ namespace Ryujinx.Audio.Backends.SoundIo.Native
 {
     public class SoundIoDeviceContext
     {
-        private readonly IntPtr _context;
+        private readonly nint _context;
 
-        public IntPtr Context => _context;
+        public nint Context => _context;
 
-        internal SoundIoDeviceContext(IntPtr context)
+        internal SoundIoDeviceContext(nint context)
         {
             _context = context;
         }
@@ -36,9 +36,9 @@ namespace Ryujinx.Audio.Backends.SoundIo.Native
 
         public SoundIoOutStreamContext CreateOutStream()
         {
-            IntPtr context = soundio_outstream_create(_context);
+            nint context = soundio_outstream_create(_context);
 
-            if (context == IntPtr.Zero)
+            if (context == nint.Zero)
             {
                 return null;
             }

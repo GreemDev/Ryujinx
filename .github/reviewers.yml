@@ -1,25 +1,17 @@
-
 cpu:
-  - gdkchan
-  - riperiperi
-  - LDj3SNuD
+  - GreemDev
 
 gpu:
-  - gdkchan
-  - riperiperi
+  - GreemDev
 
 gui:
-  - Ack77
-  - emmauss
-  - TSRBerry
+  - GreemDev
 
 horizon:
-  - gdkchan
-  - Ack77
-  - TSRBerry
+  - GreemDev
 
 infra:
-  - TSRBerry
+  - GreemDev
 
 default:
   - '@developers'

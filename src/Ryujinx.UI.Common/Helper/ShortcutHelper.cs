@@ -140,11 +140,11 @@ namespace Ryujinx.UI.Common.Helper
 
             argsList.Add($"\"{appFilePath}\"");
 
-            return String.Join(" ", argsList);
+            return string.Join(" ", argsList);
         }
 
         /// <summary>
-        /// Creates a Icon (.ico) file using the source bitmap image at the specified file path.
+        /// Creates an Icon (.ico) file using the source bitmap image at the specified file path.
         /// </summary>
         /// <param name="source">The source bitmap image that will be saved as an .ico file</param>
         /// <param name="filePath">The location that the new .ico file will be saved too (Make sure to include '.ico' in the path).</param>

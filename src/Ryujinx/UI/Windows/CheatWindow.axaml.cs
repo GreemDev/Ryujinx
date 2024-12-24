@@ -6,15 +6,13 @@ using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common.Configuration;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 
 namespace Ryujinx.Ava.UI.Windows
 {
-    public partial class CheatWindow : StyleableWindow
+    public partial class CheatWindow : StyleableAppWindow
     {
         private readonly string _enabledCheatsPath;
         public bool NoCheatsFound { get; }
@@ -30,7 +28,7 @@ namespace Ryujinx.Ava.UI.Windows
 
             InitializeComponent();
 
-            Title = $"Ryujinx {Program.Version} - " + LocaleManager.Instance[LocaleKeys.CheatWindowTitle];
+            Title = App.FormatTitle(LocaleKeys.CheatWindowTitle);
         }
 
         public CheatWindow(VirtualFileSystem virtualFileSystem, string titleId, string titleName, string titlePath)
@@ -51,7 +49,7 @@ namespace Ryujinx.Ava.UI.Windows
 
             _enabledCheatsPath = Path.Combine(titleModsPath, "cheats", "enabled.txt");
 
-            string[] enabled = Array.Empty<string>();
+            string[] enabled = [];
 
             if (File.Exists(_enabledCheatsPath))
             {
@@ -74,15 +72,15 @@ namespace Ryujinx.Ava.UI.Windows
                 if (cheat.Path.FullName != currentCheatFile)
                 {
                     currentCheatFile = cheat.Path.FullName;
-                    string parentPath = currentCheatFile.Replace(titleModsPath, "");
+                    string parentPath = currentCheatFile.Replace(titleModsPath, string.Empty);
 
                     buildId = Path.GetFileNameWithoutExtension(currentCheatFile).ToUpper();
-                    currentGroup = new CheatNode("", buildId, parentPath, true);
+                    currentGroup = new CheatNode(string.Empty, buildId, parentPath, true);
 
                     LoadedCheats.Add(currentGroup);
                 }
 
-                var model = new CheatNode(cheat.Name, buildId, "", false, enabled.Contains($"{buildId}-{cheat.Name}"));
+                var model = new CheatNode(cheat.Name, buildId, string.Empty, false, enabled.Contains($"{buildId}-{cheat.Name}"));
                 currentGroup?.SubNodes.Add(model);
 
                 cheatAdded++;
@@ -95,30 +93,19 @@ namespace Ryujinx.Ava.UI.Windows
 
             DataContext = this;
 
-            Title = $"Ryujinx {Program.Version} - " + LocaleManager.Instance[LocaleKeys.CheatWindowTitle];
+            Title = App.FormatTitle(LocaleKeys.CheatWindowTitle);
         }
 
         public void Save()
         {
             if (NoCheatsFound)
-            {
                 return;
-            }
 
-            List<string> enabledCheats = new();
+            var enabledCheats = LoadedCheats.SelectMany(it => it.SubNodes)
+                .Where(it => it.IsEnabled)
+                .Select(it => it.BuildIdKey);
 
-            foreach (var cheats in LoadedCheats)
-            {
-                foreach (var cheat in cheats.SubNodes)
-                {
-                    if (cheat.IsEnabled)
-                    {
-                        enabledCheats.Add(cheat.BuildIdKey);
-                    }
-                }
-            }
-
-            Directory.CreateDirectory(Path.GetDirectoryName(_enabledCheatsPath));
+            Directory.CreateDirectory(Path.GetDirectoryName(_enabledCheatsPath)!);
 
             File.WriteAllLines(_enabledCheatsPath, enabledCheats);
 

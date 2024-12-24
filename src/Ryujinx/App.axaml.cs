@@ -4,6 +4,8 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using Avalonia.Styling;
 using Avalonia.Threading;
+using FluentAvalonia.UI.Windowing;
+using Gommon;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Helpers;
@@ -19,9 +21,25 @@ namespace Ryujinx.Ava
 {
     public class App : Application
     {
+        internal static string FormatTitle(LocaleKeys? windowTitleKey = null)
+            => windowTitleKey is null
+                ? $"{FullAppName} {Program.Version}"
+                : $"{FullAppName} {Program.Version} - {LocaleManager.Instance[windowTitleKey.Value]}";
+
+        public static readonly string FullAppName = ReleaseInformation.IsCanaryBuild ? "Ryujinx Canary" : "Ryujinx";
+
+        public static MainWindow MainWindow => Current!
+            .ApplicationLifetime.Cast<IClassicDesktopStyleApplicationLifetime>()
+            .MainWindow.Cast<MainWindow>();
+
+        public static void SetTaskbarProgress(TaskBarProgressBarState state) => MainWindow.PlatformFeatures.SetTaskBarProgressBarState(state);
+        public static void SetTaskbarProgressValue(ulong current, ulong total) => MainWindow.PlatformFeatures.SetTaskBarProgressBarValue(current, total);
+        public static void SetTaskbarProgressValue(long current, long total) => SetTaskbarProgressValue(Convert.ToUInt64(current), Convert.ToUInt64(total));
+
+
         public override void Initialize()
         {
-            Name = $"Ryujinx {Program.Version}";
+            Name = FormatTitle();
 
             AvaloniaXamlLoader.Load(this);
 
@@ -42,23 +60,15 @@ namespace Ryujinx.Ava
 
             if (Program.PreviewerDetached)
             {
-                ApplyConfiguredTheme();
+                ApplyConfiguredTheme(ConfigurationState.Instance.UI.BaseStyle);
 
                 ConfigurationState.Instance.UI.BaseStyle.Event += ThemeChanged_Event;
-                ConfigurationState.Instance.UI.CustomThemePath.Event += ThemeChanged_Event;
-                ConfigurationState.Instance.UI.EnableCustomTheme.Event += CustomThemeChanged_Event;
             }
-        }
-
-        private void CustomThemeChanged_Event(object sender, ReactiveEventArgs<bool> e)
-        {
-            ApplyConfiguredTheme();
         }
 
         private void ShowRestartDialog()
         {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            Dispatcher.UIThread.InvokeAsync(async () =>
+            _ = Dispatcher.UIThread.InvokeAsync(async () =>
             {
                 if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 {
@@ -71,27 +81,20 @@ namespace Ryujinx.Ava
 
                     if (result == UserResult.Yes)
                     {
-                        var path = Environment.ProcessPath;
-                        var proc = Process.Start(path, CommandLineState.Arguments);
+                        _ = Process.Start(Environment.ProcessPath!, CommandLineState.Arguments);
                         desktop.Shutdown();
                         Environment.Exit(0);
                     }
                 }
             });
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
-        private void ThemeChanged_Event(object sender, ReactiveEventArgs<string> e)
-        {
-            ApplyConfiguredTheme();
-        }
+        private void ThemeChanged_Event(object _, ReactiveEventArgs<string> rArgs) => ApplyConfiguredTheme(rArgs.NewValue);
 
-        public void ApplyConfiguredTheme()
+        public void ApplyConfiguredTheme(string baseStyle)
         {
             try
             {
-                string baseStyle = ConfigurationState.Instance.UI.BaseStyle;
-
                 if (string.IsNullOrWhiteSpace(baseStyle))
                 {
                     ConfigurationState.Instance.UI.BaseStyle.Value = "Auto";
@@ -99,13 +102,11 @@ namespace Ryujinx.Ava
                     baseStyle = ConfigurationState.Instance.UI.BaseStyle;
                 }
 
-                ThemeVariant systemTheme = DetectSystemTheme();
-
                 ThemeManager.OnThemeChanged();
 
                 RequestedThemeVariant = baseStyle switch
                 {
-                    "Auto" => systemTheme,
+                    "Auto" => DetectSystemTheme(),
                     "Light" => ThemeVariant.Light,
                     "Dark" => ThemeVariant.Dark,
                     _ => ThemeVariant.Default,
@@ -113,7 +114,7 @@ namespace Ryujinx.Ava
             }
             catch (Exception)
             {
-                Logger.Warning?.Print(LogClass.Application, "Failed to Apply Theme. A restart is needed to apply the selected theme");
+                Logger.Warning?.Print(LogClass.Application, "Failed to apply theme. A restart is needed to apply the selected theme.");
 
                 ShowRestartDialog();
             }
@@ -130,16 +131,9 @@ namespace Ryujinx.Ava
                 _ => ThemeVariant.Default,
             };
 
-        public static ThemeVariant DetectSystemTheme()
-        {
-            if (Application.Current is App app)
-            {
-                var colorValues = app.PlatformSettings.GetColorValues();
-
-                return ConvertThemeVariant(colorValues.ThemeVariant);
-            }
-
-            return ThemeVariant.Default;
-        }
+        public static ThemeVariant DetectSystemTheme() =>
+            Current is App { PlatformSettings: not null } app
+                ? ConvertThemeVariant(app.PlatformSettings.GetColorValues().ThemeVariant)
+                : ThemeVariant.Default;
     }
 }

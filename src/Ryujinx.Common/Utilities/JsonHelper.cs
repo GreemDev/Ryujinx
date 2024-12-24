@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -17,29 +18,24 @@ namespace Ryujinx.Common.Utilities
         /// It is REQUIRED for you to save returned options statically or as a part of static serializer context
         /// in order to avoid performance issues. You can safely modify returned options for your case before storing.
         /// </remarks>
-        public static JsonSerializerOptions GetDefaultSerializerOptions(bool indented = true)
-        {
-            JsonSerializerOptions options = new()
+        public static JsonSerializerOptions GetDefaultSerializerOptions(bool indented = true) =>
+            new()
             {
                 DictionaryKeyPolicy = _snakeCasePolicy,
                 PropertyNamingPolicy = _snakeCasePolicy,
                 WriteIndented = indented,
                 AllowTrailingCommas = true,
-                ReadCommentHandling = JsonCommentHandling.Skip,
+                ReadCommentHandling = JsonCommentHandling.Skip
             };
 
-            return options;
-        }
+        public static string Serialize<T>(T value, JsonTypeInfo<T> typeInfo) 
+            => JsonSerializer.Serialize(value, typeInfo);
 
-        public static string Serialize<T>(T value, JsonTypeInfo<T> typeInfo)
-        {
-            return JsonSerializer.Serialize(value, typeInfo);
-        }
+        public static T Deserialize<T>(string value, JsonTypeInfo<T> typeInfo) 
+            => JsonSerializer.Deserialize(value, typeInfo);
 
-        public static T Deserialize<T>(string value, JsonTypeInfo<T> typeInfo)
-        {
-            return JsonSerializer.Deserialize(value, typeInfo);
-        }
+        public static T Deserialize<T>(ReadOnlySpan<byte> utf8Value, JsonTypeInfo<T> typeInfo) 
+            => JsonSerializer.Deserialize<T>(utf8Value, typeInfo);
 
         public static void SerializeToFile<T>(string filePath, T value, JsonTypeInfo<T> typeInfo)
         {
@@ -53,10 +49,7 @@ namespace Ryujinx.Common.Utilities
             return JsonSerializer.Deserialize(file, typeInfo);
         }
 
-        public static void SerializeToStream<T>(Stream stream, T value, JsonTypeInfo<T> typeInfo)
-        {
-            JsonSerializer.Serialize(stream, value, typeInfo);
-        }
+        public static void SerializeToStream<T>(Stream stream, T value, JsonTypeInfo<T> typeInfo) => JsonSerializer.Serialize(stream, value, typeInfo);
 
         private class SnakeCaseNamingPolicy : JsonNamingPolicy
         {
@@ -75,15 +68,10 @@ namespace Ryujinx.Common.Utilities
 
                     if (char.IsUpper(c))
                     {
-                        if (i == 0 || char.IsUpper(name[i - 1]))
-                        {
-                            builder.Append(char.ToLowerInvariant(c));
-                        }
-                        else
-                        {
+                        if (!(i == 0 || char.IsUpper(name[i - 1])))
                             builder.Append('_');
-                            builder.Append(char.ToLowerInvariant(c));
-                        }
+
+                        builder.Append(char.ToLowerInvariant(c));
                     }
                     else
                     {

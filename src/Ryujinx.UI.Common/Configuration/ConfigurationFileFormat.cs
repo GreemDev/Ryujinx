@@ -1,8 +1,10 @@
+using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Configuration.Multiplayer;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.Utilities;
+using Ryujinx.HLE;
 using Ryujinx.UI.Common.Configuration.System;
 using Ryujinx.UI.Common.Configuration.UI;
 using System.Collections.Generic;
@@ -15,7 +17,7 @@ namespace Ryujinx.UI.Common.Configuration
         /// <summary>
         /// The current version of the file format
         /// </summary>
-        public const int CurrentVersion = 51;
+        public const int CurrentVersion = 57;
 
         /// <summary>
         /// Version of the configuration file format
@@ -163,9 +165,19 @@ namespace Ryujinx.UI.Common.Configuration
         public bool ShowConfirmExit { get; set; }
 
         /// <summary>
+        /// ignore "Applet" dialog
+        /// </summary>
+        public bool IgnoreApplet { get; set; }
+
+        /// <summary>
         /// Enables or disables save window size, position and state on close.
         /// </summary>
         public bool RememberWindowState { get; set; }
+
+        /// <summary>
+        /// Enables or disables the redesigned title bar
+        /// </summary>
+        public bool ShowTitleBar { get; set; }
 
         /// <summary>
         /// Enables hardware-accelerated rendering for Avalonia
@@ -180,7 +192,24 @@ namespace Ryujinx.UI.Common.Configuration
         /// <summary>
         /// Enables or disables Vertical Sync
         /// </summary>
+        /// <remarks>Kept for file format compatibility (to avoid possible failure when parsing configuration on old versions)</remarks>
+        /// TODO: Remove this when those older versions aren't in use anymore.
         public bool EnableVsync { get; set; }
+
+        /// <summary>
+        /// Current VSync mode; 60 (Switch), unbounded ("Vsync off"), or custom
+        /// </summary>
+        public VSyncMode VSyncMode { get; set; }
+
+        /// <summary>
+        /// Enables or disables the custom present interval
+        /// </summary>
+        public bool EnableCustomVSyncInterval { get; set; }
+
+        /// <summary>
+        /// The custom present interval value
+        /// </summary>
+        public int CustomVSyncInterval { get; set; }
 
         /// <summary>
         /// Enables or disables Shader cache
@@ -206,6 +235,11 @@ namespace Ryujinx.UI.Common.Configuration
         /// Enables or disables profiled translation cache persistency
         /// </summary>
         public bool EnablePtc { get; set; }
+
+        /// <summary>
+        /// Enables or disables low-power profiled translation cache persistency loading
+        /// </summary>
+        public bool EnableLowPowerPtc { get; set; }
 
         /// <summary>
         /// Enables or disables guest Internet access
@@ -240,7 +274,7 @@ namespace Ryujinx.UI.Common.Configuration
         /// <summary>
         /// Expands the RAM amount on the emulated system from 4GiB to 8GiB
         /// </summary>
-        public bool ExpandRam { get; set; }
+        public MemoryConfiguration DramSize { get; set; }
 
         /// <summary>
         /// Enable or disable ignoring missing services
@@ -263,6 +297,11 @@ namespace Ryujinx.UI.Common.Configuration
         public List<string> GameDirs { get; set; }
 
         /// <summary>
+        /// A list of directories containing DLC/updates the user wants to autoload during library refreshes
+        /// </summary>
+        public List<string> AutoloadDirs { get; set; }
+
+        /// <summary>
         /// A list of file types to be hidden in the games List
         /// </summary>
         public ShownFileTypes ShownFileTypes { get; set; }
@@ -276,16 +315,6 @@ namespace Ryujinx.UI.Common.Configuration
         /// Language Code for the UI
         /// </summary>
         public string LanguageCode { get; set; }
-
-        /// <summary>
-        /// Enable or disable custom themes in the GUI
-        /// </summary>
-        public bool EnableCustomTheme { get; set; }
-
-        /// <summary>
-        /// Path to custom GUI theme
-        /// </summary>
-        public string CustomThemePath { get; set; }
 
         /// <summary>
         /// Chooses the base style // Not Used
@@ -380,6 +409,21 @@ namespace Ryujinx.UI.Common.Configuration
         /// GUID for the network interface used by LAN (or 0 for default)
         /// </summary>
         public string MultiplayerLanInterfaceId { get; set; }
+
+        /// <summary>
+        /// Disable P2p Toggle
+        /// </summary>
+        public bool MultiplayerDisableP2p { get; set; }
+
+        /// <summary>
+        /// Local network passphrase, for private networks.
+        /// </summary>
+        public string MultiplayerLdnPassphrase { get; set; }
+
+        /// <summary>
+        /// Custom LDN Server
+        /// </summary>
+        public string LdnServer { get; set; }
 
         /// <summary>
         /// Uses Hypervisor over JIT if available

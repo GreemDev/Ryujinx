@@ -107,7 +107,7 @@ namespace Ryujinx.HLE.HOS.Applets.Error
 
         private static string CleanText(string value)
         {
-            return CleanTextRegex().Replace(value, "").Replace("\0", "");
+            return CleanTextRegex().Replace(value, string.Empty).Replace("\0", string.Empty);
         }
 
         private string GetMessageText(uint module, uint description, string key)
@@ -129,17 +129,15 @@ namespace Ryujinx.HLE.HOS.Applets.Error
 
                 return CleanText(reader.ReadToEnd());
             }
-            else
-            {
-                return "";
-            }
+
+            return string.Empty;
         }
 
         private string[] GetButtonsText(uint module, uint description, string key)
         {
             string buttonsText = GetMessageText(module, description, key);
 
-            return (buttonsText == "") ? null : buttonsText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            return (buttonsText == string.Empty) ? null : buttonsText.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
         }
 
         private void ParseErrorCommonArg()
@@ -156,12 +154,9 @@ namespace Ryujinx.HLE.HOS.Applets.Error
 
             string message = GetMessageText(module, description, "DlgMsg");
 
-            if (message == "")
+            if (message == string.Empty)
             {
-                message = "An error has occured.\n\n"
-                        + "Please try again later.\n\n"
-                        + "If the problem persists, please refer to the Ryujinx website.\n"
-                        + "www.ryujinx.org";
+                message = "An error has occured.\n\nPlease try again later.";
             }
 
             string[] buttons = GetButtonsText(module, description, "DlgBtn");
@@ -193,7 +188,7 @@ namespace Ryujinx.HLE.HOS.Applets.Error
 
             // TODO: Handle the LanguageCode to return the translated "OK" and "Details".
 
-            if (detailsText.Trim() != "")
+            if (detailsText.Trim() != string.Empty)
             {
                 buttons.Add("Details");
             }
@@ -207,11 +202,6 @@ namespace Ryujinx.HLE.HOS.Applets.Error
 
                 _horizon.Device.UIHandler.DisplayErrorAppletDialog($"Error Number: {applicationErrorArg.ErrorNumber} (Details)", "\n" + detailsText, buttons.ToArray());
             }
-        }
-
-        public ResultCode GetResult()
-        {
-            return ResultCode.Success;
         }
     }
 }

@@ -19,12 +19,16 @@ namespace Ryujinx.UI.App.Common
 {
     public class ApplicationData
     {
+        public static Func<string> LocalizedNever { get; set; } = () => "Never";
+
         public bool Favorite { get; set; }
         public byte[] Icon { get; set; }
         public string Name { get; set; } = "Unknown";
         public ulong Id { get; set; }
         public string Developer { get; set; } = "Unknown";
         public string Version { get; set; } = "0";
+        public int PlayerCount { get; set; }
+        public int GameCount { get; set; }
         public TimeSpan TimePlayed { get; set; }
         public DateTime? LastPlayed { get; set; }
         public string FileExtension { get; set; }
@@ -34,7 +38,7 @@ namespace Ryujinx.UI.App.Common
 
         public string TimePlayedString => ValueFormatUtils.FormatTimeSpan(TimePlayed);
 
-        public string LastPlayedString => ValueFormatUtils.FormatDateTime(LastPlayed);
+        public string LastPlayedString => ValueFormatUtils.FormatDateTime(LastPlayed)?.Replace(" ", "\n") ?? LocalizedNever();
 
         public string FileSizeString => ValueFormatUtils.FormatFileSize(FileSize);
 
@@ -160,7 +164,7 @@ namespace Ryujinx.UI.App.Common
             NsoReader reader = new();
             reader.Initialize(nsoFile.Release().AsStorage().AsFile(OpenMode.Read)).ThrowIfFailure();
 
-            return BitConverter.ToString(reader.Header.ModuleId.ItemsRo.ToArray()).Replace("-", "").ToUpper()[..16];
+            return Convert.ToHexString(reader.Header.ModuleId.ItemsRo.ToArray()).Replace("-", string.Empty).ToUpper()[..16];
         }
     }
 }

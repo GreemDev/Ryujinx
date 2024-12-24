@@ -4,6 +4,7 @@ using Ryujinx.Input;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Threading;
 using ConfigKey = Ryujinx.Common.Configuration.Hid.Key;
 using Key = Ryujinx.Input.Key;
 
@@ -15,7 +16,7 @@ namespace Ryujinx.Ava.Input
         private readonly AvaloniaKeyboardDriver _driver;
         private StandardKeyboardInputConfig _configuration;
 
-        private readonly object _userMappingLock = new();
+        private readonly Lock _userMappingLock = new();
 
         public string Id { get; }
         public string Name { get; }
@@ -23,21 +24,15 @@ namespace Ryujinx.Ava.Input
         public bool IsConnected => true;
         public GamepadFeaturesFlag Features => GamepadFeaturesFlag.None;
 
-        private class ButtonMappingEntry
+        private class ButtonMappingEntry(GamepadButtonInputId to, Key from)
         {
-            public readonly Key From;
-            public readonly GamepadButtonInputId To;
-
-            public ButtonMappingEntry(GamepadButtonInputId to, Key from)
-            {
-                To = to;
-                From = from;
-            }
+            public readonly GamepadButtonInputId To = to;
+            public readonly Key From = from;
         }
 
         public AvaloniaKeyboard(AvaloniaKeyboardDriver driver, string id, string name)
         {
-            _buttonsUserMapping = new List<ButtonMappingEntry>();
+            _buttonsUserMapping = [];
 
             _driver = driver;
             Id = id;

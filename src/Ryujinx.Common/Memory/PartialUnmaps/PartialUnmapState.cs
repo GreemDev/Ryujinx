@@ -21,7 +21,7 @@ namespace Ryujinx.Common.Memory.PartialUnmaps
         public readonly static int PartialUnmapsCountOffset;
         public readonly static int LocalCountsOffset;
 
-        public readonly static IntPtr GlobalState;
+        public readonly static nint GlobalState;
 
         [SupportedOSPlatform("windows")]
         [LibraryImport("kernel32.dll")]
@@ -29,17 +29,17 @@ namespace Ryujinx.Common.Memory.PartialUnmaps
 
         [SupportedOSPlatform("windows")]
         [LibraryImport("kernel32.dll", SetLastError = true)]
-        private static partial IntPtr OpenThread(int dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, uint dwThreadId);
+        private static partial nint OpenThread(int dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, uint dwThreadId);
 
         [SupportedOSPlatform("windows")]
         [LibraryImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static partial bool CloseHandle(IntPtr hObject);
+        private static partial bool CloseHandle(nint hObject);
 
         [SupportedOSPlatform("windows")]
         [LibraryImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static partial bool GetExitCodeThread(IntPtr hThread, out uint lpExitCode);
+        private static partial bool GetExitCodeThread(nint hThread, out uint lpExitCode);
 
         /// <summary>
         /// Creates a global static PartialUnmapState and populates the field offsets.
@@ -137,9 +137,9 @@ namespace Ryujinx.Common.Memory.PartialUnmaps
 
                 if (id != 0)
                 {
-                    IntPtr handle = OpenThread(ThreadQueryInformation, false, (uint)id);
+                    nint handle = OpenThread(ThreadQueryInformation, false, (uint)id);
 
-                    if (handle == IntPtr.Zero)
+                    if (handle == nint.Zero)
                     {
                         Interlocked.CompareExchange(ref ids[i], 0, id);
                     }

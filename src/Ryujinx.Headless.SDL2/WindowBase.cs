@@ -1,3 +1,5 @@
+using Humanizer;
+using LibHac.Tools.Fs;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Logging;
@@ -10,6 +12,7 @@ using Ryujinx.HLE.HOS.Services.Am.AppletOE.ApplicationProxyService.ApplicationPr
 using Ryujinx.HLE.UI;
 using Ryujinx.Input;
 using Ryujinx.Input.HLE;
+using Ryujinx.Input.SDL2;
 using Ryujinx.SDL2.Common;
 using System;
 using System.Collections.Concurrent;
@@ -37,7 +40,7 @@ namespace Ryujinx.Headless.SDL2
 
         [LibraryImport("SDL2")]
         // TODO: Remove this as soon as SDL2-CS was updated to expose this method publicly
-        private static partial IntPtr SDL_LoadBMP_RW(IntPtr src, int freesrc);
+        private static partial nint SDL_LoadBMP_RW(nint src, int freesrc);
 
         public static void QueueMainThreadAction(Action action)
         {
@@ -51,7 +54,7 @@ namespace Ryujinx.Headless.SDL2
 
         public event EventHandler<StatusUpdatedEventArgs> StatusUpdatedEvent;
 
-        protected IntPtr WindowHandle { get; set; }
+        protected nint WindowHandle { get; set; }
 
         public IHostUITheme HostUITheme { get; }
         public int Width { get; private set; }
@@ -84,13 +87,15 @@ namespace Ryujinx.Headless.SDL2
 
         private readonly AspectRatio _aspectRatio;
         private readonly bool _enableMouse;
+        private readonly bool _ignoreControllerApplet;
 
         public WindowBase(
             InputManager inputManager,
             GraphicsDebugLevel glLogLevel,
             AspectRatio aspectRatio,
             bool enableMouse,
-            HideCursorMode hideCursorMode)
+            HideCursorMode hideCursorMode,
+            bool ignoreControllerApplet)
         {
             MouseDriver = new SDL2MouseDriver(hideCursorMode);
             _inputManager = inputManager;
@@ -106,6 +111,7 @@ namespace Ryujinx.Headless.SDL2
             _gpuDoneEvent = new ManualResetEvent(false);
             _aspectRatio = aspectRatio;
             _enableMouse = enableMouse;
+            _ignoreControllerApplet = ignoreControllerApplet;
             HostUITheme = new HeadlessHostUiTheme();
 
             SDL2Driver.Instance.Initialize();
@@ -147,8 +153,8 @@ namespace Ryujinx.Headless.SDL2
             {
                 fixed (byte* iconPtr = iconBytes)
                 {
-                    IntPtr rwOpsStruct = SDL_RWFromConstMem((IntPtr)iconPtr, iconBytes.Length);
-                    IntPtr iconHandle = SDL_LoadBMP_RW(rwOpsStruct, 1);
+                    nint rwOpsStruct = SDL_RWFromConstMem((nint)iconPtr, iconBytes.Length);
+                    nint iconHandle = SDL_LoadBMP_RW(rwOpsStruct, 1);
 
                     SDL_SetWindowIcon(WindowHandle, iconHandle);
                     SDL_FreeSurface(iconHandle);
@@ -186,7 +192,7 @@ namespace Ryujinx.Headless.SDL2
 
             WindowHandle = SDL_CreateWindow($"Ryujinx {Program.Version}{titleNameSection}{titleVersionSection}{titleIdSection}{titleArchSection}", SDL_WINDOWPOS_CENTERED_DISPLAY(DisplayId), SDL_WINDOWPOS_CENTERED_DISPLAY(DisplayId), Width, Height, DefaultFlags | FullscreenFlag | GetWindowFlags());
 
-            if (WindowHandle == IntPtr.Zero)
+            if (WindowHandle == nint.Zero)
             {
                 string errorMessage = $"SDL_CreateWindow failed with error \"{SDL_GetError()}\"";
 
@@ -309,7 +315,7 @@ namespace Ryujinx.Headless.SDL2
                         }
 
                         StatusUpdatedEvent?.Invoke(this, new StatusUpdatedEventArgs(
-                            Device.EnableDeviceVsync,
+                            Device.VSyncMode.ToString(),
                             dockedMode,
                             Device.Configuration.AspectRatio.ToText(),
                             $"Game: {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
@@ -480,14 +486,29 @@ namespace Ryujinx.Headless.SDL2
             return true;
         }
 
+        public bool DisplayCabinetDialog(out string userText)
+        {
+            // SDL2 doesn't support input dialogs
+            userText = "Ryujinx";
+
+            return true;
+        }
+
+        public void DisplayCabinetMessageDialog()
+        {
+            SDL_ShowSimpleMessageBox(SDL_MessageBoxFlags.SDL_MESSAGEBOX_INFORMATION, "Cabinet Dialog", "Please scan your Amiibo now.", WindowHandle);
+        }
+
         public bool DisplayMessageDialog(ControllerAppletUIArgs args)
         {
+            if (_ignoreControllerApplet) return false;
+            
             string playerCount = args.PlayerCountMin == args.PlayerCountMax ? $"exactly {args.PlayerCountMin}" : $"{args.PlayerCountMin}-{args.PlayerCountMax}";
 
-            string message = $"Application requests {playerCount} player(s) with:\n\n"
+            string message = $"Application requests {playerCount} {"player".ToQuantity(args.PlayerCountMin + args.PlayerCountMax, ShowQuantityAs.None)} with:\n\n"
                            + $"TYPES: {args.SupportedStyles}\n\n"
                            + $"PLAYERS: {string.Join(", ", args.SupportedPlayers)}\n\n"
-                           + (args.IsDocked ? "Docked mode set. Handheld is also invalid.\n\n" : "")
+                           + (args.IsDocked ? "Docked mode set. Handheld is also invalid.\n\n" : string.Empty)
                            + "Please reconfigure Input now and then press OK.";
 
             return DisplayMessageDialog("Controller Applet", message);

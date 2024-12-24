@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace Ryujinx.Graphics.Texture.Astc
 {
-    internal struct IntegerEncoded
+    internal struct IntegerEncoded(IntegerEncoded.EIntegerEncoding encoding, int numBits)
     {
         internal const int StructSize = 8;
         private static readonly IntegerEncoded[] _encodings;
@@ -15,11 +15,11 @@ namespace Ryujinx.Graphics.Texture.Astc
             Trit,
         }
 
-        readonly EIntegerEncoding _encoding;
-        public byte NumberBits { get; private set; }
-        public byte TritValue { get; private set; }
-        public byte QuintValue { get; private set; }
-        public int BitValue { get; private set; }
+        readonly EIntegerEncoding _encoding = encoding;
+        public byte NumberBits { get; } = (byte)numBits;
+        public byte TritValue { get; private set; } = 0;
+        public byte QuintValue { get; private set; } = 0;
+        public int BitValue { get; private set; } = 0;
 
         static IntegerEncoded()
         {
@@ -29,15 +29,6 @@ namespace Ryujinx.Graphics.Texture.Astc
             {
                 _encodings[i] = CreateEncodingCalc(i);
             }
-        }
-
-        public IntegerEncoded(EIntegerEncoding encoding, int numBits)
-        {
-            _encoding = encoding;
-            NumberBits = (byte)numBits;
-            BitValue = 0;
-            TritValue = 0;
-            QuintValue = 0;
         }
 
         public readonly bool MatchesEncoding(IntegerEncoded other)

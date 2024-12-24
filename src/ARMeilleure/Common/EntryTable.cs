@@ -15,7 +15,7 @@ namespace ARMeilleure.Common
         private int _freeHint;
         private readonly int _pageCapacity; // Number of entries per page.
         private readonly int _pageLogCapacity;
-        private readonly Dictionary<int, IntPtr> _pages;
+        private readonly Dictionary<int, nint> _pages;
         private readonly BitMap _allocated;
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace ARMeilleure.Common
             }
 
             _allocated = new BitMap(NativeAllocator.Instance);
-            _pages = new Dictionary<int, IntPtr>();
+            _pages = new Dictionary<int, nint>();
             _pageLogCapacity = BitOperations.Log2((uint)(pageSize / sizeof(TEntry)));
             _pageCapacity = 1 << _pageLogCapacity;
         }
@@ -138,9 +138,9 @@ namespace ARMeilleure.Common
         {
             var pageIndex = (int)((uint)(index & ~(_pageCapacity - 1)) >> _pageLogCapacity);
 
-            if (!_pages.TryGetValue(pageIndex, out IntPtr page))
+            if (!_pages.TryGetValue(pageIndex, out nint page))
             {
-                page = (IntPtr)NativeAllocator.Instance.Allocate((uint)sizeof(TEntry) * (uint)_pageCapacity);
+                page = (nint)NativeAllocator.Instance.Allocate((uint)sizeof(TEntry) * (uint)_pageCapacity);
 
                 _pages.Add(pageIndex, page);
             }

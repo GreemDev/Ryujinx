@@ -7,7 +7,7 @@ namespace Ryujinx.HLE.HOS.Applets.SoftwareKeyboard
     /// </summary>
     internal class SoftwareKeyboardUIState
     {
-        public string InputText = "";
+        public string InputText = string.Empty;
         public int CursorBegin = 0;
         public int CursorEnd = 0;
         public bool AcceptPressed = false;

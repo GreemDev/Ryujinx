@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.Gtk3", "src\Ryujinx.Gtk3\Ryujinx.Gtk3.csproj", "{074045D4-3ED2-4711-9169-E385F2BFB5A0}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.Tests", "src\Ryujinx.Tests\Ryujinx.Tests.csproj", "{EBB55AEA-C7D7-4DEB-BF96-FA1789E225E9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.Tests.Unicorn", "src\Ryujinx.Tests.Unicorn\Ryujinx.Tests.Unicorn.csproj", "{D8F72938-78EF-4E8C-BAFE-531C9C3C8F15}"
@@ -30,12 +28,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.Graphics.Nvdec", "src\Ryujinx.Graphics.Nvdec\Ryujinx.Graphics.Nvdec.csproj", "{85A0FA56-DC01-4A42-8808-70DAC76BD66D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.Audio", "src\Ryujinx.Audio\Ryujinx.Audio.csproj", "{806ACF6D-90B0-45D0-A1AC-5F220F3B3985}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{36F870C1-3E5F-485F-B426-F0645AF78751}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-		Directory.Packages.props = Directory.Packages.props
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.Memory", "src\Ryujinx.Memory\Ryujinx.Memory.csproj", "{A5E6C691-9E22-4263-8F40-42F002CE66BE}"
 EndProject
@@ -93,16 +85,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ryujinx.Graphics.Metal", "s
 		{A602AE97-91A5-4608-8DF1-EBF4ED7A0B9E} = {A602AE97-91A5-4608-8DF1-EBF4ED7A0B9E}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{36F870C1-3E5F-485F-B426-F0645AF78751}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.github\workflows\build.yml = .github\workflows\build.yml
+		.github\workflows\canary.yml = .github\workflows\canary.yml
+		Directory.Packages.props = Directory.Packages.props
+		.github\workflows\release.yml = .github\workflows\release.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ryujinx.BuildValidationTasks", "src\Ryujinx.BuildValidationTasks\Ryujinx.BuildValidationTasks.csproj", "{4A89A234-4F19-497D-A576-DDE8CDFC5B22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{074045D4-3ED2-4711-9169-E385F2BFB5A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{074045D4-3ED2-4711-9169-E385F2BFB5A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{074045D4-3ED2-4711-9169-E385F2BFB5A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{074045D4-3ED2-4711-9169-E385F2BFB5A0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EBB55AEA-C7D7-4DEB-BF96-FA1789E225E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EBB55AEA-C7D7-4DEB-BF96-FA1789E225E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBB55AEA-C7D7-4DEB-BF96-FA1789E225E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -263,6 +262,9 @@ Global
 		{C08931FA-1191-417A-864F-3882D93E683B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C08931FA-1191-417A-864F-3882D93E683B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C08931FA-1191-417A-864F-3882D93E683B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A89A234-4F19-497D-A576-DDE8CDFC5B22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A89A234-4F19-497D-A576-DDE8CDFC5B22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A89A234-4F19-497D-A576-DDE8CDFC5B22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

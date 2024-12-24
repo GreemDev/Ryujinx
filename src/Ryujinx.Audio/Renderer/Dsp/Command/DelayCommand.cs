@@ -77,7 +77,7 @@ namespace Ryujinx.Audio.Renderer.Dsp.Command
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private unsafe void ProcessDelayStereo(ref DelayState state, Span<IntPtr> outputBuffers, ReadOnlySpan<IntPtr> inputBuffers, uint sampleCount)
+        private unsafe void ProcessDelayStereo(ref DelayState state, Span<nint> outputBuffers, ReadOnlySpan<nint> inputBuffers, uint sampleCount)
         {
             const ushort ChannelCount = 2;
 
@@ -114,7 +114,7 @@ namespace Ryujinx.Audio.Renderer.Dsp.Command
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private unsafe void ProcessDelayQuadraphonic(ref DelayState state, Span<IntPtr> outputBuffers, ReadOnlySpan<IntPtr> inputBuffers, uint sampleCount)
+        private unsafe void ProcessDelayQuadraphonic(ref DelayState state, Span<nint> outputBuffers, ReadOnlySpan<nint> inputBuffers, uint sampleCount)
         {
             const ushort ChannelCount = 4;
 
@@ -160,7 +160,7 @@ namespace Ryujinx.Audio.Renderer.Dsp.Command
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private unsafe void ProcessDelaySurround(ref DelayState state, Span<IntPtr> outputBuffers, ReadOnlySpan<IntPtr> inputBuffers, uint sampleCount)
+        private unsafe void ProcessDelaySurround(ref DelayState state, Span<nint> outputBuffers, ReadOnlySpan<nint> inputBuffers, uint sampleCount)
         {
             const ushort ChannelCount = 6;
 
@@ -219,8 +219,8 @@ namespace Ryujinx.Audio.Renderer.Dsp.Command
 
             if (IsEffectEnabled && Parameter.IsChannelCountValid())
             {
-                Span<IntPtr> inputBuffers = stackalloc IntPtr[Parameter.ChannelCount];
-                Span<IntPtr> outputBuffers = stackalloc IntPtr[Parameter.ChannelCount];
+                Span<nint> inputBuffers = stackalloc nint[Parameter.ChannelCount];
+                Span<nint> outputBuffers = stackalloc nint[Parameter.ChannelCount];
 
                 for (int i = 0; i < Parameter.ChannelCount; i++)
                 {

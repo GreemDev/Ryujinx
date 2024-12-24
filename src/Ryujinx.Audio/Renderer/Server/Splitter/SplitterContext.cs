@@ -52,6 +52,11 @@ namespace Ryujinx.Audio.Renderer.Server.Splitter
         public bool IsBugFixed { get; private set; }
 
         /// <summary>
+        /// If set to true, the previous mix volume is explicitly resetted using the input parameter, instead of implicitly on first use.
+        /// </summary>
+        public bool IsSplitterPrevVolumeResetSupported { get; private set; }
+
+        /// <summary>
         /// Initialize <see cref="SplitterContext"/>.
         /// </summary>
         /// <param name="behaviourContext">The behaviour context.</param>
@@ -138,6 +143,8 @@ namespace Ryujinx.Audio.Renderer.Server.Splitter
                     _splitterBqfStates = Memory<BiquadFilterState>.Empty;
                 }
             }
+
+            IsSplitterPrevVolumeResetSupported = behaviourContext.IsSplitterPrevVolumeResetSupported();
 
             SplitterState.InitializeSplitters(splitters.Span);
 
@@ -277,7 +284,7 @@ namespace Ryujinx.Audio.Renderer.Server.Splitter
                 {
                     SplitterDestination destination = GetDestination(parameter.Id);
 
-                    destination.Update(parameter);
+                    destination.Update(parameter, IsSplitterPrevVolumeResetSupported);
                 }
 
                 return true;

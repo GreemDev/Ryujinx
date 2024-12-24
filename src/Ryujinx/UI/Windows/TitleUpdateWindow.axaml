@@ -3,23 +3,40 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
-    xmlns:models="clr-namespace:Ryujinx.Ava.UI.Models"
+    xmlns:models="clr-namespace:Ryujinx.UI.Common.Models;assembly=Ryujinx.UI.Common"
     xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+    xmlns:helpers="clr-namespace:Ryujinx.Ava.UI.Helpers"
     Width="500"
     Height="300"
     mc:Ignorable="d"
     x:DataType="viewModels:TitleUpdateViewModel"
     Focusable="True">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Border
+    <UserControl.Resources>
+        <helpers:TitleUpdateLabelConverter x:Key="TitleUpdateLabel" />
+    </UserControl.Resources>
+    <Grid RowDefinitions="Auto,*,Auto">
+        <StackPanel
             Grid.Row="0"
+            Margin="0 0 0 10"
+            Spacing="5"
+            Orientation="Horizontal"
+            IsVisible="{Binding ShowBundledContentNotice}">
+            <ui:FontIcon
+                Margin="0"
+                HorizontalAlignment="Stretch"
+                FontFamily="avares://FluentAvalonia/Fonts#Symbols"
+                Glyph="{helpers:GlyphValueConverter Important}" />
+            <!-- NOTE: aligning to bottom for better visual alignment with glyph -->
+            <TextBlock
+                FontStyle="Italic"
+                VerticalAlignment="Bottom"
+                Text="{ext:Locale UpdateWindowBundledContentNotice}" />
+        </StackPanel>
+        <Border
+            Grid.Row="1"
             Margin="0 0 0 24"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
@@ -38,8 +55,14 @@
                             <TextBlock
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
-                                TextWrapping="Wrap"
-                                Text="{Binding Label}" />
+                                TextWrapping="Wrap">
+                                <TextBlock.Text>
+                                    <MultiBinding Converter="{StaticResource TitleUpdateLabel}">
+                                        <Binding Path="DisplayVersion" />
+                                        <Binding Path="IsBundled" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
                             <StackPanel
                                 Spacing="10"
                                 Orientation="Horizontal"
@@ -72,7 +95,7 @@
                         </Panel>
                     </DataTemplate>
                     <DataTemplate
-                        DataType="viewModels:BaseModel">
+                        DataType="viewModels:TitleUpdateViewNoUpdateSentinal">
                         <Panel
                             Height="33"
                             Margin="10">
@@ -80,7 +103,7 @@
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
                                 TextWrapping="Wrap"
-                                Text="{locale:Locale NoUpdate}" />
+                                Text="{ext:Locale NoUpdate}" />
                         </Panel>
                     </DataTemplate>
                 </ListBox.DataTemplates>
@@ -92,7 +115,7 @@
             </ListBox>
         </Border>
         <Panel
-            Grid.Row="1"
+            Grid.Row="2"
             HorizontalAlignment="Stretch">
             <StackPanel
                 Orientation="Horizontal"
@@ -102,13 +125,13 @@
                     Name="AddButton"
                     MinWidth="90"
                     Command="{Binding Add}">
-                    <TextBlock Text="{locale:Locale SettingsTabGeneralAdd}" />
+                    <TextBlock Text="{ext:Locale SettingsTabGeneralAdd}" />
                 </Button>
                 <Button
                     Name="RemoveAllButton"
                     MinWidth="90"
                     Click="RemoveAll">
-                    <TextBlock Text="{locale:Locale DlcManagerRemoveAllButton}" />
+                    <TextBlock Text="{ext:Locale DlcManagerRemoveAllButton}" />
                 </Button>
             </StackPanel>
             <StackPanel
@@ -119,13 +142,13 @@
                     Name="SaveButton"
                     MinWidth="90"
                     Click="Save">
-                    <TextBlock Text="{locale:Locale SettingsButtonSave}" />
+                    <TextBlock Text="{ext:Locale SettingsButtonSave}" />
                 </Button>
                 <Button
                     Name="CancelButton"
                     MinWidth="90"
                     Click="Close">
-                    <TextBlock Text="{locale:Locale InputDialogCancel}" />
+                    <TextBlock Text="{ext:Locale InputDialogCancel}" />
                 </Button>
             </StackPanel>
         </Panel>

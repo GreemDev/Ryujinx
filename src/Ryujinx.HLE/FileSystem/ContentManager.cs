@@ -21,6 +21,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using Path = System.IO.Path;
 
 namespace Ryujinx.HLE.FileSystem
@@ -54,7 +56,7 @@ namespace Ryujinx.HLE.FileSystem
 
         private readonly VirtualFileSystem _virtualFileSystem;
 
-        private readonly object _lock = new();
+        private readonly Lock _lock = new();
 
         public ContentManager(VirtualFileSystem virtualFileSystem)
         {
@@ -395,7 +397,7 @@ namespace Ryujinx.HLE.FileSystem
             if (locationList != null)
             {
                 LocationEntry entry =
-                    locationList.ToList().Find(x => x.TitleId == titleId && x.ContentType == contentType);
+                    locationList.ToList().FirstOrDefault(x => x.TitleId == titleId && x.ContentType == contentType);
 
                 if (entry.ContentPath != null)
                 {
@@ -423,7 +425,7 @@ namespace Ryujinx.HLE.FileSystem
         {
             LinkedList<LocationEntry> locationList = _locationEntries[storageId];
 
-            return locationList.ToList().Find(x => x.TitleId == titleId && x.ContentType == contentType);
+            return locationList.ToList().FirstOrDefault(x => x.TitleId == titleId && x.ContentType == contentType);
         }
 
         public void InstallFirmware(string firmwareSource)
@@ -472,6 +474,74 @@ namespace Ryujinx.HLE.FileSystem
             }
 
             FinishInstallation(temporaryDirectory, registeredDirectory);
+        }
+
+        public void InstallKeys(string keysSource, string installDirectory)
+        {
+            if (Directory.Exists(keysSource))
+            {
+                foreach (var filePath in Directory.EnumerateFiles(keysSource, "*.keys"))
+                {
+                    VerifyKeysFile(filePath);
+                    File.Copy(filePath, Path.Combine(installDirectory, Path.GetFileName(filePath)), true);
+                }
+
+                return;
+            }
+
+            if (!File.Exists(keysSource))
+            {
+                throw new FileNotFoundException("Keys file does not exist.");
+            }
+
+            FileInfo info = new(keysSource);
+
+            using FileStream file = File.OpenRead(keysSource);
+
+            switch (info.Extension)
+            {
+                case ".zip":
+                    using (ZipArchive archive = ZipFile.OpenRead(keysSource))
+                    {
+                        InstallKeysFromZip(archive, installDirectory);
+                    }
+                    break;
+                case ".keys":
+                    VerifyKeysFile(keysSource);
+                    File.Copy(keysSource, Path.Combine(installDirectory, info.Name), true);
+                    break;
+                default:
+                    throw new InvalidFirmwarePackageException("Input file is not a valid key package");
+            }
+        }
+
+        private void InstallKeysFromZip(ZipArchive archive, string installDirectory)
+        {
+            string temporaryDirectory = Path.Combine(installDirectory, "temp");
+            if (Directory.Exists(temporaryDirectory))
+            {
+                Directory.Delete(temporaryDirectory, true);
+            }
+            Directory.CreateDirectory(temporaryDirectory);
+            foreach (var entry in archive.Entries)
+            {
+                if (Path.GetExtension(entry.FullName).Equals(".keys", StringComparison.OrdinalIgnoreCase))
+                {
+                    string extractDestination = Path.Combine(temporaryDirectory, entry.Name);
+                    entry.ExtractToFile(extractDestination, overwrite: true);
+                    try
+                    {
+                        VerifyKeysFile(extractDestination);
+                        File.Move(extractDestination, Path.Combine(installDirectory, entry.Name), true);
+                    }
+                    catch (Exception)
+                    {
+                        Directory.Delete(temporaryDirectory, true);
+                        throw;
+                    }
+                }
+            }
+            Directory.Delete(temporaryDirectory, true);
         }
 
         private void FinishInstallation(string temporaryDirectory, string registeredDirectory)
@@ -523,7 +593,7 @@ namespace Ryujinx.HLE.FileSystem
                 {
                     // Clean up the name and get the NcaId
 
-                    string[] pathComponents = entry.FullName.Replace(".cnmt", "").Split('/');
+                    string[] pathComponents = entry.FullName.Replace(".cnmt", string.Empty).Split('/');
 
                     string ncaId = pathComponents[^1];
 
@@ -588,21 +658,15 @@ namespace Ryujinx.HLE.FileSystem
             // LibHac.NcaHeader's DecryptHeader doesn't check if HeaderKey is empty and throws InvalidDataException instead
             // So, we check it early for a better user experience.
             if (_virtualFileSystem.KeySet.HeaderKey.IsZeros())
-            {
                 throw new MissingKeyException("HeaderKey is empty. Cannot decrypt NCA headers.");
-            }
 
             Dictionary<ulong, List<(NcaContentType type, string path)>> updateNcas = new();
 
             if (Directory.Exists(firmwarePackage))
-            {
                 return VerifyAndGetVersionDirectory(firmwarePackage);
-            }
 
             if (!File.Exists(firmwarePackage))
-            {
                 throw new FileNotFoundException("Firmware file does not exist.");
-            }
 
             FileInfo info = new(firmwarePackage);
 
@@ -612,30 +676,22 @@ namespace Ryujinx.HLE.FileSystem
             {
                 case ".zip":
                     using (ZipArchive archive = ZipFile.OpenRead(firmwarePackage))
-                    {
                         return VerifyAndGetVersionZip(archive);
-                    }
                 case ".xci":
                     Xci xci = new(_virtualFileSystem.KeySet, file.AsStorage());
 
-                    if (xci.HasPartition(XciPartitionType.Update))
-                    {
-                        XciPartition partition = xci.OpenPartition(XciPartitionType.Update);
-
-                        return VerifyAndGetVersion(partition);
-                    }
-                    else
-                    {
+                    if (!xci.HasPartition(XciPartitionType.Update))
                         throw new InvalidFirmwarePackageException("Update not found in xci file.");
-                    }
-                default:
-                    break;
+
+                    XciPartition partition = xci.OpenPartition(XciPartitionType.Update);
+
+                    return VerifyAndGetVersion(partition);
             }
+
+            return null;
 
             SystemVersion VerifyAndGetVersionDirectory(string firmwareDirectory)
-            {
-                return VerifyAndGetVersion(new LocalFileSystem(firmwareDirectory));
-            }
+                => VerifyAndGetVersion(new LocalFileSystem(firmwareDirectory));
 
             SystemVersion VerifyAndGetVersionZip(ZipArchive archive)
             {
@@ -664,7 +720,7 @@ namespace Ryujinx.HLE.FileSystem
 
                 if (updateNcas.TryGetValue(SystemUpdateTitleId, out var ncaEntry))
                 {
-                    string metaPath = ncaEntry.Find(x => x.type == NcaContentType.Meta).path;
+                    string metaPath = ncaEntry.FirstOrDefault(x => x.type == NcaContentType.Meta).path;
 
                     CnmtContentMetaEntry[] metaEntries = null;
 
@@ -700,7 +756,7 @@ namespace Ryujinx.HLE.FileSystem
 
                     if (updateNcas.TryGetValue(SystemVersionTitleId, out var updateNcasItem))
                     {
-                        string versionEntry = updateNcasItem.Find(x => x.type != NcaContentType.Meta).path;
+                        string versionEntry = updateNcasItem.FirstOrDefault(x => x.type != NcaContentType.Meta).path;
 
                         using Stream ncaStream = GetZipStream(archive.GetEntry(versionEntry));
                         Nca nca = new(_virtualFileSystem.KeySet, ncaStream.AsStorage());
@@ -719,9 +775,9 @@ namespace Ryujinx.HLE.FileSystem
                     {
                         if (updateNcas.TryGetValue(metaEntry.TitleId, out ncaEntry))
                         {
-                            metaPath = ncaEntry.Find(x => x.type == NcaContentType.Meta).path;
+                            metaPath = ncaEntry.FirstOrDefault(x => x.type == NcaContentType.Meta).path;
 
-                            string contentPath = ncaEntry.Find(x => x.type != NcaContentType.Meta).path;
+                            string contentPath = ncaEntry.FirstOrDefault(x => x.type != NcaContentType.Meta).path;
 
                             // Nintendo in 9.0.0, removed PPC and only kept the meta nca of it.
                             // This is a perfect valid case, so we should just ignore the missing content nca and continue.
@@ -860,8 +916,8 @@ namespace Ryujinx.HLE.FileSystem
                 {
                     if (updateNcas.TryGetValue(metaEntry.TitleId, out var ncaEntry))
                     {
-                        string metaNcaPath = ncaEntry.Find(x => x.type == NcaContentType.Meta).path;
-                        string contentPath = ncaEntry.Find(x => x.type != NcaContentType.Meta).path;
+                        string metaNcaPath = ncaEntry.FirstOrDefault(x => x.type == NcaContentType.Meta).path;
+                        string contentPath = ncaEntry.FirstOrDefault(x => x.type != NcaContentType.Meta).path;
 
                         // Nintendo in 9.0.0, removed PPC and only kept the meta nca of it.
                         // This is a perfect valid case, so we should just ignore the missing content nca and continue.
@@ -925,8 +981,6 @@ namespace Ryujinx.HLE.FileSystem
 
                 return systemVersion;
             }
-
-            return null;
         }
 
         public SystemVersion GetCurrentFirmwareVersion()
@@ -962,6 +1016,71 @@ namespace Ryujinx.HLE.FileSystem
             }
 
             return null;
+        }
+
+        public void VerifyKeysFile(string filePath)
+        {
+            // Verify the keys file format refers to https://github.com/Thealexbarney/LibHac/blob/master/KEYS.md
+            string genericPattern = @"^[a-z0-9_]+ = [a-z0-9]+$";
+            string titlePattern = @"^[a-z0-9]{32} = [a-z0-9]{32}$";
+
+            if (File.Exists(filePath))
+            {
+                // Read all lines from the file
+                string fileName = Path.GetFileName(filePath);
+                string[] lines = File.ReadAllLines(filePath);
+
+                bool verified = false;
+                switch (fileName)
+                {
+                    case "prod.keys":
+                        verified = verifyKeys(lines, genericPattern);
+                        break;
+                    case "title.keys":
+                        verified = verifyKeys(lines, titlePattern);
+                        break;
+                    case "console.keys":
+                        verified = verifyKeys(lines, genericPattern);
+                        break;
+                    case "dev.keys":
+                        verified = verifyKeys(lines, genericPattern);
+                        break;
+                    default:
+                        throw new FormatException($"Keys file name \"{fileName}\" not supported. Only \"prod.keys\", \"title.keys\", \"console.keys\", \"dev.keys\" are supported.");
+                }
+                if (!verified)
+                {
+                    throw new FormatException($"Invalid \"{filePath}\" file format.");
+                }
+            } else
+            {
+                throw new FileNotFoundException($"Keys file not found at \"{filePath}\".");
+            }
+        }
+
+        private bool verifyKeys(string[] lines, string regex)
+        {
+            foreach (string line in lines)
+            {
+                if (!Regex.IsMatch(line, regex))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool AreKeysAlredyPresent(string pathToCheck)
+        {
+            string[] fileNames = { "prod.keys", "title.keys", "console.keys", "dev.keys" };
+            foreach (var file in fileNames)
+            {
+                if (File.Exists(Path.Combine(pathToCheck, file)))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

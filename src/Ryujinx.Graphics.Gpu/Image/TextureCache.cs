@@ -8,6 +8,7 @@ using Ryujinx.Graphics.Texture;
 using Ryujinx.Memory.Range;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace Ryujinx.Graphics.Gpu.Image
@@ -71,9 +72,10 @@ namespace Ryujinx.Graphics.Gpu.Image
         /// <summary>
         /// Initializes the cache, setting the maximum texture capacity for the specified GPU context.
         /// </summary>
-        public void Initialize()
+        /// <param name="cpuMemorySize">The amount of physical CPU Memory Avaiable on the device.</param>
+        public void Initialize(ulong cpuMemorySize)
         {
-            _cache.Initialize(_context);
+            _cache.Initialize(_context, cpuMemorySize);
         }
 
         /// <summary>
@@ -997,7 +999,7 @@ namespace Ryujinx.Graphics.Gpu.Image
                     {
                         bool dataOverlaps = texture.DataOverlaps(overlap, compatibility);
 
-                        if (!overlap.IsView && dataOverlaps && !incompatibleOverlaps.Exists(incompatible => incompatible.Group == overlap.Group))
+                        if (!overlap.IsView && dataOverlaps && !incompatibleOverlaps.Any(incompatible => incompatible.Group == overlap.Group))
                         {
                             incompatibleOverlaps.Add(new TextureIncompatibleOverlap(overlap.Group, compatibility));
                         }

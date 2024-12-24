@@ -24,13 +24,16 @@ namespace Ryujinx.Ava.UI.ViewModels
 {
     public class AmiiboWindowViewModel : BaseModel, IDisposable
     {
+        // ReSharper disable once InconsistentNaming
+        private static bool _cachedUseRandomUuid;
+
         private const string DefaultJson = "{ \"amiibo\": [] }";
         private const float AmiiboImageSize = 350f;
 
         private readonly string _amiiboJsonPath;
         private readonly byte[] _amiiboLogoBytes;
         private readonly HttpClient _httpClient;
-        private readonly StyleableWindow _owner;
+        private readonly AmiiboWindow _owner;
 
         private Bitmap _amiiboImage;
         private List<AmiiboApi> _amiiboList;
@@ -41,12 +44,12 @@ namespace Ryujinx.Ava.UI.ViewModels
         private int _seriesSelectedIndex;
         private bool _enableScanning;
         private bool _showAllAmiibo;
-        private bool _useRandomUuid;
+        private bool _useRandomUuid = _cachedUseRandomUuid;
         private string _usage;
 
         private static readonly AmiiboJsonSerializerContext _serializerContext = new(JsonHelper.GetDefaultSerializerOptions());
 
-        public AmiiboWindowViewModel(StyleableWindow owner, string lastScannedAmiiboId, string titleId)
+        public AmiiboWindowViewModel(AmiiboWindow owner, string lastScannedAmiiboId, string titleId)
         {
             _owner = owner;
 
@@ -82,7 +85,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             get => _useRandomUuid;
             set
             {
-                _useRandomUuid = value;
+                _cachedUseRandomUuid = _useRandomUuid = value;
 
                 OnPropertyChanged();
             }
@@ -181,6 +184,22 @@ namespace Ryujinx.Ava.UI.ViewModels
 
                 OnPropertyChanged();
             }
+        }
+
+        public void Scan()
+        {
+            if (AmiiboSelectedIndex > -1)
+            {
+                _owner.ScannedAmiibo = AmiiboList[AmiiboSelectedIndex];
+                _owner.IsScanned = true;
+                _owner.Close();
+            }
+        }
+
+        public void Cancel()
+        {
+            _owner.IsScanned = false;
+            _owner.Close();
         }
 
         public void Dispose()
@@ -301,7 +320,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                 }
             }
 
-            if (LastScannedAmiiboId != "")
+            if (LastScannedAmiiboId != string.Empty)
             {
                 SelectLastScannedAmiibo();
             }
@@ -313,7 +332,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         private void SelectLastScannedAmiibo()
         {
-            AmiiboApi scanned = _amiiboList.Find(amiibo => amiibo.GetId() == LastScannedAmiiboId);
+            AmiiboApi scanned = _amiiboList.FirstOrDefault(amiibo => amiibo.GetId() == LastScannedAmiiboId);
 
             SeriesSelectedIndex = AmiiboSeries.IndexOf(scanned.AmiiboSeries);
             AmiiboSelectedIndex = AmiiboList.IndexOf(scanned);
@@ -374,7 +393,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
             AmiiboApi selected = _amiibos[_amiiboSelectedIndex];
 
-            string imageUrl = _amiiboList.Find(amiibo => amiibo.Equals(selected)).Image;
+            string imageUrl = _amiiboList.FirstOrDefault(amiibo => amiibo.Equals(selected)).Image;
 
             StringBuilder usageStringBuilder = new();
 
@@ -402,7 +421,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                         usageStringBuilder.Append($"{LocaleManager.Instance[LocaleKeys.Unknown]}.");
                     }
 
-                    Usage = $"{LocaleManager.Instance[LocaleKeys.Usage]} {(writable ? $" ({LocaleManager.Instance[LocaleKeys.Writable]})" : "")} : {usageStringBuilder}";
+                    Usage = $"{LocaleManager.Instance[LocaleKeys.Usage]} {(writable ? $" ({LocaleManager.Instance[LocaleKeys.Writable]})" : string.Empty)} : {usageStringBuilder}";
                 }
             }
 
@@ -413,7 +432,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         {
             try
             {
-                HttpResponseMessage response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, "https://amiibo.ryujinx.org/"));
+                HttpResponseMessage response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, "https://raw.githubusercontent.com/GreemDev/Ryujinx/refs/heads/master/assets/amiibo/Amiibo.json"));
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -432,7 +451,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         {
             try
             {
-                HttpResponseMessage response = await _httpClient.GetAsync("https://amiibo.ryujinx.org/");
+                HttpResponseMessage response = await _httpClient.GetAsync($"https://raw.githubusercontent.com/GreemDev/Ryujinx/refs/heads/master/assets/amiibo/Amiibo.json");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -461,7 +480,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             await ContentDialogHelper.CreateInfoDialog(LocaleManager.Instance[LocaleKeys.DialogAmiiboApiTitle],
                 LocaleManager.Instance[LocaleKeys.DialogAmiiboApiFailFetchMessage],
                 LocaleManager.Instance[LocaleKeys.InputDialogOk],
-                "",
+                string.Empty,
                 LocaleManager.Instance[LocaleKeys.RyujinxInfo]);
 
             return null;
@@ -511,7 +530,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             await ContentDialogHelper.CreateInfoDialog(LocaleManager.Instance[LocaleKeys.DialogAmiiboApiTitle],
                 LocaleManager.Instance[LocaleKeys.DialogAmiiboApiConnectErrorMessage],
                 LocaleManager.Instance[LocaleKeys.InputDialogOk],
-                "",
+                string.Empty,
                 LocaleManager.Instance[LocaleKeys.RyujinxInfo]);
         }
     }

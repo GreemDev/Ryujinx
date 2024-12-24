@@ -52,7 +52,7 @@ namespace Ryujinx.Graphics.Nvdec.FFmpeg
             int avCodecMajorVersion = avCodecRawVersion >> 16;
             int avCodecMinorVersion = (avCodecRawVersion >> 8) & 0xFF;
 
-            // libavcodec 59.24 changed AvCodec to move its private API and also move the codec function to an union.
+            // libavcodec 59.24 changed AvCodec to move its private API and also move the codec function to a union.
             if (avCodecMajorVersion > 59 || (avCodecMajorVersion == 59 && avCodecMinorVersion > 24))
             {
                 _decodeFrame = Marshal.GetDelegateForFunctionPointer<AVCodec_decode>(((FFCodec<AVCodec>*)_codec)->CodecCallback);
@@ -91,7 +91,7 @@ namespace Ryujinx.Graphics.Nvdec.FFmpeg
 
             FFmpegApi.av_log_format_line(ptr, level, format, vl, lineBuffer, lineSize, &printPrefix);
 
-            string line = Marshal.PtrToStringAnsi((IntPtr)lineBuffer).Trim();
+            string line = Marshal.PtrToStringAnsi((nint)lineBuffer).Trim();
 
             switch (level)
             {

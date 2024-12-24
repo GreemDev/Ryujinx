@@ -61,7 +61,7 @@ namespace Ryujinx.Cpu.LightningJit
             return GetContext().CntpctEl0;
         }
 
-        public static ulong GetFunctionAddress(IntPtr framePointer, ulong address)
+        public static ulong GetFunctionAddress(nint framePointer, ulong address)
         {
             return (ulong)Context.Translator.GetOrTranslatePointer(framePointer, address, GetContext().ExecutionMode);
         }

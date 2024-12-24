@@ -14,6 +14,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 
 namespace Ryujinx.HLE.HOS.Applets
 {
@@ -51,7 +52,7 @@ namespace Ryujinx.HLE.HOS.Applets
 
         private byte[] _transferMemory;
 
-        private string _textValue = "";
+        private string _textValue = string.Empty;
         private int _cursorBegin = 0;
         private Encoding _encoding = Encoding.Unicode;
         private KeyboardResult _lastResult = KeyboardResult.NotSet;
@@ -62,7 +63,7 @@ namespace Ryujinx.HLE.HOS.Applets
         private bool _canAcceptController = false;
         private KeyboardInputMode _inputMode = KeyboardInputMode.ControllerAndKeyboard;
 
-        private readonly object _lock = new();
+        private readonly Lock _lock = new();
 
         public event EventHandler AppletStateChanged;
 
@@ -142,11 +143,6 @@ namespace Ryujinx.HLE.HOS.Applets
                     return ResultCode.Success;
                 }
             }
-        }
-
-        public ResultCode GetResult()
-        {
-            return ResultCode.Success;
         }
 
         private bool IsKeyboardActive()

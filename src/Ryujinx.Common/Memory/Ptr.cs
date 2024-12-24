@@ -10,17 +10,17 @@ namespace Ryujinx.Common.Memory
     /// <typeparam name="T">Type of the unmanaged resource</typeparam>
     public unsafe struct Ptr<T> : IEquatable<Ptr<T>> where T : unmanaged
     {
-        private IntPtr _ptr;
+        private nint _ptr;
 
         /// <summary>
         /// Null pointer.
         /// </summary>
-        public static Ptr<T> Null => new() { _ptr = IntPtr.Zero };
+        public static Ptr<T> Null => new() { _ptr = nint.Zero };
 
         /// <summary>
         /// True if the pointer is null, false otherwise.
         /// </summary>
-        public readonly bool IsNull => _ptr == IntPtr.Zero;
+        public readonly bool IsNull => _ptr == nint.Zero;
 
         /// <summary>
         /// Gets a reference to the value.
@@ -37,7 +37,7 @@ namespace Ryujinx.Common.Memory
         /// <param name="value">Reference to the unmanaged resource</param>
         public Ptr(ref T value)
         {
-            _ptr = (IntPtr)Unsafe.AsPointer(ref value);
+            _ptr = (nint)Unsafe.AsPointer(ref value);
         }
 
         public readonly override bool Equals(object obj)

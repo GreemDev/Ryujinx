@@ -1,32 +1,50 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using FluentAvalonia.UI.Windowing;
 using Ryujinx.Ava.Common.Locale;
-using Ryujinx.UI.Common.Configuration;
-using System.IO;
-using System.Reflection;
+using Ryujinx.Ava.UI.ViewModels;
 
 namespace Ryujinx.Ava.UI.Windows
 {
-    public class StyleableWindow : Window
+    public abstract class StyleableAppWindow : AppWindow
     {
-        public Bitmap IconImage { get; set; }
-
-        public StyleableWindow()
+        protected StyleableAppWindow()
         {
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            TransparencyLevelHint = new[] { WindowTransparencyLevel.None };
-
-            using Stream stream = Assembly.GetAssembly(typeof(ConfigurationState)).GetManifestResourceStream("Ryujinx.UI.Common.Resources.Logo_Ryujinx.png");
-
-            Icon = new WindowIcon(stream);
-            stream.Position = 0;
-            IconImage = new Bitmap(stream);
+            TransparencyLevelHint = [WindowTransparencyLevel.None];
 
             LocaleManager.Instance.LocaleChanged += LocaleChanged;
             LocaleChanged();
+
+            Icon = MainWindowViewModel.IconBitmap;
+        }
+
+        private void LocaleChanged()
+        {
+            FlowDirection = LocaleManager.Instance.IsRTL() ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
+        }
+
+        protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+        {
+            base.OnApplyTemplate(e);
+
+            ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.SystemChrome | ExtendClientAreaChromeHints.OSXThickTitleBar;
+        }
+    }
+
+    public abstract class StyleableWindow : Window
+    {
+        protected StyleableWindow()
+        {
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            TransparencyLevelHint = [WindowTransparencyLevel.None];
+
+            LocaleManager.Instance.LocaleChanged += LocaleChanged;
+            LocaleChanged();
+
+            Icon = new WindowIcon(MainWindowViewModel.IconBitmap);
         }
 
         private void LocaleChanged()

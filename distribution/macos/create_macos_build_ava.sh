@@ -2,8 +2,8 @@
 
 set -e
 
-if [ "$#" -lt 7 ]; then
-    echo "usage <BASE_DIR> <TEMP_DIRECTORY> <OUTPUT_DIRECTORY> <ENTITLEMENTS_FILE_PATH> <VERSION> <SOURCE_REVISION_ID> <CONFIGURATION> <EXTRA_ARGS>"
+if [ "$#" -lt 8 ]; then
+    echo "usage <BASE_DIR> <TEMP_DIRECTORY> <OUTPUT_DIRECTORY> <ENTITLEMENTS_FILE_PATH> <VERSION> <SOURCE_REVISION_ID> <CONFIGURATION> <CANARY>"
     exit 1
 fi
 
@@ -18,10 +18,11 @@ ENTITLEMENTS_FILE_PATH=$(readlink -f "$4")
 VERSION=$5
 SOURCE_REVISION_ID=$6
 CONFIGURATION=$7
-EXTRA_ARGS=$8
+CANARY=$8
 
-if [ "$VERSION" == "1.1.0" ];
-then
+if [ "$CANARY" == "1" ]; then
+  RELEASE_TAR_FILE_NAME=ryujinx-canary-$VERSION-macos_universal.app.tar
+elif [ "$VERSION" == "1.1.0" ]; then
   RELEASE_TAR_FILE_NAME=ryujinx-$CONFIGURATION-$VERSION+$SOURCE_REVISION_ID-macos_universal.app.tar
 else
   RELEASE_TAR_FILE_NAME=ryujinx-$VERSION-macos_universal.app.tar
@@ -61,7 +62,7 @@ mkdir -p "$OUTPUT_DIRECTORY"
 cp -R "$ARM64_APP_BUNDLE" "$UNIVERSAL_APP_BUNDLE"
 rm "$UNIVERSAL_APP_BUNDLE/$EXECUTABLE_SUB_PATH"
 
-# Make it libraries universal
+# Make its libraries universal
 python3 "$BASE_DIR/distribution/macos/construct_universal_dylib.py" "$ARM64_APP_BUNDLE" "$X64_APP_BUNDLE" "$UNIVERSAL_APP_BUNDLE" "**/*.dylib"
 
 if ! [ -x "$(command -v lipo)" ];
@@ -99,7 +100,7 @@ then
     rcodesign sign --entitlements-xml-path "$ENTITLEMENTS_FILE_PATH" "$UNIVERSAL_APP_BUNDLE"
 else
     echo "Using codesign for ad-hoc signing"
-    codesign --entitlements "$ENTITLEMENTS_FILE_PATH" -f --deep -s - "$UNIVERSAL_APP_BUNDLE"
+    codesign --entitlements "$ENTITLEMENTS_FILE_PATH" -f -s - "$UNIVERSAL_APP_BUNDLE"
 fi
 
 echo "Creating archive"
@@ -108,12 +109,6 @@ tar --exclude "Ryujinx.app/Contents/MacOS/Ryujinx" -cvf "$RELEASE_TAR_FILE_NAME"
 python3 "$BASE_DIR/distribution/misc/add_tar_exec.py" "$RELEASE_TAR_FILE_NAME" "Ryujinx.app/Contents/MacOS/Ryujinx" "Ryujinx.app/Contents/MacOS/Ryujinx"
 gzip -9 < "$RELEASE_TAR_FILE_NAME" > "$RELEASE_TAR_FILE_NAME.gz"
 rm "$RELEASE_TAR_FILE_NAME"
-
-# Create legacy update package for Avalonia to not left behind old testers.
-if [ "$VERSION" != "1.1.0" ];
-then
-    cp $RELEASE_TAR_FILE_NAME.gz test-ava-ryujinx-$VERSION-macos_universal.app.tar.gz
-fi
 
 popd
 

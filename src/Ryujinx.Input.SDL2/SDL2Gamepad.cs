@@ -4,6 +4,7 @@ using Ryujinx.Common.Logging;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Threading;
 using static SDL2.SDL;
 
 namespace Ryujinx.Input.SDL2
@@ -12,7 +13,10 @@ namespace Ryujinx.Input.SDL2
     {
         private bool HasConfiguration => _configuration != null;
 
-        private record struct ButtonMappingEntry(GamepadButtonInputId To, GamepadButtonInputId From);
+        private readonly record struct ButtonMappingEntry(GamepadButtonInputId To, GamepadButtonInputId From)
+        {
+            public bool IsValid => To is not GamepadButtonInputId.Unbound && From is not GamepadButtonInputId.Unbound;
+        }
 
         private StandardControllerInputConfig _configuration;
 
@@ -55,7 +59,7 @@ namespace Ryujinx.Input.SDL2
             SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_INVALID,
         };
 
-        private readonly object _userMappingLock = new();
+        private readonly Lock _userMappingLock = new();
 
         private readonly List<ButtonMappingEntry> _buttonsUserMapping;
 
@@ -68,11 +72,11 @@ namespace Ryujinx.Input.SDL2
 
         public GamepadFeaturesFlag Features { get; }
 
-        private IntPtr _gamepadHandle;
+        private nint _gamepadHandle;
 
         private float _triggerThreshold;
 
-        public SDL2Gamepad(IntPtr gamepadHandle, string driverId)
+        public SDL2Gamepad(nint gamepadHandle, string driverId)
         {
             _gamepadHandle = gamepadHandle;
             _buttonsUserMapping = new List<ButtonMappingEntry>(20);
@@ -124,11 +128,11 @@ namespace Ryujinx.Input.SDL2
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing && _gamepadHandle != IntPtr.Zero)
+            if (disposing && _gamepadHandle != nint.Zero)
             {
                 SDL_GameControllerClose(_gamepadHandle);
 
-                _gamepadHandle = IntPtr.Zero;
+                _gamepadHandle = nint.Zero;
             }
         }
 
@@ -144,86 +148,65 @@ namespace Ryujinx.Input.SDL2
 
         public void Rumble(float lowFrequency, float highFrequency, uint durationMs)
         {
-            if (Features.HasFlag(GamepadFeaturesFlag.Rumble))
-            {
-                ushort lowFrequencyRaw = (ushort)(lowFrequency * ushort.MaxValue);
-                ushort highFrequencyRaw = (ushort)(highFrequency * ushort.MaxValue);
+            if (!Features.HasFlag(GamepadFeaturesFlag.Rumble))
+                return;
 
-                if (durationMs == uint.MaxValue)
-                {
-                    if (SDL_GameControllerRumble(_gamepadHandle, lowFrequencyRaw, highFrequencyRaw, SDL_HAPTIC_INFINITY) != 0)
-                    {
-                        Logger.Error?.Print(LogClass.Hid, "Rumble is not supported on this game controller.");
-                    }
-                }
-                else if (durationMs > SDL_HAPTIC_INFINITY)
-                {
-                    Logger.Error?.Print(LogClass.Hid, $"Unsupported rumble duration {durationMs}");
-                }
-                else
-                {
-                    if (SDL_GameControllerRumble(_gamepadHandle, lowFrequencyRaw, highFrequencyRaw, durationMs) != 0)
-                    {
-                        Logger.Error?.Print(LogClass.Hid, "Rumble is not supported on this game controller.");
-                    }
-                }
+            ushort lowFrequencyRaw = (ushort)(lowFrequency * ushort.MaxValue);
+            ushort highFrequencyRaw = (ushort)(highFrequency * ushort.MaxValue);
+
+            if (durationMs == uint.MaxValue)
+            {
+                if (SDL_GameControllerRumble(_gamepadHandle, lowFrequencyRaw, highFrequencyRaw, SDL_HAPTIC_INFINITY) != 0)
+                    Logger.Error?.Print(LogClass.Hid, "Rumble is not supported on this game controller.");
+            }
+            else if (durationMs > SDL_HAPTIC_INFINITY)
+            {
+                Logger.Error?.Print(LogClass.Hid, $"Unsupported rumble duration {durationMs}");
+            }
+            else
+            {
+                if (SDL_GameControllerRumble(_gamepadHandle, lowFrequencyRaw, highFrequencyRaw, durationMs) != 0)
+                    Logger.Error?.Print(LogClass.Hid, "Rumble is not supported on this game controller.");
             }
         }
 
         public Vector3 GetMotionData(MotionInputId inputId)
         {
-            SDL_SensorType sensorType = SDL_SensorType.SDL_SENSOR_INVALID;
-
-            if (inputId == MotionInputId.Accelerometer)
+            SDL_SensorType sensorType = inputId switch
             {
-                sensorType = SDL_SensorType.SDL_SENSOR_ACCEL;
-            }
-            else if (inputId == MotionInputId.Gyroscope)
-            {
-                sensorType = SDL_SensorType.SDL_SENSOR_GYRO;
-            }
+                MotionInputId.Accelerometer => SDL_SensorType.SDL_SENSOR_ACCEL,
+                MotionInputId.Gyroscope => SDL_SensorType.SDL_SENSOR_GYRO,
+                _ => SDL_SensorType.SDL_SENSOR_INVALID
+            };
 
-            if (Features.HasFlag(GamepadFeaturesFlag.Motion) && sensorType != SDL_SensorType.SDL_SENSOR_INVALID)
-            {
-                const int ElementCount = 3;
+            if (!Features.HasFlag(GamepadFeaturesFlag.Motion) || sensorType is SDL_SensorType.SDL_SENSOR_INVALID)
+                return Vector3.Zero;
 
-                unsafe
+            const int ElementCount = 3;
+
+            unsafe
+            {
+                float* values = stackalloc float[ElementCount];
+
+                int result = SDL_GameControllerGetSensorData(_gamepadHandle, sensorType, (nint)values, ElementCount);
+
+                if (result != 0)
+                    return Vector3.Zero;
+
+                Vector3 value = new(values[0], values[1], values[2]);
+
+                return inputId switch
                 {
-                    float* values = stackalloc float[ElementCount];
-
-                    int result = SDL_GameControllerGetSensorData(_gamepadHandle, sensorType, (IntPtr)values, ElementCount);
-
-                    if (result == 0)
-                    {
-                        Vector3 value = new(values[0], values[1], values[2]);
-
-                        if (inputId == MotionInputId.Gyroscope)
-                        {
-                            return RadToDegree(value);
-                        }
-
-                        if (inputId == MotionInputId.Accelerometer)
-                        {
-                            return GsToMs2(value);
-                        }
-
-                        return value;
-                    }
-                }
+                    MotionInputId.Gyroscope => RadToDegree(value),
+                    MotionInputId.Accelerometer => GsToMs2(value),
+                    _ => value
+                };
             }
-
-            return Vector3.Zero;
         }
 
-        private static Vector3 RadToDegree(Vector3 rad)
-        {
-            return rad * (180 / MathF.PI);
-        }
+        private static Vector3 RadToDegree(Vector3 rad) => rad * (180 / MathF.PI);
 
-        private static Vector3 GsToMs2(Vector3 gs)
-        {
-            return gs / SDL_STANDARD_GRAVITY;
-        }
+        private static Vector3 GsToMs2(Vector3 gs) => gs / SDL_STANDARD_GRAVITY;
 
         public void SetConfiguration(InputConfig configuration)
         {
@@ -278,16 +261,14 @@ namespace Ryujinx.Input.SDL2
             lock (_userMappingLock)
             {
                 if (_buttonsUserMapping.Count == 0)
-                {
                     return rawState;
-                }
 
+
+                // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
                 foreach (ButtonMappingEntry entry in _buttonsUserMapping)
                 {
-                    if (entry.From == GamepadButtonInputId.Unbound || entry.To == GamepadButtonInputId.Unbound)
-                    {
+                    if (!entry.IsValid)
                         continue;
-                    }
 
                     // Do not touch state of button already pressed
                     if (!result.IsPressed(entry.To))
@@ -313,70 +294,79 @@ namespace Ryujinx.Input.SDL2
             return value * ConvertRate;
         }
 
+        private JoyconConfigControllerStick<GamepadInputId, Common.Configuration.Hid.Controller.StickInputId> GetLogicalJoyStickConfig(StickInputId inputId)
+        {
+            switch (inputId)
+            {
+                case StickInputId.Left:
+                    if (_configuration.RightJoyconStick.Joystick == Common.Configuration.Hid.Controller.StickInputId.Left)
+                        return _configuration.RightJoyconStick;
+                    else
+                        return _configuration.LeftJoyconStick;
+                case StickInputId.Right:
+                    if (_configuration.LeftJoyconStick.Joystick == Common.Configuration.Hid.Controller.StickInputId.Right)
+                        return _configuration.LeftJoyconStick;
+                    else
+                        return _configuration.RightJoyconStick;
+            }
+            return null;
+        }
+
         public (float, float) GetStick(StickInputId inputId)
         {
             if (inputId == StickInputId.Unbound)
-            {
                 return (0.0f, 0.0f);
-            }
 
-            short stickX;
-            short stickY;
-
-            if (inputId == StickInputId.Left)
-            {
-                stickX = SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_LEFTX);
-                stickY = SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_LEFTY);
-            }
-            else if (inputId == StickInputId.Right)
-            {
-                stickX = SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_RIGHTX);
-                stickY = SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_RIGHTY);
-            }
-            else
-            {
-                throw new NotSupportedException($"Unsupported stick {inputId}");
-            }
+            (short stickX, short stickY) = GetStickXY(inputId);
 
             float resultX = ConvertRawStickValue(stickX);
             float resultY = -ConvertRawStickValue(stickY);
 
             if (HasConfiguration)
             {
-                if ((inputId == StickInputId.Left && _configuration.LeftJoyconStick.InvertStickX) ||
-                    (inputId == StickInputId.Right && _configuration.RightJoyconStick.InvertStickX))
-                {
-                    resultX = -resultX;
-                }
+                var joyconStickConfig = GetLogicalJoyStickConfig(inputId);
 
-                if ((inputId == StickInputId.Left && _configuration.LeftJoyconStick.InvertStickY) ||
-                    (inputId == StickInputId.Right && _configuration.RightJoyconStick.InvertStickY))
+                if (joyconStickConfig != null)
                 {
-                    resultY = -resultY;
-                }
+                    if (joyconStickConfig.InvertStickX)
+                        resultX = -resultX;
 
-                if ((inputId == StickInputId.Left && _configuration.LeftJoyconStick.Rotate90CW) ||
-                    (inputId == StickInputId.Right && _configuration.RightJoyconStick.Rotate90CW))
-                {
-                    float temp = resultX;
-                    resultX = resultY;
-                    resultY = -temp;
+                    if (joyconStickConfig.InvertStickY)
+                        resultY = -resultY;
+
+                    if (joyconStickConfig.Rotate90CW)
+                    {
+                        float temp = resultX;
+                        resultX = resultY;
+                        resultY = -temp;
+                    }
                 }
             }
 
             return (resultX, resultY);
         }
 
+        // ReSharper disable once InconsistentNaming
+        private (short, short) GetStickXY(StickInputId inputId) =>
+            inputId switch
+            {
+                StickInputId.Left => (
+                    SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_LEFTX),
+                    SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_LEFTY)),
+                StickInputId.Right => (
+                    SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_RIGHTX),
+                    SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_RIGHTY)),
+                _ => throw new NotSupportedException($"Unsupported stick {inputId}")
+            };
+
         public bool IsPressed(GamepadButtonInputId inputId)
         {
-            if (inputId == GamepadButtonInputId.LeftTrigger)
+            switch (inputId)
             {
-                return ConvertRawStickValue(SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_TRIGGERLEFT)) > _triggerThreshold;
-            }
-
-            if (inputId == GamepadButtonInputId.RightTrigger)
-            {
-                return ConvertRawStickValue(SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_TRIGGERRIGHT)) > _triggerThreshold;
+                case GamepadButtonInputId.LeftTrigger:
+                    return ConvertRawStickValue(SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_TRIGGERLEFT)) > _triggerThreshold;
+                case GamepadButtonInputId.RightTrigger:
+                    return ConvertRawStickValue(SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_TRIGGERRIGHT)) > _triggerThreshold;
             }
 
             if (_buttonsDriverMapping[(int)inputId] == SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_INVALID)

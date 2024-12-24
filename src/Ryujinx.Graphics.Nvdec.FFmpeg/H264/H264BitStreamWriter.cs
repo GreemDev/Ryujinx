@@ -3,23 +3,13 @@ using System.Numerics;
 
 namespace Ryujinx.Graphics.Nvdec.FFmpeg.H264
 {
-    struct H264BitStreamWriter
+    struct H264BitStreamWriter(byte[] workBuffer)
     {
         private const int BufferSize = 8;
 
-        private readonly byte[] _workBuffer;
-
-        private int _offset;
-        private int _buffer;
-        private int _bufferPos;
-
-        public H264BitStreamWriter(byte[] workBuffer)
-        {
-            _workBuffer = workBuffer;
-            _offset = 0;
-            _buffer = 0;
-            _bufferPos = 0;
-        }
+        private int _offset = 0;
+        private int _buffer = 0;
+        private int _bufferPos = 0;
 
         public void WriteBit(bool value)
         {
@@ -59,9 +49,7 @@ namespace Ryujinx.Graphics.Nvdec.FFmpeg.H264
         private int GetFreeBufferBits()
         {
             if (_bufferPos == BufferSize)
-            {
                 Flush();
-            }
 
             return BufferSize - _bufferPos;
         }
@@ -70,7 +58,7 @@ namespace Ryujinx.Graphics.Nvdec.FFmpeg.H264
         {
             if (_bufferPos != 0)
             {
-                _workBuffer[_offset++] = (byte)_buffer;
+                workBuffer[_offset++] = (byte)_buffer;
 
                 _buffer = 0;
                 _bufferPos = 0;
@@ -85,9 +73,7 @@ namespace Ryujinx.Graphics.Nvdec.FFmpeg.H264
         }
 
         public readonly Span<byte> AsSpan()
-        {
-            return new Span<byte>(_workBuffer)[.._offset];
-        }
+            => new Span<byte>(workBuffer)[.._offset];
 
         public void WriteU(uint value, int valueSize) => WriteBits((int)value, valueSize);
         public void WriteSe(int value) => WriteExpGolombCodedInt(value);

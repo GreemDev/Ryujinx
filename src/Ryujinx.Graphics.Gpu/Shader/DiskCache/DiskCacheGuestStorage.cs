@@ -453,7 +453,7 @@ namespace Ryujinx.Graphics.Gpu.Shader.DiskCache
         /// <returns>Hash of the data</returns>
         private static uint CalcHash(ReadOnlySpan<byte> data)
         {
-            return (uint)XXHash128.ComputeHash(data).Low;
+            return (uint)Hash128.ComputeHash(data).Low;
         }
     }
 }

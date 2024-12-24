@@ -1,11 +1,13 @@
+using Ryujinx.Common.Logging;
 using System;
+using System.Globalization;
 using System.Threading;
 
 namespace Ryujinx.Common
 {
     public class ReactiveObject<T>
     {
-        private readonly ReaderWriterLockSlim _readerWriterLock = new();
+        private readonly ReaderWriterLockSlim _rwLock = new();
         private bool _isInitialized;
         private T _value;
 
@@ -15,15 +17,15 @@ namespace Ryujinx.Common
         {
             get
             {
-                _readerWriterLock.EnterReadLock();
+                _rwLock.EnterReadLock();
                 T value = _value;
-                _readerWriterLock.ExitReadLock();
+                _rwLock.ExitReadLock();
 
                 return value;
             }
             set
             {
-                _readerWriterLock.EnterWriteLock();
+                _rwLock.EnterWriteLock();
 
                 T oldValue = _value;
 
@@ -32,7 +34,7 @@ namespace Ryujinx.Common
                 _isInitialized = true;
                 _value = value;
 
-                _readerWriterLock.ExitWriteLock();
+                _rwLock.ExitWriteLock();
 
                 if (!oldIsInitialized || oldValue == null || !oldValue.Equals(_value))
                 {
@@ -40,22 +42,28 @@ namespace Ryujinx.Common
                 }
             }
         }
+        
+        public void LogChangesToValue(string valueName, LogClass logClass = LogClass.Configuration) 
+            => Event += (_, e) => ReactiveObjectHelper.LogValueChange(logClass, e, valueName);
 
-        public static implicit operator T(ReactiveObject<T> obj)
-        {
-            return obj.Value;
-        }
+        public static implicit operator T(ReactiveObject<T> obj) => obj.Value;
     }
 
-    public class ReactiveEventArgs<T>
+    public static class ReactiveObjectHelper
     {
-        public T OldValue { get; }
-        public T NewValue { get; }
-
-        public ReactiveEventArgs(T oldValue, T newValue)
+        public static void LogValueChange<T>(LogClass logClass, ReactiveEventArgs<T> eventArgs, string valueName)
         {
-            OldValue = oldValue;
-            NewValue = newValue;
+            string message = string.Create(CultureInfo.InvariantCulture, $"{valueName} set to: {eventArgs.NewValue}");
+
+            Logger.Info?.Print(logClass, message);
         }
+        
+        public static void Toggle(this ReactiveObject<bool> rBoolean) => rBoolean.Value = !rBoolean.Value;
+    }
+
+    public class ReactiveEventArgs<T>(T oldValue, T newValue)
+    {
+        public T OldValue { get; } = oldValue;
+        public T NewValue { get; } = newValue;
     }
 }

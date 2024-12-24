@@ -14,7 +14,7 @@ namespace Ryujinx.Ava.UI.Windows
 {
     public partial class ModManagerWindow : UserControl
     {
-        public ModManagerViewModel ViewModel;
+        public readonly ModManagerViewModel ViewModel;
 
         public ModManagerWindow()
         {
@@ -34,9 +34,9 @@ namespace Ryujinx.Ava.UI.Windows
         {
             ContentDialog contentDialog = new()
             {
-                PrimaryButtonText = "",
-                SecondaryButtonText = "",
-                CloseButtonText = "",
+                PrimaryButtonText = string.Empty,
+                SecondaryButtonText = string.Empty,
+                CloseButtonText = string.Empty,
                 Content = new ModManagerWindow(titleId),
                 Title = string.Format(LocaleManager.Instance[LocaleKeys.ModWindowTitle], titleName, titleId.ToString("X16")),
             };

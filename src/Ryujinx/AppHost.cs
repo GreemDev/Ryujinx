@@ -3,6 +3,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Threading;
+using LibHac.Common;
+using LibHac.Ns;
 using LibHac.Tools.FsSystem;
 using Ryujinx.Audio.Backends.Dummy;
 using Ryujinx.Audio.Backends.OpenAL;
@@ -59,6 +61,7 @@ using MouseButton = Ryujinx.Input.MouseButton;
 using ScalingFilter = Ryujinx.Common.Configuration.ScalingFilter;
 using Size = Avalonia.Size;
 using Switch = Ryujinx.HLE.Switch;
+using VSyncMode = Ryujinx.Common.Configuration.VSyncMode;
 
 namespace Ryujinx.Ava
 {
@@ -70,8 +73,8 @@ namespace Ryujinx.Ava
         private const float VolumeDelta = 0.05f;
 
         private static readonly Cursor _invisibleCursor = new(StandardCursorType.None);
-        private readonly IntPtr _invisibleCursorWin;
-        private readonly IntPtr _defaultCursorWin;
+        private readonly nint _invisibleCursorWin;
+        private readonly nint _defaultCursorWin;
 
         private readonly long _ticksPerFrame;
         private readonly Stopwatch _chrono;
@@ -104,6 +107,10 @@ namespace Ryujinx.Ava
         private CursorStates _cursorState = !ConfigurationState.Instance.Hid.EnableMouse.Value ?
             CursorStates.CursorIsVisible : CursorStates.CursorIsHidden;
 
+        private DateTime _lastShaderReset;
+        private uint _displayCount;
+        private uint _previousCount = 0;
+
         private bool _isStopped;
         private bool _isActive;
         private bool _renderingStarted;
@@ -118,17 +125,16 @@ namespace Ryujinx.Ava
         private bool _dialogShown;
         private readonly bool _isFirmwareTitle;
 
-        private readonly object _lockObject = new();
+        private readonly Lock _lockObject = new();
 
         public event EventHandler AppExit;
-        public event EventHandler<StatusInitEventArgs> StatusInitEvent;
         public event EventHandler<StatusUpdatedEventArgs> StatusUpdatedEvent;
 
         public VirtualFileSystem VirtualFileSystem { get; }
         public ContentManager ContentManager { get; }
         public NpadManager NpadManager { get; }
         public TouchScreenManager TouchScreenManager { get; }
-        public Switch Device { get; set; }
+        public HLE.Switch Device { get; set; }
 
         public int Width { get; private set; }
         public int Height { get; private set; }
@@ -202,10 +208,16 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.Graphics.ScalingFilter.Event += UpdateScalingFilter;
             ConfigurationState.Instance.Graphics.ScalingFilterLevel.Event += UpdateScalingFilterLevel;
             ConfigurationState.Instance.Graphics.EnableColorSpacePassthrough.Event += UpdateColorSpacePassthrough;
+            ConfigurationState.Instance.Graphics.VSyncMode.Event += UpdateVSyncMode;
+            ConfigurationState.Instance.Graphics.CustomVSyncInterval.Event += UpdateCustomVSyncIntervalValue;
+            ConfigurationState.Instance.Graphics.EnableCustomVSyncInterval.Event += UpdateCustomVSyncIntervalEnabled;
 
             ConfigurationState.Instance.System.EnableInternetAccess.Event += UpdateEnableInternetAccessState;
             ConfigurationState.Instance.Multiplayer.LanInterfaceId.Event += UpdateLanInterfaceIdState;
             ConfigurationState.Instance.Multiplayer.Mode.Event += UpdateMultiplayerModeState;
+            ConfigurationState.Instance.Multiplayer.LdnPassphrase.Event += UpdateLdnPassphraseState;
+            ConfigurationState.Instance.Multiplayer.LdnServer.Event += UpdateLdnServerState;
+            ConfigurationState.Instance.Multiplayer.DisableP2p.Event += UpdateDisableP2pState;
 
             _gpuCancellationTokenSource = new CancellationTokenSource();
             _gpuDoneEvent = new ManualResetEvent(false);
@@ -291,6 +303,66 @@ namespace Ryujinx.Ava
             _renderer.Window?.SetColorSpacePassthrough((bool)ConfigurationState.Instance.Graphics.EnableColorSpacePassthrough.Value);
         }
 
+        public void UpdateVSyncMode(object sender, ReactiveEventArgs<VSyncMode> e)
+        {
+            if (Device != null)
+            {
+                Device.VSyncMode = e.NewValue;
+                Device.UpdateVSyncInterval();
+            }
+            _renderer.Window?.ChangeVSyncMode((Ryujinx.Graphics.GAL.VSyncMode)e.NewValue);
+
+            _viewModel.ShowCustomVSyncIntervalPicker = (e.NewValue == VSyncMode.Custom);
+        }
+
+        public void VSyncModeToggle()
+        {
+            VSyncMode oldVSyncMode = Device.VSyncMode;
+            VSyncMode newVSyncMode = VSyncMode.Switch;
+            bool customVSyncIntervalEnabled = ConfigurationState.Instance.Graphics.EnableCustomVSyncInterval.Value;
+
+            switch (oldVSyncMode)
+            {
+                case VSyncMode.Switch:
+                    newVSyncMode = VSyncMode.Unbounded;
+                    break;
+                case VSyncMode.Unbounded:
+                    if (customVSyncIntervalEnabled)
+                    {
+                        newVSyncMode = VSyncMode.Custom;
+                    }
+                    else
+                    {
+                        newVSyncMode = VSyncMode.Switch;
+                    }
+
+                    break;
+                case VSyncMode.Custom:
+                    newVSyncMode = VSyncMode.Switch;
+                    break;
+            }
+
+            UpdateVSyncMode(this, new ReactiveEventArgs<VSyncMode>(oldVSyncMode, newVSyncMode));
+        }
+
+        private void UpdateCustomVSyncIntervalValue(object sender, ReactiveEventArgs<int> e)
+        {
+            if (Device != null)
+            {
+                Device.TargetVSyncInterval = e.NewValue;
+                Device.UpdateVSyncInterval();
+            }
+        }
+
+        private void UpdateCustomVSyncIntervalEnabled(object sender, ReactiveEventArgs<bool> e)
+        {
+            if (Device != null)
+            {
+                Device.CustomVSyncIntervalEnabled = e.NewValue;
+                Device.UpdateVSyncInterval();
+            }
+        }
+
         private void ShowCursor()
         {
             Dispatcher.UIThread.Post(() =>
@@ -348,11 +420,7 @@ namespace Ryujinx.Ava
 
                         string filename = $"{sanitizedApplicationName}_{currentTime.Year}-{currentTime.Month:D2}-{currentTime.Day:D2}_{currentTime.Hour:D2}-{currentTime.Minute:D2}-{currentTime.Second:D2}.png";
 
-                        string directory = AppDataManager.Mode switch
-                        {
-                            AppDataManager.LaunchMode.Portable or AppDataManager.LaunchMode.Custom => Path.Combine(AppDataManager.BaseDirPath, "screenshots"),
-                            _ => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "Ryujinx"),
-                        };
+                        string directory = Path.Combine(AppDataManager.BaseDirPath, "screenshots");
 
                         string path = Path.Combine(directory, filename);
 
@@ -368,12 +436,12 @@ namespace Ryujinx.Ava
                         }
 
                         var colorType = e.IsBgra ? SKColorType.Bgra8888 : SKColorType.Rgba8888;
-                        using SKBitmap bitmap = new SKBitmap(new SKImageInfo(e.Width, e.Height, colorType, SKAlphaType.Premul));
+                        using SKBitmap bitmap = new(new SKImageInfo(e.Width, e.Height, colorType, SKAlphaType.Premul));
 
                         Marshal.Copy(e.Data, 0, bitmap.GetPixels(), e.Data.Length);
 
-                        using SKBitmap bitmapToSave = new SKBitmap(bitmap.Width, bitmap.Height);
-                        using SKCanvas canvas = new SKCanvas(bitmapToSave);
+                        using SKBitmap bitmapToSave = new(bitmap.Width, bitmap.Height);
+                        using SKCanvas canvas = new(bitmapToSave);
 
                         canvas.Clear(SKColors.Black);
 
@@ -397,7 +465,7 @@ namespace Ryujinx.Ava
             }
         }
 
-        private void SaveBitmapAsPng(SKBitmap bitmap, string path)
+        private static void SaveBitmapAsPng(SKBitmap bitmap, string path)
         {
             using var data = bitmap.Encode(SKEncodedImageFormat.Png, 100);
             using var stream = File.OpenWrite(path);
@@ -490,15 +558,25 @@ namespace Ryujinx.Ava
             Device.Configuration.MultiplayerMode = e.NewValue;
         }
 
-        public void ToggleVSync()
+        private void UpdateLdnPassphraseState(object sender, ReactiveEventArgs<string> e)
         {
-            Device.EnableDeviceVsync = !Device.EnableDeviceVsync;
-            _renderer.Window.ChangeVSyncMode(Device.EnableDeviceVsync);
+            Device.Configuration.MultiplayerLdnPassphrase = e.NewValue;
+        }
+
+        private void UpdateLdnServerState(object sender, ReactiveEventArgs<string> e)
+        {
+            Device.Configuration.MultiplayerLdnServer = e.NewValue;
+        }
+
+        private void UpdateDisableP2pState(object sender, ReactiveEventArgs<bool> e)
+        {
+            Device.Configuration.MultiplayerDisableP2p = e.NewValue;
         }
 
         public void Stop()
         {
             _isActive = false;
+            DiscordIntegrationModule.SwitchToMainState();
         }
 
         private void Exit()
@@ -511,7 +589,7 @@ namespace Ryujinx.Ava
             }
 
             _isStopped = true;
-            _isActive = false;
+            Stop();
         }
 
         public void DisposeContext()
@@ -539,9 +617,8 @@ namespace Ryujinx.Ava
         private void Dispose()
         {
             if (Device.Processes != null)
-            {
                 MainWindowViewModel.UpdateGameMetadata(Device.Processes.ActiveApplication.ProgramIdText);
-            }
+
 
             ConfigurationState.Instance.System.IgnoreMissingServices.Event -= UpdateIgnoreMissingServicesState;
             ConfigurationState.Instance.Graphics.AspectRatio.Event -= UpdateAspectRatioState;
@@ -596,68 +673,66 @@ namespace Ryujinx.Ava
             _cursorState = CursorStates.ForceChangeCursor;
         }
 
-        public async Task<bool> LoadGuestApplication()
+        public async Task<bool> LoadGuestApplication(BlitStruct<ApplicationControlProperty>? customNacpData = null)
         {
             InitializeSwitchInstance();
             MainWindow.UpdateGraphicsConfig();
 
             SystemVersion firmwareVersion = ContentManager.GetCurrentFirmwareVersion();
 
-            if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime)
             {
                 if (!SetupValidator.CanStartApplication(ContentManager, ApplicationPath, out UserError userError))
                 {
+                    if (SetupValidator.CanFixStartApplication(ContentManager, ApplicationPath, userError, out firmwareVersion))
                     {
-                        if (SetupValidator.CanFixStartApplication(ContentManager, ApplicationPath, userError, out firmwareVersion))
+                        if (userError is UserError.NoFirmware)
                         {
-                            if (userError == UserError.NoFirmware)
-                            {
-                                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(
-                                    LocaleManager.Instance[LocaleKeys.DialogFirmwareNoFirmwareInstalledMessage],
-                                    LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogFirmwareInstallEmbeddedMessage, firmwareVersion.VersionString),
-                                    LocaleManager.Instance[LocaleKeys.InputDialogYes],
-                                    LocaleManager.Instance[LocaleKeys.InputDialogNo],
-                                    "");
+                            UserResult result = await ContentDialogHelper.CreateConfirmationDialog(
+                                LocaleManager.Instance[LocaleKeys.DialogFirmwareNoFirmwareInstalledMessage],
+                                LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogFirmwareInstallEmbeddedMessage, firmwareVersion.VersionString),
+                                LocaleManager.Instance[LocaleKeys.InputDialogYes],
+                                LocaleManager.Instance[LocaleKeys.InputDialogNo],
+                                string.Empty);
 
-                                if (result != UserResult.Yes)
-                                {
-                                    await UserErrorDialog.ShowUserErrorDialog(userError);
-                                    Device.Dispose();
-
-                                    return false;
-                                }
-                            }
-
-                            if (!SetupValidator.TryFixStartApplication(ContentManager, ApplicationPath, userError, out _))
+                            if (result != UserResult.Yes)
                             {
                                 await UserErrorDialog.ShowUserErrorDialog(userError);
                                 Device.Dispose();
 
                                 return false;
                             }
-
-                            // Tell the user that we installed a firmware for them.
-                            if (userError == UserError.NoFirmware)
-                            {
-                                firmwareVersion = ContentManager.GetCurrentFirmwareVersion();
-
-                                _viewModel.RefreshFirmwareStatus();
-
-                                await ContentDialogHelper.CreateInfoDialog(
-                                    LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogFirmwareInstalledMessage, firmwareVersion.VersionString),
-                                    LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogFirmwareInstallEmbeddedSuccessMessage, firmwareVersion.VersionString),
-                                    LocaleManager.Instance[LocaleKeys.InputDialogOk],
-                                    "",
-                                    LocaleManager.Instance[LocaleKeys.RyujinxInfo]);
-                            }
                         }
-                        else
+
+                        if (!SetupValidator.TryFixStartApplication(ContentManager, ApplicationPath, userError, out _))
                         {
                             await UserErrorDialog.ShowUserErrorDialog(userError);
                             Device.Dispose();
 
                             return false;
                         }
+
+                        // Tell the user that we installed a firmware for them.
+                        if (userError is UserError.NoFirmware)
+                        {
+                            firmwareVersion = ContentManager.GetCurrentFirmwareVersion();
+
+                            _viewModel.RefreshFirmwareStatus();
+
+                            await ContentDialogHelper.CreateInfoDialog(
+                                LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogFirmwareInstalledMessage, firmwareVersion.VersionString),
+                                LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogFirmwareInstallEmbeddedSuccessMessage, firmwareVersion.VersionString),
+                                LocaleManager.Instance[LocaleKeys.InputDialogOk],
+                                string.Empty,
+                                LocaleManager.Instance[LocaleKeys.RyujinxInfo]);
+                        }
+                    }
+                    else
+                    {
+                        await UserErrorDialog.ShowUserErrorDialog(userError);
+                        Device.Dispose();
+
+                        return false;
                     }
                 }
             }
@@ -668,7 +743,7 @@ namespace Ryujinx.Ava
             {
                 Logger.Info?.Print(LogClass.Application, "Loading as Firmware Title (NCA).");
 
-                if (!Device.LoadNca(ApplicationPath))
+                if (!Device.LoadNca(ApplicationPath, customNacpData))
                 {
                     Device.Dispose();
 
@@ -786,12 +861,11 @@ namespace Ryujinx.Ava
                 return false;
             }
 
-            DiscordIntegrationModule.SwitchToPlayingState(Device.Processes.ActiveApplication.ProgramIdText, Device.Processes.ActiveApplication.Name);
+            ApplicationMetadata appMeta = ApplicationLibrary.LoadAndSaveMetaData(Device.Processes.ActiveApplication.ProgramIdText,
+                appMetadata => appMetadata.UpdatePreGame()
+            );
 
-            ApplicationLibrary.LoadAndSaveMetaData(Device.Processes.ActiveApplication.ProgramIdText, appMetadata =>
-            {
-                appMetadata.UpdatePreGame();
-            });
+            DiscordIntegrationModule.SwitchToPlayingState(appMeta, Device.Processes.ActiveApplication);
 
             return true;
         }
@@ -825,10 +899,9 @@ namespace Ryujinx.Ava
             if (ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Vulkan)
             {
                 renderer = new VulkanRenderer(
-                    Vk.GetApi(),
-                    (RendererHost.EmbeddedWindow as EmbeddedWindowVulkan).CreateSurface,
-                    VulkanHelper.GetRequiredInstanceExtensions,
-                    ConfigurationState.Instance.Graphics.PreferredGpu.Value);
+                    ConfigurationState.Instance.Graphics.PreferredGpu,
+                    (RendererHost.EmbeddedWindow as EmbeddedWindowVulkan)!.CreateSurface,
+                    VulkanHelper.GetRequiredInstanceExtensions);
             }
             else if (ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Metal && OperatingSystem.IsMacOS())
             {
@@ -850,36 +923,39 @@ namespace Ryujinx.Ava
             Logger.Info?.PrintMsg(LogClass.Gpu, $"Backend Threading ({threadingMode}): {isGALThreaded}");
 
             // Initialize Configuration.
-            var memoryConfiguration = ConfigurationState.Instance.System.ExpandRam.Value ? MemoryConfiguration.MemoryConfiguration8GiB : MemoryConfiguration.MemoryConfiguration4GiB;
+            var memoryConfiguration = ConfigurationState.Instance.System.DramSize.Value;
 
-            HLEConfiguration configuration = new(VirtualFileSystem,
-                                                 _viewModel.LibHacHorizonManager,
-                                                 ContentManager,
-                                                 _accountManager,
-                                                 _userChannelPersistence,
-                                                 renderer,
-                                                 InitializeAudio(),
-                                                 memoryConfiguration,
-                                                 _viewModel.UiHandler,
-                                                 (SystemLanguage)ConfigurationState.Instance.System.Language.Value,
-                                                 (RegionCode)ConfigurationState.Instance.System.Region.Value,
-                                                 ConfigurationState.Instance.Graphics.EnableVsync,
-                                                 ConfigurationState.Instance.System.EnableDockedMode,
-                                                 ConfigurationState.Instance.System.EnablePtc,
-                                                 ConfigurationState.Instance.System.EnableInternetAccess,
-                                                 ConfigurationState.Instance.System.EnableFsIntegrityChecks ? IntegrityCheckLevel.ErrorOnInvalid : IntegrityCheckLevel.None,
-                                                 ConfigurationState.Instance.System.FsGlobalAccessLogMode,
-                                                 ConfigurationState.Instance.System.SystemTimeOffset,
-                                                 ConfigurationState.Instance.System.TimeZone,
-                                                 ConfigurationState.Instance.System.MemoryManagerMode,
-                                                 ConfigurationState.Instance.System.IgnoreMissingServices,
-                                                 ConfigurationState.Instance.Graphics.AspectRatio,
-                                                 ConfigurationState.Instance.System.AudioVolume,
-                                                 ConfigurationState.Instance.System.UseHypervisor,
-                                                 ConfigurationState.Instance.Multiplayer.LanInterfaceId.Value,
-                                                 ConfigurationState.Instance.Multiplayer.Mode);
-
-            Device = new Switch(configuration);
+            Device = new HLE.Switch(new HLEConfiguration(
+                VirtualFileSystem,
+                _viewModel.LibHacHorizonManager,
+                ContentManager,
+                _accountManager,
+                _userChannelPersistence,
+                renderer,
+                InitializeAudio(),
+                memoryConfiguration,
+                _viewModel.UiHandler,
+                (SystemLanguage)ConfigurationState.Instance.System.Language.Value,
+                (RegionCode)ConfigurationState.Instance.System.Region.Value,
+                ConfigurationState.Instance.Graphics.VSyncMode,
+                ConfigurationState.Instance.System.EnableDockedMode,
+                ConfigurationState.Instance.System.EnablePtc,
+                ConfigurationState.Instance.System.EnableInternetAccess,
+                ConfigurationState.Instance.System.EnableFsIntegrityChecks ? IntegrityCheckLevel.ErrorOnInvalid : IntegrityCheckLevel.None,
+                ConfigurationState.Instance.System.FsGlobalAccessLogMode,
+                ConfigurationState.Instance.System.SystemTimeOffset,
+                ConfigurationState.Instance.System.TimeZone,
+                ConfigurationState.Instance.System.MemoryManagerMode,
+                ConfigurationState.Instance.System.IgnoreMissingServices,
+                ConfigurationState.Instance.Graphics.AspectRatio,
+                ConfigurationState.Instance.System.AudioVolume,
+                ConfigurationState.Instance.System.UseHypervisor,
+                ConfigurationState.Instance.Multiplayer.LanInterfaceId.Value,
+                ConfigurationState.Instance.Multiplayer.Mode,
+                ConfigurationState.Instance.Multiplayer.DisableP2p,
+                ConfigurationState.Instance.Multiplayer.LdnPassphrase,
+                ConfigurationState.Instance.Multiplayer.LdnServer,
+                ConfigurationState.Instance.Graphics.CustomVSyncInterval.Value));
         }
 
         private static IHardwareDeviceDriver InitializeAudio()
@@ -953,10 +1029,8 @@ namespace Ryujinx.Ava
 
         private void MainLoop()
         {
-            while (_isActive)
+            while (UpdateFrame())
             {
-                UpdateFrame();
-
                 // Polling becomes expensive if it's not slept.
                 Thread.Sleep(1);
             }
@@ -971,7 +1045,7 @@ namespace Ryujinx.Ava
                     _viewModel.WindowState = WindowState.FullScreen;
                 }
 
-                if (_viewModel.WindowState == WindowState.FullScreen)
+                if (_viewModel.WindowState is WindowState.FullScreen)
                 {
                     _viewModel.ShowMenuAndStatusBar = false;
                 }
@@ -1002,7 +1076,7 @@ namespace Ryujinx.Ava
                 Device.Gpu.SetGpuThread();
                 Device.Gpu.InitializeShaderCache(_gpuCancellationTokenSource.Token);
 
-                _renderer.Window.ChangeVSyncMode(Device.EnableDeviceVsync);
+                _renderer.Window.ChangeVSyncMode((Ryujinx.Graphics.GAL.VSyncMode)Device.VSyncMode);
 
                 while (_isActive)
                 {
@@ -1049,21 +1123,24 @@ namespace Ryujinx.Ava
 
         public void InitStatus()
         {
-            StatusInitEvent?.Invoke(this, new StatusInitEventArgs(
-                ConfigurationState.Instance.Graphics.GraphicsBackend.Value switch
-                {
-                    GraphicsBackend.Vulkan => "Vulkan",
-                    GraphicsBackend.OpenGl => "OpenGL",
-                    GraphicsBackend.Metal => "Metal",
-                    _ => throw new NotImplementedException()
-                },
-                $"GPU: {_renderer.GetHardwareInfo().GpuDriver}"));
+            _viewModel.BackendText = ConfigurationState.Instance.Graphics.GraphicsBackend.Value switch
+            {
+                GraphicsBackend.Vulkan => "Vulkan",
+                GraphicsBackend.OpenGl => "OpenGL",
+                GraphicsBackend.Metal => "Metal",
+                _ => throw new NotImplementedException()
+            };
+
+            _viewModel.GpuNameText = $"GPU: {_renderer.GetHardwareInfo().GpuDriver}";
         }
 
         public void UpdateStatus()
         {
             // Run a status update only when a frame is to be drawn. This prevents from updating the ui and wasting a render when no frame is queued.
             string dockedMode = ConfigurationState.Instance.System.EnableDockedMode ? LocaleManager.Instance[LocaleKeys.Docked] : LocaleManager.Instance[LocaleKeys.Handheld];
+            string vSyncMode = Device.VSyncMode.ToString();
+
+            UpdateShaderCount();
 
             if (GraphicsConfig.ResScale != 1)
             {
@@ -1071,12 +1148,13 @@ namespace Ryujinx.Ava
             }
 
             StatusUpdatedEvent?.Invoke(this, new StatusUpdatedEventArgs(
-                Device.EnableDeviceVsync,
+                vSyncMode,
                 LocaleManager.Instance[LocaleKeys.VolumeShort] + $": {(int)(Device.GetVolume() * 100)}%",
                 dockedMode,
                 ConfigurationState.Instance.Graphics.AspectRatio.Value.ToText(),
-                LocaleManager.Instance[LocaleKeys.Game] + $": {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
-                $"FIFO: {Device.Statistics.GetFifoPercent():00.00} %"));
+                $"{Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
+                $"FIFO: {Device.Statistics.GetFifoPercent():00.00} %",
+                _displayCount));
         }
 
         public async Task ShowExitPrompt()
@@ -1099,6 +1177,24 @@ namespace Ryujinx.Ava
             if (shouldExit)
             {
                 Stop();
+            }
+        }
+
+        private void UpdateShaderCount()
+        {
+            // If there is a mismatch between total program compile and previous count
+            // this means new shaders have been compiled and should be displayed.
+            if (_renderer.ProgramCount != _previousCount)
+            {
+                _displayCount += _renderer.ProgramCount - _previousCount;
+                _lastShaderReset = DateTime.Now;
+                _previousCount = _renderer.ProgramCount;
+            }
+            // Check if 5s has passed since any new shaders were compiled.
+            // If yes, reset the counter.
+            else if (_lastShaderReset.AddSeconds(5) <= DateTime.Now)
+            {
+                _displayCount = 0;
             }
         }
 
@@ -1143,7 +1239,7 @@ namespace Ryujinx.Ava
 
                 Dispatcher.UIThread.Post(() =>
                 {
-                    if (_keyboardInterface.GetKeyboardStateSnapshot().IsPressed(Key.Delete) && _viewModel.WindowState != WindowState.FullScreen)
+                    if (_keyboardInterface.GetKeyboardStateSnapshot().IsPressed(Key.Delete) && _viewModel.WindowState is not WindowState.FullScreen)
                     {
                         Device.Processes.ActiveApplication.DiskCacheLoadState?.Cancel();
                     }
@@ -1155,8 +1251,16 @@ namespace Ryujinx.Ava
                 {
                     switch (currentHotkeyState)
                     {
-                        case KeyboardHotkeyState.ToggleVSync:
-                            ToggleVSync();
+                        case KeyboardHotkeyState.ToggleVSyncMode:
+                            VSyncModeToggle();
+                            break;
+                        case KeyboardHotkeyState.CustomVSyncIntervalDecrement:
+                            Device.DecrementCustomVSyncInterval();
+                            _viewModel.CustomVSyncInterval -= 1;
+                            break;
+                        case KeyboardHotkeyState.CustomVSyncIntervalIncrement:
+                            Device.IncrementCustomVSyncInterval();
+                            _viewModel.CustomVSyncInterval += 1;
                             break;
                         case KeyboardHotkeyState.Screenshot:
                             ScreenshotRequested = true;
@@ -1243,9 +1347,9 @@ namespace Ryujinx.Ava
         {
             KeyboardHotkeyState state = KeyboardHotkeyState.None;
 
-            if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ToggleVsync))
+            if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ToggleVSyncMode))
             {
-                state = KeyboardHotkeyState.ToggleVSync;
+                state = KeyboardHotkeyState.ToggleVSyncMode;
             }
             else if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Screenshot))
             {
@@ -1278,6 +1382,14 @@ namespace Ryujinx.Ava
             else if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.VolumeDown))
             {
                 state = KeyboardHotkeyState.VolumeDown;
+            }
+            else if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.CustomVSyncIntervalIncrement))
+            {
+                state = KeyboardHotkeyState.CustomVSyncIntervalIncrement;
+            }
+            else if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.CustomVSyncIntervalDecrement))
+            {
+                state = KeyboardHotkeyState.CustomVSyncIntervalDecrement;
             }
 
             return state;

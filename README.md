@@ -1,97 +1,73 @@
-<h1 align="center">
+<table align="center">
+    <tr>
+        <td align="center" width="25%">
+            <img src="https://raw.githubusercontent.com/GreemDev/ryuassets/refs/heads/main/RyujinxApp_1024.png" alt="Ryujinx" >
+        </td>
+        <td align="center" width="75%">
+          
+# Ryujinx
+          
+[![Release workflow](https://github.com/GreemDev/Ryujinx/actions/workflows/release.yml/badge.svg)](https://github.com/GreemDev/Ryujinx/actions/workflows/release.yml)
+[![Latest release](https://img.shields.io/github/v/release/GreemDev/Ryujinx)](https://github.com/GreemDev/Ryujinx/releases/latest)
   <br>
-  <a href="https://ryujinx.org/"><img src="https://raw.githubusercontent.com/Ryujinx/Ryujinx/master/distribution/misc/Logo.svg" alt="Ryujinx" width="150"></a>
-  <br>
-  <b>Ryujinx</b>
-  <br>
-  <sub><sup><b>(REE-YOU-JINX)</b></sup></sub>
-  <br>
-</h1>
+[![Canary workflow](https://github.com/GreemDev/Ryujinx/actions/workflows/canary.yml/badge.svg)](https://github.com/GreemDev/Ryujinx/actions/workflows/canary.yml)
+[![Latest canary release](https://img.shields.io/github/v/release/GreemDev/Ryujinx-Canary?label=canary)](https://github.com/GreemDev/Ryujinx-Canary/releases/latest)
+        </td>
+    </tr>
+</table>
 
 <p align="center">
-  Ryujinx is an open-source Nintendo Switch emulator, created by gdkchan, written in C#.
+  Ryujinx is an open-source Nintendo Switch emulator, originally created by gdkchan, written in C#.
   This emulator aims at providing excellent accuracy and performance, a user-friendly interface and consistent builds.
   It was written from scratch and development on the project began in September 2017.
-  Ryujinx is available on Github under the <a href="https://github.com/Ryujinx/Ryujinx/blob/master/LICENSE.txt" target="_blank">MIT license</a>.
+  Ryujinx is available on GitHub under the <a href="https://github.com/GreemDev/Ryujinx/blob/master/LICENSE.txt" target="_blank">MIT license</a>.
   <br />
+</p>
+<p align="center">
+  On October 1st 2024, Ryujinx was discontinued as the creator was forced to abandon the project.
+  <br>
+  This fork is intended to be a QoL uplift for existing Ryujinx users.
+  <br>
+  This is not a Ryujinx revival project. This is not a Phoenix project.
+  <br>
+  Guides and documentation can be found on the <a href="https://github.com/GreemDev/Ryujinx/wiki">Wiki tab</a>.
+</p>
+<p align="center">
+  If you would like a more preservative fork of Ryujinx, check out <a href="https://github.com/ryujinx-mirror/ryujinx">ryujinx-mirror</a>.
 </p>
 
 <p align="center">
-    <a href="https://github.com/Ryujinx/Ryujinx/actions/workflows/release.yml">
-        <img src="https://github.com/Ryujinx/Ryujinx/actions/workflows/release.yml/badge.svg"
-            alt="">
-    </a>
-    <a href="https://crwd.in/ryujinx">
-        <img src="https://badges.crowdin.net/ryujinx/localized.svg"
-            alt="">
-    </a>
-    <a href="https://discord.com/invite/VkQYXAZ">
-        <img src="https://img.shields.io/discord/410208534861447168?color=5865F2&label=Ryujinx&logo=discord&logoColor=white"
-            alt="Discord">
+    Click below to join the Discord:
+    <br>
+    <a href="https://discord.gg/dHPrkBkkyA">
+        <img src="https://img.shields.io/discord/1294443224030511104?color=5865F2&label=Ryubing&logo=discord&logoColor=white" alt="Discord">
     </a>
     <br>
     <br>
-    <img src="https://raw.githubusercontent.com/Ryujinx/Ryujinx-Website/master/public/assets/images/shell.png">
+    <img src="https://raw.githubusercontent.com/GreemDev/Ryujinx/refs/heads/master/docs/shell.png">
 </p>
-
-## Compatibility
-
-As of May 2024, Ryujinx has been tested on approximately 4,300 titles;
-over 4,100 boot past menus and into gameplay, with roughly 3,550 of those being considered playable.
-
-You can check out the compatibility list [here](https://github.com/Ryujinx/Ryujinx-Games-List/issues).
-
-Anyone is free to submit a new game test or update an existing game test entry;
-simply follow the new issue template and testing guidelines, or post as a reply to the applicable game issue.
-Use the search function to see if a game has been tested already!
 
 ## Usage
 
 To run this emulator, your PC must be equipped with at least 8GiB of RAM;
 failing to meet this requirement may result in a poor gameplay experience or unexpected crashes.
 
-See our [Setup & Configuration Guide](https://github.com/Ryujinx/Ryujinx/wiki/Ryujinx-Setup-&-Configuration-Guide) on how to set up the emulator.
-
-For our Local Wireless (LDN) builds, see our [Multiplayer: Local Play/Local Wireless Guide
-](https://github.com/Ryujinx/Ryujinx/wiki/Multiplayer-(LDN-Local-Wireless)-Guide).
-
-Avalonia UI comes with translations for various languages. See [Crowdin](https://crwd.in/ryujinx) for more information.
-
 ## Latest build
 
-These builds are compiled automatically for each commit on the master branch.
-While we strive to ensure optimal stability and performance prior to pushing an update, our automated builds **may be unstable or completely broken**.
+Stable builds are made every so often onto a separate "release" branch that then gets put into the releases you know and love.
+These stable builds exist so that the end user can get a more **enjoyable and stable experience**.
 
-If you want to see details on updates to the emulator, you can visit our [Changelog](https://github.com/Ryujinx/Ryujinx/wiki/Changelog).
+You can find the latest stable release [here](https://github.com/GreemDev/Ryujinx/releases/latest).
 
-The latest automatic build for Windows, macOS, and Linux can be found on the [Official Website](https://ryujinx.org/download).
+Canary builds are compiled automatically for each commit on the master branch.
+While we strive to ensure optimal stability and performance prior to pushing an update, these builds **may be unstable or completely broken**.
+These canary builds are only recommended for experienced users.
+
+You can find the latest canary release [here](https://github.com/GreemDev/Ryujinx-Canary/releases/latest).
 
 ## Documentation
 
 If you are planning to contribute or just want to learn more about this project please read through our [documentation](docs/README.md).
-
-## Building
-
-If you wish to build the emulator yourself, follow these steps:
-
-### Step 1
-
-Install the [.NET 8.0 (or higher) SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
-Make sure your SDK version is higher or equal to the required version specified in [global.json](global.json). 
-
-### Step 2
-
-Either use `git clone https://github.com/Ryujinx/Ryujinx` on the command line to clone the repository or use Code --> Download zip button to get the files.
-
-### Step 3
-
-To build Ryujinx, open a command prompt inside the project directory.
-You can quickly access it on Windows by holding shift in File Explorer, then right clicking and selecting `Open command window here`.
-Then type the following command: `dotnet build -c Release -o build`
-the built files will be found in the newly created build directory.
-
-Ryujinx system files are stored in the `Ryujinx` folder.
-This folder is located in the user folder, which can be accessed by clicking `Open Ryujinx Folder` under the File menu in the GUI.
 
 ## Features
 
@@ -106,7 +82,7 @@ This folder is located in the user folder, which can be accessed by clicking `Op
   It translates the ARM code to a custom IR, performs a few optimizations, and turns that into x86 code.
   There are three memory manager options available depending on the user's preference, leveraging both software-based (slower) and host-mapped modes (much faster).
   The fastest option (host, unchecked) is set by default.
-  Ryujinx also features an optional Profiled Persistent Translation Cache, which essentially caches translated functions so that they do not need to be translated every time the game loads. 
+  Ryujinx also features an optional Profiled Persistent Translation Cache, which essentially caches translated functions so that they do not need to be translated every time the game loads.
   The net result is a significant reduction in load times (the amount of time between launching a game and arriving at the title screen) for nearly every game.
   NOTE: This feature is enabled by default in the Options menu > System tab.
   You must launch the game at least twice to the title screen or beyond before performance improvements are unlocked on the third launch!
@@ -134,27 +110,6 @@ This folder is located in the user folder, which can be accessed by clicking `Op
 
   The emulator has settings for enabling or disabling some logging, remapping controllers, and more.
   You can configure all of them through the graphical interface or manually through the config file, `Config.json`, found in the user folder which can be accessed by clicking `Open Ryujinx Folder` under the File menu in the GUI.
-
-## Contact
-
-If you have contributions, suggestions, need emulator support or just want to get in touch with the team, join our [Discord server](https://discord.com/invite/Ryujinx).
-You may also review our [FAQ](https://github.com/Ryujinx/Ryujinx/wiki/Frequently-Asked-Questions).
-
-## Donations
-
-If you'd like to support the project financially, Ryujinx has an active Patreon campaign.
-
-<a href="https://www.patreon.com/ryujinx">
-    <img src="https://images.squarespace-cdn.com/content/v1/560c1d39e4b0b4fae0c9cf2a/1567548955044-WVD994WZP76EWF15T0L3/Patreon+Button.png?format=500w" width="150">
-</a>
-
-All developers working on the project do so in their free time, but the project has several expenses:
-* Hackable Nintendo Switch consoles to reverse-engineer the hardware
-* Additional computer hardware for testing purposes (e.g. GPUs to diagnose graphical bugs, etc.)
-* Licenses for various software development tools (e.g. Jetbrains, IDA)
-* Web hosting and infrastructure maintenance (e.g. LDN servers)
-
-All funds received through Patreon are considered a donation to support the project. Patrons receive early access to progress reports and exclusive access to developer interviews.
 
 ## License
 

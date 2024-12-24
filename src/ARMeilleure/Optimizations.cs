@@ -5,6 +5,9 @@ namespace ARMeilleure
 
     public static class Optimizations
     {
+        // low-core count PPTC
+        public static bool LowPower { get; set; } = false;
+
         public static bool FastFP { get; set; } = true;
 
         public static bool AllowLcqInFunctionTable { get; set; } = true;
@@ -51,8 +54,8 @@ namespace ARMeilleure
         internal static bool UseSse41     => UseSse41IfAvailable     && X86HardwareCapabilities.SupportsSse41;
         internal static bool UseSse42     => UseSse42IfAvailable     && X86HardwareCapabilities.SupportsSse42;
         internal static bool UsePopCnt    => UsePopCntIfAvailable    && X86HardwareCapabilities.SupportsPopcnt;
-        internal static bool UseAvx       => UseAvxIfAvailable       && X86HardwareCapabilities.SupportsAvx && !ForceLegacySse;
-        internal static bool UseAvx512F   => UseAvx512FIfAvailable   && X86HardwareCapabilities.SupportsAvx512F && !ForceLegacySse;
+        internal static bool UseAvx       => UseAvxIfAvailable       && X86HardwareCapabilities.SupportsAvx      && !ForceLegacySse;
+        internal static bool UseAvx512F   => UseAvx512FIfAvailable   && X86HardwareCapabilities.SupportsAvx512F  && !ForceLegacySse;
         internal static bool UseAvx512Vl  => UseAvx512VlIfAvailable  && X86HardwareCapabilities.SupportsAvx512Vl && !ForceLegacySse;
         internal static bool UseAvx512Bw  => UseAvx512BwIfAvailable  && X86HardwareCapabilities.SupportsAvx512Bw && !ForceLegacySse;
         internal static bool UseAvx512Dq  => UseAvx512DqIfAvailable  && X86HardwareCapabilities.SupportsAvx512Dq && !ForceLegacySse;

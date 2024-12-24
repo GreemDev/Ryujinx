@@ -228,7 +228,7 @@ namespace ARMeilleure.IntermediateRepresentation
 
         public readonly override int GetHashCode()
         {
-            return HashCode.Combine((IntPtr)_data);
+            return HashCode.Combine((nint)_data);
         }
 
         public static bool operator ==(Operation a, Operation b)
@@ -337,7 +337,7 @@ namespace ARMeilleure.IntermediateRepresentation
                 return result;
             }
 
-            public static Operation Operation(Intrinsic intrin, Operand dest, params Operand[] srcs)
+            public static Operation Operation(Intrinsic intrin, Operand dest, params ReadOnlySpan<Operand> srcs)
             {
                 Operation result = Make(Instruction.Extended, 0, srcs.Length);
 

@@ -19,20 +19,12 @@ namespace Ryujinx.Ava.UI.Windows
 
         private const int CutOffLuminosity = 64;
 
-        private readonly struct PaletteColor
+        private readonly struct PaletteColor(int qck, byte r, byte g, byte b)
         {
-            public int Qck { get; }
-            public byte R { get; }
-            public byte G { get; }
-            public byte B { get; }
-
-            public PaletteColor(int qck, byte r, byte g, byte b)
-            {
-                Qck = qck;
-                R = r;
-                G = g;
-                B = b;
-            }
+            public int Qck => qck;
+            public byte R => r;
+            public byte G => g;
+            public byte B => b;
         }
 
         public static SKColor GetFilteredColor(SKBitmap image)
@@ -61,15 +53,6 @@ namespace Ryujinx.Ava.UI.Windows
             var dominantColorBin = new Dictionary<int, int>();
 
             var buffer = GetBuffer(image);
-
-            int w = image.Width;
-            int w8 = w << 8;
-            int h8 = image.Height << 8;
-
-#pragma warning disable IDE0059 // Unnecessary assignment
-            int xStep = w8 / ColorsPerLine;
-            int yStep = h8 / ColorsPerLine;
-#pragma warning restore IDE0059
 
             int i = 0;
             int maxHitCount = 0;
@@ -147,7 +130,7 @@ namespace Ryujinx.Ava.UI.Windows
             var value = GetColorValue(color);
 
             // If the color is rarely used on the image,
-            // then chances are that theres a better candidate, even if the saturation value
+            // then chances are that there's a better candidate, even if the saturation value
             // is high. By multiplying the saturation value with a weight, we can lower
             // it if the color is almost never used (hit count is low).
             var satWeighted = quantSat;
@@ -164,16 +147,6 @@ namespace Ryujinx.Ava.UI.Windows
             return score;
         }
 
-        private static int BalanceHitCount(int hitCount, int maxHitCount)
-        {
-            return (hitCount << 8) / maxHitCount;
-        }
-
-        private static int GetColorApproximateLuminosity(byte r, byte g, byte b)
-        {
-            return (r + g + b) / 3;
-        }
-
         private static int GetColorSaturation(PaletteColor color)
         {
             int cMax = Math.Max(Math.Max(color.R, color.G), color.B);
@@ -188,10 +161,11 @@ namespace Ryujinx.Ava.UI.Windows
             return (delta << 8) / cMax;
         }
 
-        private static int GetColorValue(PaletteColor color)
-        {
-            return Math.Max(Math.Max(color.R, color.G), color.B);
-        }
+        private static int GetColorValue(PaletteColor color) => Math.Max(Math.Max(color.R, color.G), color.B);
+
+        private static int BalanceHitCount(int hitCount, int maxHitCount) => (hitCount << 8) / maxHitCount;
+
+        private static int GetColorApproximateLuminosity(byte r, byte g, byte b) => (r + g + b) / 3;
 
         private static int GetQuantizedColorKey(byte r, byte g, byte b)
         {
