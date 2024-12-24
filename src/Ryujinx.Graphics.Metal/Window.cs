@@ -137,10 +137,10 @@ namespace Ryujinx.Graphics.Metal
             _requestedWidth = width;
             _requestedHeight = height;
         }
-
-        public void ChangeVSyncMode(bool vsyncEnabled)
+        
+        public void ChangeVSyncMode(VSyncMode vSyncMode)
         {
-            // _vsyncEnabled = vsyncEnabled;
+            //_vSyncMode = vSyncMode;
         }
 
         public void SetAntiAliasing(AntiAliasing effect)

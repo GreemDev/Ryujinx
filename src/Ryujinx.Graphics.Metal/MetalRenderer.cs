@@ -20,6 +20,8 @@ namespace Ryujinx.Graphics.Metal
 
         private Pipeline _pipeline;
         private Window _window;
+        
+        public uint ProgramCount { get; set; } = 0;
 
         public event EventHandler<ScreenCaptureImageInfo> ScreenCaptured;
         public bool PreferThreading => true;
@@ -102,6 +104,7 @@ namespace Ryujinx.Graphics.Metal
 
         public IProgram CreateProgram(ShaderSource[] shaders, ShaderInfo info)
         {
+            ProgramCount++;
             return new Program(this, _device, shaders, info.ResourceLayout, info.ComputeLocalSize);
         }
 

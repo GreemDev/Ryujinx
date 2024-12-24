@@ -22,8 +22,9 @@ namespace Ryujinx.Headless.SDL2.Metal
             GraphicsDebugLevel glLogLevel,
             AspectRatio aspectRatio,
             bool enableMouse,
-            HideCursorMode hideCursorMode)
-            : base(inputManager, glLogLevel, aspectRatio, enableMouse, hideCursorMode) { }
+            HideCursorMode hideCursorMode, 
+            bool ignoreControllerApplet)
+            : base(inputManager, glLogLevel, aspectRatio, enableMouse, hideCursorMode, ignoreControllerApplet) { }
 
         public override SDL_WindowFlags GetWindowFlags() => SDL_WindowFlags.SDL_WINDOW_METAL;
 
