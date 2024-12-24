@@ -98,6 +98,9 @@ namespace Ryujinx.Ava
 
         private void ThemeChanged_Event(object _, ReactiveEventArgs<string> rArgs) => ApplyConfiguredTheme(rArgs.NewValue);
 
+
+        public static readonly ThemeVariant AmoledThemeVariant = new("Amoled", ThemeVariant.Dark); 
+
         public void ApplyConfiguredTheme(string baseStyle)
         {
             try
@@ -116,6 +119,7 @@ namespace Ryujinx.Ava
                     "Auto" => DetectSystemTheme(),
                     "Light" => ThemeVariant.Light,
                     "Dark" => ThemeVariant.Dark,
+                    "AMOLED" => AmoledThemeVariant,
                     _ => ThemeVariant.Default,
                 };
             }

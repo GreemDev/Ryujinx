@@ -547,6 +547,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                 "Auto" => 0,
                 "Light" => 1,
                 "Dark" => 2,
+                "AMOLED" => 3,
                 _ => 0
             };
 
@@ -656,6 +657,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                 0 => "Auto",
                 1 => "Light",
                 2 => "Dark",
+                3 => "AMOLED",
                 _ => "Auto"
             };
 

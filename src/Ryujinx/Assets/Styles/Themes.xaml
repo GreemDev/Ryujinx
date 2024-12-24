@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ryu="clr-namespace:Ryujinx.Ava">
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
             <SolidColorBrush x:Key="DataGridSelectionBackgroundBrush"
@@ -46,6 +47,23 @@
             <Color x:Key="MenuFlyoutPresenterBorderColor">#3D3D3D</Color>
             <Color x:Key="AppListBackgroundColor">#0FFFFFFF</Color>
             <Color x:Key="AppListHoverBackgroundColor">#1EFFFFFF</Color>
+            <Color x:Key="SecondaryTextColor">#A0FFFFFF</Color>
+            <Color x:Key="FavoriteApplicationIconColor">#fffcd12a</Color>
+            <Color x:Key="Switch">#FF2EEAC9</Color>
+            <Color x:Key="Unbounded">#FFFF4554</Color>
+            <Color x:Key="Custom">#6483F5</Color>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="{x:Static ryu:RyujinxApp.AmoledThemeVariant}">
+            <SolidColorBrush x:Key="DataGridSelectionBackgroundBrush"
+                             Color="{DynamicResource DataGridSelectionColor}" />
+            <Color x:Key="ControlFillColorSecondary">#008AA8</Color>
+            <Color x:Key="DataGridSelectionColor">#FF00FABB</Color>
+            <Color x:Key="ThemeContentBackgroundColor">#FF000000</Color>
+            <Color x:Key="ThemeControlBorderColor">#2D000000</Color>
+            <Color x:Key="ThemeForegroundColor">#FFFFFFFF</Color>
+            <Color x:Key="MenuFlyoutPresenterBorderColor">#79000000</Color>
+            <Color x:Key="AppListBackgroundColor">#50000000</Color>
+            <Color x:Key="AppListHoverBackgroundColor">#40000000</Color>
             <Color x:Key="SecondaryTextColor">#A0FFFFFF</Color>
             <Color x:Key="FavoriteApplicationIconColor">#fffcd12a</Color>
             <Color x:Key="Switch">#FF2EEAC9</Color>
