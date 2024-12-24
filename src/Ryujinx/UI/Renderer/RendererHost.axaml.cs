@@ -30,7 +30,7 @@ namespace Ryujinx.Ava.UI.Renderer
             Initialize();
         }
 
-        private readonly string[] _knownGreatMetalTitles =
+        public static readonly string[] KnownGreatMetalTitles =
         [
             "01006A800016E000", // Smash Ultimate
             "0100000000010000", // Super Mario Odyessy
@@ -49,7 +49,7 @@ namespace Ryujinx.Ava.UI.Renderer
                     EmbeddedWindow = 
                         OperatingSystem.IsMacOS() && 
                         RuntimeInformation.ProcessArchitecture == Architecture.Arm64 && 
-                        _knownGreatMetalTitles.ContainsIgnoreCase(titleId) 
+                        KnownGreatMetalTitles.ContainsIgnoreCase(titleId) 
                             ? new EmbeddedWindowMetal() 
                             : new EmbeddedWindowVulkan();
                     break;

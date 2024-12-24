@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Threading;
+using Gommon;
 using LibHac.Common;
 using LibHac.Ns;
 using LibHac.Tools.FsSystem;
@@ -141,6 +142,23 @@ namespace Ryujinx.Ava
         public string ApplicationPath { get; private set; }
         public ulong ApplicationId { get; private set; }
         public bool ScreenshotRequested { get; set; }
+
+        public bool ShouldInitMetal
+        {
+            get
+            {
+                return OperatingSystem.IsMacOS() && RuntimeInformation.ProcessArchitecture == Architecture.Arm64 && 
+                    (
+                        (
+                            (
+                                ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Auto &&
+                                RendererHost.KnownGreatMetalTitles.ContainsIgnoreCase(ApplicationId.ToString("X16"))
+                            ) || 
+                            ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Metal
+                        )
+                     );
+            }
+        }
 
         public AppHost(
             RendererHost renderer,
@@ -895,15 +913,16 @@ namespace Ryujinx.Ava
 
             // Initialize Renderer.
             IRenderer renderer;
+            GraphicsBackend backend = ConfigurationState.Instance.Graphics.GraphicsBackend;
 
-            if (ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Vulkan)
+            if (backend == GraphicsBackend.Vulkan || (backend == GraphicsBackend.Auto && !ShouldInitMetal))
             {
                 renderer = VulkanRenderer.Create(
                     ConfigurationState.Instance.Graphics.PreferredGpu,
                     (RendererHost.EmbeddedWindow as EmbeddedWindowVulkan)!.CreateSurface,
                     VulkanHelper.GetRequiredInstanceExtensions);
             }
-            else if (ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Metal && OperatingSystem.IsMacOS())
+            else if (ShouldInitMetal)
             {
                 renderer = new MetalRenderer((RendererHost.EmbeddedWindow as EmbeddedWindowMetal).CreateSurface);
             }
