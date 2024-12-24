@@ -39,6 +39,9 @@
                             HorizontalContentAlignment="Left"
                             ToolTip.Tip="{ext:Locale SettingsTabGraphicsBackendTooltip}"
                             SelectedIndex="{Binding GraphicsBackendIndex}">
+                            <ComboBoxItem IsVisible="{Binding IsVulkanAvailable}" ToolTip.Tip="{ext:Locale SettingsTabGraphicsBackendAutoTooltip}" >
+                                <TextBlock Text="{ext:Locale SettingsTabGraphicsBackendAuto}" />
+                            </ComboBoxItem>
                             <ComboBoxItem IsVisible="{Binding IsVulkanAvailable}">
                                 <TextBlock Text="Vulkan" />
                             </ComboBoxItem>

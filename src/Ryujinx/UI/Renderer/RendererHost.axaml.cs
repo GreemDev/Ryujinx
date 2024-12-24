@@ -1,8 +1,10 @@
 using Avalonia;
 using Avalonia.Controls;
+using Gommon;
 using Ryujinx.Common.Configuration;
 using Ryujinx.UI.Common.Configuration;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Ryujinx.Ava.UI.Renderer
 {
@@ -21,13 +23,51 @@ namespace Ryujinx.Ava.UI.Renderer
             {
                 GraphicsBackend.OpenGl => new EmbeddedWindowOpenGL(),
                 GraphicsBackend.Metal => new EmbeddedWindowMetal(),
-                GraphicsBackend.Vulkan => new EmbeddedWindowVulkan(),
+                GraphicsBackend.Vulkan or GraphicsBackend.Auto => new EmbeddedWindowVulkan(),
                 _ => throw new NotSupportedException()
             };
 
             Initialize();
         }
 
+        private readonly string[] _knownGreatMetalTitles =
+        [
+            "01006A800016E000", // Smash Ultimate
+            "0100000000010000", // Super Mario Odyessy
+            "01008C0016544000", // Sea of Stars
+            "01005CA01580E000", // Persona 5
+            "010028600EBDA000", // Mario 3D World
+        ];
+        
+        public RendererHost(string titleId)
+        {
+            InitializeComponent();
+
+            switch (ConfigurationState.Instance.Graphics.GraphicsBackend.Value)
+            {
+                case GraphicsBackend.Auto:
+                    EmbeddedWindow = 
+                        OperatingSystem.IsMacOS() && 
+                        RuntimeInformation.ProcessArchitecture == Architecture.Arm64 && 
+                        _knownGreatMetalTitles.ContainsIgnoreCase(titleId) 
+                            ? new EmbeddedWindowMetal() 
+                            : new EmbeddedWindowVulkan();
+                    break;
+                case GraphicsBackend.OpenGl:
+                    EmbeddedWindow = new EmbeddedWindowOpenGL();
+                    break;
+                case GraphicsBackend.Metal:
+                    EmbeddedWindow = new EmbeddedWindowMetal();
+                    break;
+                case GraphicsBackend.Vulkan: 
+                    EmbeddedWindow = new EmbeddedWindowVulkan(); 
+                    break;
+            }
+
+            Initialize();
+        }
+        
+        
         private void Initialize()
         {
             EmbeddedWindow.WindowCreated += CurrentWindow_WindowCreated;
