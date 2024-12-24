@@ -1142,7 +1142,7 @@ namespace Ryujinx.Ava
 
         public void InitStatus()
         {
-            _viewModel.BackendText = ConfigurationState.Instance.Graphics.GraphicsBackend.Value switch
+            _viewModel.BackendText = RendererHost.Backend switch
             {
                 GraphicsBackend.Vulkan => "Vulkan",
                 GraphicsBackend.OpenGl => "OpenGL",

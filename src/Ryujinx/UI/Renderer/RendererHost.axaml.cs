@@ -38,7 +38,16 @@ namespace Ryujinx.Ava.UI.Renderer
             "01005CA01580E000", // Persona 5
             "010028600EBDA000", // Mario 3D World
         ];
-        
+
+        public GraphicsBackend Backend =>
+            EmbeddedWindow switch
+            {
+                EmbeddedWindowVulkan => GraphicsBackend.Vulkan,
+                EmbeddedWindowOpenGL => GraphicsBackend.OpenGl,
+                EmbeddedWindowMetal => GraphicsBackend.Metal,
+                _ => throw new NotImplementedException()
+            };
+
         public RendererHost(string titleId)
         {
             InitializeComponent();
