@@ -120,7 +120,8 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
         }
 
-        public bool IsMetalAvailable => OperatingSystem.IsMacOS();
+        public bool IsMetalAvailable =>
+            OperatingSystem.IsMacOS() && RuntimeInformation.ProcessArchitecture == Architecture.Arm64;
 
         public bool IsOpenGLAvailable => !OperatingSystem.IsMacOS();
 
