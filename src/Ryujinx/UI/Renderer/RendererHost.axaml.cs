@@ -65,7 +65,7 @@ namespace Ryujinx.Ava.UI.Renderer
 
                     string backendText = EmbeddedWindow is EmbeddedWindowVulkan ? "Vulkan" : "Metal";
                     
-                    Logger.Info?.Print(LogClass.Gpu, $"Auto: Using {backendText}");
+                    Logger.Info?.PrintMsg(LogClass.Gpu, $"Auto: Using {backendText}");
                     
                     break;
                 case GraphicsBackend.OpenGl:
