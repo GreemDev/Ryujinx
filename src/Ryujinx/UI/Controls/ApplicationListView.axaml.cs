@@ -43,17 +43,19 @@ namespace Ryujinx.Ava.UI.Controls
             
             if (sender is not Button { Content: TextBlock idText })
                 return;
+
+            if (!RyujinxApp.IsClipboardAvailable(out var clipboard))
+                return;
             
-            if (App.MainWindow.Clipboard is { } clipboard)
-            {
-                var appData = mwvm.Applications.FirstOrDefault(it => it.IdString == idText.Text);
-                if (appData is null)
-                    return;
+            var appData = mwvm.Applications.FirstOrDefault(it => it.IdString == idText.Text);
+            if (appData is null)
+                return;
+            
+            await clipboard.SetTextAsync(appData.IdString);
                 
-                await clipboard.SetTextAsync(appData.IdString);
-                
-                NotificationHelper.Show("Copied Title ID", $"{appData.Name} ({appData.IdString})", NotificationType.Information);
-            }
+            NotificationHelper.ShowInformation(
+                "Copied Title ID", 
+                $"{appData.Name} ({appData.IdString})");
         }
     }
 }
