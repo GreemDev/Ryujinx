@@ -917,7 +917,7 @@ namespace Ryujinx.Ava
 
             if (ShouldInitMetal)
             {
-#pragma warning disable CA1416 This call site is reachable on all platforms
+#pragma warning disable CA1416 // This call site is reachable on all platforms
                 // The condition does a check for Mac, on top of checking if it's an ARM Mac. This isn't a problem.
                 renderer = new MetalRenderer((RendererHost.EmbeddedWindow as EmbeddedWindowMetal)!.CreateSurface);
 #pragma warning restore CA1416

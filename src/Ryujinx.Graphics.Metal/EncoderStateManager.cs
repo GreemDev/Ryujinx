@@ -1767,6 +1767,7 @@ namespace Ryujinx.Graphics.Metal
                 Constants.StorageBuffersSetIndex => Constants.StorageBuffersIndex,
                 Constants.TexturesSetIndex => Constants.TexturesIndex,
                 Constants.ImagesSetIndex => Constants.ImagesIndex,
+                _ => throw new NotImplementedException()
             };
         }
 

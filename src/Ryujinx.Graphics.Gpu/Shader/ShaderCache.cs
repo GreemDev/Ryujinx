@@ -838,6 +838,7 @@ namespace Ryujinx.Graphics.Gpu.Shader
                 TargetApi.OpenGL => TargetLanguage.Glsl,
                 TargetApi.Vulkan => GraphicsConfig.EnableSpirvCompilationOnVulkan ? TargetLanguage.Spirv : TargetLanguage.Glsl,
                 TargetApi.Metal => TargetLanguage.Msl,
+                _ => throw new NotImplementedException()
             };
 
             return new TranslationOptions(lang, api, flags);

@@ -125,6 +125,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl.Instructions
                                 Instruction.Add => "PreciseFAdd",
                                 Instruction.Subtract => "PreciseFSub",
                                 Instruction.Multiply => "PreciseFMul",
+                                _ => throw new NotImplementedException()
                             };
 
                             return $"{func}({expr[0]}, {expr[1]})";
