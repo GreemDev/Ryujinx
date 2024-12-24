@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Gommon;
 using Ryujinx.Common.Configuration;
+using Ryujinx.Common.Logging;
 using Ryujinx.UI.Common.Configuration;
 using System;
 using System.Runtime.InteropServices;
@@ -61,6 +62,11 @@ namespace Ryujinx.Ava.UI.Renderer
                         KnownGreatMetalTitles.ContainsIgnoreCase(titleId) 
                             ? new EmbeddedWindowMetal() 
                             : new EmbeddedWindowVulkan();
+
+                    string backendText = EmbeddedWindow is EmbeddedWindowVulkan ? "Vulkan" : "Metal";
+                    
+                    Logger.Info?.Print(LogClass.Gpu, $"Auto: Using {backendText}");
+                    
                     break;
                 case GraphicsBackend.OpenGl:
                     EmbeddedWindow = new EmbeddedWindowOpenGL();
