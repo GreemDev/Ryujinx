@@ -48,6 +48,8 @@
   <!--Name should be "Master<Name>Task"-->
   <Target Name="MasterLocalesValidationTask">
     <Message Text="Running $(Name)Task... " Importance="high" />
+    <CallTarget Targets="ResolveReferences" />
+    <Message Text="Running $(PkgSystem_Text_Json)" Importance="high" />
     <!--Should call "Ryujinx.BuildValidationTasks.<Name>Task"-->
     <Ryujinx.BuildValidationTasks.LocalesValidationTask Path="$(MSBuildThisFileDirectory)../Ryujinx/Assets/locales.json" />
     <Message Text="$(Name)Task finished!" Importance="high" />
