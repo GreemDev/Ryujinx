@@ -1,5 +1,5 @@
 <Application
-    x:Class="Ryujinx.Ava.App"
+    x:Class="Ryujinx.Ava.RyujinxApp"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sty="using:FluentAvalonia.Styling">
