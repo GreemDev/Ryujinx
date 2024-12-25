@@ -109,7 +109,7 @@ namespace Ryujinx.Ava.Common.Locale
         {
             _dynamicValues[key] = values;
 
-            OnPropertyChanged("Item");
+            OnPropertyChanged("Translation");
 
             return this[key];
         }
@@ -138,7 +138,7 @@ namespace Ryujinx.Ava.Common.Locale
                 _localeStrings[key] = val;
             }
 
-            OnPropertyChanged("Item");
+            OnPropertyChanged("Translation");
 
             LocaleChanged?.Invoke();
         }

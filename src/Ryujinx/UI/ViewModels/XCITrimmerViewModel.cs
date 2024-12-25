@@ -91,39 +91,42 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         private void SortingChanged()
         {
-            OnPropertyChanged(nameof(IsSortedByName));
-            OnPropertyChanged(nameof(IsSortedBySaved));
-            OnPropertyChanged(nameof(SortingAscending));
-            OnPropertyChanged(nameof(SortingField));
-            OnPropertyChanged(nameof(SortingFieldName));
+            OnPropertiesChanged(
+                nameof(IsSortedByName), 
+                nameof(IsSortedBySaved), 
+                nameof(SortingAscending), 
+                nameof(SortingField), 
+                nameof(SortingFieldName));
+            
             SortAndFilter();
         }
 
         private void DisplayedChanged()
         {
-            OnPropertyChanged(nameof(Status));
-            OnPropertyChanged(nameof(DisplayedXCIFiles));
-            OnPropertyChanged(nameof(SelectedDisplayedXCIFiles));
+            OnPropertiesChanged(nameof(Status), nameof(DisplayedXCIFiles), nameof(SelectedDisplayedXCIFiles));
         }
 
         private void ApplicationsChanged()
         {
-            OnPropertyChanged(nameof(AllXCIFiles));
-            OnPropertyChanged(nameof(Status));
-            OnPropertyChanged(nameof(PotentialSavings));
-            OnPropertyChanged(nameof(ActualSavings));
-            OnPropertyChanged(nameof(CanTrim));
-            OnPropertyChanged(nameof(CanUntrim));
+            OnPropertiesChanged(
+                nameof(AllXCIFiles), 
+                nameof(Status), 
+                nameof(PotentialSavings), 
+                nameof(ActualSavings), 
+                nameof(CanTrim), 
+                nameof(CanUntrim));
+            
             DisplayedChanged();
             SortAndFilter();
         }
 
         private void SelectionChanged(bool displayedChanged = true)
         {
-            OnPropertyChanged(nameof(Status));
-            OnPropertyChanged(nameof(CanTrim));
-            OnPropertyChanged(nameof(CanUntrim));
-            OnPropertyChanged(nameof(SelectedXCIFiles));
+            OnPropertiesChanged(
+                nameof(Status), 
+                nameof(CanTrim), 
+                nameof(CanUntrim), 
+                nameof(SelectedXCIFiles));
 
             if (displayedChanged)
                 OnPropertyChanged(nameof(SelectedDisplayedXCIFiles));
@@ -131,11 +134,12 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         private void ProcessingChanged()
         {
-            OnPropertyChanged(nameof(Processing));
-            OnPropertyChanged(nameof(Cancel));
-            OnPropertyChanged(nameof(Status));
-            OnPropertyChanged(nameof(CanTrim));
-            OnPropertyChanged(nameof(CanUntrim));
+            OnPropertiesChanged(
+                nameof(Processing), 
+                nameof(Cancel), 
+                nameof(Status), 
+                nameof(CanTrim), 
+                nameof(CanUntrim));
         }
 
         private IEnumerable<XCITrimmerFileModel> GetSelectedDisplayedXCIFiles()

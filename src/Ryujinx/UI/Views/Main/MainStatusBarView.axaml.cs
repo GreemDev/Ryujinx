@@ -2,7 +2,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Media;
 using Avalonia.Threading;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Windows;
@@ -63,27 +62,9 @@ namespace Ryujinx.Ava.UI.Views.Main
             // Change the volume by 5% at a time
             float newValue = Window.ViewModel.Volume + (float)e.Delta.Y * 0.05f;
 
-            Window.ViewModel.Volume = newValue switch
-            {
-                < 0 => 0,
-                > 1 => 1,
-                _ => newValue,
-            };
+            Window.ViewModel.Volume = Math.Clamp(newValue, 0, 1);
 
             e.Handled = true;
-        }
-    }
-
-    public class StatusBarSeparator : Border
-    {
-        public StatusBarSeparator()
-        {
-            Width = 2;
-            Height = 12;
-            Margin = new Thickness();
-            BorderBrush = Brushes.Gray;
-            Background = Brushes.Gray;
-            BorderThickness = new Thickness(1);
         }
     }
 }
