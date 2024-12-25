@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     <temp_assemblies>$(MSBuildThisFileDirectory)temp_assemblies/</temp_assemblies>
@@ -14,9 +13,11 @@
   </ItemGroup>
 
   <Target Name="ValidationTask">
-    <Message Text="dir $(FrameworkDir)" Importance="high" />
-
     <Message Text="Running Validations..." Importance="high" />
+
+    <Message Text="Copying Assemblies To Intermediate Folder: $(temp_assemblies)" Importance="high" />
+    <!--Copy needed assemblies to the intermediate folder, only copy assemblies that are needed to run the validation dlls-->
+    <Copy SourceFiles="$(PkgNewtonsoft_Json)/lib/netstandard2.0/Newtonsoft.Json.dll" DestinationFolder="$(temp_assemblies)" />
 
     <!--Run Validation Targets Here-->
     <CallTarget Targets="MasterLocalesValidationTask" />
@@ -24,7 +25,7 @@
     <Message Text="Validations Succeeded!" Importance="high" />
   </Target>
   
-  <!--__________________________________________________LocalesValidation Task__________________________________________________-->
+  <!--__________________________________________________Start LocalesValidation Task__________________________________________________-->
 
   <PropertyGroup>
     <!--Name of Validation Task. <Name> refers to this name-->
@@ -48,10 +49,10 @@
              $(PkgMicrosoft_Build_Framework)/ref/netstandard2.0/Microsoft.Build.Framework.dll;
              $(PkgMicrosoft_Build_Utilities_Core)/ref/netstandard2.0/Microsoft.Build.Utilities.Core.dll;
              $(PkgNewtonsoft_Json)/lib/netstandard2.0/Newtonsoft.Json.dll"
-         TargetType="Library" OutputAssembly="$(MSBuildThisFileDirectory)temp_assemblies/$(Dll)"/>
+         TargetType="Library" OutputAssembly="$(temp_assemblies)$(Dll)"/>
   </Target>
 
-  <UsingTask TaskName="Ryujinx.BuildValidationTasks.$(Name)Task" TaskFactory="TaskHostFactory" AssemblyFile="temp_assemblies/$(Dll)"/>
+  <UsingTask TaskName="Ryujinx.BuildValidationTasks.$(Name)Task" TaskFactory="TaskHostFactory" AssemblyFile="$(temp_assemblies)$(Dll)"/>
 
   <!--Name should be "Master<Name>Task"-->
   <Target Name="MasterLocalesValidationTask" DependsOnTargets="Build$(Name)TaskDll">

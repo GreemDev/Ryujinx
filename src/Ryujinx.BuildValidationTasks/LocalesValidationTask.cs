@@ -32,8 +32,19 @@ namespace Ryujinx.BuildValidationTasks
                 data = sr.ReadToEnd();
             }
 
+            LocalesJson json;
 
-            LocalesJson json = JsonConvert.DeserializeObject<LocalesJson>(data);
+            try
+            {
+                json = JsonConvert.DeserializeObject<LocalesJson>(data);
+
+            }
+            catch (Exception e)
+            {
+                Log.LogError($"Json Validation failed! {e.Message}");
+
+                return false;
+            }
 
 
             for (int i = 0; i < json.Locales.Count; i++)
