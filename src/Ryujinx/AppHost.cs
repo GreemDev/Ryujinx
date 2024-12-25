@@ -3,6 +3,9 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Threading;
+using Gommon;
+using LibHac.Common;
+using LibHac.Ns;
 using LibHac.Tools.FsSystem;
 using Ryujinx.Audio.Backends.Dummy;
 using Ryujinx.Audio.Backends.OpenAL;
@@ -26,6 +29,7 @@ using Ryujinx.Common.Utilities;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.GAL.Multithreading;
 using Ryujinx.Graphics.Gpu;
+using Ryujinx.Graphics.Metal;
 using Ryujinx.Graphics.OpenGL;
 using Ryujinx.Graphics.Vulkan;
 using Ryujinx.HLE;
@@ -122,7 +126,7 @@ namespace Ryujinx.Ava
         private bool _dialogShown;
         private readonly bool _isFirmwareTitle;
 
-        private readonly object _lockObject = new();
+        private readonly Lock _lockObject = new();
 
         public event EventHandler AppExit;
         public event EventHandler<StatusUpdatedEventArgs> StatusUpdatedEvent;
@@ -138,6 +142,23 @@ namespace Ryujinx.Ava
         public string ApplicationPath { get; private set; }
         public ulong ApplicationId { get; private set; }
         public bool ScreenshotRequested { get; set; }
+
+        public bool ShouldInitMetal
+        {
+            get
+            {
+                return OperatingSystem.IsMacOS() && RuntimeInformation.ProcessArchitecture == Architecture.Arm64 && 
+                    (
+                        (
+                            (
+                                ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Auto &&
+                                RendererHost.KnownGreatMetalTitles.ContainsIgnoreCase(ApplicationId.ToString("X16"))
+                            ) || 
+                            ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Metal
+                        )
+                     );
+            }
+        }
 
         public AppHost(
             RendererHost renderer,
@@ -670,7 +691,7 @@ namespace Ryujinx.Ava
             _cursorState = CursorStates.ForceChangeCursor;
         }
 
-        public async Task<bool> LoadGuestApplication()
+        public async Task<bool> LoadGuestApplication(BlitStruct<ApplicationControlProperty>? customNacpData = null)
         {
             InitializeSwitchInstance();
             MainWindow.UpdateGraphicsConfig();
@@ -680,13 +701,13 @@ namespace Ryujinx.Ava
             if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime)
             {
                 if (!SetupValidator.CanStartApplication(ContentManager, ApplicationPath, out UserError userError))
-                { 
+                {
                     if (SetupValidator.CanFixStartApplication(ContentManager, ApplicationPath, userError, out firmwareVersion))
                     {
                         if (userError is UserError.NoFirmware)
                         {
                             UserResult result = await ContentDialogHelper.CreateConfirmationDialog(
-                                LocaleManager.Instance[LocaleKeys.DialogFirmwareNoFirmwareInstalledMessage], 
+                                LocaleManager.Instance[LocaleKeys.DialogFirmwareNoFirmwareInstalledMessage],
                                 LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogFirmwareInstallEmbeddedMessage, firmwareVersion.VersionString),
                                 LocaleManager.Instance[LocaleKeys.InputDialogYes],
                                 LocaleManager.Instance[LocaleKeys.InputDialogNo],
@@ -740,7 +761,7 @@ namespace Ryujinx.Ava
             {
                 Logger.Info?.Print(LogClass.Application, "Loading as Firmware Title (NCA).");
 
-                if (!Device.LoadNca(ApplicationPath))
+                if (!Device.LoadNca(ApplicationPath, customNacpData))
                 {
                     Device.Dispose();
 
@@ -891,12 +912,27 @@ namespace Ryujinx.Ava
             VirtualFileSystem.ReloadKeySet();
 
             // Initialize Renderer.
-            IRenderer renderer = ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.OpenGl
-                ? new OpenGLRenderer()
-                : VulkanRenderer.Create(
+            IRenderer renderer;
+            GraphicsBackend backend = ConfigurationState.Instance.Graphics.GraphicsBackend;
+
+            if (ShouldInitMetal)
+            {
+#pragma warning disable CA1416 // This call site is reachable on all platforms
+                // The condition does a check for Mac, on top of checking if it's an ARM Mac. This isn't a problem.
+                renderer = new MetalRenderer((RendererHost.EmbeddedWindow as EmbeddedWindowMetal)!.CreateSurface);
+#pragma warning restore CA1416
+            }
+            else if (backend == GraphicsBackend.Vulkan || (backend == GraphicsBackend.Auto && !ShouldInitMetal))
+            {
+                renderer = VulkanRenderer.Create(
                     ConfigurationState.Instance.Graphics.PreferredGpu,
                     (RendererHost.EmbeddedWindow as EmbeddedWindowVulkan)!.CreateSurface,
                     VulkanHelper.GetRequiredInstanceExtensions);
+            }
+            else
+            {
+                renderer = new OpenGLRenderer();
+            }
 
             BackendThreading threadingMode = ConfigurationState.Instance.Graphics.BackendThreading;
 
@@ -1109,10 +1145,11 @@ namespace Ryujinx.Ava
 
         public void InitStatus()
         {
-            _viewModel.BackendText = ConfigurationState.Instance.Graphics.GraphicsBackend.Value switch
+            _viewModel.BackendText = RendererHost.Backend switch
             {
                 GraphicsBackend.Vulkan => "Vulkan",
                 GraphicsBackend.OpenGl => "OpenGL",
+                GraphicsBackend.Metal => "Metal",
                 _ => throw new NotImplementedException()
             };
 
@@ -1137,7 +1174,7 @@ namespace Ryujinx.Ava
                 LocaleManager.Instance[LocaleKeys.VolumeShort] + $": {(int)(Device.GetVolume() * 100)}%",
                 dockedMode,
                 ConfigurationState.Instance.Graphics.AspectRatio.Value.ToText(),
-                LocaleManager.Instance[LocaleKeys.Game] + $": {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
+                $"{Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
                 $"FIFO: {Device.Statistics.GetFifoPercent():00.00} %",
                 _displayCount));
         }

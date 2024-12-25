@@ -7,6 +7,7 @@ using Avalonia.Threading;
 using DynamicData;
 using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Windowing;
+using Gommon;
 using LibHac.Tools.FsSystem;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
@@ -85,17 +86,22 @@ namespace Ryujinx.Ava.UI.Windows
 
             UiHandler = new AvaHostUIHandler(this);
 
-            ViewModel.Title = App.FormatTitle();
+            ViewModel.Title = RyujinxApp.FormatTitle();
 
             TitleBar.ExtendsContentIntoTitleBar = !ConfigurationState.Instance.ShowTitleBar;
             TitleBar.TitleBarHitTestType = (ConfigurationState.Instance.ShowTitleBar) ? TitleBarHitTestType.Simple : TitleBarHitTestType.Complex;
 
-            // Correctly size window when 'TitleBar' is enabled (Nov. 14, 2024)
-            TitleBarHeight = (ConfigurationState.Instance.ShowTitleBar ? TitleBar.Height : 0);
-
             // NOTE: Height of MenuBar and StatusBar is not usable here, since it would still be 0 at this point.
             StatusBarHeight = StatusBarView.StatusBar.MinHeight;
             MenuBarHeight = MenuBar.MinHeight;
+            
+            TitleBar.Height = MenuBarHeight;
+            
+            // Correctly size window when 'TitleBar' is enabled (Nov. 14, 2024)
+            TitleBarHeight = (ConfigurationState.Instance.ShowTitleBar ? TitleBar.Height : 0);
+
+            ApplicationList.DataContext = DataContext;
+            ApplicationGrid.DataContext = DataContext;
 
             SetWindowSizePosition();
 
@@ -113,7 +119,7 @@ namespace Ryujinx.Ava.UI.Windows
         /// </summary>
         private static void OnPlatformColorValuesChanged(object sender, PlatformColorValues e)
         {
-            if (Application.Current is App app)
+            if (Application.Current is RyujinxApp app)
                 app.ApplyConfiguredTheme(ConfigurationState.Instance.UI.BaseStyle);
         }
 
@@ -353,7 +359,7 @@ namespace Ryujinx.Ava.UI.Windows
 
                         if (_launchApplicationId != null)
                         {
-                            applicationData = applications.Find(application => application.IdString == _launchApplicationId);
+                            applicationData = applications.FirstOrDefault(application => application.IdString == _launchApplicationId);
 
                             if (applicationData != null)
                             {
@@ -387,10 +393,8 @@ namespace Ryujinx.Ava.UI.Windows
 
             if (ConfigurationState.Instance.CheckUpdatesOnStart && !CommandLineState.HideAvailableUpdates && Updater.CanUpdate())
             {
-                await this.BeginUpdateAsync()
-                    .ContinueWith(
-                        task => Logger.Error?.Print(LogClass.Application, $"Updater Error: {task.Exception}"), 
-                        TaskContinuationOptions.OnlyOnFaulted);
+                await Updater.BeginUpdateAsync()
+                    .Catch(task => Logger.Error?.Print(LogClass.Application, $"Updater Error: {task.Exception}"));
             }
         }
 

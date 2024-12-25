@@ -10,6 +10,7 @@ using DynamicData;
 using DynamicData.Binding;
 using FluentAvalonia.UI.Controls;
 using LibHac.Common;
+using LibHac.Ns;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Input;
@@ -28,12 +29,14 @@ using Ryujinx.HLE;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS;
 using Ryujinx.HLE.HOS.Services.Account.Acc;
+using Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption;
 using Ryujinx.HLE.UI;
 using Ryujinx.Input.HLE;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common;
 using Ryujinx.UI.Common.Configuration;
 using Ryujinx.UI.Common.Helper;
+using Silk.NET.Vulkan;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -70,7 +73,8 @@ namespace Ryujinx.Ava.UI.ViewModels
         private string _gpuStatusText;
         private string _shaderCountText;
         private bool _isAmiiboRequested;
-        private bool _showRightmostSeparator;
+        private bool _isAmiiboBinRequested;
+        private bool _showShaderCompilationHint;
         private bool _isGameRunning;
         private bool _isFullScreen;
         private int _progressMaximum;
@@ -123,8 +127,11 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public IEnumerable<LdnGameData> LastLdnGameData;
 
+        // The UI specifically uses a thicker bordered variant of the icon to avoid crunching out the border at lower resolutions.
+        // For an example of this, download canary 1.2.95, then open the settings menu, and look at the icon in the top-left.
+        // The border gets reduced to colored pixels in the 4 corners.
         public static readonly Bitmap IconBitmap =
-            new(Assembly.GetAssembly(typeof(ConfigurationState))!.GetManifestResourceStream("Ryujinx.UI.Common.Resources.Logo_Ryujinx.png")!);
+            new(Assembly.GetAssembly(typeof(ConfigurationState))!.GetManifestResourceStream("Ryujinx.UI.Common.Resources.Logo_Ryujinx_AntiAlias.png")!);
 
         public MainWindow Window { get; init; }
 
@@ -275,12 +282,12 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public bool ShowFirmwareStatus => !ShowLoadProgress;
 
-        public bool ShowRightmostSeparator
+        public bool ShowShaderCompilationHint
         {
-            get => _showRightmostSeparator;
+            get => _showShaderCompilationHint;
             set
             {
-                _showRightmostSeparator = value;
+                _showShaderCompilationHint = value;
 
                 OnPropertyChanged();
             }
@@ -316,7 +323,19 @@ namespace Ryujinx.Ava.UI.ViewModels
                 OnPropertyChanged();
             }
         }
+        public bool IsAmiiboBinRequested
+        {
+            get => _isAmiiboBinRequested && _isGameRunning;
+            set
+            {
+                _isAmiiboBinRequested = value;
 
+                OnPropertyChanged();
+            }
+        }
+
+        public bool CanScanAmiiboBinaries => AmiiboBinReader.HasAmiiboKeyFile;
+        
         public bool ShowLoadProgress
         {
             get => _showLoadProgress;
@@ -401,11 +420,9 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public bool OpenDeviceSaveDirectoryEnabled => !SelectedApplication.ControlHolder.ByteSpan.IsZeros() && SelectedApplication.ControlHolder.Value.DeviceSaveDataSize > 0;
 
-        public bool TrimXCIEnabled => Ryujinx.Common.Utilities.XCIFileTrimmer.CanTrim(SelectedApplication.Path, new Common.XCIFileTrimmerMainWindowLog(this));
+        public bool TrimXCIEnabled => XCIFileTrimmer.CanTrim(SelectedApplication.Path, new XCITrimmerLog.MainWindow(this));
 
         public bool OpenBcatSaveDirectoryEnabled => !SelectedApplication.ControlHolder.ByteSpan.IsZeros() && SelectedApplication.ControlHolder.Value.BcatDeliveryCacheStorageSize > 0;
-
-        public bool CreateShortcutEnabled => !ReleaseInformation.IsFlatHubBuild;
 
         public string LoadHeading
         {
@@ -1497,7 +1514,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                     VolumeStatusText = args.VolumeStatus;
                     FifoStatusText = args.FifoStatus;
 
-                    ShaderCountText = (ShowRightmostSeparator = args.ShaderCount > 0)
+                    ShaderCountText = (ShowShaderCompilationHint = args.ShaderCount > 0)
                         ? $"{LocaleManager.Instance[LocaleKeys.CompilingShaders]}: {args.ShaderCount}"
                         : string.Empty;
 
@@ -1897,7 +1914,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
         }
 
-        public async Task LoadApplication(ApplicationData application, bool startFullscreen = false)
+        public async Task LoadApplication(ApplicationData application, bool startFullscreen = false, BlitStruct<ApplicationControlProperty>? customNacpData = null)
         {
             if (AppHost != null)
             {
@@ -1921,7 +1938,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
             PrepareLoadScreen();
 
-            RendererHostControl = new RendererHost();
+            RendererHostControl = new RendererHost(application.Id.ToString("X16"));
 
             AppHost = new AppHost(
                 RendererHostControl,
@@ -1935,7 +1952,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                 this,
                 TopLevel);
 
-            if (!await AppHost.LoadGuestApplication())
+            if (!await AppHost.LoadGuestApplication(customNacpData))
             {
                 AppHost.DisposeContext();
                 AppHost = null;
@@ -1996,7 +2013,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
             else
             {
-                LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.StatusBarSystemVersion, "0.0");
+                LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.StatusBarSystemVersion, "NaN");
             }
 
             IsAppletMenuActive = hasApplet;
@@ -2034,7 +2051,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                Title = App.FormatTitle();
+                Title = RyujinxApp.FormatTitle();
             });
         }
 
@@ -2059,6 +2076,32 @@ namespace Ryujinx.Ava.UI.ViewModels
                 }
             }
         }
+        public async Task OpenBinFile()
+        {
+            if (!IsAmiiboRequested)
+                return;
+
+            if (AppHost.Device.System.SearchingForAmiibo(out int deviceId))
+            {
+                var result = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+                {
+                    Title = LocaleManager.Instance[LocaleKeys.OpenFileDialogTitle],
+                    AllowMultiple = false,
+                    FileTypeFilter = new List<FilePickerFileType>
+                    {
+                        new(LocaleManager.Instance[LocaleKeys.AllSupportedFormats])
+                        {
+                            Patterns = new[] { "*.bin" },
+                        }
+                    }
+                });
+                if (result.Count > 0)
+                {
+                    AppHost.Device.System.ScanAmiiboFromBin(result[0].Path.LocalPath);
+                }
+            }
+        }
+
 
         public void ToggleFullscreen()
         {
@@ -2164,7 +2207,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                 return;
             }
 
-            var trimmer = new XCIFileTrimmer(filename, new Common.XCIFileTrimmerMainWindowLog(this));
+            var trimmer = new XCIFileTrimmer(filename, new XCITrimmerLog.MainWindow(this));
 
             if (trimmer.CanBeTrimmed)
             {

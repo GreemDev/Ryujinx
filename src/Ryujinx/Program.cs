@@ -65,7 +65,7 @@ namespace Ryujinx.Ava
         }
 
         public static AppBuilder BuildAvaloniaApp() =>
-            AppBuilder.Configure<App>()
+            AppBuilder.Configure<RyujinxApp>()
                 .UsePlatformDetect()
                 .With(new X11PlatformOptions
                 {
@@ -100,7 +100,7 @@ namespace Ryujinx.Ava
             // Delete backup files after updating.
             Task.Run(Updater.CleanupUpdate);
 
-            Console.Title = $"{App.FullAppName} Console {Version}";
+            Console.Title = $"{RyujinxApp.FullAppName} Console {Version}";
 
             // Hook unhandled exception and process exit events.
             AppDomain.CurrentDomain.UnhandledException += (sender, e)
@@ -198,6 +198,7 @@ namespace Ryujinx.Ava
                 {
                     "opengl" => GraphicsBackend.OpenGl,
                     "vulkan" => GraphicsBackend.Vulkan,
+                    "metal" => GraphicsBackend.Metal,
                     _ => ConfigurationState.Instance.Graphics.GraphicsBackend
                 };
 
@@ -224,7 +225,7 @@ namespace Ryujinx.Ava
 
         private static void PrintSystemInfo()
         {
-            Logger.Notice.Print(LogClass.Application, $"{App.FullAppName} Version: {Version}");
+            Logger.Notice.Print(LogClass.Application, $"{RyujinxApp.FullAppName} Version: {Version}");
             SystemInfo.Gather().Print();
 
             var enabledLogLevels = Logger.GetEnabledLevels().ToArray();

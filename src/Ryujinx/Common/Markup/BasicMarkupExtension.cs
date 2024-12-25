@@ -14,16 +14,16 @@ namespace Ryujinx.Ava.Common.Markup
 {
     internal abstract class BasicMarkupExtension<T> : MarkupExtension
     {
-        public virtual string Name => "Item";
+        public abstract string Name { get; }
         public virtual Action<object, T?>? Setter => null;
 
-        protected abstract T? GetValue();
+        protected abstract T? Value { get; }
 
         protected virtual void ConfigureBindingExtension(CompiledBindingExtension _) { }
 
         private ClrPropertyInfo PropertyInfo =>
             new(Name,
-                _ => GetValue(),
+                _ => Value,
                 Setter as Action<object, object?>,
                 typeof(T));
 

@@ -45,11 +45,13 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
         }
 
-        public string Developers => LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.AboutPageDeveloperListMore, "gdkchan, Ac_K, marysaka, rip in peri peri, LDj3SNuD, emmaus, Thealexbarney, GoffyDude, TSRBerry, IsaacMarovitz, GreemDev");
+        public string Developers => "GreemDev";
+
+        public string FormerDevelopers => LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.AboutPageDeveloperListMore, "gdkchan, Ac_K, marysaka, rip in peri peri, LDj3SNuD, emmaus, Thealexbarney, GoffyDude, TSRBerry, IsaacMarovitz");
 
         public AboutWindowViewModel()
         {
-            Version = App.FullAppName + "\n" + Program.Version;
+            Version = RyujinxApp.FullAppName + "\n" + Program.Version;
             UpdateLogoTheme(ConfigurationState.Instance.UI.BaseStyle.Value);
 
             ThemeManager.ThemeChanged += ThemeManager_ThemeChanged;
@@ -62,7 +64,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         private void UpdateLogoTheme(string theme)
         {
-            bool isDarkTheme = theme == "Dark" || (theme == "Auto" && App.DetectSystemTheme() == ThemeVariant.Dark);
+            bool isDarkTheme = theme == "Dark" || (theme == "Auto" && RyujinxApp.DetectSystemTheme() == ThemeVariant.Dark);
 
             string basePath = "resm:Ryujinx.UI.Common.Resources.";
             string themeSuffix = isDarkTheme ? "Dark.png" : "Light.png";

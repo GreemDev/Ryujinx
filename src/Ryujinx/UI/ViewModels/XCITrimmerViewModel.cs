@@ -33,7 +33,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         private const string _FileExtXCI = "XCI";
 
         private readonly Ryujinx.Common.Logging.XCIFileTrimmerLog _logger;
-        private readonly ApplicationLibrary _applicationLibrary;
+        private ApplicationLibrary ApplicationLibrary => _mainWindowViewModel.ApplicationLibrary;
         private Optional<XCITrimmerFileModel> _processingApplication = null;
         private AvaloniaList<XCITrimmerFileModel> _allXCIFiles = new();
         private AvaloniaList<XCITrimmerFileModel> _selectedXCIFiles = new();
@@ -47,15 +47,14 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public XCITrimmerViewModel(MainWindowViewModel mainWindowViewModel)
         {
-            _logger = new XCIFileTrimmerWindowLog(this);
+            _logger = new XCITrimmerLog.TrimmerWindow(this);
             _mainWindowViewModel = mainWindowViewModel;
-            _applicationLibrary = _mainWindowViewModel.ApplicationLibrary;
             LoadXCIApplications();
         }
 
         private void LoadXCIApplications()
         {
-            var apps = _applicationLibrary.Applications.Items
+            var apps = ApplicationLibrary.Applications.Items
                 .Where(app => app.FileExtension == _FileExtXCI);
 
             foreach (var xciApp in apps)
@@ -68,7 +67,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             string path,
             OperationOutcome operationOutcome = OperationOutcome.Undetermined)
         {
-            var xciApp = _applicationLibrary.Applications.Items.First(app => app.FileExtension == _FileExtXCI && app.Path == path);
+            var xciApp = ApplicationLibrary.Applications.Items.First(app => app.FileExtension == _FileExtXCI && app.Path == path);
             return XCITrimmerFileModel.FromApplicationData(xciApp, _logger) with { ProcessingOutcome = operationOutcome };
         }
 
@@ -92,39 +91,42 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         private void SortingChanged()
         {
-            OnPropertyChanged(nameof(IsSortedByName));
-            OnPropertyChanged(nameof(IsSortedBySaved));
-            OnPropertyChanged(nameof(SortingAscending));
-            OnPropertyChanged(nameof(SortingField));
-            OnPropertyChanged(nameof(SortingFieldName));
+            OnPropertiesChanged(
+                nameof(IsSortedByName), 
+                nameof(IsSortedBySaved), 
+                nameof(SortingAscending), 
+                nameof(SortingField), 
+                nameof(SortingFieldName));
+            
             SortAndFilter();
         }
 
         private void DisplayedChanged()
         {
-            OnPropertyChanged(nameof(Status));
-            OnPropertyChanged(nameof(DisplayedXCIFiles));
-            OnPropertyChanged(nameof(SelectedDisplayedXCIFiles));
+            OnPropertiesChanged(nameof(Status), nameof(DisplayedXCIFiles), nameof(SelectedDisplayedXCIFiles));
         }
 
         private void ApplicationsChanged()
         {
-            OnPropertyChanged(nameof(AllXCIFiles));
-            OnPropertyChanged(nameof(Status));
-            OnPropertyChanged(nameof(PotentialSavings));
-            OnPropertyChanged(nameof(ActualSavings));
-            OnPropertyChanged(nameof(CanTrim));
-            OnPropertyChanged(nameof(CanUntrim));
+            OnPropertiesChanged(
+                nameof(AllXCIFiles), 
+                nameof(Status), 
+                nameof(PotentialSavings), 
+                nameof(ActualSavings), 
+                nameof(CanTrim), 
+                nameof(CanUntrim));
+            
             DisplayedChanged();
             SortAndFilter();
         }
 
         private void SelectionChanged(bool displayedChanged = true)
         {
-            OnPropertyChanged(nameof(Status));
-            OnPropertyChanged(nameof(CanTrim));
-            OnPropertyChanged(nameof(CanUntrim));
-            OnPropertyChanged(nameof(SelectedXCIFiles));
+            OnPropertiesChanged(
+                nameof(Status), 
+                nameof(CanTrim), 
+                nameof(CanUntrim), 
+                nameof(SelectedXCIFiles));
 
             if (displayedChanged)
                 OnPropertyChanged(nameof(SelectedDisplayedXCIFiles));
@@ -132,11 +134,12 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         private void ProcessingChanged()
         {
-            OnPropertyChanged(nameof(Processing));
-            OnPropertyChanged(nameof(Cancel));
-            OnPropertyChanged(nameof(Status));
-            OnPropertyChanged(nameof(CanTrim));
-            OnPropertyChanged(nameof(CanUntrim));
+            OnPropertiesChanged(
+                nameof(Processing), 
+                nameof(Cancel), 
+                nameof(Status), 
+                nameof(CanTrim), 
+                nameof(CanUntrim));
         }
 
         private IEnumerable<XCITrimmerFileModel> GetSelectedDisplayedXCIFiles()
@@ -361,7 +364,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                     value = _processingApplication.Value with { PercentageProgress = null };
 
                 if (value.HasValue)
-                    _displayedXCIFiles.ReplaceWith(value.Value);
+                    _displayedXCIFiles.ReplaceWith(value);
 
                 _processingApplication = value;
                 OnPropertyChanged();

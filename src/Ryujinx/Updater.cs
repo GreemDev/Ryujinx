@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
 using Gommon;
@@ -51,7 +50,7 @@ namespace Ryujinx.Ava
 
         private static readonly string[] _windowsDependencyDirs = [];
 
-        public static async Task BeginUpdateAsync(this Window mainWindow, bool showVersionUpToDate = false)
+        public static async Task BeginUpdateAsync(bool showVersionUpToDate = false)
         {
             if (_running)
             {
@@ -75,16 +74,9 @@ namespace Ryujinx.Ava
                 _platformExt = $"linux_{arch}.tar.gz";
             }
 
-            Version newVersion;
-            Version currentVersion;
-
-            try
+            if (!Version.TryParse(Program.Version, out Version currentVersion))
             {
-                currentVersion = Version.Parse(Program.Version);
-            }
-            catch
-            {
-                Logger.Error?.Print(LogClass.Application, $"Failed to convert the current {App.FullAppName} version!");
+                Logger.Error?.Print(LogClass.Application, $"Failed to convert the current {RyujinxApp.FullAppName} version!");
 
                 await ContentDialogHelper.CreateWarningDialog(
                     LocaleManager.Instance[LocaleKeys.DialogUpdaterConvertFailedMessage],
@@ -165,13 +157,9 @@ namespace Ryujinx.Ava
                 return;
             }
 
-            try
+            if (!Version.TryParse(_buildVer, out Version newVersion))
             {
-                newVersion = Version.Parse(_buildVer);
-            }
-            catch
-            {
-                Logger.Error?.Print(LogClass.Application, $"Failed to convert the received {App.FullAppName} version from GitHub!");
+                Logger.Error?.Print(LogClass.Application, $"Failed to convert the received {RyujinxApp.FullAppName} version from GitHub!");
 
                 await ContentDialogHelper.CreateWarningDialog(
                     LocaleManager.Instance[LocaleKeys.DialogUpdaterConvertFailedGithubMessage],
@@ -225,7 +213,7 @@ namespace Ryujinx.Ava
                     ? $"Canary {currentVersion} -> Canary {newVersion}"
                     : $"{currentVersion} -> {newVersion}";
                 
-                RequestUserToUpdate:
+            RequestUserToUpdate:
                 // Show a message asking the user if they want to update
                 UserResult shouldUpdate = await ContentDialogHelper.CreateUpdaterChoiceDialog(
                     LocaleManager.Instance[LocaleKeys.RyujinxUpdater],
@@ -235,7 +223,7 @@ namespace Ryujinx.Ava
                 switch (shouldUpdate)
                 {
                     case UserResult.Yes:
-                        await UpdateRyujinx(mainWindow, _buildUrl);
+                        await UpdateRyujinx(_buildUrl);
                         break;
                     // Secondary button maps to no, which in this case is the show changelog button.
                     case UserResult.No:
@@ -258,7 +246,7 @@ namespace Ryujinx.Ava
             return result;
         }
 
-        private static async Task UpdateRyujinx(Window parent, string downloadUrl)
+        private static async Task UpdateRyujinx(string downloadUrl)
         {
             _updateSuccessful = false;
 
@@ -278,7 +266,7 @@ namespace Ryujinx.Ava
                 SubHeader = LocaleManager.Instance[LocaleKeys.UpdaterDownloading],
                 IconSource = new SymbolIconSource { Symbol = Symbol.Download },
                 ShowProgressBar = true,
-                XamlRoot = parent,
+                XamlRoot = RyujinxApp.MainWindow,
             };
 
             taskDialog.Opened += (s, e) =>
@@ -502,7 +490,7 @@ namespace Ryujinx.Ava
                 bytesWritten += readSize;
 
                 taskDialog.SetProgressBarState(GetPercentage(bytesWritten, totalBytes), TaskDialogProgressState.Normal);
-                App.SetTaskbarProgressValue(bytesWritten, totalBytes);
+                RyujinxApp.SetTaskbarProgressValue(bytesWritten, totalBytes);
 
                 updateFileStream.Write(buffer, 0, readSize);
             }
@@ -698,22 +686,11 @@ namespace Ryujinx.Ava
 #else
             if (showWarnings)
             {
-                if (ReleaseInformation.IsFlatHubBuild)
-                {
-                    Dispatcher.UIThread.InvokeAsync(() =>
-                        ContentDialogHelper.CreateWarningDialog(
-                            LocaleManager.Instance[LocaleKeys.UpdaterDisabledWarningTitle],
-                            LocaleManager.Instance[LocaleKeys.DialogUpdaterFlatpakNotSupportedMessage])
+                Dispatcher.UIThread.InvokeAsync(() =>
+                    ContentDialogHelper.CreateWarningDialog(
+                        LocaleManager.Instance[LocaleKeys.UpdaterDisabledWarningTitle],
+                        LocaleManager.Instance[LocaleKeys.DialogUpdaterDirtyBuildSubMessage])
                     );
-                }
-                else
-                {
-                    Dispatcher.UIThread.InvokeAsync(() =>
-                        ContentDialogHelper.CreateWarningDialog(
-                            LocaleManager.Instance[LocaleKeys.UpdaterDisabledWarningTitle],
-                            LocaleManager.Instance[LocaleKeys.DialogUpdaterDirtyBuildSubMessage])
-                    );
-                }
             }
 
             return false;

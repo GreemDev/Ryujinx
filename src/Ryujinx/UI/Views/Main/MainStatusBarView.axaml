@@ -7,6 +7,7 @@
     xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
+    xmlns:local="clr-namespace:Ryujinx.Ava.UI.Views.Main"
     xmlns:config="clr-namespace:Ryujinx.Common.Configuration;assembly=Ryujinx.Common"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Ryujinx.Ava.UI.Views.Main.MainStatusBarView"
@@ -23,7 +24,7 @@
         Background="{DynamicResource ThemeContentBackgroundColor}"
         DockPanel.Dock="Bottom"
         IsVisible="{Binding ShowMenuAndStatusBar}"
-        ColumnDefinitions="Auto,Auto,*,Auto">
+        ColumnDefinitions="Auto,Auto,*,Auto,Auto">
         <StackPanel
             Grid.Column="0"
             Margin="5"
@@ -132,14 +133,7 @@
                         </Flyout>
                     </Button.Flyout>
                 </Button>
-            <Border
-                Width="2"
-                Height="12"
-                Margin="0"
-                BorderBrush="Gray"
-                Background="Gray"
-                BorderThickness="1"
-                IsVisible="{Binding !ShowLoadProgress}" />
+            <controls:MiniVerticalSeparator IsVisible="{Binding !ShowLoadProgress}" />
             <TextBlock
                 Name="DockedStatus"
                 Margin="5,0,5,0"
@@ -149,14 +143,7 @@
                 PointerReleased="DockedStatus_PointerReleased"
                 Text="{Binding DockedStatusText}"
                 TextAlignment="Start" />
-            <Border
-                Width="2"
-                Height="12"
-                Margin="0"
-                BorderBrush="Gray"
-                Background="Gray"
-                BorderThickness="1"
-                IsVisible="{Binding !ShowLoadProgress}" />
+            <controls:MiniVerticalSeparator IsVisible="{Binding !ShowLoadProgress}" />
             <SplitButton
                 Name="AspectRatioStatus"
                 Padding="5,0,5,0"
@@ -203,14 +190,7 @@
                     </MenuFlyout>
                 </SplitButton.Flyout>
             </SplitButton>
-            <Border
-                Width="2"
-                Height="12"
-                Margin="0"
-                BorderBrush="Gray"
-                Background="Gray"
-                BorderThickness="1"
-                IsVisible="{Binding !ShowLoadProgress}" />
+            <controls:MiniVerticalSeparator IsVisible="{Binding !ShowLoadProgress}" />
             <ToggleSplitButton
                 Name="VolumeStatus"
                 Padding="5,0,5,0"
@@ -254,14 +234,7 @@
                     </Flyout>
                 </ToggleSplitButton.Flyout>
             </ToggleSplitButton>
-            <Border
-                Width="2"
-                Height="12"
-                Margin="0"
-                BorderBrush="Gray"
-                Background="Gray"
-                BorderThickness="1"
-                IsVisible="{Binding !ShowLoadProgress}" />
+            <controls:MiniVerticalSeparator IsVisible="{Binding !ShowLoadProgress}" />
             <TextBlock
                 Margin="5,0,5,0"
                 HorizontalAlignment="Left"
@@ -269,14 +242,7 @@
                 IsVisible="{Binding !ShowLoadProgress}"
                 Text="{Binding GameStatusText}"
                 TextAlignment="Start" />
-            <Border
-                Width="2"
-                Height="12"
-                Margin="0"
-                BorderBrush="Gray"
-                Background="Gray"
-                BorderThickness="1"
-                IsVisible="{Binding !ShowLoadProgress}" />
+            <controls:MiniVerticalSeparator IsVisible="{Binding !ShowLoadProgress}" />
             <TextBlock
                 Margin="5,0,5,0"
                 HorizontalAlignment="Left"
@@ -284,14 +250,21 @@
                 IsVisible="{Binding !ShowLoadProgress}"
                 Text="{Binding FifoStatusText}"
                 TextAlignment="Start" />
-            <Border
-                Width="2"
-                Height="12"
-                Margin="0"
-                BorderBrush="Gray"
-                Background="Gray"
-                BorderThickness="1"
-                IsVisible="{Binding !ShowLoadProgress}" />
+        </StackPanel>
+        <StackPanel
+            Grid.Column="3"
+            Margin="0, 0, 5, 0"
+            IsVisible="{Binding IsGameRunning}"
+            VerticalAlignment="Center"
+            Orientation="Horizontal">
+            <TextBlock
+                Name="ShaderCount"
+                Margin="5,0,5,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                IsVisible="{Binding ShowShaderCompilationHint}"
+                Text="{Binding ShaderCountText}" />
+            <controls:MiniVerticalSeparator IsVisible="{Binding ShowShaderCompilationHint}" />
             <TextBlock
                 Margin="5,0,5,0"
                 HorizontalAlignment="Left"
@@ -299,44 +272,25 @@
                 IsVisible="{Binding !ShowLoadProgress}"
                 Text="{Binding BackendText}"
                 TextAlignment="Start" />
-            <Border
-                Width="2"
-                Height="12"
-                Margin="0"
-                BorderBrush="Gray"
-                Background="Gray"
-                BorderThickness="1"
-                IsVisible="{Binding !ShowLoadProgress}" />
+            <controls:MiniVerticalSeparator IsVisible="{Binding !ShowLoadProgress}" />
             <TextBlock
-                Margin="5,0,5,0"
+                Margin="5,0,0,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 IsVisible="{Binding !ShowLoadProgress}"
                 Text="{Binding GpuNameText}"
                 TextAlignment="Start" />
-            <Border
-                Width="2"
-                Height="12"
-                Margin="0"
-                BorderBrush="Gray"
-                BorderThickness="1"
-                IsVisible="{Binding ShowRightmostSeparator}" />
-            <TextBlock
-                Name="ShaderCount"
-                Margin="5,0,5,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Text="{Binding ShaderCountText}" />
         </StackPanel>
         <StackPanel
-            Grid.Column="3"
+            Grid.Column="4"
             Margin="0,0,5,0"
             VerticalAlignment="Center"
             IsVisible="{Binding ShowFirmwareStatus}"
             Orientation="Horizontal">
+            <controls:MiniVerticalSeparator IsVisible="{Binding IsGameRunning}" />
             <TextBlock
                 Name="FirmwareStatus"
-                Margin="0"
+                Margin="5, 0, 0, 0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Text="{ext:Locale StatusBarSystemVersion}" />

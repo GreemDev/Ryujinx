@@ -125,19 +125,6 @@ namespace Ryujinx.HLE.HOS.Applets.Cabinet
             return bytes;
         }
 
-        public static T ReadStruct<T>(byte[] data) where T : unmanaged
-        {
-            if (data.Length < Unsafe.SizeOf<T>())
-            {
-                throw new ArgumentException("Not enough data to read the struct");
-            }
-
-            fixed (byte* dataPtr = data)
-            {
-                return Unsafe.Read<T>(dataPtr);
-            }
-        }
-
         #region Structs
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]

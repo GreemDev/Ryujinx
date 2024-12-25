@@ -97,7 +97,7 @@ namespace Ryujinx.Ava.UI.ViewModels.Input
             {
                 if (IsModified)
                 {
-                    
+
                     _playerIdChoose = value;
                     return;
                 }
@@ -105,7 +105,7 @@ namespace Ryujinx.Ava.UI.ViewModels.Input
                 IsModified = false;
                 _playerId = value;
 
-                if (!Enum.IsDefined(typeof(PlayerIndex), _playerId))
+                if (!Enum.IsDefined<PlayerIndex>(_playerId))
                 {
                     _playerId = PlayerIndex.Player1;
 
@@ -287,7 +287,7 @@ namespace Ryujinx.Ava.UI.ViewModels.Input
 
         private void LoadConfiguration(InputConfig inputConfig = null)
         {
-            Config = inputConfig ?? ConfigurationState.Instance.Hid.InputConfig.Value.Find(inputConfig => inputConfig.PlayerIndex == _playerId);
+            Config = inputConfig ?? ConfigurationState.Instance.Hid.InputConfig.Value.FirstOrDefault(inputConfig => inputConfig.PlayerIndex == _playerId);
 
             if (Config is StandardKeyboardInputConfig keyboardInputConfig)
             {
@@ -597,7 +597,7 @@ namespace Ryujinx.Ava.UI.ViewModels.Input
             }
             else if (activeDevice.Type == DeviceType.Controller)
             {
-                bool isNintendoStyle = Devices.ToList().Find(x => x.Id == activeDevice.Id).Name.Contains("Nintendo");
+                bool isNintendoStyle = Devices.ToList().FirstOrDefault(x => x.Id == activeDevice.Id).Name.Contains("Nintendo");
 
                 string id = activeDevice.Id.Split(" ")[0];
 
@@ -823,11 +823,11 @@ namespace Ryujinx.Ava.UI.ViewModels.Input
 
             newConfig.AddRange(ConfigurationState.Instance.Hid.InputConfig.Value);
 
-            newConfig.Remove(newConfig.Find(x => x == null));
+            newConfig.Remove(newConfig.FirstOrDefault(x => x == null));
 
             if (Device == 0)
             {
-                newConfig.Remove(newConfig.Find(x => x.PlayerIndex == this.PlayerId));
+                newConfig.Remove(newConfig.FirstOrDefault(x => x.PlayerIndex == this.PlayerId));
             }
             else
             {
