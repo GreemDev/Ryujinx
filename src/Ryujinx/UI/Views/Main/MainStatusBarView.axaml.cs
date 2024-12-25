@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Threading;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Windows;
@@ -71,5 +72,27 @@ namespace Ryujinx.Ava.UI.Views.Main
 
             e.Handled = true;
         }
+    }
+
+    public class StatusBarSeparator : Border
+    {
+        public StatusBarSeparator()
+        {
+            Width = 2;
+            Height = 12;
+            Margin = new Thickness();
+            BorderBrush = Brushes.Gray;
+            Background = Brushes.Gray;
+            BorderThickness = new Thickness(1);
+        }
+        /*
+        <Border
+        Width="2"
+    Height="12"
+    Margin="0"
+    BorderBrush="Gray"
+    Background="Gray"
+    BorderThickness="1"
+    IsVisible="{Binding !ShowLoadProgress}" />*/
     }
 }
