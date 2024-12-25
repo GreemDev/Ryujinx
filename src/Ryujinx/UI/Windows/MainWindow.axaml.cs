@@ -86,7 +86,7 @@ namespace Ryujinx.Ava.UI.Windows
 
             UiHandler = new AvaHostUIHandler(this);
 
-            ViewModel.Title = App.FormatTitle();
+            ViewModel.Title = RyujinxApp.FormatTitle();
 
             TitleBar.ExtendsContentIntoTitleBar = !ConfigurationState.Instance.ShowTitleBar;
             TitleBar.TitleBarHitTestType = (ConfigurationState.Instance.ShowTitleBar) ? TitleBarHitTestType.Simple : TitleBarHitTestType.Complex;
@@ -97,6 +97,9 @@ namespace Ryujinx.Ava.UI.Windows
             // NOTE: Height of MenuBar and StatusBar is not usable here, since it would still be 0 at this point.
             StatusBarHeight = StatusBarView.StatusBar.MinHeight;
             MenuBarHeight = MenuBar.MinHeight;
+
+            ApplicationList.DataContext = DataContext;
+            ApplicationGrid.DataContext = DataContext;
 
             SetWindowSizePosition();
 
@@ -114,7 +117,7 @@ namespace Ryujinx.Ava.UI.Windows
         /// </summary>
         private static void OnPlatformColorValuesChanged(object sender, PlatformColorValues e)
         {
-            if (Application.Current is App app)
+            if (Application.Current is RyujinxApp app)
                 app.ApplyConfiguredTheme(ConfigurationState.Instance.UI.BaseStyle);
         }
 
