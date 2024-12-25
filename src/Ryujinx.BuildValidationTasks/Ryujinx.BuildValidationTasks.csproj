@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     <temp_assemblies>$(MSBuildThisFileDirectory)temp_assemblies/</temp_assemblies>
@@ -17,6 +16,10 @@
   </ItemGroup>
 
   <Target Name="ValidationTask">
+    <Message Text="Restoring Packages..." Importance="high" />
+    <CallTarget Targets="restore" />
+    <CallTarget Targets="ResolveReferences" />
+    
     <Message Text="Running Validations..." Importance="high" />
 
     <!--Run Validation Targets Here-->
@@ -48,7 +51,6 @@
   <!--Name should be "Master<Name>Task"-->
   <Target Name="MasterLocalesValidationTask">
     <Message Text="Running $(Name)Task... " Importance="high" />
-    <CallTarget Targets="ResolveReferences" />
     <Message Text="Running $(PkgSystem_Text_Json)" Importance="high" />
     <!--Should call "Ryujinx.BuildValidationTasks.<Name>Task"-->
     <Ryujinx.BuildValidationTasks.LocalesValidationTask Path="$(MSBuildThisFileDirectory)../Ryujinx/Assets/locales.json" />
