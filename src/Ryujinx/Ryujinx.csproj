@@ -13,8 +13,8 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);._*</DefaultItemExcludes>
   </PropertyGroup>
 
-  <Target Name="BuildValidationProj" BeforeTargets="BeforeRebuild">
-    <MSBuild Projects="..\Ryujinx.BuildValidationTasks\Ryujinx.BuildValidationTasks.csproj" Targets="Rebuild">
+  <Target Name="BuildValidationProj" BeforeTargets="BeforeBuild">
+    <MSBuild Projects="..\Ryujinx.BuildValidationTasks\Ryujinx.BuildValidationTasks.csproj" Targets="ValidationTask" >
     </MSBuild>
   </Target>
 

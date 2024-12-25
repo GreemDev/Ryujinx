@@ -8,7 +8,7 @@ using Microsoft.Build.Framework;
 
 namespace Ryujinx.BuildValidationTasks
 {
-    public class LocaleValidationTask : Task
+    public class LocalesValidationTask : Task
     {
         public override bool Execute()
         {
@@ -32,7 +32,9 @@ namespace Ryujinx.BuildValidationTasks
                 data = sr.ReadToEnd();
             }
 
+
             LocalesJson json = JsonConvert.DeserializeObject<LocalesJson>(data);
+
 
             for (int i = 0; i < json.Locales.Count; i++)
             {
