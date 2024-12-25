@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     <temp_assemblies>$(MSBuildThisFileDirectory)temp_assemblies/</temp_assemblies>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Build.Utilities.Core" GeneratePathProperty="true" />
-    <PackageReference Include="Microsoft.Build.Framework" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" />
+    <PackageReference Include="Microsoft.Build.Framework" />
   </ItemGroup>
 
   <Target Name="ValidationTask">
@@ -26,41 +26,26 @@
   <PropertyGroup>
     <!--Name of Validation Task. <Name> refers to this name-->
     <Name>LocalesValidation</Name>
-    <!--Dll should be "<Name>Task.dll"-->
-    <Dll>LocalesValidationTask.dll</Dll>
   </PropertyGroup>
 
-  <!--Name should be "Build<Name>TaskDll"-->
-  <Target Name="BuildLocalesValidationTaskDll">
-    <CallTarget Targets="ResolveAssemblyReferences"/>
-    <Message Text="Path @(ReferencePath)" Importance="high" />
-    <Message Text="Ref @(Reference)" Importance="high" />
 
-
-    <Message Text="Building $(Name)Task..." Importance="high" />
-    <!--Remember to include References!-->
-    <Csc Sources="$(MSBuildThisFileDirectory)$(Name)Task*.cs"
-         AdditionalLibPaths="$(ProgramFiles)/dotnet/packs/Microsoft.NETCore.App.Ref/9.0.0/ref/net9.0/"
-         References="
-             System.dll;
-             System.Runtime.dll;
-             netstandard.dll;
-             System.Collections.dll;
-             System.Linq.dll;
-             System.Text.Json.dll;
-             System.Text.Encodings.Web.dll;
-             $(PkgMicrosoft_Build_Framework)/ref/net9.0/Microsoft.Build.Framework.dll;
-             $(PkgMicrosoft_Build_Utilities_Core)/ref/net9.0/Microsoft.Build.Utilities.Core.dll;"
-         TargetType="Library" OutputAssembly="$(temp_assemblies)$(Dll)"/>
-  </Target>
-
-  <UsingTask TaskName="Ryujinx.BuildValidationTasks.$(Name)Task" TaskFactory="TaskHostFactory" AssemblyFile="$(temp_assemblies)$(Dll)"/>
+  <UsingTask TaskName="Ryujinx.BuildValidationTasks.$(Name)Task" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Path Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Text.Json"/>
+      <Reference Include="System.Text.Encodings.Web"/>
+      <Reference Include="System.Memory"/>
+      <Code Language="cs" Source="$(MSBuildThisFileDirectory)$(Name)Task.cs" />
+    </Task>
+  </UsingTask>
 
   <!--Name should be "Master<Name>Task"-->
-  <Target Name="MasterLocalesValidationTask" DependsOnTargets="Build$(Name)TaskDll">
+  <Target Name="MasterLocalesValidationTask">
     <Message Text="Running $(Name)Task... " Importance="high" />
     <!--Should call "Ryujinx.BuildValidationTasks.<Name>Task"-->
-    <Ryujinx.BuildValidationTasks.LocalesValidationTask />
+    <Ryujinx.BuildValidationTasks.LocalesValidationTask Path="$(MSBuildThisFileDirectory)../Ryujinx/Assets/locales.json" />
     <Message Text="$(Name)Task finished!" Importance="high" />
   </Target>
 

@@ -11,20 +11,11 @@ namespace Ryujinx.BuildValidationTasks
 {
     public class LocalesValidationTask : Task
     {
+        public string Path { get; set; }
+
         public override bool Execute()
         {
-            string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-
-            if (path.Split(["src"], StringSplitOptions.None).Length == 1)
-            {
-                //i assume that we are in a build directory in the solution dir
-                path = new FileInfo(path).Directory!.Parent!.GetDirectories("src")[0].GetDirectories("Ryujinx")[0].GetDirectories("Assets")[0].GetFiles("locales.json")[0].FullName;
-            }
-            else
-            {
-                path = path.Split(["src"], StringSplitOptions.None)[0];
-                path = new FileInfo(path).Directory!.GetDirectories("src")[0].GetDirectories("Ryujinx")[0].GetDirectories("Assets")[0].GetFiles("locales.json")[0].FullName;
-            }
+            string path = Path;
 
             string data;
 
