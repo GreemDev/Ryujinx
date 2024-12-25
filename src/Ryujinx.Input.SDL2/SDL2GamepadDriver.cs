@@ -1,7 +1,7 @@
+using Ryujinx.Common.Logging;
 using Ryujinx.SDL2.Common;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using static SDL2.SDL;
 
@@ -12,7 +12,8 @@ namespace Ryujinx.Input.SDL2
         private readonly Dictionary<int, string> _gamepadsInstanceIdsMapping;
         private readonly List<string> _gamepadsIds;
         private readonly Lock _lock = new();
-        private readonly SDL2JoyConPair joyConPair;
+        private readonly SDL2JoyConPair _joyConPair;
+
         public ReadOnlySpan<string> GamepadsIds
         {
             get
@@ -37,7 +38,7 @@ namespace Ryujinx.Input.SDL2
             SDL2Driver.Instance.Initialize();
             SDL2Driver.Instance.OnJoyStickConnected += HandleJoyStickConnected;
             SDL2Driver.Instance.OnJoystickDisconnected += HandleJoyStickDisconnected;
-            joyConPair = new SDL2JoyConPair();
+            _joyConPair = new SDL2JoyConPair();
             // Add already connected gamepads
             int numJoysticks = SDL_NumJoysticks();
 
@@ -90,9 +91,9 @@ namespace Ryujinx.Input.SDL2
             lock (_lock)
             {
                 _gamepadsIds.Remove(id);
-                if (joyConPair.GetJoyConPair(_gamepadsIds) == null)
+                if (_joyConPair.GetGamepad(_gamepadsIds) == null)
                 {
-                    _gamepadsIds.Remove(joyConPair.Id);
+                    _gamepadsIds.Remove(_joyConPair.Id);
                 }
             }
 
@@ -125,12 +126,15 @@ namespace Ryujinx.Input.SDL2
                             _gamepadsIds.Insert(joystickDeviceId, id);
                         else
                             _gamepadsIds.Add(id);
-                        if (joyConPair.GetJoyConPair(_gamepadsIds) != null)
+                        var powerLevel = SDL_JoystickCurrentPowerLevel(GetJoystickIndexByGamepadId(id));
+                        Logger.Info?.Print(LogClass.Hid, $"Gamepad connected: {id}, power level: {powerLevel}");
+                        if (_joyConPair.GetGamepad(_gamepadsIds) != null)
                         {
-                            _gamepadsIds.Remove(joyConPair.Id);
-                            _gamepadsIds.Add(joyConPair.Id);
+                            _gamepadsIds.Remove(_joyConPair.Id);
+                            _gamepadsIds.Add(_joyConPair.Id);
                         }
                     }
+
                     OnGamepadConnected?.Invoke(id);
                 }
             }
@@ -166,9 +170,12 @@ namespace Ryujinx.Input.SDL2
 
         public IGamepad GetGamepad(string id)
         {
-            if (id == joyConPair.Id)
+            if (id == _joyConPair.Id)
             {
-               return joyConPair.GetJoyConPair(_gamepadsIds);
+                lock (_lock)
+                {
+                    return _joyConPair.GetGamepad(_gamepadsIds);
+                }
             }
 
             int joystickIndex = GetJoystickIndexByGamepadId(id);
