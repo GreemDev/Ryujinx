@@ -18,11 +18,6 @@
 
     <Message Text="Running Validations..." Importance="high" />
 
-    <Message Text="Copying Assemblies..." Importance="high" />
-
-    <!--Copy extra assemblies to the temp_assemblies folder-->
-    <Copy SourceFiles="$(NuGetPackageRoot)newtonsoft.json/13.0.3/lib/netstandard2.0/Newtonsoft.Json.dll" DestinationFolder="$(MSBuildThisFileDirectory)temp_assemblies/" />
-
     <!--Run Validation Targets Here-->
     <CallTarget Targets="MasterLocalesValidationTask" />
 
