@@ -85,14 +85,5 @@ namespace Ryujinx.Ava.UI.Views.Main
             Background = Brushes.Gray;
             BorderThickness = new Thickness(1);
         }
-        /*
-        <Border
-        Width="2"
-    Height="12"
-    Margin="0"
-    BorderBrush="Gray"
-    Background="Gray"
-    BorderThickness="1"
-    IsVisible="{Binding !ShowLoadProgress}" />*/
     }
 }
