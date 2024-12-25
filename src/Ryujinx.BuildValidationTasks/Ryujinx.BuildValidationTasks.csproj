@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     <temp_assemblies>$(MSBuildThisFileDirectory)temp_assemblies/</temp_assemblies>
@@ -10,6 +11,9 @@
     <PackageReference Include="Microsoft.Build.Tasks.Core" />
     <PackageReference Include="Microsoft.Build.Utilities.Core" />
     <PackageReference Include="Microsoft.Build.Framework" />
+    <PackageReference Include="System.Text.Json" GeneratePathProperty="true" />
+    <PackageReference Include="System.Text.Encodings.Web" GeneratePathProperty="true" />
+    <PackageReference Include="System.Memory" GeneratePathProperty="true" />
   </ItemGroup>
 
   <Target Name="ValidationTask">
@@ -34,9 +38,9 @@
       <Path Required="true" />
     </ParameterGroup>
     <Task>
-      <Reference Include="System.Text.Json"/>
-      <Reference Include="System.Text.Encodings.Web"/>
-      <Reference Include="System.Memory"/>
+      <Reference Include="$(PkgSystem_Text_Json)/lib/netstandard2.0/System.Text.Json.dll" />
+      <Reference Include="$(PkgSystem_Text_Encodings_Web)/lib/netstandard2.0/System.Text.Encodings.Web.dll" />
+      <Reference Include="$(PkgSystem_Memory)/lib/netstandard2.0/System.Memory.dll" Version="4.6.0" />
       <Code Language="cs" Source="$(MSBuildThisFileDirectory)$(Name)Task.cs" />
     </Task>
   </UsingTask>
