@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     <temp_assemblies>$(MSBuildThisFileDirectory)temp_assemblies/</temp_assemblies>
@@ -9,15 +10,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Build.Utilities.Core" GeneratePathProperty="true" />
     <PackageReference Include="Microsoft.Build.Framework" GeneratePathProperty="true" />
-    <PackageReference Include="Newtonsoft.Json" GeneratePathProperty="true" />
   </ItemGroup>
 
   <Target Name="ValidationTask">
     <Message Text="Running Validations..." Importance="high" />
-
-    <Message Text="Copying Assemblies To Intermediate Folder: $(temp_assemblies)" Importance="high" />
-    <!--Copy needed assemblies to the intermediate folder, only copy assemblies that are needed to run the validation dlls-->
-    <Copy SourceFiles="$(PkgNewtonsoft_Json)/lib/netstandard2.0/Newtonsoft.Json.dll" DestinationFolder="$(temp_assemblies)" />
 
     <!--Run Validation Targets Here-->
     <CallTarget Targets="MasterLocalesValidationTask" />
@@ -36,6 +32,11 @@
 
   <!--Name should be "Build<Name>TaskDll"-->
   <Target Name="BuildLocalesValidationTaskDll">
+    <CallTarget Targets="ResolveAssemblyReferences"/>
+    <Message Text="Path @(ReferencePath)" Importance="high" />
+    <Message Text="Ref @(Reference)" Importance="high" />
+
+
     <Message Text="Building $(Name)Task..." Importance="high" />
     <!--Remember to include References!-->
     <Csc Sources="$(MSBuildThisFileDirectory)$(Name)Task*.cs"
@@ -46,9 +47,10 @@
              netstandard.dll;
              System.Collections.dll;
              System.Linq.dll;
-             $(PkgMicrosoft_Build_Framework)/ref/netstandard2.0/Microsoft.Build.Framework.dll;
-             $(PkgMicrosoft_Build_Utilities_Core)/ref/netstandard2.0/Microsoft.Build.Utilities.Core.dll;
-             $(PkgNewtonsoft_Json)/lib/netstandard2.0/Newtonsoft.Json.dll"
+             System.Text.Json.dll;
+             System.Text.Encodings.Web.dll;
+             $(PkgMicrosoft_Build_Framework)/ref/net9.0/Microsoft.Build.Framework.dll;
+             $(PkgMicrosoft_Build_Utilities_Core)/ref/net9.0/Microsoft.Build.Utilities.Core.dll;"
          TargetType="Library" OutputAssembly="$(temp_assemblies)$(Dll)"/>
   </Target>
 

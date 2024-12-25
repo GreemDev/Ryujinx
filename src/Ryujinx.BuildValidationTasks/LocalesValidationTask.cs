@@ -3,8 +3,9 @@ using Microsoft.Build.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using Newtonsoft.Json;
+using System.Text.Json;
 using Microsoft.Build.Framework;
+using System.Text.Encodings.Web;
 
 namespace Ryujinx.BuildValidationTasks
 {
@@ -34,9 +35,10 @@ namespace Ryujinx.BuildValidationTasks
 
             LocalesJson json;
 
+
             try
             {
-                json = JsonConvert.DeserializeObject<LocalesJson>(data);
+                json = JsonSerializer.Deserialize<LocalesJson>(data);
 
             }
             catch (Exception e)
@@ -61,7 +63,13 @@ namespace Ryujinx.BuildValidationTasks
                 json.Locales[i] = locale;
             }
 
-            string jsonString = JsonConvert.SerializeObject(json, Formatting.Indented);
+            JsonSerializerOptions jsonOptions = new JsonSerializerOptions()
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+
+            string jsonString = JsonSerializer.Serialize(json, jsonOptions);
 
             using (StreamWriter sw = new(path))
             {
