@@ -143,11 +143,7 @@ namespace Ryujinx.Ava.Common.Locale
             LocaleChanged?.Invoke();
         }
 
-        #nullable enable
-
         private static LocalesJson? _localeData;
-        
-        #nullable disable
 
         private static Dictionary<LocaleKeys, string> LoadJsonLanguage(string languageCode)
         {
@@ -158,18 +154,28 @@ namespace Ryujinx.Ava.Common.Locale
 
             foreach (LocalesEntry locale in _localeData.Value.Locales)
             {
-                if (locale.Translations.Count != _localeData.Value.Languages.Count)
+                if (locale.Translations.Count < _localeData.Value.Languages.Count)
                 {
                     throw new Exception($"Locale key {{{locale.ID}}} is missing languages! Has {locale.Translations.Count} translations, expected {_localeData.Value.Languages.Count}!");
+                } 
+                
+                if (locale.Translations.Count > _localeData.Value.Languages.Count)
+                {
+                    throw new Exception($"Locale key {{{locale.ID}}} has too many languages! Has {locale.Translations.Count} translations, expected {_localeData.Value.Languages.Count}!");
                 }
 
                 if (!Enum.TryParse<LocaleKeys>(locale.ID, out var localeKey))
                     continue;
 
                 localeStrings[localeKey] =
-                    locale.Translations.TryGetValue(languageCode, out string val) && val != string.Empty
+                    locale.Translations.TryGetValue(languageCode, out string val) && !string.IsNullOrEmpty(val)
                         ? val
                         : locale.Translations[DefaultLanguageCode];
+
+                if (string.IsNullOrEmpty(localeStrings[localeKey]))
+                {
+                    throw new Exception($"Locale key '{locale.ID}' has no valid translations for desired language {languageCode}! {DefaultLanguageCode} is an empty string or null");
+                }
             }
 
             return localeStrings;
