@@ -18,6 +18,7 @@
       Command="Ryujinx.BuildValidationTasks.exe $(ProjectDir)..\..\" 
       ConsoleToMsBuild="true"
       />-->
+    <Exec Command="dir"/>
   </Target>
 
 </Project>
