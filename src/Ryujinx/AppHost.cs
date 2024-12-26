@@ -143,23 +143,6 @@ namespace Ryujinx.Ava
         public ulong ApplicationId { get; private set; }
         public bool ScreenshotRequested { get; set; }
 
-        public bool ShouldInitMetal
-        {
-            get
-            {
-                return OperatingSystem.IsMacOS() && RuntimeInformation.ProcessArchitecture == Architecture.Arm64 && 
-                    (
-                        (
-                            (
-                                ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Auto &&
-                                RendererHost.KnownGreatMetalTitles.ContainsIgnoreCase(ApplicationId.ToString("X16"))
-                            ) || 
-                            ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Metal
-                        )
-                     );
-            }
-        }
-
         public AppHost(
             RendererHost renderer,
             InputManager inputManager,
@@ -912,27 +895,20 @@ namespace Ryujinx.Ava
             VirtualFileSystem.ReloadKeySet();
 
             // Initialize Renderer.
-            IRenderer renderer;
-            GraphicsBackend backend = ConfigurationState.Instance.Graphics.GraphicsBackend;
+            GraphicsBackend backend = TitleIDs.SelectGraphicsBackend(ApplicationId.ToString("X16"), ConfigurationState.Instance.Graphics.GraphicsBackend);
 
-            if (ShouldInitMetal)
+            IRenderer renderer = backend switch
             {
 #pragma warning disable CA1416 // This call site is reachable on all platforms
-                // The condition does a check for Mac, on top of checking if it's an ARM Mac. This isn't a problem.
-                renderer = new MetalRenderer((RendererHost.EmbeddedWindow as EmbeddedWindowMetal)!.CreateSurface);
+                // SelectGraphicsBackend does a check for Mac, on top of checking if it's an ARM Mac. This isn't a problem.
+                GraphicsBackend.Metal => new MetalRenderer((RendererHost.EmbeddedWindow as EmbeddedWindowMetal)!.CreateSurface),
 #pragma warning restore CA1416
-            }
-            else if (backend == GraphicsBackend.Vulkan || (backend == GraphicsBackend.Auto && !ShouldInitMetal))
-            {
-                renderer = VulkanRenderer.Create(
+                GraphicsBackend.Vulkan => VulkanRenderer.Create(
                     ConfigurationState.Instance.Graphics.PreferredGpu,
                     (RendererHost.EmbeddedWindow as EmbeddedWindowVulkan)!.CreateSurface,
-                    VulkanHelper.GetRequiredInstanceExtensions);
-            }
-            else
-            {
-                renderer = new OpenGLRenderer();
-            }
+                    VulkanHelper.GetRequiredInstanceExtensions),
+                _ => new OpenGLRenderer()
+            };
 
             BackendThreading threadingMode = ConfigurationState.Instance.Graphics.BackendThreading;
 

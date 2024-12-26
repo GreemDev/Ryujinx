@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Gommon;
+using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.UI.Common.Configuration;
@@ -31,20 +32,6 @@ namespace Ryujinx.Ava.UI.Renderer
             Initialize();
         }
 
-        public static readonly string[] KnownGreatMetalTitles =
-        [
-            "01006f8002326000", // Animal Crossings: New Horizons
-            "01009bf0072d4000", // Captain Toad: Treasure Tracker
-            "0100a5c00d162000", // Cuphead
-            "010023800d64a000", // Deltarune
-            "010028600EBDA000", // Mario 3D World
-            "0100152000022000", // Mario Kart 8 Deluxe
-            "01005CA01580E000", // Persona 5
-            "01008C0016544000", // Sea of Stars
-            "01006A800016E000", // Smash Ultimate
-            "0100000000010000", // Super Mario Odyessy
-        ];
-
         public GraphicsBackend Backend =>
             EmbeddedWindow switch
             {
@@ -58,16 +45,8 @@ namespace Ryujinx.Ava.UI.Renderer
         {
             InitializeComponent();
 
-            switch (ConfigurationState.Instance.Graphics.GraphicsBackend.Value)
+            switch (TitleIDs.SelectGraphicsBackend(titleId, ConfigurationState.Instance.Graphics.GraphicsBackend))
             {
-                case GraphicsBackend.Auto:
-                    EmbeddedWindow = 
-                        OperatingSystem.IsMacOS() && 
-                        RuntimeInformation.ProcessArchitecture == Architecture.Arm64 && 
-                        KnownGreatMetalTitles.ContainsIgnoreCase(titleId) 
-                            ? new EmbeddedWindowMetal() 
-                            : new EmbeddedWindowVulkan();
-                    break;
                 case GraphicsBackend.OpenGl:
                     EmbeddedWindow = new EmbeddedWindowOpenGL();
                     break;
