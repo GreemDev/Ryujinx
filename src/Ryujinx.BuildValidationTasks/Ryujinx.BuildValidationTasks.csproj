@@ -1,13 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-
-    <temp_assemblies>$(MSBuildThisFileDirectory)temp_assemblies/</temp_assemblies>
-  </PropertyGroup>
-  
-  <PropertyGroup>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
