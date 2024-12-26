@@ -11,6 +11,7 @@ using Ryujinx.Common.Logging;
 using Ryujinx.Common.Utilities;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.GAL.Multithreading;
+using Ryujinx.Graphics.Metal;
 using Ryujinx.Graphics.OpenGL;
 using Ryujinx.Graphics.Vulkan;
 using Ryujinx.HLE;
@@ -281,7 +282,7 @@ namespace Ryujinx.Headless
             return config;
         }
         
-                private static IRenderer CreateRenderer(Options options, WindowBase window)
+        private static IRenderer CreateRenderer(Options options, WindowBase window)
         {
             if (options.GraphicsBackend == GraphicsBackend.Vulkan && window is VulkanWindow vulkanWindow)
             {
@@ -308,6 +309,11 @@ namespace Ryujinx.Headless
                     (instance, vk) => new SurfaceKHR((ulong)(vulkanWindow.CreateWindowSurface(instance.Handle))),
                     vulkanWindow.GetRequiredInstanceExtensions,
                     preferredGpuId);
+            }
+
+            if (options.GraphicsBackend == GraphicsBackend.Metal && window is MetalWindow metalWindow && OperatingSystem.IsMacOS())
+            {
+                return new MetalRenderer(metalWindow.GetLayer);
             }
 
             return new OpenGLRenderer();
