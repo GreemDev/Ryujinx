@@ -27,27 +27,56 @@ namespace Ryujinx.BuildValidationTasks
                 json = JsonSerializer.Deserialize<LocalesJson>(data);
 
             }
-            catch (Exception e)
+            catch (JsonException e)
             {
-                //Log.LogError($"Json Validation failed! {e.Message}");
-
-                return false;
+                throw new JsonException(e.Message); //shorter and easier stacktrace
             }
 
+            bool isGitRunner = path.Contains("runner");
+            if (isGitRunner)
+                Console.WriteLine("Is Git Runner!");
+            bool encounteredLanguageIssue = false;
 
             for (int i = 0; i < json.Locales.Count; i++)
             {
                 LocalesEntry locale = json.Locales[i];
 
-                foreach (string langCode in json.Languages.Where(it => !locale.Translations.ContainsKey(it)))
+                foreach (string langCode in json.Languages.Where(lang => !locale.Translations.ContainsKey(lang)))
                 {
-                    locale.Translations.Add(langCode, string.Empty);
-                    //Log.LogMessage(MessageImportance.High, $"Added '{langCode}' to Locale '{locale.ID}'");
+                    encounteredLanguageIssue = true;
+
+                    if (!isGitRunner)
+                    {
+                        locale.Translations.Add(langCode, string.Empty);
+                        Console.WriteLine($"Added '{langCode}' to Locale '{locale.ID}'");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Missing '{langCode}' in Locale '{locale.ID}'!");
+                    }
+                }
+
+                foreach (string langCode in json.Languages.Where(lang => locale.Translations.ContainsKey(lang) && lang != "en_US" && locale.Translations[lang] == locale.Translations["en_US"]))
+                {
+                    encounteredLanguageIssue = true;
+
+                    if (!isGitRunner)
+                    {
+                        locale.Translations[langCode] = string.Empty;
+                        Console.WriteLine($"Lanugage '{langCode}' is a dupelicate of en_US in Locale '{locale.ID}'! Resetting it...");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Lanugage '{langCode}' is a dupelicate of en_US in Locale '{locale.ID}'!");
+                    }
                 }
 
                 locale.Translations = locale.Translations.OrderBy(pair => pair.Key).ToDictionary(pair => pair.Key, pair => pair.Value);
                 json.Locales[i] = locale;
             }
+
+            if (isGitRunner && encounteredLanguageIssue)
+                throw new JsonException("1 or more locales are invalid!");
 
             JsonSerializerOptions jsonOptions = new JsonSerializerOptions()
             {

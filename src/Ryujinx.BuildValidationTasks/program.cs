@@ -23,11 +23,12 @@ namespace Ryujinx.BuildValidationTasks
                 throw new ArgumentException("Error: path is null or empty!");
 
             if (!Path.Exists(args[0]))
-                throw new ArgumentException("Error: path does not exist!");
+                throw new ArgumentException($"path {{{args[0]}}} does not exist!");
 
-            Console.WriteLine(args[0]);
-            Console.WriteLine(Path.GetFullPath(args[0]));
-            LocalesValidationTask.Execute(args[0]);
+            if (!Directory.GetDirectories(Path.GetFullPath(args[0])).Contains($"{Path.GetFullPath(args[0])}src"))
+                throw new ArgumentException($"path {{{args[0]}}} is not a valid ryujinx project!");
+
+            LocalesValidationTask.Execute(Path.GetFullPath(args[0]));
         }
     }
 }
