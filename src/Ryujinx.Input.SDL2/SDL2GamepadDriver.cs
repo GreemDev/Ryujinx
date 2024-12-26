@@ -152,8 +152,7 @@ namespace Ryujinx.Input.SDL2
 
         private void HandleJoyBatteryUpdated(int joystickDeviceId, SDL_JoystickPowerLevel powerLevel)
         {
-            var apiPowerLevel = SDL_JoystickCurrentPowerLevel(SDL_JoystickFromInstanceID(joystickDeviceId));
-            Logger.Info?.Print(LogClass.Hid, $"From user code: {powerLevel}, From api: {apiPowerLevel}");
+            Logger.Info?.Print(LogClass.Hid, $"{SDL_GameControllerNameForIndex(joystickDeviceId) } power level: {powerLevel}");
         }
 
         protected virtual void Dispose(bool disposing)
