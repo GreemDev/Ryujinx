@@ -14,7 +14,7 @@
   <Target Name="PostBuildTarget" DependsOnTargets="AfterBuild">
     <Message Text="Running Validation Project" Importance="high" />
 
-    <Exec WorkingDirectory="$(ProjectDir)bin\Debug\$(TargetFramework)\"
+    <Exec WorkingDirectory="$(OutDir)"
       Command="Ryujinx.BuildValidationTasks.exe $(ProjectDir)..\..\" 
       ConsoleToMsBuild="true"
       />
