@@ -1,60 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     <temp_assemblies>$(MSBuildThisFileDirectory)temp_assemblies/</temp_assemblies>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Build.Tasks.Core" />
-    <PackageReference Include="Microsoft.Build.Utilities.Core" />
-    <PackageReference Include="Microsoft.Build.Framework" />
-    <PackageReference Include="System.Text.Json" GeneratePathProperty="true" />
-    <PackageReference Include="System.Text.Encodings.Web" GeneratePathProperty="true" />
-    <PackageReference Include="System.Memory" GeneratePathProperty="true" />
-  </ItemGroup>
-
-  <Target Name="ValidationTask">
-    <Message Text="Restoring Packages..." Importance="high" />
-    <CallTarget Targets="restore" />
-    <CallTarget Targets="ResolveReferences" />
-    
-    <Message Text="Running Validations..." Importance="high" />
-
-    <!--Run Validation Targets Here-->
-    <CallTarget Targets="MasterLocalesValidationTask" />
-
-    <Message Text="Validations Succeeded!" Importance="high" />
-  </Target>
   
-  <!--__________________________________________________Start LocalesValidation Task__________________________________________________-->
-
   <PropertyGroup>
-    <!--Name of Validation Task. <Name> refers to this name-->
-    <Name>LocalesValidation</Name>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
+  <Target Name="PostBuildTarget" DependsOnTargets="AfterBuild">
+    <Message Text="Running Validation Project" Importance="high" />
 
-  <UsingTask TaskName="Ryujinx.BuildValidationTasks.$(Name)Task" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
-    <ParameterGroup>
-      <Path Required="true" />
-    </ParameterGroup>
-    <Task>
-      <Reference Include="$(PkgSystem_Text_Json)/lib/netstandard2.0/System.Text.Json.dll" />
-      <Reference Include="$(PkgSystem_Text_Encodings_Web)/lib/netstandard2.0/System.Text.Encodings.Web.dll" />
-      <Reference Include="$(PkgSystem_Memory)/lib/netstandard2.0/System.Memory.dll" Version="4.6.0" />
-      <Code Language="cs" Source="$(MSBuildThisFileDirectory)$(Name)Task.cs" />
-    </Task>
-  </UsingTask>
-
-  <!--Name should be "Master<Name>Task"-->
-  <Target Name="MasterLocalesValidationTask">
-    <Message Text="Running $(Name)Task... " Importance="high" />
-    <Message Text="Running $(PkgSystem_Text_Json)" Importance="high" />
-    <!--Should call "Ryujinx.BuildValidationTasks.<Name>Task"-->
-    <Ryujinx.BuildValidationTasks.LocalesValidationTask Path="$(MSBuildThisFileDirectory)../Ryujinx/Assets/locales.json" />
-    <Message Text="$(Name)Task finished!" Importance="high" />
+    <Exec WorkingDirectory="$(ProjectDir)bin\Debug\$(TargetFramework)\"
+      Command="Ryujinx.BuildValidationTasks.exe $(ProjectDir)..\..\" 
+      ConsoleToMsBuild="true"
+      />
   </Target>
 
 </Project>

@@ -1,22 +1,17 @@
 using System;
-using Microsoft.Build.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text.Json;
-using Microsoft.Build.Framework;
 using System.Text.Encodings.Web;
 
 namespace Ryujinx.BuildValidationTasks
 {
-    public class LocalesValidationTask : Task
+    public class LocalesValidationTask : ValidationTask
     {
-        public string Path { get; set; }
-
-        public override bool Execute()
+        public static bool Execute(string projectPath)
         {
-            string path = Path;
-
+            string path = projectPath + "src\\Ryujinx\\Assets\\locales.json";
             string data;
 
             using (StreamReader sr = new(path))
@@ -34,7 +29,7 @@ namespace Ryujinx.BuildValidationTasks
             }
             catch (Exception e)
             {
-                Log.LogError($"Json Validation failed! {e.Message}");
+                //Log.LogError($"Json Validation failed! {e.Message}");
 
                 return false;
             }
@@ -47,7 +42,7 @@ namespace Ryujinx.BuildValidationTasks
                 foreach (string langCode in json.Languages.Where(it => !locale.Translations.ContainsKey(it)))
                 {
                     locale.Translations.Add(langCode, string.Empty);
-                    Log.LogMessage(MessageImportance.High, $"Added '{langCode}' to Locale '{locale.ID}'");
+                    //Log.LogMessage(MessageImportance.High, $"Added '{langCode}' to Locale '{locale.ID}'");
                 }
 
                 locale.Translations = locale.Translations.OrderBy(pair => pair.Key).ToDictionary(pair => pair.Key, pair => pair.Value);
