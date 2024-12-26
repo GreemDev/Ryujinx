@@ -71,8 +71,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             {
                 _resolutionScale = value;
 
-                OnPropertyChanged(nameof(CustomResolutionScale));
-                OnPropertyChanged(nameof(IsCustomResolutionScaleActive));
+                OnPropertiesChanged(nameof(CustomResolutionScale), nameof(IsCustomResolutionScaleActive));
             }
         }
 
@@ -181,8 +180,9 @@ namespace Ryujinx.Ava.UI.ViewModels
                 int newInterval = (int)((value / 100f) * 60);
                 _customVSyncInterval = newInterval;
                 _customVSyncIntervalPercentageProxy = value;
-                OnPropertyChanged((nameof(CustomVSyncInterval)));
-                OnPropertyChanged((nameof(CustomVSyncIntervalPercentageText)));
+                OnPropertiesChanged(
+                    nameof(CustomVSyncInterval), 
+                    nameof(CustomVSyncIntervalPercentageText));
             }
         }
 
@@ -190,7 +190,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         {
             get
             {
-                string text = CustomVSyncIntervalPercentageProxy.ToString() + "%";
+                string text = CustomVSyncIntervalPercentageProxy + "%";
                 return text;
             }
         }
@@ -221,8 +221,9 @@ namespace Ryujinx.Ava.UI.ViewModels
                 _customVSyncInterval = value;
                 int newPercent = (int)((value / 60f) * 100);
                 _customVSyncIntervalPercentageProxy = newPercent;
-                OnPropertyChanged(nameof(CustomVSyncIntervalPercentageProxy));
-                OnPropertyChanged(nameof(CustomVSyncIntervalPercentageText));
+                OnPropertiesChanged(
+                    nameof(CustomVSyncIntervalPercentageProxy), 
+                    nameof(CustomVSyncIntervalPercentageText));
                 OnPropertyChanged();
             }
         }

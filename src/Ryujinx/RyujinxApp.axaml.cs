@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input.Platform;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using Avalonia.Styling;
@@ -19,7 +20,7 @@ using System.Diagnostics;
 
 namespace Ryujinx.Ava
 {
-    public class App : Application
+    public class RyujinxApp : Application
     {
         internal static string FormatTitle(LocaleKeys? windowTitleKey = null)
             => windowTitleKey is null
@@ -31,6 +32,12 @@ namespace Ryujinx.Ava
         public static MainWindow MainWindow => Current!
             .ApplicationLifetime.Cast<IClassicDesktopStyleApplicationLifetime>()
             .MainWindow.Cast<MainWindow>();
+
+        public static bool IsClipboardAvailable(out IClipboard clipboard)
+        {
+            clipboard = MainWindow.Clipboard;
+            return clipboard != null;
+        }
 
         public static void SetTaskbarProgress(TaskBarProgressBarState state) => MainWindow.PlatformFeatures.SetTaskBarProgressBarState(state);
         public static void SetTaskbarProgressValue(ulong current, ulong total) => MainWindow.PlatformFeatures.SetTaskBarProgressBarValue(current, total);
@@ -132,7 +139,7 @@ namespace Ryujinx.Ava
             };
 
         public static ThemeVariant DetectSystemTheme() =>
-            Current is App { PlatformSettings: not null } app
+            Current is RyujinxApp { PlatformSettings: not null } app
                 ? ConvertThemeVariant(app.PlatformSettings.GetColorValues().ThemeVariant)
                 : ThemeVariant.Default;
     }

@@ -51,7 +51,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public AboutWindowViewModel()
         {
-            Version = App.FullAppName + "\n" + Program.Version;
+            Version = RyujinxApp.FullAppName + "\n" + Program.Version;
             UpdateLogoTheme(ConfigurationState.Instance.UI.BaseStyle.Value);
 
             ThemeManager.ThemeChanged += ThemeManager_ThemeChanged;
@@ -64,7 +64,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         private void UpdateLogoTheme(string theme)
         {
-            bool isDarkTheme = theme == "Dark" || (theme == "Auto" && App.DetectSystemTheme() == ThemeVariant.Dark);
+            bool isDarkTheme = theme == "Dark" || (theme == "Auto" && RyujinxApp.DetectSystemTheme() == ThemeVariant.Dark);
 
             string basePath = "resm:Ryujinx.UI.Common.Resources.";
             string themeSuffix = isDarkTheme ? "Dark.png" : "Light.png";
