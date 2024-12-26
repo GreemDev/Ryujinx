@@ -11,6 +11,8 @@ namespace Ryujinx.BuildValidationTasks
     {
         public static bool Execute(string projectPath)
         {
+            Console.WriteLine("Running Locale Validation Task...");
+
             string path = projectPath + "src/Ryujinx/Assets/locales.json";
             string data;
 
@@ -90,6 +92,8 @@ namespace Ryujinx.BuildValidationTasks
             {
                 sw.Write(jsonString);
             }
+
+            Console.WriteLine("Finished Locale Validation Task!");
 
             return true;
         }

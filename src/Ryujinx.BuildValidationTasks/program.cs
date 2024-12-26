@@ -19,16 +19,21 @@ namespace Ryujinx.BuildValidationTasks
                 else
                     throw new ArgumentException("Error: too many arguments!");
             }
-            if (string.IsNullOrEmpty(args[0]))
+
+            string path = args[0];
+
+            if (string.IsNullOrEmpty(path))
                 throw new ArgumentException("Error: path is null or empty!");
 
             if (!Path.Exists(args[0]))
-                throw new ArgumentException($"path {{{args[0]}}} does not exist!");
+                throw new ArgumentException($"path {{{path}}} does not exist!");
 
-            if (!Directory.GetDirectories(Path.GetFullPath(args[0])).Contains($"{Path.GetFullPath(args[0])}src"))
-                throw new ArgumentException($"path {{{args[0]}}} is not a valid ryujinx project!");
+            path = Path.GetFullPath(path);
 
-            LocalesValidationTask.Execute(Path.GetFullPath(args[0]));
+            if (!Directory.GetDirectories(path).Contains($"{path}src"))
+                throw new ArgumentException($"path {{{path}}} is not a valid ryujinx project!");
+
+            LocalesValidationTask.Execute(path);
         }
     }
 }
