@@ -33,11 +33,16 @@ namespace Ryujinx.Ava.UI.Renderer
 
         public static readonly string[] KnownGreatMetalTitles =
         [
+            "01006f8002326000", // Animal Crossings: New Horizons
+            "01009bf0072d4000", // Captain Toad: Treasure Tracker
+            "0100a5c00d162000", // Cuphead
+            "010023800d64a000", // Deltarune
+            "010028600EBDA000", // Mario 3D World
+            "0100152000022000", // Mario Kart 8 Deluxe
+            "01005CA01580E000", // Persona 5
+            "01008C0016544000", // Sea of Stars
             "01006A800016E000", // Smash Ultimate
             "0100000000010000", // Super Mario Odyessy
-            "01008C0016544000", // Sea of Stars
-            "01005CA01580E000", // Persona 5
-            "010028600EBDA000", // Mario 3D World
         ];
 
         public GraphicsBackend Backend =>
