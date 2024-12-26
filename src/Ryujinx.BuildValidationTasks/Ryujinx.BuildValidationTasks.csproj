@@ -11,7 +11,7 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
-  <Target Name="PostBuildTarget" DependsOnTargets="AfterBuild">
+  <Target Name="PostBuildTarget" AfterTargets="AfterBuild">
     <Message Text="Running Validation Project" Importance="high" />
 
     <!--<Exec WorkingDirectory="$(ProjectDir)bin\Debug\$(TargetFramework)\"
