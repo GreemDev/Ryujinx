@@ -37,7 +37,7 @@ namespace Ryujinx.BuildValidationTasks
             bool isGitRunner = path.Contains("runner") || path.Contains("D:\\a\\Ryujinx\\Ryujinx");
             if (isGitRunner)
                 Console.WriteLine("Is Git Runner!");
-            bool encounteredLanguageIssue = false;
+            bool encounteredIssue = false;
 
             for (int i = 0; i < json.Locales.Count; i++)
             {
@@ -45,7 +45,7 @@ namespace Ryujinx.BuildValidationTasks
 
                 foreach (string langCode in json.Languages.Where(lang => !locale.Translations.ContainsKey(lang)))
                 {
-                    encounteredLanguageIssue = true;
+                    encounteredIssue = true;
 
                     if (!isGitRunner)
                     {
@@ -60,16 +60,16 @@ namespace Ryujinx.BuildValidationTasks
 
                 foreach (string langCode in json.Languages.Where(lang => locale.Translations.ContainsKey(lang) && lang != "en_US" && locale.Translations[lang] == locale.Translations["en_US"]))
                 {
-                    encounteredLanguageIssue = true;
+                    encounteredIssue = true;
 
                     if (!isGitRunner)
                     {
                         locale.Translations[langCode] = string.Empty;
-                        Console.WriteLine($"Lanugage '{langCode}' is a dupelicate of en_US in Locale '{locale.ID}'! Resetting it...");
+                        Console.WriteLine($"Lanugage '{langCode}' is a duplicate of en_US in Locale '{locale.ID}'! Resetting it...");
                     }
                     else
                     {
-                        Console.WriteLine($"Lanugage '{langCode}' is a dupelicate of en_US in Locale '{locale.ID}'!");
+                        Console.WriteLine($"Lanugage '{langCode}' is a duplicate of en_US in Locale '{locale.ID}'!");
                     }
                 }
 
@@ -77,7 +77,7 @@ namespace Ryujinx.BuildValidationTasks
                 json.Locales[i] = locale;
             }
 
-            if (isGitRunner && encounteredLanguageIssue)
+            if (isGitRunner && encounteredIssue)
                 throw new JsonException("1 or more locales are invalid!");
 
             JsonSerializerOptions jsonOptions = new JsonSerializerOptions()
