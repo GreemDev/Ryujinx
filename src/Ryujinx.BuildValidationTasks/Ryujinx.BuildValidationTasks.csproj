@@ -8,7 +8,7 @@
     <Message Text="Running Validation Project" Importance="high" />
 
     <Exec WorkingDirectory="$(ProjectDir)bin\Debug\$(TargetFramework)\"
-      Command="Ryujinx.BuildValidationTasks &quot;$(ProjectDir)..\..\\&quot;" 
+      Command="dotnet Ryujinx.BuildValidationTasks.dll &quot;$(ProjectDir)..\..\\&quot;" 
       ConsoleToMsBuild="true"
       />
   </Target>
