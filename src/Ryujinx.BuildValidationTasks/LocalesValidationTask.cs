@@ -34,7 +34,7 @@ namespace Ryujinx.BuildValidationTasks
                 throw new JsonException(e.Message); //shorter and easier stacktrace
             }
 
-            bool isGitRunner = path.Contains("runner");
+            bool isGitRunner = path.Contains("runner") || path.Contains("D:\\a\\Ryujinx\\Ryujinx");
             if (isGitRunner)
                 Console.WriteLine("Is Git Runner!");
             bool encounteredLanguageIssue = false;
