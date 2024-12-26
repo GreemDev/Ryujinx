@@ -1,3 +1,4 @@
+using Ryujinx.Common.Logging;
 using Ryujinx.SDL2.Common;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,6 @@ namespace Ryujinx.Input.SDL2
         private readonly Dictionary<int, string> _gamepadsInstanceIdsMapping;
         private readonly List<string> _gamepadsIds;
         private readonly Lock _lock = new();
-        private readonly SDL2JoyConPair joyConPair;
 
         public ReadOnlySpan<string> GamepadsIds
         {
@@ -37,7 +37,8 @@ namespace Ryujinx.Input.SDL2
             SDL2Driver.Instance.Initialize();
             SDL2Driver.Instance.OnJoyStickConnected += HandleJoyStickConnected;
             SDL2Driver.Instance.OnJoystickDisconnected += HandleJoyStickDisconnected;
-            joyConPair = new SDL2JoyConPair();
+            SDL2Driver.Instance.OnJoyBatteryUpdated += HandleJoyBatteryUpdated;
+
             // Add already connected gamepads
             int numJoysticks = SDL_NumJoysticks();
 
@@ -84,23 +85,30 @@ namespace Ryujinx.Input.SDL2
 
         private void HandleJoyStickDisconnected(int joystickInstanceId)
         {
+            bool joyConPairDisconnected = false;
             if (!_gamepadsInstanceIdsMapping.Remove(joystickInstanceId, out string id))
                 return;
 
             lock (_lock)
             {
                 _gamepadsIds.Remove(id);
-                if (joyConPair.GetGamepad(_gamepadsIds) == null)
+                if (!SDL2JoyConPair.IsCombinable(_gamepadsIds))
                 {
-                    _gamepadsIds.Remove(joyConPair.Id);
+                    _gamepadsIds.Remove(SDL2JoyConPair.Id);
+                    joyConPairDisconnected = true;
                 }
             }
 
             OnGamepadDisconnected?.Invoke(id);
+            if (joyConPairDisconnected)
+            {
+                OnGamepadDisconnected?.Invoke(SDL2JoyConPair.Id);
+            }
         }
 
         private void HandleJoyStickConnected(int joystickDeviceId, int joystickInstanceId)
         {
+            bool joyConPairConnected = false;
             if (SDL_IsGameController(joystickDeviceId) == SDL_bool.SDL_TRUE)
             {
                 if (_gamepadsInstanceIdsMapping.ContainsKey(joystickInstanceId))
@@ -125,16 +133,27 @@ namespace Ryujinx.Input.SDL2
                             _gamepadsIds.Insert(joystickDeviceId, id);
                         else
                             _gamepadsIds.Add(id);
-                        if (joyConPair.GetGamepad(_gamepadsIds) != null)
+                        if (SDL2JoyConPair.IsCombinable(_gamepadsIds))
                         {
-                            _gamepadsIds.Remove(joyConPair.Id);
-                            _gamepadsIds.Add(joyConPair.Id);
+                            _gamepadsIds.Remove(SDL2JoyConPair.Id);
+                            _gamepadsIds.Add(SDL2JoyConPair.Id);
+                            joyConPairConnected = true;
                         }
                     }
 
                     OnGamepadConnected?.Invoke(id);
+                    if (joyConPairConnected)
+                    {
+                        OnGamepadConnected?.Invoke(SDL2JoyConPair.Id);
+                    }
                 }
             }
+        }
+
+        private void HandleJoyBatteryUpdated(int joystickDeviceId, SDL_JoystickPowerLevel powerLevel)
+        {
+            var apiPowerLevel = SDL_JoystickCurrentPowerLevel(SDL_JoystickFromInstanceID(joystickDeviceId));
+            Logger.Info?.Print(LogClass.Hid, $"From user code: {powerLevel}, From api: {apiPowerLevel}");
         }
 
         protected virtual void Dispose(bool disposing)
@@ -167,11 +186,11 @@ namespace Ryujinx.Input.SDL2
 
         public IGamepad GetGamepad(string id)
         {
-            if (id == joyConPair.Id)
+            if (id == SDL2JoyConPair.Id)
             {
                 lock (_lock)
                 {
-                    return joyConPair.GetGamepad(_gamepadsIds);
+                    return SDL2JoyConPair.GetGamepad(_gamepadsIds);
                 }
             }
 
@@ -184,13 +203,7 @@ namespace Ryujinx.Input.SDL2
 
             nint gamepadHandle = SDL_GameControllerOpen(joystickIndex);
 
-            if (gamepadHandle == nint.Zero)
-            {
-                return null;
-            }
-
-            Console.WriteLine("Game controller opened" + SDL_GameControllerName(gamepadHandle));
-            return new SDL2Gamepad(gamepadHandle, id);
+            return gamepadHandle == nint.Zero ? null : new SDL2Gamepad(gamepadHandle, id);
         }
     }
 }

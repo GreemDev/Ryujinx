@@ -1,20 +1,15 @@
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Configuration.Hid.Controller;
-using Ryujinx.Common.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
 using static SDL2.SDL;
-using Timer = System.Timers.Timer;
 
 namespace Ryujinx.Input.SDL2
 {
-    internal class SDL2JoyConPair : IGamepad
+    internal class SDL2JoyConPair(IGamepad left, IGamepad right) : IGamepad
     {
-        private IGamepad _left;
-        private IGamepad _right;
-        private Timer timer;
         private StandardControllerInputConfig _configuration;
 
         private readonly StickInputId[] _stickUserMapping =
@@ -33,20 +28,21 @@ namespace Ryujinx.Input.SDL2
 
         private readonly Lock _userMappingLock = new();
 
-        public GamepadFeaturesFlag Features => (_left?.Features ?? GamepadFeaturesFlag.None) |
-                                               (_right?.Features ?? GamepadFeaturesFlag.None);
+        public GamepadFeaturesFlag Features => (left?.Features ?? GamepadFeaturesFlag.None) |
+                                               (right?.Features ?? GamepadFeaturesFlag.None);
 
-        public string Id => "JoyConPair";
+        public const string Id = "JoyConPair";
+        string IGamepad.Id => Id;
 
         public string Name => "Nintendo Switch Joy-Con (L/R)";
         private const string LeftName = "Nintendo Switch Joy-Con (L)";
         private const string RightName = "Nintendo Switch Joy-Con (R)";
-        public bool IsConnected => _left is { IsConnected: true } && _right is { IsConnected: true };
+        public bool IsConnected => left is { IsConnected: true } && right is { IsConnected: true };
 
         public void Dispose()
         {
-            _left?.Dispose();
-            _right?.Dispose();
+            left?.Dispose();
+            right?.Dispose();
         }
 
         public GamepadStateSnapshot GetMappedStateSnapshot()
@@ -87,9 +83,9 @@ namespace Ryujinx.Input.SDL2
         {
             return inputId switch
             {
-                MotionInputId.SecondAccelerometer => _right.GetMotionData(MotionInputId.Accelerometer),
-                MotionInputId.SecondGyroscope => _right.GetMotionData(MotionInputId.Gyroscope),
-                _ => _left.GetMotionData(inputId)
+                MotionInputId.SecondAccelerometer => right.GetMotionData(MotionInputId.Accelerometer),
+                MotionInputId.SecondGyroscope => right.GetMotionData(MotionInputId.Gyroscope),
+                _ => left.GetMotionData(inputId)
             };
         }
 
@@ -104,12 +100,12 @@ namespace Ryujinx.Input.SDL2
             {
                 case StickInputId.Left:
                     {
-                        (float x, float y) = _left.GetStick(StickInputId.Left);
+                        (float x, float y) = left.GetStick(StickInputId.Left);
                         return (y, -x);
                     }
                 case StickInputId.Right:
                     {
-                        (float x, float y) = _right.GetStick(StickInputId.Left);
+                        (float x, float y) = right.GetStick(StickInputId.Left);
                         return (-y, x);
                     }
                 case StickInputId.Unbound:
@@ -123,27 +119,27 @@ namespace Ryujinx.Input.SDL2
         {
             return inputId switch
             {
-                GamepadButtonInputId.LeftStick => _left.IsPressed(GamepadButtonInputId.LeftStick),
-                GamepadButtonInputId.DpadUp => _left.IsPressed(GamepadButtonInputId.Y),
-                GamepadButtonInputId.DpadDown => _left.IsPressed(GamepadButtonInputId.A),
-                GamepadButtonInputId.DpadLeft => _left.IsPressed(GamepadButtonInputId.B),
-                GamepadButtonInputId.DpadRight => _left.IsPressed(GamepadButtonInputId.X),
-                GamepadButtonInputId.Minus => _left.IsPressed(GamepadButtonInputId.Start),
-                GamepadButtonInputId.LeftShoulder => _left.IsPressed(GamepadButtonInputId.Paddle2),
-                GamepadButtonInputId.LeftTrigger => _left.IsPressed(GamepadButtonInputId.Paddle4),
-                GamepadButtonInputId.SingleRightTrigger0 => _left.IsPressed(GamepadButtonInputId.LeftShoulder),
-                GamepadButtonInputId.SingleLeftTrigger0 => _left.IsPressed(GamepadButtonInputId.RightShoulder),
+                GamepadButtonInputId.LeftStick => left.IsPressed(GamepadButtonInputId.LeftStick),
+                GamepadButtonInputId.DpadUp => left.IsPressed(GamepadButtonInputId.Y),
+                GamepadButtonInputId.DpadDown => left.IsPressed(GamepadButtonInputId.A),
+                GamepadButtonInputId.DpadLeft => left.IsPressed(GamepadButtonInputId.B),
+                GamepadButtonInputId.DpadRight => left.IsPressed(GamepadButtonInputId.X),
+                GamepadButtonInputId.Minus => left.IsPressed(GamepadButtonInputId.Start),
+                GamepadButtonInputId.LeftShoulder => left.IsPressed(GamepadButtonInputId.Paddle2),
+                GamepadButtonInputId.LeftTrigger => left.IsPressed(GamepadButtonInputId.Paddle4),
+                GamepadButtonInputId.SingleRightTrigger0 => left.IsPressed(GamepadButtonInputId.LeftShoulder),
+                GamepadButtonInputId.SingleLeftTrigger0 => left.IsPressed(GamepadButtonInputId.RightShoulder),
 
-                GamepadButtonInputId.RightStick => _right.IsPressed(GamepadButtonInputId.LeftStick),
-                GamepadButtonInputId.A => _right.IsPressed(GamepadButtonInputId.B),
-                GamepadButtonInputId.B => _right.IsPressed(GamepadButtonInputId.Y),
-                GamepadButtonInputId.X => _right.IsPressed(GamepadButtonInputId.A),
-                GamepadButtonInputId.Y => _right.IsPressed(GamepadButtonInputId.X),
-                GamepadButtonInputId.Plus => _right.IsPressed(GamepadButtonInputId.Start),
-                GamepadButtonInputId.RightShoulder => _right.IsPressed(GamepadButtonInputId.Paddle1),
-                GamepadButtonInputId.RightTrigger => _right.IsPressed(GamepadButtonInputId.Paddle3),
-                GamepadButtonInputId.SingleRightTrigger1 => _right.IsPressed(GamepadButtonInputId.LeftShoulder),
-                GamepadButtonInputId.SingleLeftTrigger1 => _right.IsPressed(GamepadButtonInputId.RightShoulder),
+                GamepadButtonInputId.RightStick => right.IsPressed(GamepadButtonInputId.LeftStick),
+                GamepadButtonInputId.A => right.IsPressed(GamepadButtonInputId.B),
+                GamepadButtonInputId.B => right.IsPressed(GamepadButtonInputId.Y),
+                GamepadButtonInputId.X => right.IsPressed(GamepadButtonInputId.A),
+                GamepadButtonInputId.Y => right.IsPressed(GamepadButtonInputId.X),
+                GamepadButtonInputId.Plus => right.IsPressed(GamepadButtonInputId.Start),
+                GamepadButtonInputId.RightShoulder => right.IsPressed(GamepadButtonInputId.Paddle1),
+                GamepadButtonInputId.RightTrigger => right.IsPressed(GamepadButtonInputId.Paddle3),
+                GamepadButtonInputId.SingleRightTrigger1 => right.IsPressed(GamepadButtonInputId.LeftShoulder),
+                GamepadButtonInputId.SingleLeftTrigger1 => right.IsPressed(GamepadButtonInputId.RightShoulder),
 
                 _ => false
             };
@@ -153,18 +149,18 @@ namespace Ryujinx.Input.SDL2
         {
             if (lowFrequency != 0)
             {
-                _right.Rumble(lowFrequency, lowFrequency, durationMs);
+                right.Rumble(lowFrequency, lowFrequency, durationMs);
             }
 
             if (highFrequency != 0)
             {
-                _left.Rumble(highFrequency, highFrequency, durationMs);
+                left.Rumble(highFrequency, highFrequency, durationMs);
             }
 
             if (lowFrequency == 0 && highFrequency == 0)
             {
-                _left.Rumble(0, 0, durationMs);
-                _right.Rumble(0, 0, durationMs);
+                left.Rumble(0, 0, durationMs);
+                right.Rumble(0, 0, durationMs);
             }
         }
 
@@ -173,8 +169,8 @@ namespace Ryujinx.Input.SDL2
             lock (_userMappingLock)
             {
                 _configuration = (StandardControllerInputConfig)configuration;
-                _left.SetConfiguration(configuration);
-                _right.SetConfiguration(configuration);
+                left.SetConfiguration(configuration);
+                right.SetConfiguration(configuration);
 
                 _buttonsUserMapping.Clear();
 
@@ -232,18 +228,29 @@ namespace Ryujinx.Input.SDL2
 
         public void SetTriggerThreshold(float triggerThreshold)
         {
-            _left.SetTriggerThreshold(triggerThreshold);
-            _right.SetTriggerThreshold(triggerThreshold);
+            left.SetTriggerThreshold(triggerThreshold);
+            right.SetTriggerThreshold(triggerThreshold);
         }
 
-        public IGamepad GetGamepad(List<string> gamepadsIds)
+        public static bool IsCombinable(List<string> gamepadsIds)
         {
-            this.Dispose();
+            (int leftIndex, int rightIndex) = DetectJoyConPair(gamepadsIds);
+            return leftIndex >= 0 && rightIndex >= 0;
+        }
+
+        private static (int leftIndex, int rightIndex) DetectJoyConPair(List<string> gamepadsIds)
+        {
             var gamepadNames = gamepadsIds.Where(gamepadId => gamepadId != Id)
                 .Select((_, index) => SDL_GameControllerNameForIndex(index)).ToList();
             int leftIndex = gamepadNames.IndexOf(LeftName);
             int rightIndex = gamepadNames.IndexOf(RightName);
 
+            return (leftIndex, rightIndex);
+        }
+
+        public static IGamepad GetGamepad(List<string> gamepadsIds)
+        {
+            (int leftIndex, int rightIndex) = DetectJoyConPair(gamepadsIds);
             if (leftIndex == -1 || rightIndex == -1)
             {
                 return null;
@@ -257,25 +264,9 @@ namespace Ryujinx.Input.SDL2
                 return null;
             }
 
-            _left = new SDL2Gamepad(leftGamepadHandle, gamepadsIds[leftIndex]);
-            _right = new SDL2Gamepad(rightGamepadHandle, gamepadsIds[rightIndex]);
-            ShowPowerLevel(leftGamepadHandle, rightGamepadHandle);
-            return this;
-        }
 
-        private void ShowPowerLevel(nint leftGamepadHandle, nint rightGamepadHandle)
-        {
-            timer?.Stop();
-            timer = new Timer(2000);
-            timer.Elapsed += (_, _) =>
-            {
-                timer.Stop();
-                var leftLevel = SDL_JoystickCurrentPowerLevel(SDL_GameControllerGetJoystick(leftGamepadHandle));
-                var rightLevel = SDL_JoystickCurrentPowerLevel(SDL_GameControllerGetJoystick(rightGamepadHandle));
-                Logger.Info?.Print(LogClass.Hid, $"Left power level: {leftLevel}, Right power level: {rightLevel}");
-            };
-            timer.AutoReset = false;
-            timer.Start();
+            return new SDL2JoyConPair(new SDL2Gamepad(leftGamepadHandle, gamepadsIds[leftIndex]),
+                new SDL2Gamepad(rightGamepadHandle, gamepadsIds[rightIndex]));
         }
     }
 }
