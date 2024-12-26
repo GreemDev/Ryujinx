@@ -11,7 +11,7 @@ namespace Ryujinx.BuildValidationTasks
     {
         public static bool Execute(string projectPath)
         {
-            string path = projectPath + "src\\Ryujinx\\Assets\\locales.json";
+            string path = projectPath + "src/Ryujinx/Assets/locales.json";
             string data;
 
             using (StreamReader sr = new(path))
