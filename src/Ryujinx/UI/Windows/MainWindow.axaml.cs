@@ -39,8 +39,6 @@ namespace Ryujinx.Ava.UI.Windows
 {
     public partial class MainWindow : StyleableAppWindow
     {
-        internal static MainWindowViewModel MainWindowViewModel { get; private set; }
-        
         public MainWindowViewModel ViewModel { get; }
 
         internal readonly AvaHostUIHandler UiHandler;
@@ -76,7 +74,7 @@ namespace Ryujinx.Ava.UI.Windows
 
         public MainWindow()
         {
-            DataContext = ViewModel = MainWindowViewModel = new MainWindowViewModel
+            DataContext = ViewModel = new MainWindowViewModel
             {
                 Window = this
             };
