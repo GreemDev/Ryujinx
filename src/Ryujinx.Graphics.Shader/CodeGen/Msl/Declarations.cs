@@ -87,8 +87,8 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Msl
                 .GroupBy(x => x.Set)
                 .ToDictionary(x => x.Key, x => x.OrderBy(y => y.Binding).ToArray());
 
-            var textureSets = textureDefinitions.Keys.ToArray();
-            var imageSets = imageDefinitions.Keys.ToArray();
+            int[] textureSets = [.. textureDefinitions.Keys];
+            int[] imageSets = [.. imageDefinitions.Keys];
 
             var sets = textureSets.Union(imageSets).ToArray();
 
