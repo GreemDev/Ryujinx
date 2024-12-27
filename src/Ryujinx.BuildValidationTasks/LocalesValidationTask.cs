@@ -83,6 +83,7 @@ namespace Ryujinx.BuildValidationTasks
             JsonSerializerOptions jsonOptions = new JsonSerializerOptions()
             {
                 WriteIndented = true,
+                NewLine = "\n",
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };
 
