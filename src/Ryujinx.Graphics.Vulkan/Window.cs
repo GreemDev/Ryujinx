@@ -1,9 +1,12 @@
+using Ryujinx.Common.Configuration;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Vulkan.Effects;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 using System;
 using System.Linq;
+using AntiAliasing = Ryujinx.Graphics.GAL.AntiAliasing;
+using ScalingFilter = Ryujinx.Graphics.GAL.ScalingFilter;
 using VkFormat = Silk.NET.Vulkan.Format;
 
 namespace Ryujinx.Graphics.Vulkan

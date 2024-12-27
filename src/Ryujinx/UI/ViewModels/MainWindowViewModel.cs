@@ -9,6 +9,7 @@ using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
 using FluentAvalonia.UI.Controls;
+using Gommon;
 using LibHac.Common;
 using LibHac.Ns;
 using Ryujinx.Ava.Common;
@@ -109,13 +110,8 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         private bool _areMimeTypesRegistered = FileAssociationHelper.AreMimeTypesRegistered;
         private bool _canUpdate = true;
-        private Cursor _cursor;
-        private string _title;
         private ApplicationData _currentApplicationData;
         private readonly AutoResetEvent _rendererWaitEvent;
-        private WindowState _windowState;
-        private double _windowWidth;
-        private double _windowHeight;
         private int _customVSyncInterval;
         private int _customVSyncIntervalPercentageProxy;
 
@@ -124,8 +120,9 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public ApplicationData ListSelectedApplication;
         public ApplicationData GridSelectedApplication;
-
-        public IEnumerable<LdnGameData> LastLdnGameData;
+        
+        // Key is Title ID
+        public SafeDictionary<string, LdnGameDataArray> LdnData = [];
 
         // The UI specifically uses a thicker bordered variant of the icon to avoid crunching out the border at lower resolutions.
         // For an example of this, download canary 1.2.95, then open the settings menu, and look at the icon in the top-left.
@@ -216,7 +213,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public bool CanUpdate
         {
-            get => _canUpdate && EnableNonGameRunningControls && Updater.CanUpdate(false);
+            get => _canUpdate && EnableNonGameRunningControls && Updater.CanUpdate();
             set
             {
                 _canUpdate = value;
@@ -226,12 +223,8 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public Cursor Cursor
         {
-            get => _cursor;
-            set
-            {
-                _cursor = value;
-                OnPropertyChanged();
-            }
+            get => Window.Cursor;
+            set => Window.Cursor = value;
         }
 
         public ReadOnlyObservableCollection<ApplicationData> AppsObservableList
@@ -813,35 +806,23 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public WindowState WindowState
         {
-            get => _windowState;
+            get => Window.WindowState;
             internal set
             {
-                _windowState = value;
-
-                OnPropertyChanged();
+                Window.WindowState = value;
             }
         }
 
         public double WindowWidth
         {
-            get => _windowWidth;
-            set
-            {
-                _windowWidth = value;
-
-                OnPropertyChanged();
-            }
+            get => Window.Width;
+            set => Window.Width = value;
         }
 
         public double WindowHeight
         {
-            get => _windowHeight;
-            set
-            {
-                _windowHeight = value;
-
-                OnPropertyChanged();
-            }
+            get => Window.Height;
+            set => Window.Height = value;
         }
 
         public bool IsGrid => Glyph == Glyph.Grid;
@@ -889,11 +870,11 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public string Title
         {
-            get => _title;
+            get => Window.Title;
             set
             {
-                _title = value;
-
+                Window.Title = value;
+                
                 OnPropertyChanged();
             }
         }
