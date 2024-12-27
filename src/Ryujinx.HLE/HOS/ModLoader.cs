@@ -752,7 +752,7 @@ namespace Ryujinx.HLE.HOS
                 patches[i] = new MemPatch();
             }
 
-            List<string> buildIds = new (programs.Length);
+            List<string> buildIds = new(programs.Length);
 
             foreach (IExecutable p in programs)
             {

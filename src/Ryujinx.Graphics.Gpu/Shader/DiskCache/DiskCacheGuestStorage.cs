@@ -198,7 +198,7 @@ namespace Ryujinx.Graphics.Gpu.Shader.DiskCache
         {
             if (_cache == null || index >= _cache.Length)
             {
-                _cache = new (byte[], byte[])[Math.Max(index + 1, GetShadersCountFromLength(tocFileStream.Length))];
+                _cache = new(byte[], byte[])[Math.Max(index + 1, GetShadersCountFromLength(tocFileStream.Length))];
             }
 
             (byte[] guestCode, byte[] cb1Data) = _cache[index];

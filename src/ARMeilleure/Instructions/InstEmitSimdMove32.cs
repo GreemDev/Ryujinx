@@ -277,7 +277,7 @@ namespace ARMeilleure.Instructions
             {
                 int elems = op.GetBytesCount() >> op.Size;
 
-                (int Qx, int Ix)[] tableTuples = new (int, int)[length];
+                (int Qx, int Ix)[] tableTuples = new(int, int)[length];
                 for (int i = 0; i < length; i++)
                 {
                     tableTuples[i] = GetQuadwordAndSubindex(op.Vn + i, op.RegisterSize);
