@@ -110,8 +110,13 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         private bool _areMimeTypesRegistered = FileAssociationHelper.AreMimeTypesRegistered;
         private bool _canUpdate = true;
+        private Cursor _cursor;
+        private string _title;
         private ApplicationData _currentApplicationData;
         private readonly AutoResetEvent _rendererWaitEvent;
+        private WindowState _windowState;
+        private double _windowWidth;
+        private double _windowHeight;
         private int _customVSyncInterval;
         private int _customVSyncIntervalPercentageProxy;
 
@@ -213,7 +218,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public bool CanUpdate
         {
-            get => _canUpdate && EnableNonGameRunningControls && Updater.CanUpdate();
+            get => _canUpdate && EnableNonGameRunningControls && Updater.CanUpdate(false);
             set
             {
                 _canUpdate = value;
@@ -223,8 +228,12 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public Cursor Cursor
         {
-            get => Window.Cursor;
-            set => Window.Cursor = value;
+            get => _cursor;
+            set
+            {
+                _cursor = value;
+                OnPropertyChanged();
+            }
         }
 
         public ReadOnlyObservableCollection<ApplicationData> AppsObservableList
@@ -806,23 +815,35 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public WindowState WindowState
         {
-            get => Window.WindowState;
+            get => _windowState;
             internal set
             {
-                Window.WindowState = value;
+                _windowState = value;
+
+                OnPropertyChanged();
             }
         }
 
         public double WindowWidth
         {
-            get => Window.Width;
-            set => Window.Width = value;
+            get => _windowWidth;
+            set
+            {
+                _windowWidth = value;
+
+                OnPropertyChanged();
+            }
         }
 
         public double WindowHeight
         {
-            get => Window.Height;
-            set => Window.Height = value;
+            get => _windowHeight;
+            set
+            {
+                _windowHeight = value;
+
+                OnPropertyChanged();
+            }
         }
 
         public bool IsGrid => Glyph == Glyph.Grid;
@@ -870,11 +891,11 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public string Title
         {
-            get => Window.Title;
+            get => _title;
             set
             {
-                Window.Title = value;
-                
+                _title = value;
+
                 OnPropertyChanged();
             }
         }
