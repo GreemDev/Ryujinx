@@ -25,6 +25,6 @@ namespace Ryujinx.Graphics.Metal.SharpMetalExtensions
             => ObjectiveCRuntime.IntPtr_objc_msgSend(metalLayer.NativePtr, sel_developerHUDProperties);
 
         public static void SetDeveloperHudProperties(this CAMetalLayer metalLayer, nint dictionaryPointer) 
-            => ObjectiveCRuntime.objc_msgSend(metalLayer.NativePtr, sel_setDisplaySyncEnabled, dictionaryPointer);
+            => ObjectiveCRuntime.objc_msgSend(metalLayer.NativePtr, sel_setDeveloperHUDProperties, dictionaryPointer);
     }
 }
