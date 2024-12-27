@@ -1,6 +1,7 @@
 using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Metal.Effects;
+using Ryujinx.Graphics.Metal.SharpMetalExtensions;
 using SharpMetal.ObjectiveCCore;
 using SharpMetal.QuartzCore;
 using System;
@@ -140,7 +141,15 @@ namespace Ryujinx.Graphics.Metal
         
         public void ChangeVSyncMode(VSyncMode vSyncMode)
         {
-            //_vSyncMode = vSyncMode;
+            switch (vSyncMode)
+            {
+                case VSyncMode.Unbounded: 
+                    _metalLayer.SetDisplaySyncEnabled(false);
+                    break;
+                case VSyncMode.Switch:
+                    _metalLayer.SetDisplaySyncEnabled(true);
+                    break;
+            }
         }
 
         public void SetAntiAliasing(AntiAliasing effect)
