@@ -81,7 +81,7 @@ namespace ARMeilleure.Translation
 
         static Delegates()
         {
-            _delegates = new SortedList<string, DelegateInfo>();
+            _delegates = [];
 
             var dlgMathAbs = new MathAbs(Math.Abs);
             var dlgMathCeiling = new MathCeiling(Math.Ceiling);

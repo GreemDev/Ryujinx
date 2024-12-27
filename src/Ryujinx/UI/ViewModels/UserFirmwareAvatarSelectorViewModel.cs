@@ -22,7 +22,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 {
     internal class UserFirmwareAvatarSelectorViewModel : BaseModel
     {
-        private static readonly Dictionary<string, byte[]> _avatarStore = new();
+        private static readonly Dictionary<string, byte[]> _avatarStore = [];
 
         private ObservableCollection<ProfileImageModel> _images;
         private Color _backgroundColor = Colors.White;
@@ -31,7 +31,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public UserFirmwareAvatarSelectorViewModel()
         {
-            _images = new ObservableCollection<ProfileImageModel>();
+            _images = [];
 
             LoadImagesFromStore();
         }

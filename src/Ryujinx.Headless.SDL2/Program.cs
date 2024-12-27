@@ -103,7 +103,7 @@ namespace Ryujinx.Headless.SDL2
                 .WithNotParsed(errors =>
                 {
                     Logger.Error?.PrintMsg(LogClass.Application, "Error parsing command-line arguments:");
-                    
+
                     errors.ForEach(err => Logger.Error?.PrintMsg(LogClass.Application, $" - {err.Tag}"));
                 });
         }
@@ -399,7 +399,7 @@ namespace Ryujinx.Headless.SDL2
                 return;
             }
 
-            _inputConfiguration = new List<InputConfig>();
+            _inputConfiguration = [];
             _enableKeyboard = option.EnableKeyboard;
             _enableMouse = option.EnableMouse;
 

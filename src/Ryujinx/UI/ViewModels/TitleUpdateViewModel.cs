@@ -23,8 +23,8 @@ namespace Ryujinx.Ava.UI.ViewModels
         private ApplicationLibrary ApplicationLibrary { get; }
         private ApplicationData ApplicationData { get; }
 
-        private AvaloniaList<TitleUpdateModel> _titleUpdates = new();
-        private AvaloniaList<object> _views = new();
+        private AvaloniaList<TitleUpdateModel> _titleUpdates = [];
+        private AvaloniaList<object> _views = [];
         private object _selectedUpdate = new TitleUpdateViewNoUpdateSentinal();
         private bool _showBundledContentNotice = false;
 
@@ -227,14 +227,14 @@ namespace Ryujinx.Ava.UI.ViewModels
         private Task ShowNewUpdatesAddedDialog(int numAdded)
         {
             var msg = string.Format(LocaleManager.Instance[LocaleKeys.UpdateWindowUpdateAddedMessage], numAdded);
-            return Dispatcher.UIThread.InvokeAsync(async () => 
+            return Dispatcher.UIThread.InvokeAsync(async () =>
                 await ContentDialogHelper.ShowTextDialog(
-                    LocaleManager.Instance[LocaleKeys.DialogConfirmationTitle], 
-                    msg, 
-                    string.Empty, 
-                    string.Empty, 
-                    string.Empty, 
-                    LocaleManager.Instance[LocaleKeys.InputDialogOk], 
+                    LocaleManager.Instance[LocaleKeys.DialogConfirmationTitle],
+                    msg,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    LocaleManager.Instance[LocaleKeys.InputDialogOk],
                     (int)Symbol.Checkmark
                 ));
         }

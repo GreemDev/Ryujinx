@@ -219,7 +219,7 @@ namespace Ryujinx.Graphics.Gpu.Shader.DiskCache
             _validationQueue = new Queue<ProgramEntry>();
             _compilationQueue = new ConcurrentQueue<ProgramCompilation>();
             _asyncTranslationQueue = new BlockingCollection<AsyncProgramTranslation>(ThreadCount);
-            _programList = new SortedList<int, (CachedShaderProgram, byte[])>();
+            _programList = [];
             _backendParallelCompileThreads = Math.Min(Environment.ProcessorCount, 8); // Must be kept in sync with the backend code.
         }
 
@@ -653,7 +653,7 @@ namespace Ryujinx.Graphics.Gpu.Shader.DiskCache
             }
 
             CachedShaderStage[] shaders = new CachedShaderStage[guestShaders.Length];
-            List<ShaderProgram> translatedStages = new();
+            List<ShaderProgram> translatedStages = [];
 
             TranslatorContext previousStage = null;
 
@@ -704,7 +704,7 @@ namespace Ryujinx.Graphics.Gpu.Shader.DiskCache
                 }
             }
 
-            _compilationQueue.Enqueue(new ProgramCompilation(translatedStages.ToArray(), shaders, newSpecState, programIndex, isCompute: false));
+            _compilationQueue.Enqueue(new ProgramCompilation([.. translatedStages], shaders, newSpecState, programIndex, isCompute: false));
         }
 
         /// <summary>
@@ -725,9 +725,9 @@ namespace Ryujinx.Graphics.Gpu.Shader.DiskCache
 
             ShaderProgram program = translatorContext.Translate();
 
-            CachedShaderStage[] shaders = new[] { new CachedShaderStage(program.Info, shader.Code, shader.Cb1Data) };
+            CachedShaderStage[] shaders = [new CachedShaderStage(program.Info, shader.Code, shader.Cb1Data)];
 
-            _compilationQueue.Enqueue(new ProgramCompilation(new[] { program }, shaders, newSpecState, programIndex, isCompute: true));
+            _compilationQueue.Enqueue(new ProgramCompilation([program], shaders, newSpecState, programIndex, isCompute: true));
         }
 
         /// <summary>

@@ -43,11 +43,11 @@ namespace Ryujinx.Graphics.OpenGL.Effects.Smaa
         {
             _renderer = renderer;
 
-            _edgeShaderPrograms = Array.Empty<int>();
-            _blendShaderPrograms = Array.Empty<int>();
-            _neighbourShaderPrograms = Array.Empty<int>();
+            _edgeShaderPrograms = [];
+            _blendShaderPrograms = [];
+            _neighbourShaderPrograms = [];
 
-            _qualities = new string[] { "SMAA_PRESET_LOW", "SMAA_PRESET_MEDIUM", "SMAA_PRESET_HIGH", "SMAA_PRESET_ULTRA" };
+            _qualities = ["SMAA_PRESET_LOW", "SMAA_PRESET_MEDIUM", "SMAA_PRESET_HIGH", "SMAA_PRESET_ULTRA"];
 
             Quality = quality;
 

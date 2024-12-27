@@ -190,8 +190,8 @@ namespace Ryujinx.UI.Common.Configuration
             {
                 Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 24.");
 
-                configurationFileFormat.InputConfig = new List<InputConfig>
-                {
+                configurationFileFormat.InputConfig =
+                [
                     new StandardKeyboardInputConfig
                     {
                         Version = InputConfig.CurrentVersion,
@@ -240,7 +240,7 @@ namespace Ryujinx.UI.Common.Configuration
                             StickButton = Key.H,
                         },
                     },
-                };
+                ];
 
                 configurationFileUpdated = true;
             }
