@@ -92,7 +92,7 @@ namespace Ryujinx.Graphics.OpenGL.Effects.Smaa
                 var blendShaderData = EmbeddedResources.ReadAllText("Ryujinx.Graphics.OpenGL/Effects/Shaders/smaa_blend.glsl");
                 var neighbourShaderData = EmbeddedResources.ReadAllText("Ryujinx.Graphics.OpenGL/Effects/Shaders/smaa_neighbour.glsl");
 
-                var shaders = new string[] { presets, edgeShaderData };
+                string[] shaders = [ presets, edgeShaderData ];
                 var edgeProgram = ShaderHelper.CompileProgram(shaders, ShaderType.ComputeShader);
 
                 shaders[1] = blendShaderData;
