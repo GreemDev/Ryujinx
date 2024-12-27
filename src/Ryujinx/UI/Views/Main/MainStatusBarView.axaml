@@ -7,7 +7,6 @@
     xmlns:ext="clr-namespace:Ryujinx.Ava.Common.Markup"
     xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.UI.ViewModels"
-    xmlns:local="clr-namespace:Ryujinx.Ava.UI.Views.Main"
     xmlns:config="clr-namespace:Ryujinx.Common.Configuration;assembly=Ryujinx.Common"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Ryujinx.Ava.UI.Views.Main.MainStatusBarView"
