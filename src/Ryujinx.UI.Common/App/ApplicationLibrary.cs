@@ -962,8 +962,8 @@ namespace Ryujinx.UI.App.Common
 
             try
             {
-                var titleIdsToSave = new HashSet<ulong>();
-                var titleIdsToRefresh = new HashSet<ulong>();
+                HashSet<ulong> titleIdsToSave = [];
+                HashSet<ulong> titleIdsToRefresh = [];
 
                 // Remove any updates which can no longer be located on disk
                 Logger.Notice.Print(LogClass.Application, $"Removing non-existing Title Updates");

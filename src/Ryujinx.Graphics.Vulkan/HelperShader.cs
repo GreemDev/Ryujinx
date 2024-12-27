@@ -946,7 +946,7 @@ namespace Ryujinx.Graphics.Vulkan
                 bufferCopy.Add(new BufferCopy((ulong)(srcOffset + sequenceStart * indexSize), (ulong)outputOffset, (ulong)(indexSize * sequenceLength)));
             }
 
-            var bufferCopyArray = bufferCopy.ToArray();
+            BufferCopy[] bufferCopyArray = [.. bufferCopy];
 
             BufferHolder.InsertBufferBarrier(
                 gd,

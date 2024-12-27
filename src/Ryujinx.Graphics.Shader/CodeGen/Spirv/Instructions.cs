@@ -1376,7 +1376,7 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Spirv
                 image = context.Image(declaration.ImageType, image);
             }
 
-            var operands = operandsList.ToArray();
+            SpvInstruction[] operands = [.. operandsList];
 
             SpvInstruction result;
 

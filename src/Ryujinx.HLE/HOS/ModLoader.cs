@@ -469,7 +469,7 @@ namespace Ryujinx.HLE.HOS
                 return baseStorage;
             }
 
-            var fileSet = new HashSet<string>();
+            HashSet<string> fileSet = [];
             var builder = new RomFsBuilder();
             int count = 0;
 

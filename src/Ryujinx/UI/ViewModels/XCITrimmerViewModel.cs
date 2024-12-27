@@ -160,13 +160,13 @@ namespace Ryujinx.Ava.UI.ViewModels
 
             Thread XCIFileTrimThread = new(() =>
             {
-                var toProcess = Sort(SelectedXCIFiles
+                List<XCITrimmerFileModel> toProcess = [.. Sort(SelectedXCIFiles
                     .Where(xci =>
                         (processingMode == ProcessingMode.Untrimming && xci.Untrimmable) ||
                         (processingMode == ProcessingMode.Trimming && xci.Trimmable)
-                    )).ToList();
+                    ))];
 
-                var viewsSaved = DisplayedXCIFiles.ToList();
+                List<XCITrimmerFileModel> viewsSaved = [.. DisplayedXCIFiles];
 
                 Dispatcher.UIThread.Post(() =>
                 {
