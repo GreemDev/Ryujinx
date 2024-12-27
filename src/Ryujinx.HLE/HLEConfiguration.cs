@@ -9,7 +9,6 @@ using Ryujinx.HLE.HOS.Services.Account.Acc;
 using Ryujinx.HLE.HOS.SystemState;
 using Ryujinx.HLE.UI;
 using System;
-using VSyncMode = Ryujinx.Common.Configuration.VSyncMode;
 
 namespace Ryujinx.HLE
 {
