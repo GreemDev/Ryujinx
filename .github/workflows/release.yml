@@ -42,8 +42,8 @@ jobs:
         with:
           script: |
             github.rest.git.createRef({
-              owner: ${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }},
-              repo: ${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }},
+              owner: "${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}",
+              repo: "${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}",
               ref: 'refs/tags/${{ steps.version_info.outputs.build_version }}',
               sha: context.sha
             })
