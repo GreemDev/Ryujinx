@@ -36,6 +36,8 @@ namespace Ryujinx.UI.App.Common
         public string Path { get; set; }
         public BlitStruct<ApplicationControlProperty> ControlHolder { get; set; }
 
+        public bool HasControlHolder => ControlHolder.ByteSpan.Length > 0;
+
         public string TimePlayedString => ValueFormatUtils.FormatTimeSpan(TimePlayed);
 
         public string LastPlayedString => ValueFormatUtils.FormatDateTime(LastPlayed)?.Replace(" ", "\n") ?? LocalizedNever();
