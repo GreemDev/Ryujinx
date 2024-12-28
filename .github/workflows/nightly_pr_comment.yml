@@ -41,12 +41,13 @@ jobs:
             let hidden_headless_artifacts = `\n\n <details><summary>GUI-less</summary>\n`;
             let hidden_debug_artifacts = `\n\n <details><summary>Only for Developers</summary>\n`;
             for (const art of artifacts) {
+              var url = `https://github.com/Ryubing/Ryujinx/actions/runs/${run_id}/artifacts/${art_id}`;
               if(art.name.includes('Debug')) {
-                hidden_debug_artifacts += `\n* [${art.name}](https://nightly.link/${owner}/${repo}/actions/artifacts/${art.id}.zip)`;
+                hidden_debug_artifacts += `\n* [${art.name}](${url})`;
               } else if(art.name.includes('nogui-ryujinx')) {
-                hidden_headless_artifacts += `\n* [${art.name}](https://nightly.link/${owner}/${repo}/actions/artifacts/${art.id}.zip)`;
+                hidden_headless_artifacts += `\n* [${art.name}](${url})`;
               } else {
-                body += `\n* [${art.name}](https://nightly.link/${owner}/${repo}/actions/artifacts/${art.id}.zip)`;
+                body += `\n* [${art.name}](${url})`;
               }
             }
             hidden_headless_artifacts += `\n</details>`;
