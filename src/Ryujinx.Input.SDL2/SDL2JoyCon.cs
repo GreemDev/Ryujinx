@@ -67,23 +67,21 @@ namespace Ryujinx.Input.SDL2
 
         public (float, float) GetStick(StickInputId inputId)
         {
-            if (inputId == StickInputId.Left)
+            switch (inputId)
             {
-                switch (_joyConType)
-                {
-                    case JoyConType.Left:
-                        {
-                            (float x, float y) = _gamepad.GetStick(inputId);
-                            return (y, -x);
-                        }
-                    case JoyConType.Right:
-                        {
-                            (float x, float y) = _gamepad.GetStick(inputId);
-                            return (-y, x);
-                        }
-                }
-            } 
-            return (0, 0);
+                case StickInputId.Left when _joyConType == JoyConType.Left:
+                    {
+                        (float x, float y) = _gamepad.GetStick(inputId);
+                        return (y, -x);
+                    }
+                case StickInputId.Right when _joyConType == JoyConType.Right:
+                    {
+                        (float x, float y) = _gamepad.GetStick(StickInputId.Left);
+                        return (-y, x);
+                    }
+                default:
+                    return (0, 0);
+            }
         }
 
         public GamepadFeaturesFlag Features => _gamepad.Features;
