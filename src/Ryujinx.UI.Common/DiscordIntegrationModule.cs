@@ -5,7 +5,6 @@ using Ryujinx.Common;
 using Ryujinx.HLE.Loaders.Processes;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common.Configuration;
-using System.Linq;
 using System.Text;
 
 namespace Ryujinx.UI.Common

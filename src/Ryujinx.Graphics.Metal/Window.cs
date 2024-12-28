@@ -2,13 +2,10 @@ using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Metal.Effects;
-using Ryujinx.Graphics.Metal.SharpMetalExtensions;
 using SharpMetal.ObjectiveCCore;
 using SharpMetal.QuartzCore;
 using System;
 using System.Runtime.Versioning;
-using AntiAliasing = Ryujinx.Graphics.GAL.AntiAliasing;
-using ScalingFilter = Ryujinx.Graphics.GAL.ScalingFilter;
 
 namespace Ryujinx.Graphics.Metal
 {

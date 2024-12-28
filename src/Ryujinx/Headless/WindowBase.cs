@@ -255,12 +255,12 @@ namespace Ryujinx.Headless
 
         private void SetAntiAliasing()
         {
-            Renderer?.Window.SetAntiAliasing((Graphics.GAL.AntiAliasing)AntiAliasing);
+            Renderer?.Window.SetAntiAliasing(AntiAliasing);
         }
 
         private void SetScalingFilter()
         {
-            Renderer?.Window.SetScalingFilter((Graphics.GAL.ScalingFilter)ScalingFilter);
+            Renderer?.Window.SetScalingFilter(ScalingFilter);
             Renderer?.Window.SetScalingFilterLevel(ScalingFilterLevel);
         }
 

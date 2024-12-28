@@ -1,8 +1,6 @@
 using Ryujinx.Common.Configuration;
 using Ryujinx.Graphics.GAL;
 using System;
-using AntiAliasing = Ryujinx.Graphics.GAL.AntiAliasing;
-using ScalingFilter = Ryujinx.Graphics.GAL.ScalingFilter;
 
 namespace Ryujinx.Graphics.Vulkan
 {

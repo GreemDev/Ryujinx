@@ -250,10 +250,10 @@ namespace Ryujinx.Headless
         [Option("hide-cursor", Required = false, Default = HideCursorMode.OnIdle, HelpText = "Change when the cursor gets hidden.")]
         public HideCursorMode HideCursorMode { get; set; }
 
-        [Option("list-input-profiles", Required = false, HelpText = "List inputs profiles.")]
+        [Option("list-input-profiles", Required = false, HelpText = "List input profiles.")]
         public bool ListInputProfiles { get; set; }
 
-        [Option("list-inputs-ids", Required = false, HelpText = "List inputs ids.")]
+        [Option("list-input-ids", Required = false, HelpText = "List input IDs.")]
         public bool ListInputIds { get; set; }
 
         // System
@@ -370,7 +370,7 @@ namespace Ryujinx.Headless
         [Option("anti-aliasing", Required = false, Default = AntiAliasing.None, HelpText = "Set the type of anti aliasing being used. [None|Fxaa|SmaaLow|SmaaMedium|SmaaHigh|SmaaUltra]")]
         public AntiAliasing AntiAliasing { get; set; }
 
-        [Option("scaling-filter", Required = false, Default = ScalingFilter.Bilinear, HelpText = "Set the scaling filter. [Bilinear|Nearest|Fsr]")]
+        [Option("scaling-filter", Required = false, Default = ScalingFilter.Bilinear, HelpText = "Set the scaling filter. [Bilinear|Nearest|Fsr|Area]")]
         public ScalingFilter ScalingFilter { get; set; }
 
         [Option("scaling-filter-level", Required = false, Default = 0, HelpText = "Set the scaling filter intensity (currently only applies to FSR). [0-100]")]
