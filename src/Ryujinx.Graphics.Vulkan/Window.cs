@@ -82,7 +82,7 @@ namespace Ryujinx.Graphics.Vulkan
                 }
             }
 
-            _gd.SwapchainApi.DestroySwapchain(_device, oldSwapchain, Span<AllocationCallbacks>.Empty);
+            _gd.SwapchainApi.DestroySwapchain(_device, oldSwapchain, []);
 
             CreateSwapchain();
         }
@@ -396,7 +396,7 @@ namespace Ryujinx.Graphics.Vulkan
                     _gd.CommandBufferPool.Return(
                         cbs,
                         null,
-                        stackalloc[] { PipelineStageFlags.ColorAttachmentOutputBit },
+                        [PipelineStageFlags.ColorAttachmentOutputBit],
                         null);
                     _gd.FlushAllCommands();
                     cbs.GetFence().Wait();
@@ -459,9 +459,9 @@ namespace Ryujinx.Graphics.Vulkan
 
             _gd.CommandBufferPool.Return(
                 cbs,
-                stackalloc[] { _imageAvailableSemaphores[semaphoreIndex] },
-                stackalloc[] { PipelineStageFlags.ColorAttachmentOutputBit },
-                stackalloc[] { _renderFinishedSemaphores[semaphoreIndex] });
+                [_imageAvailableSemaphores[semaphoreIndex]],
+                [PipelineStageFlags.ColorAttachmentOutputBit],
+                [_renderFinishedSemaphores[semaphoreIndex]]);
 
             // TODO: Present queue.
             var semaphore = _renderFinishedSemaphores[semaphoreIndex];

@@ -48,7 +48,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         private bool _isVulkanAvailable = true;
         private bool _gameDirectoryChanged;
         private bool _autoloadDirectoryChanged;
-        private readonly List<string> _gpuIds = new();
+        private readonly List<string> _gpuIds = [];
         private int _graphicsBackendIndex;
         private int _scalingFilter;
         private int _scalingFilterLevel;
@@ -181,7 +181,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                 _customVSyncInterval = newInterval;
                 _customVSyncIntervalPercentageProxy = value;
                 OnPropertiesChanged(
-                    nameof(CustomVSyncInterval), 
+                    nameof(CustomVSyncInterval),
                     nameof(CustomVSyncIntervalPercentageText));
             }
         }
@@ -222,7 +222,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                 int newPercent = (int)((value / 60f) * 100);
                 _customVSyncIntervalPercentageProxy = newPercent;
                 OnPropertiesChanged(
-                    nameof(CustomVSyncIntervalPercentageProxy), 
+                    nameof(CustomVSyncIntervalPercentageProxy),
                     nameof(CustomVSyncIntervalPercentageText));
                 OnPropertyChanged();
             }
@@ -342,7 +342,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public AvaloniaList<string> NetworkInterfaceList
         {
-            get => new(_networkInterfaces.Keys);
+            get => [.. _networkInterfaces.Keys];
         }
 
         public HotkeyConfig KeyboardHotkey { get; set; }
@@ -399,7 +399,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             TimeZones = [];
             AvailableGpus = [];
             _validTzRegions = [];
-            _networkInterfaces = new Dictionary<string, string>();
+            _networkInterfaces = [];
 
             Task.Run(CheckSoundBackends);
             Task.Run(PopulateNetworkInterfaces);
@@ -461,9 +461,9 @@ namespace Ryujinx.Ava.UI.ViewModels
             var dto = DateTimeOffset.Now;
 
             CurrentDate = new DateTimeOffset(dto.Year, dto.Month, dto.Day, 0, 0, 0, dto.Offset);
-            
+
             CurrentTime = dto.TimeOfDay;
-            
+
             OnPropertyChanged(nameof(CurrentDate));
             OnPropertyChanged(nameof(CurrentTime));
         }
@@ -642,13 +642,13 @@ namespace Ryujinx.Ava.UI.ViewModels
 
             if (_gameDirectoryChanged)
             {
-                List<string> gameDirs = new(GameDirectories);
+                List<string> gameDirs = [.. GameDirectories];
                 config.UI.GameDirs.Value = gameDirs;
             }
 
             if (_autoloadDirectoryChanged)
             {
-                List<string> autoloadDirs = new(AutoloadDirectories);
+                List<string> autoloadDirs = [.. AutoloadDirectories];
                 config.UI.AutoloadDirs.Value = autoloadDirs;
             }
 

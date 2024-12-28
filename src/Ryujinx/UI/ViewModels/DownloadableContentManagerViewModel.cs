@@ -20,9 +20,9 @@ namespace Ryujinx.Ava.UI.ViewModels
     public class DownloadableContentManagerViewModel : BaseModel
     {
         private readonly ApplicationLibrary _applicationLibrary;
-        private AvaloniaList<DownloadableContentModel> _downloadableContents = new();
-        private AvaloniaList<DownloadableContentModel> _selectedDownloadableContents = new();
-        private AvaloniaList<DownloadableContentModel> _views = new();
+        private AvaloniaList<DownloadableContentModel> _downloadableContents = [];
+        private AvaloniaList<DownloadableContentModel> _selectedDownloadableContents = [];
+        private AvaloniaList<DownloadableContentModel> _views = [];
         private bool _showBundledContentNotice = false;
 
         private string _search;
@@ -137,7 +137,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
             // NOTE(jpr): this works around a bug where calling _views.Clear also clears SelectedDownloadableContents for
             // some reason. so we save the items here and add them back after
-            var items = SelectedDownloadableContents.ToArray();
+            DownloadableContentModel[] items = [.. SelectedDownloadableContents];
 
             _views.Clear();
             _views.AddRange(view);
@@ -288,12 +288,12 @@ namespace Ryujinx.Ava.UI.ViewModels
             return Dispatcher.UIThread.InvokeAsync(async () =>
             {
                 await ContentDialogHelper.ShowTextDialog(
-                    LocaleManager.Instance[LocaleKeys.DialogConfirmationTitle], 
-                    msg, 
-                    string.Empty, 
-                    string.Empty, 
-                    string.Empty, 
-                    LocaleManager.Instance[LocaleKeys.InputDialogOk], 
+                    LocaleManager.Instance[LocaleKeys.DialogConfirmationTitle],
+                    msg,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    LocaleManager.Instance[LocaleKeys.InputDialogOk],
                     (int)Symbol.Checkmark);
             });
         }

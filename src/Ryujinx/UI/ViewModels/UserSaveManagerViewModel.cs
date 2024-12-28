@@ -13,8 +13,8 @@ namespace Ryujinx.Ava.UI.ViewModels
         private int _sortIndex;
         private int _orderIndex;
         private string _search;
-        private ObservableCollection<SaveModel> _saves = new();
-        private ObservableCollection<SaveModel> _views = new();
+        private ObservableCollection<SaveModel> _saves = [];
+        private ObservableCollection<SaveModel> _views = [];
         private readonly AccountManager _accountManager;
 
         public string SaveManagerHeading => LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.SaveManagerHeading, _accountManager.LastOpenedUser.Name, _accountManager.LastOpenedUser.UserId);
