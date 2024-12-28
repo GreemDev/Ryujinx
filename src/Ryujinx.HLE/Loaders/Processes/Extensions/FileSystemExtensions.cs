@@ -102,7 +102,7 @@ namespace Ryujinx.HLE.Loaders.Processes.Extensions
             }
 
             // Initialize GPU.
-            Graphics.Gpu.GraphicsConfig.TitleId = $"{programId:x16}";
+            Graphics.Gpu.GraphicsConfig.TitleId = programId.ToString("X16");
             device.Gpu.HostInitalized.Set();
 
             if (!MemoryBlock.SupportsFlags(MemoryAllocationFlags.ViewCompatible))
