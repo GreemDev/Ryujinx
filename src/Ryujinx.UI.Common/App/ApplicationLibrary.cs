@@ -789,16 +789,15 @@ namespace Ryujinx.UI.App.Common
                     using HttpClient httpClient = new HttpClient();
                     string ldnGameDataArrayString = await httpClient.GetStringAsync($"https://{ldnWebHost}/api/public_games");
                     ldnGameDataArray = JsonHelper.Deserialize(ldnGameDataArrayString, _ldnDataSerializerContext.IEnumerableLdnGameData);
-                    var evt = new LdnGameDataReceivedEventArgs
+                    LdnGameDataReceived?.Invoke(null, new LdnGameDataReceivedEventArgs
                     {
                         LdnData = ldnGameDataArray
-                    };
-                    LdnGameDataReceived?.Invoke(null, evt);
+                    });
                 }
                 catch (Exception ex)
                 {
                     Logger.Warning?.Print(LogClass.Application, $"Failed to fetch the public games JSON from the API. Player and game count in the game list will be unavailable.\n{ex.Message}");
-                    LdnGameDataReceived?.Invoke(null, new LdnGameDataReceivedEventArgs()
+                    LdnGameDataReceived?.Invoke(null, new LdnGameDataReceivedEventArgs
                     {
                         LdnData = Array.Empty<LdnGameData>()
                     });
@@ -806,7 +805,7 @@ namespace Ryujinx.UI.App.Common
             }
             else
             {
-                LdnGameDataReceived?.Invoke(null, new LdnGameDataReceivedEventArgs()
+                LdnGameDataReceived?.Invoke(null, new LdnGameDataReceivedEventArgs
                 {
                     LdnData = Array.Empty<LdnGameData>()
                 });

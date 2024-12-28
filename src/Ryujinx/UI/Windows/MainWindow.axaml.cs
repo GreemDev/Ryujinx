@@ -39,8 +39,6 @@ namespace Ryujinx.Ava.UI.Windows
 {
     public partial class MainWindow : StyleableAppWindow
     {
-        internal static MainWindowViewModel MainWindowViewModel { get; private set; }
-        
         public MainWindowViewModel ViewModel { get; }
 
         internal readonly AvaHostUIHandler UiHandler;
@@ -76,7 +74,7 @@ namespace Ryujinx.Ava.UI.Windows
 
         public MainWindow()
         {
-            DataContext = ViewModel = MainWindowViewModel = new MainWindowViewModel
+            DataContext = ViewModel = new MainWindowViewModel
             {
                 Window = this
             };
@@ -169,24 +167,31 @@ namespace Ryujinx.Ava.UI.Windows
         {
             Dispatcher.UIThread.Post(() =>
             {
-                var ldnGameDataArray = e.LdnData;
-                ViewModel.LastLdnGameData = ldnGameDataArray;
+                var ldnGameDataArray = e.LdnData.ToList();
+                ViewModel.LdnData.Clear();
                 foreach (var application in ViewModel.Applications)
                 {
+                    ref var controlHolder = ref application.ControlHolder.Value;
+                    
+                    ViewModel.LdnData[application.IdString] = 
+                        LdnGameData.GetArrayForApp(
+                            ldnGameDataArray, 
+                            ref controlHolder
+                        );
+                    
                     UpdateApplicationWithLdnData(application);
                 }
+                
                 ViewModel.RefreshView();
             });
         }
 
         private void UpdateApplicationWithLdnData(ApplicationData application)
         {
-            if (application.ControlHolder.ByteSpan.Length > 0 && ViewModel.LastLdnGameData != null)
+            if (application.HasControlHolder && ViewModel.LdnData.TryGetValue(application.IdString, out var ldnGameDatas))
             {
-                IEnumerable<LdnGameData> ldnGameData = ViewModel.LastLdnGameData.Where(game => application.ControlHolder.Value.LocalCommunicationId.Items.Contains(Convert.ToUInt64(game.TitleId, 16)));
-
-                application.PlayerCount = ldnGameData.Sum(game => game.PlayerCount);
-                application.GameCount = ldnGameData.Count();
+                application.PlayerCount = ldnGameDatas.PlayerCount;
+                application.GameCount = ldnGameDatas.GameCount;
             }
             else
             {

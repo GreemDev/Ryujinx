@@ -1,9 +1,12 @@
 using OpenTK.Graphics.OpenGL;
+using Ryujinx.Common.Configuration;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.OpenGL.Effects;
 using Ryujinx.Graphics.OpenGL.Effects.Smaa;
 using Ryujinx.Graphics.OpenGL.Image;
 using System;
+using AntiAliasing = Ryujinx.Graphics.GAL.AntiAliasing;
+using ScalingFilter = Ryujinx.Graphics.GAL.ScalingFilter;
 
 namespace Ryujinx.Graphics.OpenGL
 {

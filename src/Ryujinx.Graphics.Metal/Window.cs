@@ -1,10 +1,14 @@
+using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Metal.Effects;
+using Ryujinx.Graphics.Metal.SharpMetalExtensions;
 using SharpMetal.ObjectiveCCore;
 using SharpMetal.QuartzCore;
 using System;
 using System.Runtime.Versioning;
+using AntiAliasing = Ryujinx.Graphics.GAL.AntiAliasing;
+using ScalingFilter = Ryujinx.Graphics.GAL.ScalingFilter;
 
 namespace Ryujinx.Graphics.Metal
 {
@@ -14,7 +18,7 @@ namespace Ryujinx.Graphics.Metal
         public bool ScreenCaptureRequested { get; set; }
 
         private readonly MetalRenderer _renderer;
-        private readonly CAMetalLayer _metalLayer;
+        private CAMetalLayer _metalLayer;
 
         private int _width;
         private int _height;
@@ -140,7 +144,15 @@ namespace Ryujinx.Graphics.Metal
         
         public void ChangeVSyncMode(VSyncMode vSyncMode)
         {
-            //_vSyncMode = vSyncMode;
+            switch (vSyncMode)
+            {
+                case VSyncMode.Unbounded:
+                    _metalLayer.DisplaySyncEnabled = false;
+                    break;
+                case VSyncMode.Switch:
+                    _metalLayer.DisplaySyncEnabled = true;
+                    break;
+            }
         }
 
         public void SetAntiAliasing(AntiAliasing effect)
