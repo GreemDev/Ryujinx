@@ -37,6 +37,10 @@ namespace Ryujinx.BuildValidationTasks
             bool isGitRunner = path.Contains("runner") || path.Contains("D:\\a\\Ryujinx\\Ryujinx");
             if (isGitRunner)
                 Console.WriteLine("Is Git Runner!");
+
+            if (isGitRunner && data.Contains("\r\n"))
+                throw new FormatException("locales.json is using CRLF line endings! It should be using LF line endings, build locally to fix...");
+
             bool encounteredIssue = false;
 
             for (int i = 0; i < json.Locales.Count; i++)
