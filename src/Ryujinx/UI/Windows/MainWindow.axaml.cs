@@ -171,6 +171,11 @@ namespace Ryujinx.Ava.UI.Windows
                 ViewModel.LdnData.Clear();
                 foreach (var application in ViewModel.Applications)
                 {
+                    if (!application.HasControlHolder)
+                    {
+                        continue;
+                    }
+                    
                     ref var controlHolder = ref application.ControlHolder.Value;
                     
                     ViewModel.LdnData[application.IdString] = 
