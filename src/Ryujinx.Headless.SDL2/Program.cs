@@ -428,6 +428,8 @@ namespace Ryujinx.Headless.SDL2
                 return;
             }
 
+            _inputManager.AddUpdaterForConfiguration(_inputConfiguration);
+
             // Setup logging level
             Logger.SetEnable(LogLevel.Debug, option.LoggingEnableDebug);
             Logger.SetEnable(LogLevel.Stub, !option.LoggingDisableStub);
@@ -484,7 +486,7 @@ namespace Ryujinx.Headless.SDL2
             }
 
             _inputManager.Dispose();
-        }
+        } 
 
         private static void SetupProgressHandler()
         {

@@ -367,12 +367,12 @@ namespace Ryujinx.Ava.UI.ViewModels.Input
 
         private void HandleOnGamepadDisconnected(string id)
         {
-            Dispatcher.UIThread.Post(LoadDevices);
+            Dispatcher.UIThread.Post(RefreshDevicesAndCurrentPlayerConfiguration);
         }
 
         private void HandleOnGamepadConnected(string id)
         {
-            Dispatcher.UIThread.Post(LoadDevices);
+            Dispatcher.UIThread.Post(RefreshDevicesAndCurrentPlayerConfiguration);
         }
 
         private string GetCurrentGamepadId()
@@ -441,6 +441,21 @@ namespace Ryujinx.Ava.UI.ViewModels.Input
             return str[(str.IndexOf(Hyphen) + Offset)..];
         }
 
+        public void RefreshDevicesAndCurrentPlayerConfiguration()
+        {
+            LoadDevices();
+       
+            //update Device for current user based on new configuration.
+            var config = ConfigurationState.Instance.Hid.InputConfig.Value.Find(inputConfig => inputConfig.PlayerIndex == PlayerId);
+            var device = Devices.FindFirst(d => d.Id==config.Id);
+            if (device.HasValue) {
+                Device=Devices.IndexOf(device);
+            } else {
+                //0 is the None Device
+                Device = 0;
+            }            
+        }
+
         public void LoadDevices()
         {
             string GetGamepadName(IGamepad gamepad, int controllerNumber)
@@ -464,17 +479,19 @@ namespace Ryujinx.Ava.UI.ViewModels.Input
                 DeviceList.Clear();
                 Devices.Add((DeviceType.None, Disabled, LocaleManager.Instance[LocaleKeys.ControllerSettingsDeviceDisabled]));
 
-                int controllerNumber = 0;
+                int controllerNumber = 1;
                 foreach (string id in _mainWindow.InputManager.KeyboardDriver.GamepadsIds)
                 {
                     using IGamepad gamepad = _mainWindow.InputManager.KeyboardDriver.GetGamepad(id);
 
                     if (gamepad != null)
                     {
+                        controllerNumber++;
                         Devices.Add((DeviceType.Keyboard, id, $"{GetShortGamepadName(gamepad.Name)}"));
                     }
                 }
 
+                controllerNumber = 1;
                 foreach (string id in _mainWindow.InputManager.GamepadDriver.GamepadsIds)
                 {
                     using IGamepad gamepad = _mainWindow.InputManager.GamepadDriver.GetGamepad(id);
@@ -482,6 +499,7 @@ namespace Ryujinx.Ava.UI.ViewModels.Input
                     if (gamepad != null)
                     {
                         string name = GetUniqueGamepadName(gamepad, ref controllerNumber);
+                        controllerNumber++;
                         Devices.Add((DeviceType.Controller, id, name));
                     }
                 }
