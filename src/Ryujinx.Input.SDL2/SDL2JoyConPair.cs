@@ -1,5 +1,6 @@
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Configuration.Hid.Controller;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -81,12 +82,23 @@ namespace Ryujinx.Input.SDL2
 
         public Vector3 GetMotionData(MotionInputId inputId)
         {
-            return inputId switch
+            Vector3 motionData;
+            switch (inputId)
             {
-                MotionInputId.SecondAccelerometer => right.GetMotionData(MotionInputId.Accelerometer),
-                MotionInputId.SecondGyroscope => right.GetMotionData(MotionInputId.Gyroscope),
-                _ => left.GetMotionData(inputId)
-            };
+                case MotionInputId.Accelerometer:
+                case MotionInputId.Gyroscope:
+                     motionData = left.GetMotionData(inputId);
+                     return new Vector3(-motionData.Z, motionData.Y, motionData.X);
+                case MotionInputId.SecondAccelerometer:
+                     motionData = right.GetMotionData(MotionInputId.Accelerometer);
+                     return new Vector3(motionData.Z, motionData.Y, -motionData.X);
+                case MotionInputId.SecondGyroscope:
+                     motionData = right.GetMotionData(MotionInputId.Gyroscope);
+                     return new Vector3(motionData.Z, motionData.Y, -motionData.X);
+                case MotionInputId.Invalid:
+                default:
+                    return Vector3.Zero;
+            }
         }
 
         public GamepadStateSnapshot GetStateSnapshot()
