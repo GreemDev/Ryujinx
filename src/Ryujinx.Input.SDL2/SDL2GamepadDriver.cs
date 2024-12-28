@@ -152,7 +152,8 @@ namespace Ryujinx.Input.SDL2
 
         private void HandleJoyBatteryUpdated(int joystickDeviceId, SDL_JoystickPowerLevel powerLevel)
         {
-            Logger.Info?.Print(LogClass.Hid, $"{SDL_GameControllerNameForIndex(joystickDeviceId) } power level: {powerLevel}");
+            Logger.Info?.Print(LogClass.Hid,
+                $"{SDL_GameControllerNameForIndex(joystickDeviceId)} power level: {powerLevel}");
         }
 
         protected virtual void Dispose(bool disposing)
@@ -201,8 +202,17 @@ namespace Ryujinx.Input.SDL2
             }
 
             nint gamepadHandle = SDL_GameControllerOpen(joystickIndex);
+            if (gamepadHandle == nint.Zero)
+            {
+                return null;
+            }
 
-            return gamepadHandle == nint.Zero ? null : new SDL2Gamepad(gamepadHandle, id);
+            if (SDL_GameControllerName(gamepadHandle).StartsWith(SDL2JoyCon.Prefix))
+            {
+                return new SDL2JoyCon(gamepadHandle, id);    
+            }
+
+            return new SDL2Gamepad(gamepadHandle, id);
         }
     }
 }
