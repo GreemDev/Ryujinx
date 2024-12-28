@@ -8,6 +8,6 @@ namespace Ryujinx.BuildValidationTasks
 {
     public interface ValidationTask
     {
-        public static bool Execute(string projectPath) { return true; }
+        public bool Execute(string projectPath, bool isGitRunner);
     }
 }
