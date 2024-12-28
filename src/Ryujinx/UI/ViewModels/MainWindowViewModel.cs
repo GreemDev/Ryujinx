@@ -9,6 +9,7 @@ using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
 using FluentAvalonia.UI.Controls;
+using Gommon;
 using LibHac.Common;
 using LibHac.Ns;
 using Ryujinx.Ava.Common;
@@ -124,8 +125,9 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public ApplicationData ListSelectedApplication;
         public ApplicationData GridSelectedApplication;
-
-        public IEnumerable<LdnGameData> LastLdnGameData;
+        
+        // Key is Title ID
+        public SafeDictionary<string, LdnGameData.Array> LdnData = [];
 
         // The UI specifically uses a thicker bordered variant of the icon to avoid crunching out the border at lower resolutions.
         // For an example of this, download canary 1.2.95, then open the settings menu, and look at the icon in the top-left.

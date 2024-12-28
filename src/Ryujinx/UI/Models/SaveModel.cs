@@ -1,3 +1,4 @@
+using Gommon;
 using LibHac.Fs;
 using LibHac.Ncm;
 using Ryujinx.Ava.UI.ViewModels;
@@ -47,7 +48,7 @@ namespace Ryujinx.Ava.UI.Models
             TitleId = info.ProgramId;
             UserId = info.UserId;
 
-            var appData = MainWindow.MainWindowViewModel.Applications.FirstOrDefault(x => x.IdString.Equals(TitleIdString, StringComparison.OrdinalIgnoreCase));
+            var appData = RyujinxApp.MainWindow.ViewModel.Applications.FirstOrDefault(x => x.IdString.EqualsIgnoreCase(TitleIdString));
 
             InGameList = appData != null;
 

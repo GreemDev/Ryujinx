@@ -21,9 +21,9 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   RYUJINX_BASE_VERSION: "1.2"
   RYUJINX_TARGET_RELEASE_CHANNEL_NAME: "canary"
-  RYUJINX_TARGET_RELEASE_CHANNEL_OWNER: "GreemDev"
+  RYUJINX_TARGET_RELEASE_CHANNEL_OWNER: "Ryubing"
   RYUJINX_TARGET_RELEASE_CHANNEL_SOURCE_REPO: "Ryujinx"
-  RYUJINX_TARGET_RELEASE_CHANNEL_REPO: "Ryujinx-Canary"
+  RYUJINX_TARGET_RELEASE_CHANNEL_REPO: "Canary-Releases"
   RELEASE: 1
 
 jobs:
@@ -43,8 +43,8 @@ jobs:
         with:
           script: |
             github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
+              owner: "${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}",
+              repo: "${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_SOURCE_REPO }}",
               ref: 'refs/tags/Canary-${{ steps.version_info.outputs.build_version }}',
               sha: context.sha
             })
@@ -64,7 +64,7 @@ jobs:
             | Windows 64-bit | [Canary Windows Artifact](https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-win_x64.zip) |
             | Linux 64-bit | [Canary Linux Artifact](https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-linux_x64.tar.gz) |
             | Linux ARM 64-bit | [Canary Linux ARM Artifact](https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-linux_arm64.tar.gz) |
-            | macOS | [Canary macOS artifact](https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-macos_universal.app.tar.gz) |
+            | macOS | [Canary macOS Artifact](https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-macos_universal.app.tar.gz) |
             
             **Full Changelog**: https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_SOURCE_REPO }}/compare/Canary-${{ steps.version_info.outputs.prev_build_version }}...Canary-${{ steps.version_info.outputs.build_version }}
           omitBodyDuringUpdate: true
@@ -196,16 +196,16 @@ jobs:
           body: |
             # Canary builds:
             
-            These builds are experimental and may sometimes not work, use [regular builds](https://github.com/GreemDev/Ryujinx/releases/latest) instead if that sounds like something you don't want to deal with.
-
+            These builds are experimental and may sometimes not work, use [regular builds](https://github.com/${{ github.repository }}/releases/latest) instead if that sounds like something you don't want to deal with.
+            
             | Platform | Artifact |
             |--|--|
-            | Windows 64-bit | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-win_x64.zip |
-            | Linux 64-bit | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-linux_x64.tar.gz |
-            | Linux ARM 64-bit | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-linux_arm64.tar.gz |
-            | macOS | https://github.com/${{ github.repository }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-macos_universal.app.tar.gz |
+            | Windows 64-bit | [Canary Windows Artifact](https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-win_x64.zip) |
+            | Linux 64-bit | [Canary Linux Artifact](https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-linux_x64.tar.gz) |
+            | Linux ARM 64-bit | [Canary Linux ARM Artifact](https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-linux_arm64.tar.gz) |
+            | macOS | [Canary macOS Artifact](https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}/releases/download/${{ steps.version_info.outputs.build_version }}/ryujinx-canary-${{ steps.version_info.outputs.build_version }}-macos_universal.app.tar.gz) |
             
-            "**Full Changelog**: https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_SOURCE_REPO }}/compare/Canary-${{ steps.version_info.outputs.prev_build_version }}...Canary-${{ steps.version_info.outputs.build_version }}"
+            **Full Changelog**: https://github.com/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_SOURCE_REPO }}/compare/Canary-${{ steps.version_info.outputs.prev_build_version }}...Canary-${{ steps.version_info.outputs.build_version }}
           omitBodyDuringUpdate: true
           allowUpdates: true
           replacesArtifacts: true
