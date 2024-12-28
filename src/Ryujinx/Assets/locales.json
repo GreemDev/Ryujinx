@@ -1114,7 +1114,6 @@
         "pl_PL": "",
         "pt_BR": "",
         "ru_RU": "",
-        "ru_RU": "",
         "sv_SE": "",
         "th_TH": "",
         "tr_TR": "",
@@ -2214,11 +2213,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "ExeFS",
-
         "sv_SE": "ExeFS",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -2267,11 +2263,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "RomFS",
-
         "sv_SE": "RomFS",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -2545,11 +2538,8 @@
         "no_NO": "Kontroller og trim XCI-filen",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Проверить и обрезать XCI файл",
-
         "sv_SE": "Kontrollera och optimera XCI-fil",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Перевірка та Нарізка XCI Файлів",
@@ -2573,11 +2563,8 @@
         "no_NO": "Kontroller og trimm XCI-filen for å spare diskplass",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Проверить и обрезать XCI файл для уменьшения его размера",
-
         "sv_SE": "Kontrollera och optimera XCI-fil för att spara diskutrymme",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Перевірка та Нарізка XCI Файлів для збереження місця на диску",
@@ -2651,11 +2638,8 @@
         "no_NO": "Trimming av XCI-filen '{0}'",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Обрезается XCI файл '{0}'",
-
         "sv_SE": "Optimerar XCI-filen '{0}'",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Обрізано XCI Файлів '{0}'",
@@ -3029,11 +3013,8 @@
         "no_NO": "Vis tittellinje (krever omstart)",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Показать строку заголовка (требуется перезапуск)",
-
         "sv_SE": "Visa titelrad (kräver omstart)",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Показувати рядок заголовка (Потрібен перезапуск)",
@@ -3182,11 +3163,8 @@
         "no_NO": "Autoload DLC/Updates-mapper",
         "pl_PL": "",
         "pt_BR": "Carregar Automaticamente Diretórios de DLC/Atualizações",
-
         "ru_RU": "Автозагрузка папки с DLC/Обновлениями",
-
         "sv_SE": "Läs automatisk in DLC/speluppdateringar",
-
         "th_TH": "โหลดไดเรกทอรี DLC/ไฟล์อัปเดต อัตโนมัติ",
         "tr_TR": "",
         "uk_UA": "Автозавантаження каталогів DLC/Оновлень",
@@ -3210,11 +3188,8 @@
         "no_NO": "DLC og oppdateringer som henviser til manglende filer, vil bli lastet ned automatisk",
         "pl_PL": "",
         "pt_BR": "DLCs e Atualizações que se referem a arquivos ausentes serão descarregadas automaticamente",
-
         "ru_RU": "DLC и обновления, которые ссылаются на отсутствующие файлы, будут выгружаться автоматически",
-
         "sv_SE": "DLC och speluppdateringar som refererar till saknade filer kommer inte att läsas in automatiskt",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "DLC та Оновлення, які посилаються на відсутні файли, будуть автоматично вимкнуті.",
@@ -3538,10 +3513,8 @@
         "no_NO": "Systemspråk",
         "pl_PL": "Język systemu:",
         "pt_BR": "Idioma do sistema:",
-
         "ru_RU": "Язык системы:",
         "sv_SE": "Systemspråk:",
-
         "th_TH": "ภาษาของระบบ:",
         "tr_TR": "Sistem Dili:",
         "uk_UA": "Мова системи:",
@@ -4015,10 +3988,8 @@
         "no_NO": "System tid:",
         "pl_PL": "Czas systemu:",
         "pt_BR": "Hora do sistema:",
-
         "ru_RU": "Системное время:",
         "sv_SE": "Systemtid:",
-
         "th_TH": "เวลาของระบบ:",
         "tr_TR": "Sistem Saati:",
         "uk_UA": "Час системи:",
@@ -4042,11 +4013,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Повторная синхронизация с датой и временем на компьютере",
-
         "sv_SE": "Återsynka till datorns datum och tid",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -4095,10 +4063,8 @@
         "no_NO": "PPTC med lavt strømforbruk",
         "pl_PL": "Low-power PPTC",
         "pt_BR": "Low-power PPTC",
-
         "ru_RU": "PPTC с низким электропотреблением",
         "sv_SE": "PPTC med låg strömförbrukning",
-
         "th_TH": "PPTC แบบพลังงานตํ่า",
         "tr_TR": "Low-power PPTC",
         "uk_UA": "Low-power PPTC",
@@ -4197,11 +4163,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "OpenAL",
-
         "sv_SE": "OpenAL",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -4225,11 +4188,8 @@
         "no_NO": "Lyd Inn/Ut",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "SoundIO",
-
         "sv_SE": "SoundIO",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -4253,11 +4213,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "SDL2",
-
         "sv_SE": "SDL2",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -4356,11 +4313,8 @@
         "no_NO": "4GB",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "4ГиБ",
-
         "sv_SE": "4GiB",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "4Гб",
@@ -4384,11 +4338,8 @@
         "no_NO": "6GB",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "6ГиБ",
-
         "sv_SE": "6GiB",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "6Гб",
@@ -4412,11 +4363,8 @@
         "no_NO": "8GB",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "8ГиБ",
-
         "sv_SE": "8GiB",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "8Гб",
@@ -4440,11 +4388,8 @@
         "no_NO": "12GB",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "12ГиБ",
-
         "sv_SE": "12GiB",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "12Гб",
@@ -4643,11 +4588,8 @@
         "no_NO": "2x",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "2x",
-
         "sv_SE": "2x",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -4671,11 +4613,8 @@
         "no_NO": "4x",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "4x",
-
         "sv_SE": "4x",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -4699,11 +4638,8 @@
         "no_NO": "8x",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "8x",
-
         "sv_SE": "8x",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -4727,11 +4663,8 @@
         "no_NO": "16x",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "16x",
-
         "sv_SE": "16x",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -4830,11 +4763,8 @@
         "no_NO": "2x (1440p/2160p)",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "2x (1440p/2160p)",
-
         "sv_SE": "2x (1440p/2160p)",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -4858,11 +4788,8 @@
         "no_NO": "3x (2160p/3240p)",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "3x (2160p/3240p)",
-
         "sv_SE": "3x (2160p/3240p)",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -4936,11 +4863,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "4:3",
-
         "sv_SE": "4:3",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -4964,11 +4888,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "16:9",
-
         "sv_SE": "16:9",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -4992,11 +4913,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "16:10",
-
         "sv_SE": "16:10",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -5020,11 +4938,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "21:9",
-
         "sv_SE": "21:9",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -5048,11 +4963,8 @@
         "no_NO": "32:9",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "32:9",
-
         "sv_SE": "32:9",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -6201,11 +6113,8 @@
         "no_NO": "",
         "pl_PL": "Pro Kontroler",
         "pt_BR": "",
-
         "ru_RU": "Pro Controller",
-
         "sv_SE": "Pro Controller",
-
         "th_TH": "โปรคอนโทรลเลอร์",
         "tr_TR": "Profesyonel Kumanda",
         "uk_UA": "Контролер Pro",
@@ -8179,11 +8088,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Enter",
-
         "sv_SE": "Enter",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -8207,11 +8113,8 @@
         "no_NO": "Esc-tast",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Esc",
-
         "sv_SE": "Escape",
-
         "th_TH": "",
         "tr_TR": "Esc",
         "uk_UA": "",
@@ -8260,11 +8163,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Tab",
-
         "sv_SE": "Tab",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -8288,11 +8188,8 @@
         "no_NO": "Tilbaketast",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Backspace",
-
         "sv_SE": "Backspace",
-
         "th_TH": "",
         "tr_TR": "Geri tuşu",
         "uk_UA": "",
@@ -8316,11 +8213,8 @@
         "no_NO": "Sett inn",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Insert",
-
         "sv_SE": "Insert",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -8344,11 +8238,8 @@
         "no_NO": "Slett",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Delete",
-
         "sv_SE": "Delete",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -8372,11 +8263,8 @@
         "no_NO": "Side opp",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Page Up",
-
         "sv_SE": "Page Up",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -8400,11 +8288,8 @@
         "no_NO": "Side ned",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Page Down",
-
         "sv_SE": "Page Down",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -8428,11 +8313,8 @@
         "no_NO": "Hjem",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Home",
-
         "sv_SE": "Home",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -8456,11 +8338,8 @@
         "no_NO": "Avslutt",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "End",
-
         "sv_SE": "End",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -8484,11 +8363,8 @@
         "no_NO": "Skiftelås",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Caps Lock",
-
         "sv_SE": "Caps Lock",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -8512,11 +8388,8 @@
         "no_NO": "Rullelås",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Scroll Lock",
-
         "sv_SE": "Scroll Lock",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -8540,11 +8413,8 @@
         "no_NO": "Skjermbilde",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Print Screen",
-
         "sv_SE": "Print Screen",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -8568,11 +8438,8 @@
         "no_NO": "Stans midlertidig",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Pause",
-
         "sv_SE": "Pause",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -8596,11 +8463,8 @@
         "no_NO": "Numerisk Lås",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Num Lock",
-
         "sv_SE": "Num Lock",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9049,11 +8913,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "0",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9077,11 +8938,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "1",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9105,11 +8963,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "2",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9133,11 +8988,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "3",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9161,11 +9013,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "4",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9189,11 +9038,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "5",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9217,11 +9063,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "6",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9245,11 +9088,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "7",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9273,11 +9113,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "8",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9301,11 +9138,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "9",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9329,11 +9163,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "~",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9357,11 +9188,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "`",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9385,11 +9213,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "-",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9413,11 +9238,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "+",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9441,11 +9263,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "[",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9469,11 +9288,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "]",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9497,11 +9313,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": ";",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9550,11 +9363,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": ",",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9578,11 +9388,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": ".",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9606,11 +9413,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "/",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9934,11 +9738,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "-",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -9962,11 +9763,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "+",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "4",
         "uk_UA": "",
@@ -10715,11 +10513,8 @@
         "no_NO": "Kansellerer",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Отмена",
-
         "sv_SE": "Avbryter",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Скасування",
@@ -10743,11 +10538,8 @@
         "no_NO": "Lukk",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Закрыть",
-
         "sv_SE": "Stäng",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Закрити",
@@ -10946,11 +10738,8 @@
         "no_NO": "Se Profil",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Показать профиль",
-
         "sv_SE": "Visa profil",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Показати профіль",
@@ -11199,11 +10988,8 @@
         "no_NO": "Automatisk",
         "pl_PL": "",
         "pt_BR": "Automático",
-
         "ru_RU": "Авто",
-
         "sv_SE": "Automatiskt",
-
         "th_TH": "อัตโนมัติ",
         "tr_TR": "",
         "uk_UA": "Авто.",
@@ -12052,11 +11838,8 @@
         "no_NO": "Vis endringslogg",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Показать список изменений",
-
         "sv_SE": "Visa ändringslogg",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Показати список змін",
@@ -12530,11 +12313,8 @@
         "no_NO": "XCI Trimmervindu",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Окно триммера XCI",
-
         "sv_SE": "XCI-optimerare",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -12658,11 +12438,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "{0}: {1}",
-
         "sv_SE": "",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -12736,11 +12513,8 @@
         "no_NO": "",
         "pl_PL": "API Amiibo",
         "pt_BR": "API Amiibo",
-
         "ru_RU": "API Amiibo",
-
         "sv_SE": "Amiibo-API",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -13264,11 +13038,8 @@
         "no_NO": "En ugyldig Keys-fil ble funnet i {0}.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "В {0} были найдены некорректные ключи",
-
         "sv_SE": "En ogiltig nyckelfil hittades i {0}",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -13292,11 +13063,8 @@
         "no_NO": "Installere nøkler",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Установить ключи",
-
         "sv_SE": "Installera nycklar",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Встановлення Ключів",
@@ -13320,11 +13088,8 @@
         "no_NO": "Ny Keys-fil vil bli installert.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Будут установлены новые ключи.",
-
         "sv_SE": "Ny nyckelfil kommer att installeras.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Новий файл Ключів буде встановлено",
@@ -13348,11 +13113,8 @@
         "no_NO": "\n\nDette kan erstatte noen av de nåværende installerte nøklene.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "\n\nЭто действие может перезаписать установленные ключи.",
-
         "sv_SE": "\n\nDetta kan ersätta några av de redan installerade nycklarna.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "\n\nЦе замінить собою поточні файли Ключів.",
@@ -13376,11 +13138,8 @@
         "no_NO": "\n\nVil du fortsette?",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "\n\nХотите продолжить?",
-
         "sv_SE": "\n\nVill du fortsätta?",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "\n\nВи хочете продовжити?",
@@ -13404,11 +13163,8 @@
         "no_NO": "Installere nøkler...",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Установка ключей...",
-
         "sv_SE": "Installerar nycklar...",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Встановлення Ключів...",
@@ -13432,11 +13188,8 @@
         "no_NO": "Ny Keys -fil installert.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Новые ключи были успешно установлены.",
-
         "sv_SE": "Ny nyckelfil installerades.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Нові ключі встановлено.",
@@ -14435,11 +14188,8 @@
         "no_NO": "Ryujinx er en emulator for Nintendo SwitchTM.\nVennligst støtt oss på Patreon.\nFå alle de siste nyhetene på vår Twitter eller Discord.\nUtviklere som er interessert i å bidra kan finne ut mer på GitHub eller Discord.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Ryujinx - это эмулятор для Nintendo Switch™.\nПолучайте все последние новости разработки в нашем Discord.\nРазработчики, заинтересованные в участии, могут узнать больше на нашем GitHub или Discord.",
-
         "sv_SE": "Ryujinx är en emulator för Nintendo Switch™.\nFå de senaste nyheterna via vår Discord.\nUtvecklare som är intresserade att bidra kan hitta mer info på vår GitHub eller Discord.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Ryujinx — це емулятор для Nintendo Switch™.\nОтримуйте всі останні новини в нашому Discord.\nРозробники, які хочуть зробити внесок, можуть дізнатися більше на нашому GitHub або в Discord.",
@@ -14488,11 +14238,8 @@
         "no_NO": "Tidligere vedlikeholdt av:",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Поддержка:",
-
         "sv_SE": "Underhölls tidigare av:",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Минулі розробники:",
@@ -15516,11 +15263,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Повторно синхронизирует системное время, чтобы оно соответствовало текущей дате и времени вашего компьютера.\n\nЭто не активная настройка, она все еще может рассинхронизироваться; в этом случае просто нажмите эту кнопку еще раз.",
-
         "sv_SE": "Återsynkronisera systemtiden för att matcha din dators aktuella datum och tid.\n\nDetta är inte en aktiv inställning och den kan tappa synken och om det händer så kan du klicka på denna knapp igen.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -15594,11 +15338,8 @@
         "no_NO": "Last inn PPTC med en tredjedel av antall kjerner.",
         "pl_PL": "",
         "pt_BR": "Carregar o PPTC usando um terço da quantidade de núcleos.",
-
         "ru_RU": "Загрузить PPTC, используя треть от количества ядер.",
-
         "sv_SE": "Läs in PPTC med en tredjedel av mängden kärnor.",
-
         "th_TH": "โหลด PPTC โดยใช้หนึ่งในสามของจำนวนคอร์",
         "tr_TR": "",
         "uk_UA": "Завантажувати PPTC використовуючи третину від кількості ядер.",
@@ -16422,11 +16163,8 @@
         "no_NO": "Åpne en filutforsker for å velge en eller flere mapper å laste inn DLC fra",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Открывает проводник, для выбора одной или нескольких папок для массовой загрузки DLC",
-
         "sv_SE": "Öppna en filutforskare för att välja en eller flera mappar att läsa in alla DLC från",
-
         "th_TH": "เปิดตัวสำรวจไฟล์เพื่อเลือกหนึ่งโฟลเดอร์ขึ้นไปเพื่อโหลด DLC จำนวนมาก",
         "tr_TR": "",
         "uk_UA": "Відкрийте провідник файлів, щоб вибрати одну або кілька папок для масового завантаження DLC",
@@ -16450,11 +16188,8 @@
         "no_NO": "Åpne en filutforsker for å velge en eller flere mapper som du vil laste inn titteloppdateringer fra",
         "pl_PL": "",
         "pt_BR": "Abra o explorador de arquivos para selecionar uma ou mais pastas e carregar atualizações de jogo em massa.",
-
         "ru_RU": "Открывает проводник, чтобы выбрать одну или несколько папок для массовой загрузки обновлений приложений",
-
         "sv_SE": "Öppna en filutforskare för att välja en eller flera mappar att läsa in alla titeluppdateringar från",
-
         "th_TH": "เปิดตัวสำรวจไฟล์เพื่อเลือกหนึ่งโฟลเดอร์ขึ้นไปเพื่อโหลดไฟล์อัปเดตจำนวนมาก",
         "tr_TR": "",
         "uk_UA": "Відкрийте провідник файлів, щоб вибрати одну або кілька папок для масового завантаження оновлень заголовків",
@@ -17753,11 +17488,8 @@
         "no_NO": "Pakket:",
         "pl_PL": "",
         "pt_BR": "Empacotado:",
-
         "ru_RU": "Бандл:",
-
         "sv_SE": "Bundlad:",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Комплектні:",
@@ -17781,11 +17513,8 @@
         "no_NO": "Delvis",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Частично",
-
         "sv_SE": "Delvis",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Часткові",
@@ -17809,11 +17538,8 @@
         "no_NO": "Ikke trimmet",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Не обрезан",
-
         "sv_SE": "Inte optimerad",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Необрізані",
@@ -17837,11 +17563,8 @@
         "no_NO": "Trimmet",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Обрезан",
-
         "sv_SE": "Optimerad",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Обрізані",
@@ -17865,11 +17588,8 @@
         "no_NO": "(Mislyktes)",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "(Ошибка)",
-
         "sv_SE": "(misslyckades)",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "(Невдача)",
@@ -17893,11 +17613,8 @@
         "no_NO": "Spare {0:n0} Mb",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Сохранить {0:n0} Мб",
-
         "sv_SE": "Spara {0:n0} Mb",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Зберегти {0:n0} Мб",
@@ -17921,11 +17638,8 @@
         "no_NO": "Spart {0:n0} Mb",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Сохранено {0:n0} Мб",
-
         "sv_SE": "Sparade {0:n0} Mb",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Збережено {0:n0} Мб",
@@ -18099,11 +17813,8 @@
         "no_NO": "Dialogboks for kabinett",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Сообщение кабинета",
-
         "sv_SE": "Cabinet-dialog",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -18127,11 +17838,8 @@
         "no_NO": "Skriv inn Amiiboens nye navn",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Введите новое имя вашего Amiibo",
-
         "sv_SE": "Ange nya namnet för din Amiibo",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Вкажіть Ваше нове ім'я Amiibo",
@@ -18155,11 +17863,8 @@
         "no_NO": "Vennligst skann Amiiboene dine nå.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Пожалуйста, отсканируйте свой Amiibo.",
-
         "sv_SE": "Skanna din Amiibo nu.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Будь ласка, проскануйте Ваш Amiibo.",
@@ -19108,11 +18813,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Amiibo",
-
         "sv_SE": "Amiibo",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -19286,11 +18988,8 @@
         "no_NO": "Kontroller og trim XCI-filen",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Проверить и обрезать XCI файл",
-
         "sv_SE": "Kontrollera och optimera XCI-filer",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Перевірити та Обрізати XCI файл",
@@ -19314,11 +19013,8 @@
         "no_NO": "Denne funksjonen kontrollerer først hvor mye plass som er ledig, og trimmer deretter XCI-filen for å spare diskplass.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Эта функция сначала проверит наличие пустого пространства, а затем обрежет файл XCI, чтобы сэкономить место на диске.",
-
         "sv_SE": "Denna funktion kommer först att kontrollera ledigt utrymme och sedan optimera XCI-filen för att spara diskutrymme.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Ця функція спочатку перевірить вільний простір, а потім обрізатиме файл XCI для економії місця на диску.",
@@ -19342,11 +19038,8 @@
         "no_NO": "Nåværende filstørrelse: 0:n MB\nSpilldatastørrelse: {1:n} MB\nDiskplassbesparelse: {2:n} MB",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Размер текущего файла: {0:n} Мб\nРазмер игровых данных: {1:n} MB\nЭкономия дискового пространства: {2:n} Мб",
-
         "sv_SE": "Aktuell filstorlek: {0:n} MB\nStorlek för speldata: {1:n} MB\nSparat diskutrymme: {2:n} MB",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Поточний розмір файла: {0:n} MB\nРозмір файлів гри: {1:n} MB\nЕкономія місця: {2:n} MB",
@@ -19370,11 +19063,8 @@
         "no_NO": "XCI-filen trenger ikke å trimmes. Sjekk loggene for mer informasjon",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Файл XCI не нуждается в обрезке. Проверьте логи для получения более подробной информации",
-
         "sv_SE": "XCI-filen behöver inte optimeras. Kontrollera loggen för mer information",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "XCI файл не потребує обрізання. Перевірте журнали для додаткової інформації",
@@ -19398,11 +19088,8 @@
         "no_NO": "XCI-filen kan ikke trimmes. Sjekk loggene for mer informasjon",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "XCI файл не может быть обрезан. Проверьте логи для получения более подробной информации",
-
         "sv_SE": "XCI-filen kan inte avoptimeras. Kontrollera loggen för mer information",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "XCI файл не може бути обрізаний. Перевірте журнали для додаткової інформації",
@@ -19426,11 +19113,8 @@
         "no_NO": "XCI-filen er skrivebeskyttet og kunne ikke gjøres skrivbar. Sjekk loggene for mer informasjon",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Файл XCI доступен только для чтения и его невозможно сделать доступным для записи. Проверьте логи для получения более подробной информации",
-
         "sv_SE": "XCI-filen är skrivskyddad och kunde inte göras skrivbar. Kontrollera loggen för mer information",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "XCI файл Тільки для Читання і не може бути прочитаним. Перевірте журнали додаткової інформації",
@@ -19454,11 +19138,8 @@
         "no_NO": "XCI File har endret størrelse siden den ble skannet. Kontroller at det ikke skrives til filen, og prøv på nytt.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Файл XCI изменился в размере после сканирования. Проверьте, не производится ли запись в этот файл, и повторите попытку.",
-
         "sv_SE": "XCI-filen har ändrats i storlek sedan den lästes av.  Kontrollera att filen inte skrivs till och försök igen.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Розмір файлу XCI змінився з моменту сканування. Перевірте, чи не записується файл, та спробуйте знову",
@@ -19482,11 +19163,8 @@
         "no_NO": "XCI-filen har data i ledig plass, og det er ikke trygt å trimme den",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "XCI файл содержит данные в пустой зоне, обрезать его небезопасно",
-
         "sv_SE": "XCI-filen har data i det lediga utrymmet. Den är inte säker att optimera",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Файл XCI містить дані в зоні вільного простору, тому обрізка небезпечна",
@@ -19510,11 +19188,8 @@
         "no_NO": "XCI-filen inneholder ugyldige data. Sjekk loggene for ytterligere detaljer",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Файл XCI содержит недопустимые данные. Проверьте логи для получения дополнительной информации",
-
         "sv_SE": "XCI-filen innehåller ogiltig data. Kontrollera loggen för mer information",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "XCI Файл містить недійсні дані. Перевірте журнали для додаткової інформації",
@@ -19538,11 +19213,8 @@
         "no_NO": "XCI-filen kunne ikke åpnes for skriving. Sjekk loggene for ytterligere detaljer",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "XCI файл не удалось открыть для записи. Проверьте логи для получения дополнительной информации",
-
         "sv_SE": "XCI-filen kunde inte öppnas för skrivning. Kontrollera loggen för mer information",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "XCI Файл файл не вдалося відкрити для запису. Перевірте журнали для додаткової інформації",
@@ -19566,11 +19238,8 @@
         "no_NO": "Trimming av XCI-filen mislyktes",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Обрезка файла XCI не удалась",
-
         "sv_SE": "Optimering av XCI-filen misslyckades",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Не вдалося обрізати файл XCI",
@@ -19594,11 +19263,8 @@
         "no_NO": "Operasjonen ble avlyst",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Операция была отменена",
-
         "sv_SE": "Åtgärden avbröts",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Операція перервана",
@@ -19622,11 +19288,8 @@
         "no_NO": "Ingen operasjon ble utført",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Операция не была проведена",
-
         "sv_SE": "Ingen åtgärd genomfördes",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Операція не проводилася",
@@ -19775,11 +19438,8 @@
         "no_NO": "XCI File Trimmer",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Уменьшение размера XCI файлов",
-
         "sv_SE": "Optimera XCI-filer",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Обрізка XCI Файлів",
@@ -19803,11 +19463,8 @@
         "no_NO": "{0} av {1} Valgte tittel(er)",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "{0} из {1} файла(ов) выбрано",
-
         "sv_SE": "{0} av {1} spel markerade",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "{0} з {1} тайтл(ів) обрано",
@@ -19831,11 +19488,8 @@
         "no_NO": "{0} av {1} Tittel(er) valgt ({2} vises)",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "{0} из {1} файла(ов) выбрано ({2} показано)",
-
         "sv_SE": "{0} av {1} spel markerade ({2} visade)",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "{0} з {1} тайтл(ів) обрано ({2} відображається)",
@@ -19859,11 +19513,8 @@
         "no_NO": "Trimming av {0} tittel(er)...",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Обрезка {0} файла(ов)...",
-
         "sv_SE": "Optimerar {0} spel...",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Обрізка {0} тайтл(ів)...",
@@ -19887,11 +19538,8 @@
         "no_NO": "Untrimming {0} Tittel(er)...",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Отмена обрезки {0} файла(ов)...",
-
         "sv_SE": "Avoptimerar {0} spel...",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Необрізаних {0} тайтл(ів)...",
@@ -19915,11 +19563,8 @@
         "no_NO": "Mislyktes",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Ошибка",
-
         "sv_SE": "Misslyckades",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Невдача",
@@ -19943,11 +19588,8 @@
         "no_NO": "Potensielle besparelser",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Потенциально освобождено места",
-
         "sv_SE": "Möjlig besparning",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Потенційна економія",
@@ -19971,11 +19613,8 @@
         "no_NO": "Faktiske besparelser",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Реально освобождено места",
-
         "sv_SE": "Faktisk besparning",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Зекономлено",
@@ -19999,11 +19638,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "{0:n0} Мб",
-
         "sv_SE": "{0:n0} Mb",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "{0:n0} Мб",
@@ -20027,11 +19663,8 @@
         "no_NO": "Velg vist",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Выбрать то что показано",
-
         "sv_SE": "Markera visade",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Вибрати показане",
@@ -20055,11 +19688,8 @@
         "no_NO": "Opphev valg av Vist",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Отменить выбор показанного",
-
         "sv_SE": "Avmarkera visade",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Скасувати вибір показаного",
@@ -20083,11 +19713,8 @@
         "no_NO": "Tittel",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Приложение",
-
         "sv_SE": "Titel",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Заголовок",
@@ -20111,11 +19738,8 @@
         "no_NO": "Plassbesparelser",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Сохранение места на диске",
-
         "sv_SE": "Utrymmesbesparning",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Економія місця",
@@ -20139,11 +19763,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Обрезать",
-
         "sv_SE": "Optimera",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Обрізка",
@@ -20167,11 +19788,8 @@
         "no_NO": "Utrim",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Отмена обрезки",
-
         "sv_SE": "Avoptimera",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Зшивання",
@@ -20195,11 +19813,8 @@
         "no_NO": "{0} ny(e) oppdatering(er) lagt til",
         "pl_PL": "",
         "pt_BR": "{0} nova(s) atualização(ões) adicionada(s)",
-
         "ru_RU": "Добавлено {0} новых обновлений",
-
         "sv_SE": "{0} nya uppdatering(ar) lades till",
-
         "th_TH": "{0} อัพเดตที่เพิ่มมาใหม่",
         "tr_TR": "",
         "uk_UA": "{0} нове оновлення додано",
@@ -20223,11 +19838,8 @@
         "no_NO": "Medfølgende oppdateringer kan ikke fjernes, bare deaktiveres.",
         "pl_PL": "",
         "pt_BR": "Atualizações incorporadas não podem ser removidas, apenas desativadas.",
-
         "ru_RU": "Обновления бандлов не могут быть удалены, только отключены.",
-
         "sv_SE": "Bundlade uppdateringar kan inte tas bort, endast inaktiveras.",
-
         "th_TH": "แพ็คที่อัพเดตมาไม่สามารถลบทิ้งได้ สามารถปิดใช้งานได้เท่านั้น",
         "tr_TR": "",
         "uk_UA": "Вбудовані оновлення не можуть бути видалені, лише вимкнені.",
@@ -20301,11 +19913,8 @@
         "no_NO": "Medfølgende DLC kan ikke fjernes, bare deaktiveres.",
         "pl_PL": "",
         "pt_BR": "DLCs incorporadas não podem ser removidas, apenas desativadas.",
-
         "ru_RU": "DLC бандлов не могут быть удалены, только отключены.",
-
         "sv_SE": "Bundlade DLC kan inte tas bort, endast inaktiveras.",
-
         "th_TH": "แพ็ค DLC ไม่สามารถลบทิ้งได้ สามารถปิดใช้งานได้เท่านั้น",
         "tr_TR": "",
         "uk_UA": "Вбудований DLC не може бути видаленим, лише вимкненим.",
@@ -20329,11 +19938,8 @@
         "no_NO": "{0} Nedlastbare innhold(er)",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "{0} доступных DLC",
-
         "sv_SE": "{0} DLC(er) tillgängliga",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "{0} DLC доступно",
@@ -20357,11 +19963,8 @@
         "no_NO": "{0} nytt nedlastbart innhold lagt til",
         "pl_PL": "",
         "pt_BR": "{0} novo(s) conteúdo(s) para download adicionado(s)",
-
         "ru_RU": "Добавлено {0} новых DLC",
-
         "sv_SE": "{0} nya hämtningsbara innehåll lades till",
-
         "th_TH": "{0} DLC ใหม่ที่เพิ่มเข้ามา",
         "tr_TR": "",
         "uk_UA": "{0} нового завантажувального вмісту додано",
@@ -20385,11 +19988,8 @@
         "no_NO": "{0} nytt nedlastbart innhold lagt til",
         "pl_PL": "",
         "pt_BR": "{0} novo(s) conteúdo(s) para download adicionado(s)",
-
         "ru_RU": "Добавлено {0} новых DLC",
-
         "sv_SE": "{0} nya hämtningsbara innehåll lades till",
-
         "th_TH": "{0} ใหม่ที่เพิ่มเข้ามา",
         "tr_TR": "",
         "uk_UA": "{0} нового завантажувального вмісту додано",
@@ -20413,11 +20013,8 @@
         "no_NO": "{0} manglende nedlastbart innhold fjernet",
         "pl_PL": "",
         "pt_BR": "{0} conteúdo(s) para download ausente(s) removido(s)",
-
         "ru_RU": "{0} отсутствующих DLC удалено",
-
         "sv_SE": "{0} saknade hämtningsbara innehåll togs bort",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "{0} відсутнього завантажувального вмісту видалено",
@@ -20441,11 +20038,8 @@
         "no_NO": "{0} ny(e) oppdatering(er) lagt til",
         "pl_PL": "",
         "pt_BR": "{0} nova(s) atualização(ões) adicionada(s)",
-
         "ru_RU": "{0} новых обновлений добавлено",
-
         "sv_SE": "{0} nya uppdatering(ar) lades till",
-
         "th_TH": "{0} อัพเดตใหม่ที่เพิ่มเข้ามา",
         "tr_TR": "",
         "uk_UA": "{0} нових оновлень додано",
@@ -20469,11 +20063,8 @@
         "no_NO": "{0} manglende oppdatering(er) fjernet",
         "pl_PL": "",
         "pt_BR": "{0} atualização(ões) ausente(s) removida(s)",
-
         "ru_RU": "{0} отсутствующих обновлений удалено",
-
         "sv_SE": "{0} saknade uppdatering(ar) togs bort",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "{0} відсутніх оновлень видалено",
@@ -20547,11 +20138,8 @@
         "no_NO": "Fortsett",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Продолжить",
-
         "sv_SE": "Fortsätt",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Продовжити",
@@ -20925,11 +20513,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Авто",
-
         "sv_SE": "Automatiskt",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -20953,11 +20538,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Использует Vulkan.\nНа Mac с ARM процессорами используется Metal, если игра с ним совместима и хорошо работает.",
-
         "sv_SE": "Använder Vulkan.\nPå en ARM Mac och vid spel som körs bra på den så används Metal-bakänden.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -21806,11 +21388,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "FSR",
-
         "sv_SE": "FSR",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -21834,11 +21413,8 @@
         "no_NO": "Område",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Зональная",
-
         "sv_SE": "Yta",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -22312,11 +21888,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "ldn_mitm",
-
         "sv_SE": "ldn_mitm",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -22340,11 +21913,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "RyuLDN",
-
         "sv_SE": "RyuLDN",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -22368,11 +21938,8 @@
         "no_NO": "Deaktiver P2P-nettverkshosting (kan øke ventetiden)",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Отключить хостинг P2P-сетей (может увеличить задержку)",
-
         "sv_SE": "Inaktivera P2P-nätverkshosting (kan öka latens)",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Вимкнути хостинг P2P мережі (може збільшити затримку)",
@@ -22396,11 +21963,8 @@
         "no_NO": "Deaktiver P2P-nettverkshosting, så vil andre brukere gå via hovedserveren i stedet for å koble seg direkte til deg.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Отключая хостинг P2P-сетей, пользователи будут проксироваться через главный сервер, а не подключаться к вам напрямую.",
-
         "sv_SE": "Inaktivera P2P-nätverkshosting, motparter kommer skickas genom masterservern isället för att ansluta direkt till dig.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Вимкнути хостинг P2P мережі, піри будуть підключатися через майстер-сервер замість прямого з'єднання з вами.",
@@ -22424,11 +21988,8 @@
         "no_NO": "Nettverkspassord:",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Cетевой пароль:",
-
         "sv_SE": "Lösenfras för nätverk:",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Мережевий пароль:",
@@ -22452,11 +22013,8 @@
         "no_NO": "Du vil bare kunne se spill som er arrangert med samme passordfrase som deg.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Вы сможете видеть только те игры, в которых используется тот же пароль, что и у вас.",
-
         "sv_SE": "Du kommer endast kunna se hostade spel med samma lösenfras som du.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Ви зможете бачити лише ті ігри, які мають такий самий пароль, як і у вас.",
@@ -22480,11 +22038,8 @@
         "no_NO": "Skriv inn en passordfrase i formatet Ryujinx-<8 heks tegn>. Du vil bare kunne se spill som er arrangert med samme passordfrase som deg.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Введите пароль в формате Ryujinx-<8 шестнадцатеричных символов>. Вы сможете видеть только те игры, в которых используется тот же пароль, что и у вас.",
-
         "sv_SE": "Ange en lösenfras i formatet Ryujinx-<8 hextecken>. Du kommer endast kunna se hostade spel med samma lösenfras som du.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Введіть пароль у форматі Ryujinx-<8 символів>. Ви зможете бачити лише ті ігри, які мають такий самий пароль, як і у вас.",
@@ -22508,11 +22063,8 @@
         "no_NO": "(offentlig)",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "(публичный)",
-
         "sv_SE": "(publik)",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "(публічний)",
@@ -22536,11 +22088,8 @@
         "no_NO": "Generer tilfeldig",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Сгенерировать рандомно",
-
         "sv_SE": "Generera slumpmässigt",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Згенерувати випадкову",
@@ -22564,11 +22113,8 @@
         "no_NO": "Genererer en ny passordfrase, som kan deles med andre spillere.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Генерирует новый пароль, который можно передать другим игрокам.",
-
         "sv_SE": "Genererar en ny lösenfras som kan delas med andra spelare.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Генерує новий пароль, яким можна поділитися з іншими гравцями.",
@@ -22592,11 +22138,8 @@
         "no_NO": "Slett",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Очистить",
-
         "sv_SE": "Töm",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Очистити",
@@ -22620,11 +22163,8 @@
         "no_NO": "Sletter den gjeldende passordfrasen og går tilbake til det offentlige nettverket.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Очищает текущий пароль, возвращаясь в публичную сеть.",
-
         "sv_SE": "Tömmer aktuell lösenfras och återgår till det publika nätverket.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Очищає поточну пароль, повертаючись до публічної мережі.",
@@ -22648,11 +22188,8 @@
         "no_NO": "Ugyldig passordfrase! Må være i formatet \"Ryujinx-<8 hex tegn>\"",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Неверный пароль! Пароль должен быть в формате \"Ryujinx-<8 шестнадцатеричных символов>\"",
-
         "sv_SE": "Ogiltig lösenfras! Måste vara i formatet \"Ryujinx-<8 hextecken>\"",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Невірний пароль! Має бути в форматі \"Ryujinx-<8 символів>\"",
@@ -22676,11 +22213,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Вертикальная синхронизация:",
-
         "sv_SE": "VSync:",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Вертикальна синхронізація (VSync):",
@@ -22704,11 +22238,8 @@
         "no_NO": "Aktiver egendefinert oppdateringsfrekvens (eksperimentell)",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Включить пользовательскую частоту кадров (Экспериментально)",
-
         "sv_SE": "Aktivera anpassad uppdateringsfrekvens (experimentell)",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Увімкнути користувацьку частоту оновлення (Експериментально)",
@@ -22732,11 +22263,8 @@
         "no_NO": "",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Консоль",
-
         "sv_SE": "Switch",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "",
@@ -22760,11 +22288,8 @@
         "no_NO": "Ubegrenset",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Без ограничений",
-
         "sv_SE": "Obunden",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Безмежна",
@@ -22788,11 +22313,8 @@
         "no_NO": "Egendefinert oppdateringsfrekvens",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Пользовательская частота кадров",
-
         "sv_SE": "Anpassad uppdateringsfrekvens",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Користувацька",
@@ -22816,11 +22338,8 @@
         "no_NO": "Emulert vertikal synkronisering. «Switch» emulerer Switchs oppdateringsfrekvens på 60 Hz. «Ubegrenset» er en ubegrenset oppdateringsfrekvens.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Эмулированная вертикальная синхронизация. 'Консоль' эмулирует частоту обновления консоли, равную 60 Гц. 'Без ограничений' - неограниченная частота кадров.",
-
         "sv_SE": "Emulerad vertikal synk. 'Switch' emulerar Switchens uppdateringsfrekvens på 60Hz. 'Obunden' är en obegränsad uppdateringsfrekvens.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Емульована вертикальна синхронізація. 'Switch' емулює частоту оновлення Switch 60 Гц. 'Безмежна' — частота оновлення не матиме обмежень.",
@@ -22844,11 +22363,8 @@
         "no_NO": "Emulert vertikal synkronisering. «Switch» emulerer Switchs oppdateringsfrekvens på 60 Hz. «Ubegrenset» er en ubegrenset oppdateringsfrekvens. «Egendefinert» emulerer den angitte egendefinerte oppdateringsfrekvensen.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Эмулированная вертикальная синхронизация. 'Консоль' эмулирует частоту обновления консоли, равную 60 Гц. 'Без ограничений' - неограниченная частота кадров. 'Пользовательска частота кадров' эмулирует выбранную пользователем частоту кадров.",
-
         "sv_SE": "Emulerad vertikal synk. 'Switch' emulerar Switchens uppdateringsfrekvens på 60Hz. 'Obunden' är en obegränsad uppdateringsfrekvens. 'Anpassad uppdateringsfrekvens' emulerar den angivna anpassade uppdateringsfrekvensen.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Емульована вертикальна синхронізація. 'Switch' емулює частоту оновлення Switch 60 Гц. 'Безмежна' — частота оновлення не матиме обмежень. 'Користувацька' емулює вказану користувацьку частоту оновлення.",
@@ -22872,11 +22388,8 @@
         "no_NO": "Gjør det mulig for brukeren å angi en emulert oppdateringsfrekvens. I noen titler kan dette øke eller senke hastigheten på spillogikken. I andre titler kan det gjøre det mulig å begrense FPS til et multiplum av oppdateringsfrekvensen, eller føre til uforutsigbar oppførsel. Dette er en eksperimentell funksjon, og det gis ingen garantier for hvordan spillingen påvirkes. \n\nLa AV stå hvis du er usikker.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Позволяет пользователю указать эмулируемую частоту кадров. В некоторых играх это может ускорить или замедлить скорость логики игрового процесса. В других играх это может позволить ограничить FPS на уровне, кратном частоте обновления, или привести к непредсказуемому поведению. Это экспериментальная функция, и нет никаких гарантий того, как она повлияет на игровой процесс. \n\nОставьте выключенным, если не уверены.",
-
         "sv_SE": "Låter användaren ange en emulerad uppdateringsfrekvens. För vissa spel så kan detta snabba upp eller ner frekvensen för spellogiken. I andra spel så kan detta tillåta att bildfrekvensen kapas för delar av uppdateringsfrekvensen eller leda till oväntat beteende. Detta är en experimentell funktion utan några garantier för hur spelet påverkas. \n\nLämna AV om du är osäker.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Дозволяє користувачу вказати емульовану частоту оновлення. У деяких іграх це може прискорити або сповільнити логіку гри. У інших іграх це може дозволити обмежити FPS на певні кратні частоти оновлення або призвести до непередбачуваної поведінки. Це експериментальна функція, без гарантій того, як це вплине на ігровий процес. \n\nЗалиште ВИМКНЕНИМ, якщо не впевнені.",
@@ -22900,11 +22413,8 @@
         "no_NO": "Den egendefinerte målverdien for oppdateringsfrekvens.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Заданное значение частоты кадров",
-
         "sv_SE": "Målvärde för anpassad uppdateringsfrekvens.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Цільове значення користувацької частоти оновлення.",
@@ -22928,11 +22438,8 @@
         "no_NO": "Den egendefinerte oppdateringsfrekvensen, i prosent av den normale oppdateringsfrekvensen for Switch-konsollen.",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Пользовательская частота кадров в процентах от обычной частоты обновления на консоли.",
-
         "sv_SE": "Anpassad uppdateringsfrekvens, som en procentdel av den normala uppdateringsfrekvensen för Switch.",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Користувацька частота оновлення, як відсоток від стандартної частоти оновлення Switch.",
@@ -22956,11 +22463,8 @@
         "no_NO": "Egendefinert oppdateringsfrekvens %:",
         "pl_PL": "",
         "pt_BR": "",
-
         "ru_RU": "Пользовательская частота кадров %:",
-
         "sv_SE": "Anpassad uppdateringsfrekvens %:",
-
         "th_TH": "",
         "tr_TR": "",
         "uk_UA": "Користувацька частота оновлення %:",
