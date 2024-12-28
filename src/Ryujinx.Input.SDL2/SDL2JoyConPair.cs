@@ -61,7 +61,7 @@ namespace Ryujinx.Input.SDL2
             return inputId switch
             {
                 StickInputId.Left => left.GetStick(StickInputId.Left),
-                StickInputId.Right => right.GetStick(StickInputId.Left),
+                StickInputId.Right => right.GetStick(StickInputId.Right),
                 _ => (0, 0)
             };
         }
