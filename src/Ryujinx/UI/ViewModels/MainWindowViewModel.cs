@@ -9,6 +9,7 @@ using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
 using FluentAvalonia.UI.Controls;
+using Gommon;
 using LibHac.Common;
 using LibHac.Ns;
 using Ryujinx.Ava.Common;
@@ -124,14 +125,15 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public ApplicationData ListSelectedApplication;
         public ApplicationData GridSelectedApplication;
-
-        public IEnumerable<LdnGameData> LastLdnGameData;
+        
+        // Key is Title ID
+        public SafeDictionary<string, LdnGameData.Array> LdnData = [];
 
         // The UI specifically uses a thicker bordered variant of the icon to avoid crunching out the border at lower resolutions.
         // For an example of this, download canary 1.2.95, then open the settings menu, and look at the icon in the top-left.
         // The border gets reduced to colored pixels in the 4 corners.
         public static readonly Bitmap IconBitmap =
-            new(Assembly.GetAssembly(typeof(ConfigurationState))!.GetManifestResourceStream("Ryujinx.UI.Common.Resources.Logo_Thiccjinx.png")!);
+            new(Assembly.GetAssembly(typeof(ConfigurationState))!.GetManifestResourceStream("Ryujinx.UI.Common.Resources.Logo_Ryujinx_AntiAlias.png")!);
 
         public MainWindow Window { get; init; }
 
@@ -1938,7 +1940,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
             PrepareLoadScreen();
 
-            RendererHostControl = new RendererHost();
+            RendererHostControl = new RendererHost(application.Id.ToString("X16"));
 
             AppHost = new AppHost(
                 RendererHostControl,
@@ -2051,7 +2053,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                Title = App.FormatTitle();
+                Title = RyujinxApp.FormatTitle();
             });
         }
 

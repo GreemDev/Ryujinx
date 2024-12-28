@@ -16,7 +16,7 @@ namespace Ryujinx.Ava.UI.Windows
 
             InitializeComponent();
 
-            Title = App.FormatTitle(LocaleKeys.Amiibo);
+            Title = RyujinxApp.FormatTitle(LocaleKeys.Amiibo);
         }
 
         public AmiiboWindow()
@@ -27,7 +27,7 @@ namespace Ryujinx.Ava.UI.Windows
 
             if (Program.PreviewerDetached)
             {
-                Title = App.FormatTitle(LocaleKeys.Amiibo);
+                Title = RyujinxApp.FormatTitle(LocaleKeys.Amiibo);
             }
         }
 

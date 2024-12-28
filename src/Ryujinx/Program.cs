@@ -14,6 +14,7 @@ using Ryujinx.Common.GraphicsDriver;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.SystemInterop;
 using Ryujinx.Graphics.Vulkan.MoltenVK;
+using Ryujinx.Headless;
 using Ryujinx.SDL2.Common;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common;
@@ -52,9 +53,15 @@ namespace Ryujinx.Ava
             }
 
             PreviewerDetached = true;
+            
+            if (args.Length > 0 && args[0] is "--no-gui" or "nogui")
+            {
+                HeadlessRyujinx.Entrypoint(args[1..]);
+                return 0;
+            }
 
             Initialize(args);
-
+            
             LoggerAdapter.Register();
 
             IconProvider.Current
@@ -65,7 +72,7 @@ namespace Ryujinx.Ava
         }
 
         public static AppBuilder BuildAvaloniaApp() =>
-            AppBuilder.Configure<App>()
+            AppBuilder.Configure<RyujinxApp>()
                 .UsePlatformDetect()
                 .With(new X11PlatformOptions
                 {
@@ -100,13 +107,13 @@ namespace Ryujinx.Ava
             // Delete backup files after updating.
             Task.Run(Updater.CleanupUpdate);
 
-            Console.Title = $"{App.FullAppName} Console {Version}";
+            Console.Title = $"{RyujinxApp.FullAppName} Console {Version}";
 
             // Hook unhandled exception and process exit events.
             AppDomain.CurrentDomain.UnhandledException += (sender, e)
                 => ProcessUnhandledException(sender, e.ExceptionObject as Exception, e.IsTerminating);
             AppDomain.CurrentDomain.ProcessExit += (_, _) => Exit();
-
+            
             // Setup base data directory.
             AppDataManager.Initialize(CommandLineState.BaseDirPathArg);
 
@@ -198,6 +205,7 @@ namespace Ryujinx.Ava
                 {
                     "opengl" => GraphicsBackend.OpenGl,
                     "vulkan" => GraphicsBackend.Vulkan,
+                    "metal" => GraphicsBackend.Metal,
                     _ => ConfigurationState.Instance.Graphics.GraphicsBackend
                 };
 
@@ -222,9 +230,9 @@ namespace Ryujinx.Ava
                 UseHardwareAcceleration = CommandLineState.OverrideHardwareAcceleration.Value;
         }
 
-        private static void PrintSystemInfo()
+        internal static void PrintSystemInfo()
         {
-            Logger.Notice.Print(LogClass.Application, $"{App.FullAppName} Version: {Version}");
+            Logger.Notice.Print(LogClass.Application, $"{RyujinxApp.FullAppName} Version: {Version}");
             SystemInfo.Gather().Print();
 
             var enabledLogLevels = Logger.GetEnabledLevels().ToArray();
@@ -239,7 +247,7 @@ namespace Ryujinx.Ava
                     : $"Launch Mode: {AppDataManager.Mode}");
         }
 
-        private static void ProcessUnhandledException(object sender, Exception ex, bool isTerminating)
+        internal static void ProcessUnhandledException(object sender, Exception ex, bool isTerminating)
         {
             Logger.Log log = Logger.Error ?? Logger.Notice;
             string message = $"Unhandled exception caught: {ex}";
@@ -254,7 +262,7 @@ namespace Ryujinx.Ava
                 Exit();
         }
 
-        public static void Exit()
+        internal static void Exit()
         {
             DiscordIntegrationModule.Exit();
 

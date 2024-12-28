@@ -71,8 +71,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             {
                 _resolutionScale = value;
 
-                OnPropertyChanged(nameof(CustomResolutionScale));
-                OnPropertyChanged(nameof(IsCustomResolutionScaleActive));
+                OnPropertiesChanged(nameof(CustomResolutionScale), nameof(IsCustomResolutionScaleActive));
             }
         }
 
@@ -122,7 +121,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public bool IsOpenGLAvailable => !OperatingSystem.IsMacOS();
 
-        public bool IsHypervisorAvailable => OperatingSystem.IsMacOS() && RuntimeInformation.ProcessArchitecture == Architecture.Arm64;
+        public bool IsAppleSiliconMac => OperatingSystem.IsMacOS() && RuntimeInformation.ProcessArchitecture == Architecture.Arm64;
 
         public bool GameDirectoryChanged
         {
@@ -181,8 +180,9 @@ namespace Ryujinx.Ava.UI.ViewModels
                 int newInterval = (int)((value / 100f) * 60);
                 _customVSyncInterval = newInterval;
                 _customVSyncIntervalPercentageProxy = value;
-                OnPropertyChanged((nameof(CustomVSyncInterval)));
-                OnPropertyChanged((nameof(CustomVSyncIntervalPercentageText)));
+                OnPropertiesChanged(
+                    nameof(CustomVSyncInterval), 
+                    nameof(CustomVSyncIntervalPercentageText));
             }
         }
 
@@ -190,7 +190,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         {
             get
             {
-                string text = CustomVSyncIntervalPercentageProxy.ToString() + "%";
+                string text = CustomVSyncIntervalPercentageProxy + "%";
                 return text;
             }
         }
@@ -221,8 +221,9 @@ namespace Ryujinx.Ava.UI.ViewModels
                 _customVSyncInterval = value;
                 int newPercent = (int)((value / 60f) * 100);
                 _customVSyncIntervalPercentageProxy = newPercent;
-                OnPropertyChanged(nameof(CustomVSyncIntervalPercentageProxy));
-                OnPropertyChanged(nameof(CustomVSyncIntervalPercentageText));
+                OnPropertiesChanged(
+                    nameof(CustomVSyncIntervalPercentageProxy), 
+                    nameof(CustomVSyncIntervalPercentageText));
                 OnPropertyChanged();
             }
         }
@@ -252,7 +253,8 @@ namespace Ryujinx.Ava.UI.ViewModels
         public bool IsCustomResolutionScaleActive => _resolutionScale == 4;
         public bool IsScalingFilterActive => _scalingFilter == (int)Ryujinx.Common.Configuration.ScalingFilter.Fsr;
 
-        public bool IsVulkanSelected => GraphicsBackendIndex == 0;
+        public bool IsVulkanSelected =>
+            GraphicsBackendIndex == 1 || (GraphicsBackendIndex == 0 && !OperatingSystem.IsMacOS());
         public bool UseHypervisor { get; set; }
         public bool DisableP2P { get; set; }
 
@@ -432,7 +434,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             if (devices.Length == 0)
             {
                 IsVulkanAvailable = false;
-                GraphicsBackendIndex = 1;
+                GraphicsBackendIndex = 2;
             }
             else
             {
@@ -748,7 +750,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             config.ToFileFormat().SaveConfig(Program.ConfigurationPath);
 
             MainWindow.UpdateGraphicsConfig();
-            MainWindow.MainWindowViewModel.VSyncModeSettingChanged();
+            RyujinxApp.MainWindow.ViewModel.VSyncModeSettingChanged();
 
             SaveSettingsEvent?.Invoke();
 

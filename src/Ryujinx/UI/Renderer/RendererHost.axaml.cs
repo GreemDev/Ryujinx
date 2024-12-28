@@ -1,8 +1,12 @@
 using Avalonia;
 using Avalonia.Controls;
+using Gommon;
+using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
+using Ryujinx.Common.Logging;
 using Ryujinx.UI.Common.Configuration;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Ryujinx.Ava.UI.Renderer
 {
@@ -17,18 +21,57 @@ namespace Ryujinx.Ava.UI.Renderer
         {
             InitializeComponent();
 
-            if (ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.OpenGl)
+            EmbeddedWindow = ConfigurationState.Instance.Graphics.GraphicsBackend.Value switch
             {
-                EmbeddedWindow = new EmbeddedWindowOpenGL();
-            }
-            else
-            {
-                EmbeddedWindow = new EmbeddedWindowVulkan();
-            }
+                GraphicsBackend.OpenGl => new EmbeddedWindowOpenGL(),
+                GraphicsBackend.Metal => new EmbeddedWindowMetal(),
+                GraphicsBackend.Vulkan or GraphicsBackend.Auto => new EmbeddedWindowVulkan(),
+                _ => throw new NotSupportedException()
+            };
 
             Initialize();
         }
 
+        public GraphicsBackend Backend =>
+            EmbeddedWindow switch
+            {
+                EmbeddedWindowVulkan => GraphicsBackend.Vulkan,
+                EmbeddedWindowOpenGL => GraphicsBackend.OpenGl,
+                EmbeddedWindowMetal => GraphicsBackend.Metal,
+                _ => throw new NotImplementedException()
+            };
+
+        public RendererHost(string titleId)
+        {
+            InitializeComponent();
+
+            switch (TitleIDs.SelectGraphicsBackend(titleId, ConfigurationState.Instance.Graphics.GraphicsBackend))
+            {
+                case GraphicsBackend.OpenGl:
+                    EmbeddedWindow = new EmbeddedWindowOpenGL();
+                    break;
+                case GraphicsBackend.Metal:
+                    EmbeddedWindow = new EmbeddedWindowMetal();
+                    break;
+                case GraphicsBackend.Vulkan: 
+                    EmbeddedWindow = new EmbeddedWindowVulkan(); 
+                    break;
+            }
+            
+            string backendText = EmbeddedWindow switch
+            {
+                EmbeddedWindowVulkan => "Vulkan",
+                EmbeddedWindowOpenGL => "OpenGL",
+                EmbeddedWindowMetal => "Metal",
+                _ => throw new NotImplementedException()
+            };
+                    
+            Logger.Info?.PrintMsg(LogClass.Gpu, $"Backend ({ConfigurationState.Instance.Graphics.GraphicsBackend.Value}): {backendText}");
+
+            Initialize();
+        }
+        
+        
         private void Initialize()
         {
             EmbeddedWindow.WindowCreated += CurrentWindow_WindowCreated;
