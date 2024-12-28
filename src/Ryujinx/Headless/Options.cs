@@ -1,13 +1,168 @@
 using CommandLine;
+using Gommon;
 using Ryujinx.Common.Configuration;
+using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.HLE;
+using Ryujinx.HLE.HOS.Services.Account.Acc;
 using Ryujinx.HLE.HOS.SystemState;
+using Ryujinx.UI.Common.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
-namespace Ryujinx.Headless.SDL2
+namespace Ryujinx.Headless
 {
     public class Options
     {
+        public void InheritMainConfig(string[] originalArgs, ConfigurationState configurationState, out bool needsProfileSet)
+        {
+            needsProfileSet = NeedsOverride(nameof(UserProfile));
+
+            if (NeedsOverride(nameof(IsFullscreen)))
+                IsFullscreen = configurationState.UI.StartFullscreen;
+
+            if (NeedsOverride(nameof(EnableKeyboard)))
+                EnableKeyboard = configurationState.Hid.EnableKeyboard;
+            
+            if (NeedsOverride(nameof(EnableMouse)))
+                EnableMouse = configurationState.Hid.EnableMouse;
+
+            if (NeedsOverride(nameof(HideCursorMode)))
+                HideCursorMode = configurationState.HideCursor;
+
+            if (NeedsOverride(nameof(DisablePTC)))
+                DisablePTC = !configurationState.System.EnablePtc;
+
+            if (NeedsOverride(nameof(EnableInternetAccess)))
+                EnableInternetAccess = configurationState.System.EnableInternetAccess;
+
+            if (NeedsOverride(nameof(DisableFsIntegrityChecks)))
+                DisableFsIntegrityChecks = configurationState.System.EnableFsIntegrityChecks;
+            
+            if (NeedsOverride(nameof(FsGlobalAccessLogMode)))
+                FsGlobalAccessLogMode = configurationState.System.FsGlobalAccessLogMode;
+            
+            if (NeedsOverride(nameof(VSyncMode)))
+                VSyncMode = configurationState.Graphics.VSyncMode;
+            
+            if (NeedsOverride(nameof(CustomVSyncInterval)))
+                CustomVSyncInterval = configurationState.Graphics.CustomVSyncInterval;
+            
+            if (NeedsOverride(nameof(DisableShaderCache)))
+                DisableShaderCache = !configurationState.Graphics.EnableShaderCache;
+
+            if (NeedsOverride(nameof(EnableTextureRecompression)))
+                EnableTextureRecompression = configurationState.Graphics.EnableTextureRecompression;
+            
+            if (NeedsOverride(nameof(DisableDockedMode)))
+                DisableDockedMode = !configurationState.System.EnableDockedMode;
+
+            if (NeedsOverride(nameof(SystemLanguage)))
+                SystemLanguage = (SystemLanguage)(int)configurationState.System.Language.Value;
+            
+            if (NeedsOverride(nameof(SystemRegion)))
+                SystemRegion = (RegionCode)(int)configurationState.System.Region.Value;
+            
+            if (NeedsOverride(nameof(SystemTimeZone)))
+                SystemTimeZone = configurationState.System.TimeZone;
+            
+            if (NeedsOverride(nameof(SystemTimeOffset)))
+                SystemTimeOffset = configurationState.System.SystemTimeOffset;
+            
+            if (NeedsOverride(nameof(MemoryManagerMode)))
+                MemoryManagerMode = configurationState.System.MemoryManagerMode;
+            
+            if (NeedsOverride(nameof(AudioVolume)))
+                AudioVolume = configurationState.System.AudioVolume;
+
+            if (NeedsOverride(nameof(UseHypervisor)) && OperatingSystem.IsMacOS())
+                UseHypervisor = configurationState.System.UseHypervisor;
+
+            if (NeedsOverride(nameof(MultiplayerLanInterfaceId)))
+                MultiplayerLanInterfaceId = configurationState.Multiplayer.LanInterfaceId;
+            
+            if (NeedsOverride(nameof(DisableFileLog)))
+                DisableFileLog = !configurationState.Logger.EnableFileLog;
+            
+            if (NeedsOverride(nameof(LoggingEnableDebug)))
+                LoggingEnableDebug = configurationState.Logger.EnableDebug;
+            
+            if (NeedsOverride(nameof(LoggingDisableStub)))
+                LoggingDisableStub = !configurationState.Logger.EnableStub;
+            
+            if (NeedsOverride(nameof(LoggingDisableInfo)))
+                LoggingDisableInfo = !configurationState.Logger.EnableInfo;
+            
+            if (NeedsOverride(nameof(LoggingDisableWarning)))
+                LoggingDisableWarning = !configurationState.Logger.EnableWarn;
+            
+            if (NeedsOverride(nameof(LoggingDisableError)))
+                LoggingDisableError = !configurationState.Logger.EnableError;
+            
+            if (NeedsOverride(nameof(LoggingEnableTrace)))
+                LoggingEnableTrace = configurationState.Logger.EnableTrace;
+            
+            if (NeedsOverride(nameof(LoggingDisableGuest)))
+                LoggingDisableGuest = !configurationState.Logger.EnableGuest;
+
+            if (NeedsOverride(nameof(LoggingEnableFsAccessLog)))
+                LoggingEnableFsAccessLog = configurationState.Logger.EnableFsAccessLog;
+
+            if (NeedsOverride(nameof(LoggingGraphicsDebugLevel)))
+                LoggingGraphicsDebugLevel = configurationState.Logger.GraphicsDebugLevel;
+
+            if (NeedsOverride(nameof(ResScale)))
+                ResScale = configurationState.Graphics.ResScale;
+            
+            if (NeedsOverride(nameof(MaxAnisotropy)))
+                MaxAnisotropy = configurationState.Graphics.MaxAnisotropy;
+            
+            if (NeedsOverride(nameof(AspectRatio)))
+                AspectRatio = configurationState.Graphics.AspectRatio;
+            
+            if (NeedsOverride(nameof(BackendThreading)))
+                BackendThreading = configurationState.Graphics.BackendThreading;
+            
+            if (NeedsOverride(nameof(DisableMacroHLE)))
+                DisableMacroHLE = !configurationState.Graphics.EnableMacroHLE;
+            
+            if (NeedsOverride(nameof(GraphicsShadersDumpPath)))
+                GraphicsShadersDumpPath = configurationState.Graphics.ShadersDumpPath;
+            
+            if (NeedsOverride(nameof(GraphicsBackend)))
+                GraphicsBackend = configurationState.Graphics.GraphicsBackend;
+            
+            if (NeedsOverride(nameof(AntiAliasing)))
+                AntiAliasing = configurationState.Graphics.AntiAliasing;
+            
+            if (NeedsOverride(nameof(ScalingFilter)))
+                ScalingFilter = configurationState.Graphics.ScalingFilter;
+            
+            if (NeedsOverride(nameof(ScalingFilterLevel)))
+                ScalingFilterLevel = configurationState.Graphics.ScalingFilterLevel;
+
+            if (NeedsOverride(nameof(DramSize)))
+                DramSize = configurationState.System.DramSize;
+            
+            if (NeedsOverride(nameof(IgnoreMissingServices)))
+                IgnoreMissingServices = configurationState.System.IgnoreMissingServices;
+            
+            if (NeedsOverride(nameof(IgnoreControllerApplet)))
+                IgnoreControllerApplet = configurationState.IgnoreApplet;
+            
+            return;
+            
+            bool NeedsOverride(string argKey) => originalArgs.None(arg => arg.TrimStart('-').EqualsIgnoreCase(OptionName(argKey)));
+
+            string OptionName(string propertyName) =>
+                typeof(Options)!.GetProperty(propertyName)!.GetCustomAttribute<OptionAttribute>()!.LongName;
+        }
+        
         // General
+        
+        [Option("use-main-config", Required = false, Default = false, HelpText = "Use the settings from what was configured via the UI.")]
+        public bool InheritConfig { get; set; }
 
         [Option("root-data-dir", Required = false, HelpText = "Set the custom folder path for Ryujinx data.")]
         public string BaseDataDir { get; set; }
@@ -95,10 +250,10 @@ namespace Ryujinx.Headless.SDL2
         [Option("hide-cursor", Required = false, Default = HideCursorMode.OnIdle, HelpText = "Change when the cursor gets hidden.")]
         public HideCursorMode HideCursorMode { get; set; }
 
-        [Option("list-input-profiles", Required = false, HelpText = "List inputs profiles.")]
+        [Option("list-input-profiles", Required = false, HelpText = "List input profiles.")]
         public bool ListInputProfiles { get; set; }
 
-        [Option("list-inputs-ids", Required = false, HelpText = "List inputs ids.")]
+        [Option("list-input-ids", Required = false, HelpText = "List input IDs.")]
         public bool ListInputIds { get; set; }
 
         // System
@@ -172,7 +327,7 @@ namespace Ryujinx.Headless.SDL2
         public bool LoggingDisableWarning { get; set; }
 
         [Option("disable-error-logs", Required = false, HelpText = "Disables printing error log messages.")]
-        public bool LoggingEnableError { get; set; }
+        public bool LoggingDisableError { get; set; }
 
         [Option("enable-trace-logs", Required = false, Default = false, HelpText = "Enables printing trace log messages.")]
         public bool LoggingEnableTrace { get; set; }
@@ -215,7 +370,7 @@ namespace Ryujinx.Headless.SDL2
         [Option("anti-aliasing", Required = false, Default = AntiAliasing.None, HelpText = "Set the type of anti aliasing being used. [None|Fxaa|SmaaLow|SmaaMedium|SmaaHigh|SmaaUltra]")]
         public AntiAliasing AntiAliasing { get; set; }
 
-        [Option("scaling-filter", Required = false, Default = ScalingFilter.Bilinear, HelpText = "Set the scaling filter. [Bilinear|Nearest|Fsr]")]
+        [Option("scaling-filter", Required = false, Default = ScalingFilter.Bilinear, HelpText = "Set the scaling filter. [Bilinear|Nearest|Fsr|Area]")]
         public ScalingFilter ScalingFilter { get; set; }
 
         [Option("scaling-filter-level", Required = false, Default = 0, HelpText = "Set the scaling filter intensity (currently only applies to FSR). [0-100]")]

@@ -2,7 +2,7 @@ using Ryujinx.HLE.UI;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ryujinx.Headless.SDL2
+namespace Ryujinx.Headless
 {
     /// <summary>
     /// Headless text processing class, right now there is no way to forward the input to it.

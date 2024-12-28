@@ -132,7 +132,7 @@ namespace Ryujinx.UI.Common.Helper
 
                 if (uninstall)
                 {
-                    // If the types don't already exist, there's nothing to do and we can call this operation successful.
+                    // If the types don't already exist, there's nothing to do, and we can call this operation successful.
                     if (!AreMimeTypesRegisteredWindows())
                     {
                         return true;
