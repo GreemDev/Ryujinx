@@ -33,8 +33,11 @@ namespace Ryujinx.Ava
             .ApplicationLifetime.Cast<IClassicDesktopStyleApplicationLifetime>()
             .MainWindow.Cast<MainWindow>();
 
-        public static bool IsClipboardAvailable(out IClipboard clipboard) 
-            => (clipboard = MainWindow.Clipboard) != null;
+        public static bool IsClipboardAvailable(out IClipboard clipboard)
+        {
+            clipboard = MainWindow.Clipboard;
+            return clipboard != null;
+        }
 
         public static void SetTaskbarProgress(TaskBarProgressBarState state) => MainWindow.PlatformFeatures.SetTaskBarProgressBarState(state);
         public static void SetTaskbarProgressValue(ulong current, ulong total) => MainWindow.PlatformFeatures.SetTaskBarProgressBarValue(current, total);

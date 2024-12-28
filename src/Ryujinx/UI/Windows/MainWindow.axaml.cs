@@ -171,9 +171,12 @@ namespace Ryujinx.Ava.UI.Windows
                 ViewModel.LdnData.Clear();
                 foreach (var application in ViewModel.Applications)
                 {
-                    ViewModel.LdnData[application.IdString] = new LdnGameDataArray(
-                        ldnGameDataArray,
-                        ref application.ControlHolder.Value
+                    ref var controlHolder = ref application.ControlHolder.Value;
+                    
+                    ViewModel.LdnData[application.IdString] = 
+                        LdnGameData.GetArrayForApp(
+                            ldnGameDataArray, 
+                            ref controlHolder
                         );
 
                     UpdateApplicationWithLdnData(application);

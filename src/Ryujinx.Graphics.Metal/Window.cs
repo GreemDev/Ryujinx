@@ -18,7 +18,7 @@ namespace Ryujinx.Graphics.Metal
         public bool ScreenCaptureRequested { get; set; }
 
         private readonly MetalRenderer _renderer;
-        private readonly CAMetalLayer _metalLayer;
+        private CAMetalLayer _metalLayer;
 
         private int _width;
         private int _height;
@@ -146,11 +146,11 @@ namespace Ryujinx.Graphics.Metal
         {
             switch (vSyncMode)
             {
-                case VSyncMode.Unbounded: 
-                    _metalLayer.SetDisplaySyncEnabled(false);
+                case VSyncMode.Unbounded:
+                    _metalLayer.DisplaySyncEnabled = false;
                     break;
                 case VSyncMode.Switch:
-                    _metalLayer.SetDisplaySyncEnabled(true);
+                    _metalLayer.DisplaySyncEnabled = true;
                     break;
             }
         }
