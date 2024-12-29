@@ -1,6 +1,7 @@
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using Gommon;
 using LibHac.Tools.FsSystem;
 using Ryujinx.Audio.Backends.OpenAL;
 using Ryujinx.Audio.Backends.SDL2;
@@ -796,7 +797,17 @@ namespace Ryujinx.Ava.UI.ViewModels
             CloseWindow?.Invoke();
         }
 
-        public static string Xc2MenuFixTooltip =>
-            "From the issue on GitHub:\n\nWhen clicking very fast from game main menu to 2nd submenu, there is a low chance that the game will softlock, the submenu won't show up, while background music is still there.";
+        public static string Xc2MenuFixTooltip { get; } = Lambda.String(sb =>
+        {
+            sb.AppendLine(
+                "This fix applies a 2ms delay (via 'Thread.Sleep(2)') every time the game tries to read data from the emulated Switch filesystem.")
+                .AppendLine();
+            
+            sb.AppendLine("From the issue on GitHub:").AppendLine();
+            sb.Append(
+                "When clicking very fast from game main menu to 2nd submenu, " +
+                "there is a low chance that the game will softlock, " +
+                "the submenu won't show up, while background music is still there.");
+        });
     }
 }
