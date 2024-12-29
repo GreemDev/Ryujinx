@@ -48,12 +48,6 @@ namespace Ryujinx.Graphics.Gpu
         public static bool EnableMacroHLE = true;
 
         /// <summary>
-        /// Title id of the current running game.
-        /// Used by the shader cache.
-        /// </summary>
-        public static string TitleId;
-
-        /// <summary>
         /// Enables or disables the shader cache.
         /// </summary>
         public static bool EnableShaderCache;

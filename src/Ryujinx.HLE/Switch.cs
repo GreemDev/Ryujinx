@@ -37,6 +37,8 @@ namespace Ryujinx.HLE
 
         public bool IsFrameAvailable => Gpu.Window.IsFrameAvailable;
 
+        public DirtyHacks DirtyHacks { get; }
+
         public Switch(HLEConfiguration configuration)
         {
             ArgumentNullException.ThrowIfNull(configuration.GpuRenderer);
@@ -72,6 +74,7 @@ namespace Ryujinx.HLE
             System.EnablePtc                        = Configuration.EnablePtc;
             System.FsIntegrityCheckLevel            = Configuration.FsIntegrityCheckLevel;
             System.GlobalAccessLogMode              = Configuration.FsGlobalAccessLogMode;
+            DirtyHacks                              = Configuration.Hacks;
             UpdateVSyncInterval();
 #pragma warning restore IDE0055
         }

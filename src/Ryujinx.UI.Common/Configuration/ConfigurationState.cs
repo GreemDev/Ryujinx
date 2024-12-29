@@ -138,6 +138,8 @@ namespace Ryujinx.UI.Common.Configuration
                 MultiplayerDisableP2p = Multiplayer.DisableP2p,
                 MultiplayerLdnPassphrase = Multiplayer.LdnPassphrase,
                 LdnServer = Multiplayer.LdnServer,
+                ShowDirtyHacks = Hacks.ShowDirtyHacks,
+                EnabledDirtyHacks = (int)Hacks.EnabledHacks,
             };
 
             return configurationFile;

@@ -6,6 +6,7 @@ using LibHac.Ns;
 using LibHac.Tools.Fs;
 using LibHac.Tools.FsSystem;
 using LibHac.Tools.FsSystem.NcaUtils;
+using Ryujinx.Common;
 using Ryujinx.Common.Logging;
 using Ryujinx.HLE.Loaders.Executables;
 using Ryujinx.HLE.Loaders.Processes.Extensions;
@@ -204,7 +205,7 @@ namespace Ryujinx.HLE.Loaders.Processes
             }
 
             // Explicitly null TitleId to disable the shader cache.
-            Graphics.Gpu.GraphicsConfig.TitleId = null;
+            TitleIDs.CurrentApplication = default;
             _device.Gpu.HostInitalized.Set();
 
             ProcessResult processResult = ProcessLoaderHelper.LoadNsos(_device,

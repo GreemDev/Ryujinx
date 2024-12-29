@@ -8,6 +8,8 @@ namespace Ryujinx.Common
 {
     public static class TitleIDs
     {
+        public static Optional<string> CurrentApplication;
+        
         public static GraphicsBackend SelectGraphicsBackend(string titleId, GraphicsBackend currentBackend)
         {
             switch (currentBackend)
