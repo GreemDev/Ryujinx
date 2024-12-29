@@ -45,13 +45,13 @@ namespace Ryujinx.UI.Common
             };
 
             ConfigurationState.Instance.EnableDiscordIntegration.Event += Update;
-            TitleIDs.CurrentApplicationChanged += titleId =>
+            TitleIDs.CurrentApplication.Event += (_, e) =>
             {
-                if (titleId)
+                if (e.NewValue)
                     SwitchToPlayingState(
-                        ApplicationLibrary.LoadAndSaveMetaData(titleId),
+                        ApplicationLibrary.LoadAndSaveMetaData(e.NewValue),
                         Switch.Shared.Processes.ActiveApplication
-                        );
+                    );
                 else 
                     SwitchToMainState();
             };
