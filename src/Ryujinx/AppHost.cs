@@ -578,7 +578,6 @@ namespace Ryujinx.Ava
         public void Stop()
         {
             _isActive = false;
-            DiscordIntegrationModule.SwitchToMainState();
         }
 
         private void Exit()
@@ -862,12 +861,10 @@ namespace Ryujinx.Ava
 
                 return false;
             }
-
-            ApplicationMetadata appMeta = ApplicationLibrary.LoadAndSaveMetaData(Device.Processes.ActiveApplication.ProgramIdText,
+            
+            ApplicationLibrary.LoadAndSaveMetaData(Device.Processes.ActiveApplication.ProgramIdText,
                 appMetadata => appMetadata.UpdatePreGame()
             );
-
-            DiscordIntegrationModule.SwitchToPlayingState(appMeta, Device.Processes.ActiveApplication);
 
             return true;
         }

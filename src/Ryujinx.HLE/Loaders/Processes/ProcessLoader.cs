@@ -61,6 +61,8 @@ namespace Ryujinx.HLE.Loaders.Processes
                 {
                     _latestPid = processResult.ProcessId;
 
+                    TitleIDs.CurrentApplication = processResult.ProgramIdText;
+
                     return true;
                 }
             }
@@ -87,6 +89,8 @@ namespace Ryujinx.HLE.Loaders.Processes
                 if (processResult.Start(_device))
                 {
                     _latestPid = processResult.ProcessId;
+
+                    TitleIDs.CurrentApplication = processResult.ProgramIdText;
 
                     return true;
                 }
@@ -115,6 +119,8 @@ namespace Ryujinx.HLE.Loaders.Processes
                     if (processResult.ProgramId > 0x01000000000007FF)
                     {
                         _latestPid = processResult.ProcessId;
+
+                        TitleIDs.CurrentApplication = processResult.ProgramIdText;
                     }
 
                     return true;
@@ -133,6 +139,8 @@ namespace Ryujinx.HLE.Loaders.Processes
                 if (processResult.Start(_device))
                 {
                     _latestPid = processResult.ProcessId;
+
+                    TitleIDs.CurrentApplication = processResult.ProgramIdText;
 
                     return true;
                 }

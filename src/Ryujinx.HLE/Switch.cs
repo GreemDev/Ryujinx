@@ -2,6 +2,7 @@ using LibHac.Common;
 using LibHac.Ns;
 using Ryujinx.Audio.Backends.CompatLayer;
 using Ryujinx.Audio.Integration;
+using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Graphics.Gpu;
 using Ryujinx.HLE.FileSystem;
@@ -17,6 +18,8 @@ namespace Ryujinx.HLE
 {
     public class Switch : IDisposable
     {
+        public static Switch Shared { get; private set; }
+        
         public HLEConfiguration Configuration { get; }
         public IHardwareDeviceDriver AudioDeviceDriver { get; }
         public MemoryBlock Memory { get; }
@@ -77,6 +80,8 @@ namespace Ryujinx.HLE
             DirtyHacks                              = Configuration.Hacks;
             UpdateVSyncInterval();
 #pragma warning restore IDE0055
+
+            Shared = this;
         }
 
         public void ProcessFrame()
@@ -145,6 +150,9 @@ namespace Ryujinx.HLE
                 AudioDeviceDriver.Dispose();
                 FileSystem.Dispose();
                 Memory.Dispose();
+
+                TitleIDs.CurrentApplication = null;
+                Shared = null;
             }
         }
     }
