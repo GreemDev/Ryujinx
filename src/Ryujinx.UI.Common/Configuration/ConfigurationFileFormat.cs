@@ -430,14 +430,14 @@ namespace Ryujinx.UI.Common.Configuration
         /// </summary>
         public bool UseHypervisor { get; set; }
         
-        /**
-         * Show toggles for dirty hacks in the UI.
-         */
+        /// <summary>
+        ///     Show toggles for dirty hacks in the UI.
+        /// </summary>
         public bool ShowDirtyHacks { get; set; }
         
-        /**
-          * The packed value of the enabled dirty hacks.
-          */
+        /// <summary>
+        ///     The packed value of the enabled dirty hacks.
+        /// </summary>
         public int EnabledDirtyHacks { get; set; }
         
         /// <summary>

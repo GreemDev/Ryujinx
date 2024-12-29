@@ -696,9 +696,9 @@ namespace Ryujinx.UI.Common.Configuration
         /// </summary>
         public MultiplayerSection Multiplayer { get; private set; }
         
-        /**
-         * The Dirty Hacks section
-         */
+        /// <summary>
+        ///     The Dirty Hacks section
+        /// </summary>
         public HacksSection Hacks { get; private set; }
 
         /// <summary>

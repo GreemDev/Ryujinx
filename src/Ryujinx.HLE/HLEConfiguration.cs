@@ -189,9 +189,9 @@ namespace Ryujinx.HLE
         /// </summary>
         public Action RefreshInputConfig { internal get; set; }
         
-        /**
-         * The desired hacky workarounds.
-         */
+        /// <summary>
+        ///     The desired hacky workarounds.
+        /// </summary>
         public DirtyHacks Hacks { internal get; set; }
 
         public HLEConfiguration(VirtualFileSystem virtualFileSystem,
