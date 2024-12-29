@@ -7,6 +7,7 @@ using LibHac.Tools.FsSystem;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
+using Ryujinx.Graphics.Gpu;
 using Ryujinx.HLE.Loaders.Executables;
 using Ryujinx.Memory;
 using System;
@@ -103,7 +104,8 @@ namespace Ryujinx.HLE.Loaders.Processes.Extensions
             }
 
             // Initialize GPU.
-            TitleIDs.CurrentApplication = programId.ToString("X16");
+            GraphicsConfig.TitleId = programId.ToString("X16");
+            TitleIDs.CurrentApplication = GraphicsConfig.TitleId;
             device.Gpu.HostInitalized.Set();
 
             if (!MemoryBlock.SupportsFlags(MemoryAllocationFlags.ViewCompatible))

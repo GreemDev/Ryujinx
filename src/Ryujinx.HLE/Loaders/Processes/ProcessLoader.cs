@@ -8,6 +8,7 @@ using LibHac.Tools.FsSystem;
 using LibHac.Tools.FsSystem.NcaUtils;
 using Ryujinx.Common;
 using Ryujinx.Common.Logging;
+using Ryujinx.Graphics.Gpu;
 using Ryujinx.HLE.Loaders.Executables;
 using Ryujinx.HLE.Loaders.Processes.Extensions;
 using System;
@@ -184,14 +185,17 @@ namespace Ryujinx.HLE.Loaders.Processes
                     if (nacpData.Value.PresenceGroupId != 0)
                     {
                         programId = nacpData.Value.PresenceGroupId;
+                        TitleIDs.CurrentApplication = programId.ToString("X16");
                     }
                     else if (nacpData.Value.SaveDataOwnerId != 0)
                     {
                         programId = nacpData.Value.SaveDataOwnerId;
+                        TitleIDs.CurrentApplication = programId.ToString("X16");
                     }
                     else if (nacpData.Value.AddOnContentBaseId != 0)
                     {
                         programId = nacpData.Value.AddOnContentBaseId - 0x1000;
+                        TitleIDs.CurrentApplication = programId.ToString("X16");
                     }
                 }
 
@@ -205,7 +209,7 @@ namespace Ryujinx.HLE.Loaders.Processes
             }
 
             // Explicitly null TitleId to disable the shader cache.
-            TitleIDs.CurrentApplication = default;
+            GraphicsConfig.TitleId = null;
             _device.Gpu.HostInitalized.Set();
 
             ProcessResult processResult = ProcessLoaderHelper.LoadNsos(_device,
