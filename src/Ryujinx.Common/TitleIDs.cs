@@ -8,20 +8,7 @@ namespace Ryujinx.Common
 {
     public static class TitleIDs
     {
-        private static string _currentApplication;
-
-        public static Optional<string> CurrentApplication
-        {
-            get => _currentApplication;
-            set
-            {
-                _currentApplication = value.OrElse(null);
-                
-                CurrentApplicationChanged?.Invoke(_currentApplication);
-            }
-        }
-
-        public static event Action<Optional<string>> CurrentApplicationChanged;
+        public static ReactiveObject<Optional<string>> CurrentApplication { get; set; } = new();
         
         public static GraphicsBackend SelectGraphicsBackend(string titleId, GraphicsBackend currentBackend)
         {

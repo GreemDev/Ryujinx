@@ -39,7 +39,7 @@ namespace Ryujinx.HLE.HOS.Services.Fs.FileSystemProxy
                 using var region = context.Memory.GetWritableRegion(bufferAddress, (int)bufferLen, true);
                 Result result = _baseStorage.Get.Read((long)offset, new OutBuffer(region.Memory.Span), (long)size);
                 
-                if (context.Device.DirtyHacks.HasFlag(DirtyHacks.Xc2MenuSoftlockFix) && TitleIDs.CurrentApplication == Xc2TitleId)
+                if (context.Device.DirtyHacks.HasFlag(DirtyHacks.Xc2MenuSoftlockFix) && TitleIDs.CurrentApplication.Value == Xc2TitleId)
                 {
                     // Add a load-bearing sleep to avoid XC2 softlock
                     // https://web.archive.org/web/20240728045136/https://github.com/Ryujinx/Ryujinx/issues/2357

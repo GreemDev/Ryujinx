@@ -151,7 +151,7 @@ namespace Ryujinx.HLE
                 FileSystem.Dispose();
                 Memory.Dispose();
 
-                TitleIDs.CurrentApplication = null;
+                TitleIDs.CurrentApplication.Value = null;
                 Shared = null;
             }
         }

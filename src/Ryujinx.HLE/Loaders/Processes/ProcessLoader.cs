@@ -61,7 +61,7 @@ namespace Ryujinx.HLE.Loaders.Processes
                 {
                     _latestPid = processResult.ProcessId;
 
-                    TitleIDs.CurrentApplication = processResult.ProgramIdText;
+                    TitleIDs.CurrentApplication.Value = processResult.ProgramIdText;
 
                     return true;
                 }
@@ -90,7 +90,7 @@ namespace Ryujinx.HLE.Loaders.Processes
                 {
                     _latestPid = processResult.ProcessId;
 
-                    TitleIDs.CurrentApplication = processResult.ProgramIdText;
+                    TitleIDs.CurrentApplication.Value = processResult.ProgramIdText;
 
                     return true;
                 }
@@ -120,7 +120,7 @@ namespace Ryujinx.HLE.Loaders.Processes
                     {
                         _latestPid = processResult.ProcessId;
 
-                        TitleIDs.CurrentApplication = processResult.ProgramIdText;
+                        TitleIDs.CurrentApplication.Value = processResult.ProgramIdText;
                     }
 
                     return true;
@@ -140,7 +140,7 @@ namespace Ryujinx.HLE.Loaders.Processes
                 {
                     _latestPid = processResult.ProcessId;
 
-                    TitleIDs.CurrentApplication = processResult.ProgramIdText;
+                    TitleIDs.CurrentApplication.Value = processResult.ProgramIdText;
 
                     return true;
                 }
@@ -193,17 +193,17 @@ namespace Ryujinx.HLE.Loaders.Processes
                     if (nacpData.Value.PresenceGroupId != 0)
                     {
                         programId = nacpData.Value.PresenceGroupId;
-                        TitleIDs.CurrentApplication = programId.ToString("X16");
+                        TitleIDs.CurrentApplication.Value = programId.ToString("X16");
                     }
                     else if (nacpData.Value.SaveDataOwnerId != 0)
                     {
                         programId = nacpData.Value.SaveDataOwnerId;
-                        TitleIDs.CurrentApplication = programId.ToString("X16");
+                        TitleIDs.CurrentApplication.Value = programId.ToString("X16");
                     }
                     else if (nacpData.Value.AddOnContentBaseId != 0)
                     {
                         programId = nacpData.Value.AddOnContentBaseId - 0x1000;
-                        TitleIDs.CurrentApplication = programId.ToString("X16");
+                        TitleIDs.CurrentApplication.Value = programId.ToString("X16");
                     }
                 }
 
