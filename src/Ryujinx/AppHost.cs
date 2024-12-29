@@ -311,6 +311,7 @@ namespace Ryujinx.Ava
                 Device.VSyncMode = e.NewValue;
                 Device.UpdateVSyncInterval();
             }
+            
             _renderer.Window?.ChangeVSyncMode(e.NewValue);
 
             _viewModel.ShowCustomVSyncIntervalPicker = (e.NewValue == VSyncMode.Custom);
@@ -577,7 +578,6 @@ namespace Ryujinx.Ava
         public void Stop()
         {
             _isActive = false;
-            DiscordIntegrationModule.SwitchToMainState();
         }
 
         private void Exit()
@@ -861,12 +861,10 @@ namespace Ryujinx.Ava
 
                 return false;
             }
-
-            ApplicationMetadata appMeta = ApplicationLibrary.LoadAndSaveMetaData(Device.Processes.ActiveApplication.ProgramIdText,
+            
+            ApplicationLibrary.LoadAndSaveMetaData(Device.Processes.ActiveApplication.ProgramIdText,
                 appMetadata => appMetadata.UpdatePreGame()
             );
-
-            DiscordIntegrationModule.SwitchToPlayingState(appMeta, Device.Processes.ActiveApplication);
 
             return true;
         }
@@ -923,7 +921,7 @@ namespace Ryujinx.Ava
             // Initialize Configuration.
             var memoryConfiguration = ConfigurationState.Instance.System.DramSize.Value;
 
-            Device = new HLE.Switch(new HLEConfiguration(
+            Device = new Switch(new HLEConfiguration(
                 VirtualFileSystem,
                 _viewModel.LibHacHorizonManager,
                 ContentManager,
@@ -953,7 +951,8 @@ namespace Ryujinx.Ava
                 ConfigurationState.Instance.Multiplayer.DisableP2p,
                 ConfigurationState.Instance.Multiplayer.LdnPassphrase,
                 ConfigurationState.Instance.Multiplayer.LdnServer,
-                ConfigurationState.Instance.Graphics.CustomVSyncInterval.Value));
+                ConfigurationState.Instance.Graphics.CustomVSyncInterval.Value,
+                ConfigurationState.Instance.Hacks.ShowDirtyHacks ? ConfigurationState.Instance.Hacks.EnabledHacks : DirtyHacks.None));
         }
 
         private static IHardwareDeviceDriver InitializeAudio()

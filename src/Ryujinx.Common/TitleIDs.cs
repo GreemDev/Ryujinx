@@ -8,6 +8,21 @@ namespace Ryujinx.Common
 {
     public static class TitleIDs
     {
+        private static string _currentApplication;
+
+        public static Optional<string> CurrentApplication
+        {
+            get => _currentApplication;
+            set
+            {
+                _currentApplication = value.OrElse(null);
+                
+                CurrentApplicationChanged?.Invoke(_currentApplication);
+            }
+        }
+
+        public static event Action<Optional<string>> CurrentApplicationChanged;
+        
         public static GraphicsBackend SelectGraphicsBackend(string titleId, GraphicsBackend currentBackend)
         {
             switch (currentBackend)
@@ -33,6 +48,7 @@ namespace Ryujinx.Common
             "010028600EBDA000", // Mario 3D World
             "0100152000022000", // Mario Kart 8 Deluxe
             "01005CA01580E000", // Persona 5
+            "01001f5010dfa000", // Pokemon Legends Arceus
             "01008C0016544000", // Sea of Stars
             "01006A800016E000", // Smash Ultimate
             "0100000000010000", // Super Mario Odyessy
