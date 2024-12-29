@@ -22,13 +22,15 @@ namespace Ryujinx.Graphics.Metal
 
         private int _requestedWidth;
         private int _requestedHeight;
-
-        // private bool _vsyncEnabled;
+        
         private AntiAliasing _currentAntiAliasing;
         private bool _updateEffect;
         private IPostProcessingEffect _effect;
         private IScalingFilter _scalingFilter;
         private bool _isLinear;
+
+        public bool IsVSyncEnabled => _metalLayer.DisplaySyncEnabled;
+        
         // private float _scalingFilterLevel;
         private bool _updateScalingFilter;
         private ScalingFilter _currentScalingFilter;
@@ -40,7 +42,7 @@ namespace Ryujinx.Graphics.Metal
             _metalLayer = metalLayer;
         }
 
-        private unsafe void ResizeIfNeeded()
+        private void ResizeIfNeeded()
         {
             if (_requestedWidth != 0 && _requestedHeight != 0)
             {
@@ -54,7 +56,7 @@ namespace Ryujinx.Graphics.Metal
             }
         }
 
-        public unsafe void Present(ITexture texture, ImageCrop crop, Action swapBuffersCallback)
+        public void Present(ITexture texture, ImageCrop crop, Action swapBuffersCallback)
         {
             if (_renderer.Pipeline is Pipeline pipeline && texture is Texture tex)
             {
@@ -141,15 +143,7 @@ namespace Ryujinx.Graphics.Metal
         
         public void ChangeVSyncMode(VSyncMode vSyncMode)
         {
-            switch (vSyncMode)
-            {
-                case VSyncMode.Unbounded:
-                    _metalLayer.DisplaySyncEnabled = false;
-                    break;
-                case VSyncMode.Switch:
-                    _metalLayer.DisplaySyncEnabled = true;
-                    break;
-            }
+            _metalLayer.DisplaySyncEnabled = vSyncMode is VSyncMode.Switch;
         }
 
         public void SetAntiAliasing(AntiAliasing effect)

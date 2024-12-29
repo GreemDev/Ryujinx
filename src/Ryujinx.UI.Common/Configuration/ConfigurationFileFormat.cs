@@ -17,7 +17,7 @@ namespace Ryujinx.UI.Common.Configuration
         /// <summary>
         /// The current version of the file format
         /// </summary>
-        public const int CurrentVersion = 57;
+        public const int CurrentVersion = 58;
 
         /// <summary>
         /// Version of the configuration file format
@@ -429,7 +429,17 @@ namespace Ryujinx.UI.Common.Configuration
         /// Uses Hypervisor over JIT if available
         /// </summary>
         public bool UseHypervisor { get; set; }
-
+        
+        /// <summary>
+        ///     Show toggles for dirty hacks in the UI.
+        /// </summary>
+        public bool ShowDirtyHacks { get; set; }
+        
+        /// <summary>
+        ///     The packed value of the enabled dirty hacks.
+        /// </summary>
+        public int EnabledDirtyHacks { get; set; }
+        
         /// <summary>
         /// Loads a configuration file from disk
         /// </summary>

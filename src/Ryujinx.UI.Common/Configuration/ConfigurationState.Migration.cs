@@ -735,6 +735,9 @@ namespace Ryujinx.UI.Common.Configuration
             Multiplayer.DisableP2p.Value = configurationFileFormat.MultiplayerDisableP2p;
             Multiplayer.LdnPassphrase.Value = configurationFileFormat.MultiplayerLdnPassphrase;
             Multiplayer.LdnServer.Value = configurationFileFormat.LdnServer;
+            
+            Hacks.ShowDirtyHacks.Value = configurationFileFormat.ShowDirtyHacks;
+            Hacks.Xc2MenuSoftlockFix.Value = ((DirtyHacks)configurationFileFormat.EnabledDirtyHacks).HasFlag(DirtyHacks.Xc2MenuSoftlockFix);
 
             if (configurationFileUpdated)
             {

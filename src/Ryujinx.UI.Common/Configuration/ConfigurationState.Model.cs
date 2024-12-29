@@ -1,4 +1,5 @@
 using ARMeilleure;
+using Gommon;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
@@ -617,6 +618,49 @@ namespace Ryujinx.UI.Common.Configuration
             }
         }
 
+        public class HacksSection
+        {
+            /// <summary>
+            /// Show toggles for dirty hacks in the UI.
+            /// </summary>
+            public ReactiveObject<bool> ShowDirtyHacks { get; private set; }
+            
+            public ReactiveObject<bool> Xc2MenuSoftlockFix { get; private set; }
+
+            public HacksSection()
+            {
+                ShowDirtyHacks = new ReactiveObject<bool>();
+                Xc2MenuSoftlockFix = new ReactiveObject<bool>();
+                Xc2MenuSoftlockFix.Event += HackChanged;
+            }
+
+            private void HackChanged(object sender, ReactiveEventArgs<bool> rxe)
+            {
+                Ryujinx.Common.Logging.Logger.Info?.Print(LogClass.Configuration, $"EnabledDirtyHacks set to: {EnabledHacks}", "LogValueChange");
+            }
+
+            public DirtyHacks EnabledHacks
+            {
+                get
+                {
+                    DirtyHacks dirtyHacks = DirtyHacks.None;
+                    
+                    if (Xc2MenuSoftlockFix)
+                        Apply(DirtyHacks.Xc2MenuSoftlockFix);
+                    
+                    return dirtyHacks;
+
+                    void Apply(DirtyHacks hack)
+                    {
+                        if (dirtyHacks is not DirtyHacks.None)
+                            dirtyHacks |= hack;
+                        else
+                            dirtyHacks = hack;
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// The default configuration instance
         /// </summary>
@@ -651,6 +695,11 @@ namespace Ryujinx.UI.Common.Configuration
         /// The Multiplayer section
         /// </summary>
         public MultiplayerSection Multiplayer { get; private set; }
+        
+        /// <summary>
+        ///     The Dirty Hacks section
+        /// </summary>
+        public HacksSection Hacks { get; private set; }
 
         /// <summary>
         /// Enables or disables Discord Rich Presence
@@ -700,6 +749,7 @@ namespace Ryujinx.UI.Common.Configuration
             Graphics = new GraphicsSection();
             Hid = new HidSection();
             Multiplayer = new MultiplayerSection();
+            Hacks = new HacksSection();
             EnableDiscordIntegration = new ReactiveObject<bool>();
             CheckUpdatesOnStart = new ReactiveObject<bool>();
             ShowConfirmExit = new ReactiveObject<bool>();

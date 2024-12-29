@@ -2,6 +2,7 @@ using DiscordRPC;
 using Humanizer;
 using Humanizer.Localisation;
 using Ryujinx.Common;
+using Ryujinx.HLE;
 using Ryujinx.HLE.Loaders.Processes;
 using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common.Configuration;
@@ -44,6 +45,16 @@ namespace Ryujinx.UI.Common
             };
 
             ConfigurationState.Instance.EnableDiscordIntegration.Event += Update;
+            TitleIDs.CurrentApplication.Event += (_, e) =>
+            {
+                if (e.NewValue)
+                    SwitchToPlayingState(
+                        ApplicationLibrary.LoadAndSaveMetaData(e.NewValue),
+                        Switch.Shared.Processes.ActiveApplication
+                    );
+                else 
+                    SwitchToMainState();
+            };
         }
 
         private static void Update(object sender, ReactiveEventArgs<bool> evnt)
@@ -69,7 +80,7 @@ namespace Ryujinx.UI.Common
             }
         }
 
-        public static void SwitchToPlayingState(ApplicationMetadata appMeta, ProcessResult procRes)
+        private static void SwitchToPlayingState(ApplicationMetadata appMeta, ProcessResult procRes)
         {
             _discordClient?.SetPresence(new RichPresence
             {
@@ -88,7 +99,7 @@ namespace Ryujinx.UI.Common
             });
         }
 
-        public static void SwitchToMainState() => _discordClient?.SetPresence(_discordPresenceMain);
+        private static void SwitchToMainState() => _discordClient?.SetPresence(_discordPresenceMain);
 
         private static string TruncateToByteLength(string input)
         {

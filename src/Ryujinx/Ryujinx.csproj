@@ -143,4 +143,10 @@
   <ItemGroup>
     <AdditionalFiles Include="Assets\locales.json" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="UI\Views\Settings\SettingsHacksView.axaml.cs">
+      <DependentUpon>SettingsHacksView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
 </Project>
