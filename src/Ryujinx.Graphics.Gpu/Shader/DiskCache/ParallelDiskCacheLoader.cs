@@ -1,3 +1,4 @@
+using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Shader;
@@ -366,6 +367,9 @@ namespace Ryujinx.Graphics.Gpu.Shader.DiskCache
         {
             try
             {
+                if (_context.DirtyHacks.IsEnabled(DirtyHacks.ShaderCompilationThreadSleep))
+                    Thread.Sleep(_context.DirtyHacks[DirtyHacks.ShaderCompilationThreadSleep]);
+                
                 AsyncProgramTranslation asyncTranslation = new(guestShaders, specState, programIndex, isCompute);
                 _asyncTranslationQueue.Add(asyncTranslation, _cancellationToken);
             }
