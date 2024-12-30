@@ -15,7 +15,6 @@
 
   <Target Name="BuildValidationProj" BeforeTargets="BeforeBuild">
     <Message Text="Building Validation Project for $(TargetFramework)" Importance="high" Condition="'$(RuntimeIdentifier)' == ''" />
-    <Exec WorkingDirectory="..\Ryujinx.BuildValidationTasks\" Command="dotnet restore Ryujinx.BuildValidationTasks.csproj --force true" />
     <Exec WorkingDirectory="..\Ryujinx.BuildValidationTasks\" Command="dotnet build -c Debug" />
     
   </Target>
