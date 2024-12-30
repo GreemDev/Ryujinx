@@ -176,15 +176,15 @@ namespace Ryujinx.Graphics.Gpu.Shader.DiskCache
                 GuestCodeAndCbData?[] guestShaders,
                 ShaderSpecializationState specState,
                 int programIndex,
-                bool isCompute)
+                bool isCompute,
+                int shaderTranslationDelay)
             {
                 Thread.Sleep(shaderTranslationDelay);
                 
                 GuestShaders = guestShaders;
                 SpecializationState = specState;
                 ProgramIndex = programIndex;
-                IsCompute = isCompute,
-                int = shaderTranslationDelay;
+                IsCompute = isCompute;
             }
         }
 
@@ -369,7 +369,7 @@ namespace Ryujinx.Graphics.Gpu.Shader.DiskCache
         {
             try
             {
-                AsyncProgramTranslation asyncTranslation = new(guestShaders, specState, programIndex, isCompute, _context.DirtyHacks[DirtyHacks.ShaderCompilationThreadSleep);
+                AsyncProgramTranslation asyncTranslation = new(guestShaders, specState, programIndex, isCompute, _context.DirtyHacks[DirtyHacks.ShaderCompilationThreadSleep]);
                 _asyncTranslationQueue.Add(asyncTranslation, _cancellationToken);
             }
             catch (OperationCanceledException)
