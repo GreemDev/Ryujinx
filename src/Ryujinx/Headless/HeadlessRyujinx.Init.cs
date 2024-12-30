@@ -2,6 +2,7 @@
 using LibHac.Tools.FsSystem;
 using Ryujinx.Audio.Backends.SDL2;
 using Ryujinx.Ava;
+using Ryujinx.Ava.Utilities.Configuration;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Configuration.Hid.Controller;
@@ -16,8 +17,6 @@ using Ryujinx.Graphics.OpenGL;
 using Ryujinx.Graphics.Vulkan;
 using Ryujinx.HLE;
 using Ryujinx.Input;
-using Ryujinx.UI.Common;
-using Ryujinx.UI.Common.Configuration;
 using Silk.NET.Vulkan;
 using System;
 using System.IO;

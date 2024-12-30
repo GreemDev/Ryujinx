@@ -6,7 +6,7 @@ using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Common.Models;
 using Ryujinx.Ava.UI.ViewModels;
 using Ryujinx.Ava.Utilities.AppLibrary;
-using Ryujinx.UI.Common.Helper;
+using Ryujinx.Common.Helper;
 using System.Threading.Tasks;
 
 namespace Ryujinx.Ava.UI.Windows

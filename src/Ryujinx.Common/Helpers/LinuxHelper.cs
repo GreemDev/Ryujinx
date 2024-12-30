@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Versioning;
 
-namespace Ryujinx.UI.Common.Helper
+namespace Ryujinx.Common.Helper
 {
     [SupportedOSPlatform("linux")]
     public static class LinuxHelper

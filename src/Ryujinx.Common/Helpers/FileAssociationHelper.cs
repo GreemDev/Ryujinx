@@ -8,7 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
-namespace Ryujinx.UI.Common.Helper
+namespace Ryujinx.Common.Helper
 {
     public static partial class FileAssociationHelper
     {

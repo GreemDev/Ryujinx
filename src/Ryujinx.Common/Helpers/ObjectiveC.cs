@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
-namespace Ryujinx.UI.Common.Helper
+namespace Ryujinx.Common.Helper
 {
     [SupportedOSPlatform("macos")]
     public static partial class ObjectiveC

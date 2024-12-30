@@ -1,14 +1,14 @@
+using Ryujinx.Ava.Utilities.Configuration.System;
+using Ryujinx.Ava.Utilities.Configuration.UI;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Configuration.Hid.Keyboard;
 using Ryujinx.Common.Configuration.Multiplayer;
 using Ryujinx.Graphics.Vulkan;
 using Ryujinx.HLE;
-using Ryujinx.UI.Common.Configuration.System;
-using Ryujinx.UI.Common.Configuration.UI;
 using System;
 
-namespace Ryujinx.UI.Common.Configuration
+namespace Ryujinx.Ava.Utilities.Configuration
 {
     public partial class ConfigurationState
     {

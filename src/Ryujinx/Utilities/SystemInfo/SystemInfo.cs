@@ -1,5 +1,4 @@
 using Ryujinx.Common.Logging;
-using Ryujinx.UI.Common.Helper;
 using System;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;

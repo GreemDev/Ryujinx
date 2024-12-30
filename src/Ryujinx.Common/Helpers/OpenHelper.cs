@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Ryujinx.UI.Common.Helper
+namespace Ryujinx.Common.Helper
 {
     public static partial class OpenHelper
     {

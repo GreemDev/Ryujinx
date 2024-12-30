@@ -1,6 +1,5 @@
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
-using Ryujinx.UI.Common.Helper;
 using ShellLink;
 using SkiaSharp;
 using System;

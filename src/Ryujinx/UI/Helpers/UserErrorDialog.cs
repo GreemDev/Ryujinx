@@ -1,6 +1,5 @@
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Common.UI;
-using Ryujinx.UI.Common;
 using System.Threading.Tasks;
 
 namespace Ryujinx.Ava.UI.Helpers

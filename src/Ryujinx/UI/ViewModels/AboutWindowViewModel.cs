@@ -3,7 +3,7 @@ using Avalonia.Styling;
 using Avalonia.Threading;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
-using Ryujinx.UI.Common.Configuration;
+using Ryujinx.Ava.Utilities.Configuration;
 using System;
 
 namespace Ryujinx.Ava.UI.ViewModels

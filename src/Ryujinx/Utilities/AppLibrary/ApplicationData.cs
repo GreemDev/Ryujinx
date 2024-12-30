@@ -10,7 +10,6 @@ using LibHac.Tools.FsSystem.NcaUtils;
 using Ryujinx.Common.Logging;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.Loaders.Processes.Extensions;
-using Ryujinx.UI.Common.Helper;
 using System;
 using System.IO;
 using System.Text.Json.Serialization;
@@ -19,8 +18,6 @@ namespace Ryujinx.Ava.Utilities.AppLibrary
 {
     public class ApplicationData
     {
-        public static Func<string> LocalizedNever { get; set; } = () => "Never";
-
         public bool Favorite { get; set; }
         public byte[] Icon { get; set; }
         public string Name { get; set; } = "Unknown";
@@ -40,7 +37,7 @@ namespace Ryujinx.Ava.Utilities.AppLibrary
 
         public string TimePlayedString => ValueFormatUtils.FormatTimeSpan(TimePlayed);
 
-        public string LastPlayedString => ValueFormatUtils.FormatDateTime(LastPlayed)?.Replace(" ", "\n") ?? LocalizedNever();
+        public string LastPlayedString => ValueFormatUtils.FormatDateTime(LastPlayed)?.Replace(" ", "\n");
 
         public string FileSizeString => ValueFormatUtils.FormatFileSize(FileSize);
 

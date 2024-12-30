@@ -1,6 +1,7 @@
 using CommandLine;
 using Gommon;
 using Ryujinx.Ava;
+using Ryujinx.Ava.Utilities.Configuration;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
@@ -25,7 +26,6 @@ using Ryujinx.Input;
 using Ryujinx.Input.HLE;
 using Ryujinx.Input.SDL2;
 using Ryujinx.SDL2.Common;
-using Ryujinx.UI.Common.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;

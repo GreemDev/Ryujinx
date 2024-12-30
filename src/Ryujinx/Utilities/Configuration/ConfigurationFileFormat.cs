@@ -1,3 +1,5 @@
+using Ryujinx.Ava.Utilities.Configuration.System;
+using Ryujinx.Ava.Utilities.Configuration.UI;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
@@ -5,12 +7,10 @@ using Ryujinx.Common.Configuration.Multiplayer;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.Utilities;
 using Ryujinx.HLE;
-using Ryujinx.UI.Common.Configuration.System;
-using Ryujinx.UI.Common.Configuration.UI;
 using System.Collections.Generic;
 using System.Text.Json.Nodes;
 
-namespace Ryujinx.UI.Common.Configuration
+namespace Ryujinx.Ava.Utilities.Configuration
 {
     public class ConfigurationFileFormat
     {

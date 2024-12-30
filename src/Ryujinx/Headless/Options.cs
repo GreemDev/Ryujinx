@@ -1,11 +1,11 @@
 using CommandLine;
 using Gommon;
+using Ryujinx.Ava.Utilities.Configuration;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.HLE;
 using Ryujinx.HLE.HOS.Services.Account.Acc;
 using Ryujinx.HLE.HOS.SystemState;
-using Ryujinx.UI.Common.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;

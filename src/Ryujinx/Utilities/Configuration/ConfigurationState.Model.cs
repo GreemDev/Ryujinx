@@ -1,16 +1,16 @@
 using ARMeilleure;
 using Gommon;
+using Ryujinx.Ava.Utilities.Configuration.System;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Configuration.Multiplayer;
+using Ryujinx.Common.Helper;
 using Ryujinx.Common.Logging;
 using Ryujinx.HLE;
-using Ryujinx.UI.Common.Configuration.System;
-using Ryujinx.UI.Common.Helper;
 using System.Collections.Generic;
 
-namespace Ryujinx.UI.Common.Configuration
+namespace Ryujinx.Ava.Utilities.Configuration
 {
     public partial class ConfigurationState
     {

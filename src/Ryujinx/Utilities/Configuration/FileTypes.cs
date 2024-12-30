@@ -1,8 +1,19 @@
 using System;
-using static Ryujinx.UI.Common.Configuration.ConfigurationState.UISection;
 
-namespace Ryujinx.UI.Common
+using static Ryujinx.Ava.Utilities.Configuration.ConfigurationState.UISection;
+
+namespace Ryujinx.Ava.Utilities.Configuration
 {
+    public enum FileTypes
+    {
+        NSP,
+        PFS0,
+        XCI,
+        NCA,
+        NRO,
+        NSO
+    }
+    
     public static class FileTypesExtensions
     {
         /// <summary>
@@ -10,7 +21,7 @@ namespace Ryujinx.UI.Common
         /// </summary>
         /// <param name="type">The name of the <see cref="ShownFileTypeSettings"/> parameter to get the value of.</param>
         /// <param name="config">The config instance to get the value from.</param>
-        /// <returns>The current value of the setting. Value is <see langword="true"/> if the file type is the be shown on the games list, <see langword="false"/> otherwise.</returns>
+        /// <returns>The current value of the setting. Value is <see langword="true"/> if the file type is to be shown on the games list, <see langword="false"/> otherwise.</returns>
         public static bool GetConfigValue(this FileTypes type, ShownFileTypeSettings config) => type switch
         {
             FileTypes.NSP => config.NSP.Value,

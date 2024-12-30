@@ -1,4 +1,4 @@
-namespace Ryujinx.UI.Common.Configuration.UI
+namespace Ryujinx.Ava.Utilities.Configuration.UI
 {
     public struct ShownFileTypes
     {

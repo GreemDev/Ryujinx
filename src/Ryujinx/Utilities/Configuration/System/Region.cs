@@ -1,7 +1,7 @@
 using Ryujinx.Common.Utilities;
 using System.Text.Json.Serialization;
 
-namespace Ryujinx.UI.Common.Configuration.System
+namespace Ryujinx.Ava.Utilities.Configuration.System
 {
     [JsonConverter(typeof(TypedStringEnumConverter<Region>))]
     public enum Region

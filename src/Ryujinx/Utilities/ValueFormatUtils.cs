@@ -1,8 +1,9 @@
+using Ryujinx.Ava.Common.Locale;
 using System;
 using System.Globalization;
 using System.Linq;
 
-namespace Ryujinx.UI.Common.Helper
+namespace Ryujinx.Ava.Utilities
 {
     public static class ValueFormatUtils
     {
@@ -75,7 +76,7 @@ namespace Ryujinx.UI.Common.Helper
         {
             culture ??= CultureInfo.CurrentCulture;
 
-            return utcDateTime?.ToLocalTime().ToString(culture);
+            return utcDateTime?.ToLocalTime().ToString(culture) ?? LocaleManager.Instance[LocaleKeys.Never];
         }
 
         /// <summary>
