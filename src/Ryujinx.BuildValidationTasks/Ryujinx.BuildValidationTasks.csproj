@@ -1,16 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
-  <Target Name="PostBuildTarget" AfterTargets="AfterBuild">
-    <Message Text="Running Validation Project" Importance="high" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Utilities.Core" />
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
 
-    <Exec WorkingDirectory="$(ProjectDir)bin\Debug\$(TargetFramework)\"
-      Command="dotnet Ryujinx.BuildValidationTasks.dll &quot;$(ProjectDir)..\..\\&quot;" 
-      ConsoleToMsBuild="true"
-      />
+  <UsingTask TaskName="Ryujinx.BuildValidationTasks.LocaleValidationTask" TaskFactory="TaskHostFactory" AssemblyFile="$(OutDir)Ryujinx.BuildValidationTasks.dll" />
+
+  <Target Name="LocalesJsonValidation" AfterTargets="AfterRebuild">
+    <LocaleValidationTask />
   </Target>
 
 </Project>
