@@ -13,13 +13,13 @@ namespace Ryujinx.Common.Configuration
 
     public record EnabledDirtyHack(DirtyHacks Hack, int Value)
     {
-        private static readonly byte[] _packedFormat = [8, 32];
+        public static readonly byte[] PackedFormat = [8, 32];
         
-        public ulong Pack() => BitTricks.PackBitFields([(uint)Hack, (uint)Value], _packedFormat);
+        public ulong Pack() => BitTricks.PackBitFields([(uint)Hack, (uint)Value], PackedFormat);
 
         public static EnabledDirtyHack FromPacked(ulong packedHack)
         {
-            var unpackedFields = BitTricks.UnpackBitFields(packedHack, _packedFormat);
+            var unpackedFields = BitTricks.UnpackBitFields(packedHack, PackedFormat);
             if (unpackedFields is not [var hack, var value])
                 throw new ArgumentException(nameof(packedHack));
             
@@ -44,6 +44,15 @@ namespace Ryujinx.Common.Configuration
                 Add(dirtyHacks, value);
             }
         }
+
+        public ulong[] PackEntries() =>
+            this
+                .Select(it => 
+                    BitTricks.PackBitFields([(uint)it.Key, (uint)it.Value], EnabledDirtyHack.PackedFormat))
+                .ToArray();
+
+        public static implicit operator DirtyHackCollection(EnabledDirtyHack[] hacks) => new(hacks);
+        public static implicit operator DirtyHackCollection(ulong[] packedHacks) => new(packedHacks);
 
         public new int this[DirtyHacks hack] => TryGetValue(hack, out var value) ? value : -1;
 

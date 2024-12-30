@@ -752,7 +752,7 @@ namespace Ryujinx.Ava.Utilities.Configuration
             Hacks.ShowDirtyHacks.Value = configurationFileFormat.ShowDirtyHacks;
 
             {
-                EnabledDirtyHack[] hacks = configurationFileFormat.DirtyHacks.Select(EnabledDirtyHack.FromPacked).ToArray();
+                EnabledDirtyHack[] hacks = (configurationFileFormat.DirtyHacks ?? []).Select(EnabledDirtyHack.FromPacked).ToArray();
             
                 Hacks.Xc2MenuSoftlockFix.Value = hacks.Any(it => it.Hack == DirtyHacks.Xc2MenuSoftlockFix);
             

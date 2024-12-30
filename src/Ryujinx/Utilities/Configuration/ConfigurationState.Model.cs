@@ -10,6 +10,7 @@ using Ryujinx.Common.Logging;
 using Ryujinx.HLE;
 using System.Collections.Generic;
 using System.Linq;
+using RyuLogger = Ryujinx.Common.Logging.Logger;
 
 namespace Ryujinx.Ava.Utilities.Configuration
 {
@@ -644,8 +645,19 @@ namespace Ryujinx.Ava.Utilities.Configuration
 
             private void HackChanged(object sender, ReactiveEventArgs<bool> rxe)
             {
-                Ryujinx.Common.Logging.Logger.Info?.Print(LogClass.Configuration, $"EnabledDirtyHacks set to: [{EnabledHacks.Select(x => x.Hack).JoinToString(", ")}]", "LogValueChange");
+                var newHacks = EnabledHacks.Select(x => x.Hack)
+                    .JoinToString(", ");
+
+                if (newHacks != _lastHackCollection)
+                {
+                    RyuLogger.Info?.Print(LogClass.Configuration, 
+                        $"EnabledDirtyHacks set to: [{_lastHackCollection}]", "LogValueChange");
+
+                    _lastHackCollection = newHacks;
+                }
             }
+
+            private static string _lastHackCollection;
 
             public EnabledDirtyHack[] EnabledHacks
             {

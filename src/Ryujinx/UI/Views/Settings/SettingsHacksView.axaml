@@ -42,7 +42,7 @@
                         VerticalAlignment="Center"
                         Text="Xenoblade Chronicles 2 Menu Softlock Fix" />
                 </StackPanel>
-                <!--<Separator/>
+                <Separator/>
                 <StackPanel
                     Margin="0,10,0,0"
                     Orientation="Horizontal"
@@ -68,7 +68,7 @@
                         VerticalAlignment="Center"
                         Minimum="1"
                         Maximum="1000" />
-                <Separator/>-->
+                <Separator/>
             </StackPanel>
         </Border>
     </ScrollViewer>
