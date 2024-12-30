@@ -7,12 +7,12 @@ using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Ava.UI.ViewModels;
 using Ryujinx.Ava.UI.Windows;
+using Ryujinx.Ava.Utilities;
+using Ryujinx.Ava.Utilities.Configuration;
 using Ryujinx.Common;
+using Ryujinx.Common.Helper;
 using Ryujinx.Common.Utilities;
 using Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption;
-using Ryujinx.UI.Common;
-using Ryujinx.UI.Common.Configuration;
-using Ryujinx.UI.Common.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +29,7 @@ namespace Ryujinx.Ava.UI.Views.Main
             InitializeComponent();
 
             RyuLogo.IsVisible = !ConfigurationState.Instance.ShowTitleBar;
+            RyuLogo.Source = MainWindowViewModel.IconBitmap;
 
             ToggleFileTypesMenuItem.ItemsSource = GenerateToggleFileTypeItems();
             ChangeLanguageMenuItem.ItemsSource = GenerateLanguageMenuItems();
