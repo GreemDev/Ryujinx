@@ -17,7 +17,7 @@ namespace Ryujinx.Ava.Utilities.Configuration
         /// <summary>
         /// The current version of the file format
         /// </summary>
-        public const int CurrentVersion = 58;
+        public const int CurrentVersion = 59;
 
         /// <summary>
         /// Version of the configuration file format
@@ -436,9 +436,9 @@ namespace Ryujinx.Ava.Utilities.Configuration
         public bool ShowDirtyHacks { get; set; }
         
         /// <summary>
-        ///     The packed value of the enabled dirty hacks.
+        ///     The packed values of the enabled dirty hacks.
         /// </summary>
-        public int EnabledDirtyHacks { get; set; }
+        public ulong[] DirtyHacks { get; set; }
         
         /// <summary>
         /// Loads a configuration file from disk

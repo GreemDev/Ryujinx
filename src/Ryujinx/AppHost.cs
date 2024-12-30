@@ -952,7 +952,7 @@ namespace Ryujinx.Ava
                 ConfigurationState.Instance.Multiplayer.LdnPassphrase,
                 ConfigurationState.Instance.Multiplayer.LdnServer,
                 ConfigurationState.Instance.Graphics.CustomVSyncInterval.Value,
-                ConfigurationState.Instance.Hacks.ShowDirtyHacks ? ConfigurationState.Instance.Hacks.EnabledHacks : DirtyHacks.None));
+                ConfigurationState.Instance.Hacks.ShowDirtyHacks ? ConfigurationState.Instance.Hacks.EnabledHacks : null));
         }
 
         private static IHardwareDeviceDriver InitializeAudio()

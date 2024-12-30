@@ -7,6 +7,7 @@ using Ryujinx.Common.Configuration.Multiplayer;
 using Ryujinx.Graphics.Vulkan;
 using Ryujinx.HLE;
 using System;
+using System.Linq;
 
 namespace Ryujinx.Ava.Utilities.Configuration
 {
@@ -139,7 +140,7 @@ namespace Ryujinx.Ava.Utilities.Configuration
                 MultiplayerLdnPassphrase = Multiplayer.LdnPassphrase,
                 LdnServer = Multiplayer.LdnServer,
                 ShowDirtyHacks = Hacks.ShowDirtyHacks,
-                EnabledDirtyHacks = (int)Hacks.EnabledHacks,
+                DirtyHacks = Hacks.EnabledHacks.Select(it => it.Pack()).ToArray(),
             };
 
             return configurationFile;

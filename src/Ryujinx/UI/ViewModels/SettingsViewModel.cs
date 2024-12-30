@@ -66,6 +66,8 @@ namespace Ryujinx.Ava.UI.ViewModels
         private string _ldnServer;
 
         private bool _xc2MenuSoftlockFix = ConfigurationState.Instance.Hacks.Xc2MenuSoftlockFix;
+        private bool _shaderTranslationThreadSleep = ConfigurationState.Instance.Hacks.EnableShaderCompilationThreadSleep;
+        private int _shaderTranslationSleepDelay = ConfigurationState.Instance.Hacks.ShaderCompilationThreadSleepDelay;
 
         public int ResolutionScale
         {
@@ -283,6 +285,28 @@ namespace Ryujinx.Ava.UI.ViewModels
             set
             {
                 _xc2MenuSoftlockFix = value;
+                
+                OnPropertyChanged();
+            }
+        }
+        
+        public bool ShaderTranslationDelayEnabled
+        {
+            get => _shaderTranslationThreadSleep;
+            set
+            {
+                _shaderTranslationThreadSleep = value;
+                
+                OnPropertyChanged();
+            }
+        }
+        
+        public int ShaderTranslationDelay
+        {
+            get => _shaderTranslationSleepDelay;
+            set
+            {
+                _shaderTranslationSleepDelay = value;
                 
                 OnPropertyChanged();
             }
@@ -763,6 +787,8 @@ namespace Ryujinx.Ava.UI.ViewModels
             
             // Dirty Hacks
             config.Hacks.Xc2MenuSoftlockFix.Value = Xc2MenuSoftlockFixEnabled;
+            config.Hacks.EnableShaderCompilationThreadSleep.Value = ShaderTranslationDelayEnabled;
+            config.Hacks.ShaderCompilationThreadSleepDelay.Value = ShaderTranslationDelay;
 
             config.ToFileFormat().SaveConfig(Program.ConfigurationPath);
 
@@ -808,6 +834,12 @@ namespace Ryujinx.Ava.UI.ViewModels
                 "When clicking very fast from game main menu to 2nd submenu, " +
                 "there is a low chance that the game will softlock, " +
                 "the submenu won't show up, while background music is still there.");
+        });
+        
+        public static string ShaderTranslationDelayTooltip { get; } = Lambda.String(sb =>
+        {
+            sb.Append(
+                "This hack applies the delay you specify every time shaders are attempted to be translated.");
         });
     }
 }

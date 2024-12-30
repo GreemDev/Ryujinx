@@ -9,6 +9,7 @@ using Ryujinx.Common.Helper;
 using Ryujinx.Common.Logging;
 using Ryujinx.HLE;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Ryujinx.Ava.Utilities.Configuration
 {
@@ -626,36 +627,43 @@ namespace Ryujinx.Ava.Utilities.Configuration
             public ReactiveObject<bool> ShowDirtyHacks { get; private set; }
             
             public ReactiveObject<bool> Xc2MenuSoftlockFix { get; private set; }
+            
+            public ReactiveObject<bool> EnableShaderCompilationThreadSleep { get; private set; }
+            
+            public ReactiveObject<int> ShaderCompilationThreadSleepDelay { get; private set; }
 
             public HacksSection()
             {
                 ShowDirtyHacks = new ReactiveObject<bool>();
                 Xc2MenuSoftlockFix = new ReactiveObject<bool>();
                 Xc2MenuSoftlockFix.Event += HackChanged;
+                EnableShaderCompilationThreadSleep = new ReactiveObject<bool>();
+                EnableShaderCompilationThreadSleep.Event += HackChanged;
+                ShaderCompilationThreadSleepDelay = new ReactiveObject<int>();
             }
 
             private void HackChanged(object sender, ReactiveEventArgs<bool> rxe)
             {
-                Ryujinx.Common.Logging.Logger.Info?.Print(LogClass.Configuration, $"EnabledDirtyHacks set to: {EnabledHacks}", "LogValueChange");
+                Ryujinx.Common.Logging.Logger.Info?.Print(LogClass.Configuration, $"EnabledDirtyHacks set to: [{EnabledHacks.Select(x => x.Hack).JoinToString(", ")}]", "LogValueChange");
             }
 
-            public DirtyHacks EnabledHacks
+            public EnabledDirtyHack[] EnabledHacks
             {
                 get
                 {
-                    DirtyHacks dirtyHacks = DirtyHacks.None;
+                    List<EnabledDirtyHack> enabledHacks = [];
                     
                     if (Xc2MenuSoftlockFix)
                         Apply(DirtyHacks.Xc2MenuSoftlockFix);
                     
-                    return dirtyHacks;
+                    if (EnableShaderCompilationThreadSleep)
+                        Apply(DirtyHacks.ShaderCompilationThreadSleep, ShaderCompilationThreadSleepDelay);
+                    
+                    return enabledHacks.ToArray();
 
-                    void Apply(DirtyHacks hack)
+                    void Apply(DirtyHacks hack, int value = 0)
                     {
-                        if (dirtyHacks is not DirtyHacks.None)
-                            dirtyHacks |= hack;
-                        else
-                            dirtyHacks = hack;
+                        enabledHacks.Add(new EnabledDirtyHack(hack, value));
                     }
                 }
             }

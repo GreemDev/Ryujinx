@@ -9,6 +9,7 @@ using Ryujinx.Common.Logging;
 using Ryujinx.HLE;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Ryujinx.Ava.Utilities.Configuration
 {
@@ -637,6 +638,18 @@ namespace Ryujinx.Ava.Utilities.Configuration
 
                 configurationFileUpdated = true;
             }
+            
+            // 58 migration accidentally got skipped but it worked with no issues somehow lol
+            
+            if (configurationFileFormat.Version < 59)
+            {
+                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 59.");
+
+                configurationFileFormat.ShowDirtyHacks = false;
+                configurationFileFormat.DirtyHacks = [];
+
+                configurationFileUpdated = true;
+            }
 
             Logger.EnableFileLog.Value = configurationFileFormat.EnableFileLog;
             Graphics.ResScale.Value = configurationFileFormat.ResScale;
@@ -737,7 +750,16 @@ namespace Ryujinx.Ava.Utilities.Configuration
             Multiplayer.LdnServer.Value = configurationFileFormat.LdnServer;
             
             Hacks.ShowDirtyHacks.Value = configurationFileFormat.ShowDirtyHacks;
-            Hacks.Xc2MenuSoftlockFix.Value = ((DirtyHacks)configurationFileFormat.EnabledDirtyHacks).HasFlag(DirtyHacks.Xc2MenuSoftlockFix);
+
+            {
+                EnabledDirtyHack[] hacks = configurationFileFormat.DirtyHacks.Select(EnabledDirtyHack.FromPacked).ToArray();
+            
+                Hacks.Xc2MenuSoftlockFix.Value = hacks.Any(it => it.Hack == DirtyHacks.Xc2MenuSoftlockFix);
+            
+                var shaderCompilationThreadSleep = hacks.FirstOrDefault(it => it.Hack == DirtyHacks.ShaderCompilationThreadSleep);
+                Hacks.EnableShaderCompilationThreadSleep.Value = shaderCompilationThreadSleep != null;
+                Hacks.ShaderCompilationThreadSleepDelay.Value = shaderCompilationThreadSleep?.Value ?? 0;
+            }
 
             if (configurationFileUpdated)
             {
