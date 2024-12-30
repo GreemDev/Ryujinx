@@ -629,18 +629,18 @@ namespace Ryujinx.Ava.Utilities.Configuration
             
             public ReactiveObject<bool> Xc2MenuSoftlockFix { get; private set; }
             
-            public ReactiveObject<bool> EnableShaderCompilationThreadSleep { get; private set; }
+            public ReactiveObject<bool> EnableShaderTranslationDelay { get; private set; }
             
-            public ReactiveObject<int> ShaderCompilationThreadSleepDelay { get; private set; }
+            public ReactiveObject<int> ShaderTranslationDelay { get; private set; }
 
             public HacksSection()
             {
                 ShowDirtyHacks = new ReactiveObject<bool>();
                 Xc2MenuSoftlockFix = new ReactiveObject<bool>();
                 Xc2MenuSoftlockFix.Event += HackChanged;
-                EnableShaderCompilationThreadSleep = new ReactiveObject<bool>();
-                EnableShaderCompilationThreadSleep.Event += HackChanged;
-                ShaderCompilationThreadSleepDelay = new ReactiveObject<int>();
+                EnableShaderTranslationDelay = new ReactiveObject<bool>();
+                EnableShaderTranslationDelay.Event += HackChanged;
+                ShaderTranslationDelay = new ReactiveObject<int>();
             }
 
             private void HackChanged(object sender, ReactiveEventArgs<bool> rxe)
@@ -651,7 +651,7 @@ namespace Ryujinx.Ava.Utilities.Configuration
                 if (newHacks != _lastHackCollection)
                 {
                     RyuLogger.Info?.Print(LogClass.Configuration, 
-                        $"EnabledDirtyHacks set to: [{_lastHackCollection}]", "LogValueChange");
+                        $"EnabledDirtyHacks set to: [{newHacks}]", "LogValueChange");
 
                     _lastHackCollection = newHacks;
                 }
@@ -668,8 +668,8 @@ namespace Ryujinx.Ava.Utilities.Configuration
                     if (Xc2MenuSoftlockFix)
                         Apply(DirtyHacks.Xc2MenuSoftlockFix);
                     
-                    if (EnableShaderCompilationThreadSleep)
-                        Apply(DirtyHacks.ShaderCompilationThreadSleep, ShaderCompilationThreadSleepDelay);
+                    if (EnableShaderTranslationDelay)
+                        Apply(DirtyHacks.ShaderCompilationThreadSleep, ShaderTranslationDelay);
                     
                     return enabledHacks.ToArray();
 

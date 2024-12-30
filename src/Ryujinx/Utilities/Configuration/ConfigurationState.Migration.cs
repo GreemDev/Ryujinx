@@ -758,8 +758,8 @@ namespace Ryujinx.Ava.Utilities.Configuration
                 
                 var shaderCompilationThreadSleep = hacks.FirstOrDefault(it => 
                     it.Hack == DirtyHacks.ShaderCompilationThreadSleep);
-                Hacks.EnableShaderCompilationThreadSleep.Value = shaderCompilationThreadSleep != null;
-                Hacks.ShaderCompilationThreadSleepDelay.Value = shaderCompilationThreadSleep?.Value ?? 0;
+                Hacks.EnableShaderTranslationDelay.Value = shaderCompilationThreadSleep != null;
+                Hacks.ShaderTranslationDelay.Value = shaderCompilationThreadSleep?.Value ?? 0;
             }
 
             if (configurationFileUpdated)
