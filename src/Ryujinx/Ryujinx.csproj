@@ -128,6 +128,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="..\..\distribution\linux\shortcut-template.desktop">
+      <Link>Assets\ShortcutFiles\shortcut-template.desktop</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\distribution\macos\shortcut-launch-script.sh">
+      <Link>Assets\ShortcutFiles\shortcut-launch-script.sh</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\distribution\macos\shortcut-template.plist">
+      <Link>Assets\ShortcutFiles\shortcut-template.plist</Link>
+    </EmbeddedResource>
     <EmbeddedResource Include="Assets\locales.json" />
     <EmbeddedResource Include="Assets\Styles\Styles.xaml" />
     <EmbeddedResource Include="Assets\Icons\Controller_JoyConLeft.svg" />

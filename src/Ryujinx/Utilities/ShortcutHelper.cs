@@ -32,7 +32,7 @@ namespace Ryujinx.Ava.Utilities
         private static void CreateShortcutLinux(string applicationFilePath, string applicationId, byte[] iconData, string iconPath, string desktopPath, string cleanedAppName)
         {
             string basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Ryujinx.sh");
-            var desktopFile = EmbeddedResources.ReadAllText("Ryujinx.UI.Common/shortcut-template.desktop");
+            var desktopFile = EmbeddedResources.ReadAllText("Ryujinx/Assets/ShortcutFiles/shortcut-template.desktop");
             iconPath += ".png";
 
             var image = SKBitmap.Decode(iconData);
@@ -48,8 +48,8 @@ namespace Ryujinx.Ava.Utilities
         private static void CreateShortcutMacos(string appFilePath, string applicationId, byte[] iconData, string desktopPath, string cleanedAppName)
         {
             string basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Ryujinx");
-            var plistFile = EmbeddedResources.ReadAllText("Ryujinx.UI.Common/shortcut-template.plist");
-            var shortcutScript = EmbeddedResources.ReadAllText("Ryujinx.UI.Common/shortcut-launch-script.sh");
+            var plistFile = EmbeddedResources.ReadAllText("Ryujinx/Assets/ShortcutFiles/shortcut-template.plist");
+            var shortcutScript = EmbeddedResources.ReadAllText("Ryujinx/Assets/ShortcutFiles/shortcut-launch-script.sh");
             // Macos .App folder
             string contentFolderPath = Path.Combine("/Applications", cleanedAppName + ".app", "Contents");
             string scriptFolderPath = Path.Combine(contentFolderPath, "MacOS");
