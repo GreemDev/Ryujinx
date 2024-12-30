@@ -13,11 +13,6 @@
       ConsoleToMsBuild="true"
       Condition="'$(RuntimeIdentifier)' == ''"
       />
-    <Exec WorkingDirectory="$(ProjectDir)bin\Debug\$(TargetFramework)\$(RuntimeIdentifier)\"
-      Command="dotnet Ryujinx.BuildValidationTasks.dll &quot;$(ProjectDir)..\..\\&quot;"
-      ConsoleToMsBuild="true"
-      Condition="'$(RuntimeIdentifier)' != ''"
-      />
   </Target>
 
 </Project>
