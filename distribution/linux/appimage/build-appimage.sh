@@ -13,7 +13,7 @@ mkdir -p AppDir/usr/bin
 
 cp distribution/linux/Ryujinx.desktop AppDir/Ryujinx.desktop
 cp distribution/linux/appimage/AppRun AppDir/AppRun
-cp src/Ryujinx.UI.Common/Resources/Logo_Ryujinx.png AppDir/Ryujinx.svg
+cp distribution/misc/Logo.svg AppDir/Ryujinx.svg
 
 
 cp -r "$BUILDDIR"/* AppDir/usr/bin/

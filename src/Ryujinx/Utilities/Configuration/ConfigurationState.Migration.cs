@@ -752,11 +752,12 @@ namespace Ryujinx.Ava.Utilities.Configuration
             Hacks.ShowDirtyHacks.Value = configurationFileFormat.ShowDirtyHacks;
 
             {
-                EnabledDirtyHack[] hacks = (configurationFileFormat.DirtyHacks ?? []).Select(EnabledDirtyHack.FromPacked).ToArray();
+                EnabledDirtyHack[] hacks = (configurationFileFormat.DirtyHacks ?? []).Select(EnabledDirtyHack.Unpack).ToArray();
             
                 Hacks.Xc2MenuSoftlockFix.Value = hacks.Any(it => it.Hack == DirtyHacks.Xc2MenuSoftlockFix);
-            
-                var shaderCompilationThreadSleep = hacks.FirstOrDefault(it => it.Hack == DirtyHacks.ShaderCompilationThreadSleep);
+                
+                var shaderCompilationThreadSleep = hacks.FirstOrDefault(it => 
+                    it.Hack == DirtyHacks.ShaderCompilationThreadSleep);
                 Hacks.EnableShaderCompilationThreadSleep.Value = shaderCompilationThreadSleep != null;
                 Hacks.ShaderCompilationThreadSleepDelay.Value = shaderCompilationThreadSleep?.Value ?? 0;
             }

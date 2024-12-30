@@ -17,7 +17,7 @@ namespace Ryujinx.Common.Configuration
         
         public ulong Pack() => BitTricks.PackBitFields([(uint)Hack, (uint)Value], PackedFormat);
 
-        public static EnabledDirtyHack FromPacked(ulong packedHack)
+        public static EnabledDirtyHack Unpack(ulong packedHack)
         {
             var unpackedFields = BitTricks.UnpackBitFields(packedHack, PackedFormat);
             if (unpackedFields is not [var hack, var value])
@@ -39,7 +39,7 @@ namespace Ryujinx.Common.Configuration
         
         public DirtyHackCollection(ulong[] packedHacks)
         {
-            foreach ((DirtyHacks dirtyHacks, int value) in packedHacks.Select(EnabledDirtyHack.FromPacked))
+            foreach ((DirtyHacks dirtyHacks, int value) in packedHacks.Select(EnabledDirtyHack.Unpack))
             {
                 Add(dirtyHacks, value);
             }
