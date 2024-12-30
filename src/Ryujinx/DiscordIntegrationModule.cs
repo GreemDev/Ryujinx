@@ -8,7 +8,7 @@ using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common.Configuration;
 using System.Text;
 
-namespace Ryujinx.UI.Common
+namespace Ryujinx.Ava
 {
     public static class DiscordIntegrationModule
     {

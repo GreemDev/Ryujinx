@@ -10,6 +10,7 @@ using LibHac.Ns;
 using LibHac.Tools.Fs;
 using LibHac.Tools.FsSystem;
 using LibHac.Tools.FsSystem.NcaUtils;
+using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Multiplayer;
 using Ryujinx.Common.Logging;
@@ -76,21 +77,11 @@ namespace Ryujinx.UI.App.Common
             TitleUpdates = _titleUpdates.AsObservableCache();
             DownloadableContents = _downloadableContents.AsObservableCache();
 
-            _nspIcon = GetResourceBytes("Ryujinx.UI.Common.Resources.Icon_NSP.png");
-            _xciIcon = GetResourceBytes("Ryujinx.UI.Common.Resources.Icon_XCI.png");
-            _ncaIcon = GetResourceBytes("Ryujinx.UI.Common.Resources.Icon_NCA.png");
-            _nroIcon = GetResourceBytes("Ryujinx.UI.Common.Resources.Icon_NRO.png");
-            _nsoIcon = GetResourceBytes("Ryujinx.UI.Common.Resources.Icon_NSO.png");
-        }
-
-        private static byte[] GetResourceBytes(string resourceName)
-        {
-            Stream resourceStream = Assembly.GetCallingAssembly().GetManifestResourceStream(resourceName)!;
-            byte[] resourceByteArray = new byte[resourceStream.Length];
-
-            resourceStream.ReadExactly(resourceByteArray);
-
-            return resourceByteArray;
+            _nspIcon = EmbeddedResources.Read("Ryujinx.Assets.UIImages.Icon_NSP.png");
+            _xciIcon = EmbeddedResources.Read("Ryujinx.Assets.UIImages.Icon_XCI.png");
+            _ncaIcon = EmbeddedResources.Read("Ryujinx.Assets.UIImages.Icon_NCA.png");
+            _nroIcon = EmbeddedResources.Read("Ryujinx.Assets.UIImages.Icon_NRO.png");
+            _nsoIcon = EmbeddedResources.Read("Ryujinx.Assets.UIImages.Icon_NSO.png");
         }
 
         /// <exception cref="Ryujinx.HLE.Exceptions.InvalidNpdmException">The npdm file doesn't contain valid data.</exception>

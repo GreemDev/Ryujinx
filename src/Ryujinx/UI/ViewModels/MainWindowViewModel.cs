@@ -134,7 +134,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         // For an example of this, download canary 1.2.95, then open the settings menu, and look at the icon in the top-left.
         // The border gets reduced to colored pixels in the 4 corners.
         public static readonly Bitmap IconBitmap =
-            new(Assembly.GetAssembly(typeof(ConfigurationState))!.GetManifestResourceStream("Ryujinx.UI.Common.Resources.Logo_Ryujinx_AntiAlias.png")!);
+            new(Assembly.GetAssembly(typeof(MainWindowViewModel))!.GetManifestResourceStream("Ryujinx.Assets.UIImages.Logo_Ryujinx_AntiAlias.png")!);
 
         public MainWindow Window { get; init; }
 
