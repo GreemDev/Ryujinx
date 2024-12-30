@@ -19,8 +19,19 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
             return (byte)(uid[3] ^ uid[4] ^ uid[5] ^ uid[6]);
         }
 
-        public static VirtualAmiiboFile ReadBinFile(byte[] fileBytes)
+        public static VirtualAmiiboFile ReadBinFile(string filePath)
         {
+            Logger.Info?.Print(LogClass.ServiceNfp, "Reading bin file.");
+            byte[] fileBytes;
+            try
+            {
+                fileBytes = File.ReadAllBytes(filePath);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error?.Print(LogClass.ServiceNfp, $"Error reading file: {ex.Message}");
+                return new VirtualAmiiboFile();
+            }
             string keyRetailBinPath = GetKeyRetailBinPath();
             if (string.IsNullOrEmpty(keyRetailBinPath))
             {
@@ -39,6 +50,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
                 byte[] newFileBytes = new byte[totalBytes];
                 Array.Copy(fileBytes, newFileBytes, fileBytes.Length);
                 fileBytes = newFileBytes;
+                Logger.Info?.Print(LogClass.ServiceNfp, "Added 8 bytes to the end of the file.");
             }
 
             AmiiboDecryptor amiiboDecryptor = new(keyRetailBinPath);
@@ -59,6 +71,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
             byte[] dataFull = amiiboDump.GetData();
             Logger.Debug?.Print(LogClass.ServiceNfp, $"Data Full Length: {dataFull.Length}");
             byte[] uid = new byte[7];
+            byte[] mii = new byte[98];
             Array.Copy(dataFull, 0, uid, 0, 7);
 
             byte bcc0 = CalculateBCC0(uid);
@@ -96,6 +109,10 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
                         setID[0] = pageData[2];
                         formData = pageData[3];
                         break;
+                    case >= 40 and <= 63:
+                        int miiOffset = (page - 40) * 4;
+                        Array.Copy(pageData, 0, mii, miiOffset, 4);
+                        break;
                     case 64:
                     case 65:
                         // Extract title ID
@@ -113,7 +130,6 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
                         break;
                 }
             }
-
             string usedCharacterStr = BitConverter.ToString(usedCharacter).Replace("-", "");
             string variationStr = BitConverter.ToString(variation).Replace("-", "");
             string amiiboIDStr = BitConverter.ToString(amiiboID).Replace("-", "");
@@ -141,14 +157,20 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
                 LastWriteDate = writeDateTime,
                 WriteCounter = writeCounterValue,
             };
-            if (writeCounterValue > 0)
+            VirtualAmiiboBinFile virtualAmiiboBinFile = new VirtualAmiiboBinFile
             {
-                VirtualAmiibo.ApplicationBytes = applicationAreas;
-            }
-            VirtualAmiibo.NickName = nickName;
+                ApplicationBytes = applicationAreas,
+                MiiBytes = mii,
+                InputBin = filePath,
+                NickName = nickName,
+                WriteCounter = writeCounterValue,
+                LastWriteDate = writeDateTime,
+                TagUuid = uid,
+            };
+            VirtualAmiibo.VirtualAmiiboBinFile = virtualAmiiboBinFile;
             return virtualAmiiboFile;
         }
-        public static bool SaveBinFile(string inputFile, byte[] appData)
+        public static bool SaveBinFile(string inputFile, VirtualAmiiboBinFile virtualAmiiboBinFile)
         {
             Logger.Info?.Print(LogClass.ServiceNfp, "Saving bin file.");
             byte[] readBytes;
@@ -168,92 +190,32 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.AmiiboDecryption
                 return false;
             }
 
-            if (appData.Length != 216) // Ensure application area size is valid
+            if (readBytes.Length == 532)
+            {
+                // add 8 bytes to the end of the file
+                byte[] newFileBytes = new byte[540];
+                Array.Copy(readBytes, newFileBytes, readBytes.Length);
+                readBytes = newFileBytes;
+            }
+
+            AmiiboDecryptor amiiboDecryptor = new AmiiboDecryptor(keyRetailBinPath);
+            AmiiboDump amiiboDump = amiiboDecryptor.DecryptAmiiboDump(readBytes);
+            amiiboDump.AmiiboNickname = virtualAmiiboBinFile.NickName;
+            byte[] appData = virtualAmiiboBinFile.ApplicationBytes;
+            if (appData.Length != 216)
             {
                 Logger.Error?.Print(LogClass.ServiceNfp, "Invalid application data length. Expected 216 bytes.");
                 return false;
             }
-
-            if (readBytes.Length == 532)
-            {
-                // add 8 bytes to the end of the file
-                byte[] newFileBytes = new byte[540];
-                Array.Copy(readBytes, newFileBytes, readBytes.Length);
-                readBytes = newFileBytes;
-            }
-
-            AmiiboDecryptor amiiboDecryptor = new AmiiboDecryptor(keyRetailBinPath);
-            AmiiboDump amiiboDump = amiiboDecryptor.DecryptAmiiboDump(readBytes);
-
             byte[] oldData = amiiboDump.GetData();
-            if (oldData.Length != 540) // Verify the expected length for NTAG215 tags
-            {
-                Logger.Error?.Print(LogClass.ServiceNfp, "Invalid tag data length. Expected 540 bytes.");
-                return false;
-            }
+            Array.Copy(appData, 0, oldData, 304, 216);
+            // apply write counter and write date change
+            byte[] writeCounter = BitConverter.GetBytes(virtualAmiiboBinFile.WriteCounter);
+            byte[] writeDate = BitConverter.GetBytes((ushort)virtualAmiiboBinFile.LastWriteDate.Day);
+            writeDate = BitConverter.GetBytes((ushort)(writeDate[0] | (virtualAmiiboBinFile.LastWriteDate.Month << 5) | (virtualAmiiboBinFile.LastWriteDate.Year - 2000) << 9));
+            Array.Copy(writeCounter, 0, oldData, 264, 2);
+            Array.Copy(writeDate, 0, oldData, 26, 2);
 
-            byte[] newData = new byte[oldData.Length];
-            Array.Copy(oldData, newData, oldData.Length);
-
-            // Replace application area with appData
-            int appAreaOffset = 76 * 4; // Starting page (76) times 4 bytes per page
-            Array.Copy(appData, 0, newData, appAreaOffset, appData.Length);
-
-            AmiiboDump encryptedDump = amiiboDecryptor.EncryptAmiiboDump(newData);
-            byte[] encryptedData = encryptedDump.GetData();
-
-            if (encryptedData == null || encryptedData.Length != readBytes.Length)
-            {
-                Logger.Error?.Print(LogClass.ServiceNfp, "Failed to encrypt data correctly.");
-                return false;
-            }
-            inputFile = inputFile.Replace("_modified", string.Empty);
-            // Save the encrypted data to file or return it for saving externally
-            string outputFilePath = Path.Combine(Path.GetDirectoryName(inputFile), Path.GetFileNameWithoutExtension(inputFile) + "_modified.bin");
-            try
-            {
-                File.WriteAllBytes(outputFilePath, encryptedData);
-                Logger.Info?.Print(LogClass.ServiceNfp, $"Modified Amiibo data saved to {outputFilePath}.");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error?.Print(LogClass.ServiceNfp, $"Error saving file: {ex.Message}");
-                return false;
-            }
-        }
-        public static bool SaveBinFile(string inputFile, string newNickName)
-        {
-            Logger.Info?.Print(LogClass.ServiceNfp, "Saving bin file.");
-            byte[] readBytes;
-            try
-            {
-                readBytes = File.ReadAllBytes(inputFile);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error?.Print(LogClass.ServiceNfp, $"Error reading file: {ex.Message}");
-                return false;
-            }
-            string keyRetailBinPath = GetKeyRetailBinPath();
-            if (string.IsNullOrEmpty(keyRetailBinPath))
-            {
-                Logger.Error?.Print(LogClass.ServiceNfp, "Key retail path is empty.");
-                return false;
-            }
-
-            if (readBytes.Length == 532)
-            {
-                // add 8 bytes to the end of the file
-                byte[] newFileBytes = new byte[540];
-                Array.Copy(readBytes, newFileBytes, readBytes.Length);
-                readBytes = newFileBytes;
-            }
-
-            AmiiboDecryptor amiiboDecryptor = new AmiiboDecryptor(keyRetailBinPath);
-            AmiiboDump amiiboDump = amiiboDecryptor.DecryptAmiiboDump(readBytes);
-            amiiboDump.AmiiboNickname = newNickName;
-            byte[] oldData = amiiboDump.GetData();
             if (oldData.Length != 540) // Verify the expected length for NTAG215 tags
             {
                 Logger.Error?.Print(LogClass.ServiceNfp, "Invalid tag data length. Expected 540 bytes.");
