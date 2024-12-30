@@ -56,7 +56,7 @@
                 </StackPanel>
                 <Slider HorizontalAlignment="Center" 
                         Value="{Binding ShaderTranslationDelay}"
-                        ToolTip.Tip="{Binding ShaderTranslationDelay}"
+                        ToolTip.Tip="{Binding ShaderTranslationDelayTooltipText}"
                         Width="175"
                         Margin="0,-3,0,0"
                         Height="32"
