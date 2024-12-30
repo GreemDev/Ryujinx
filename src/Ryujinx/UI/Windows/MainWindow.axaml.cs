@@ -15,18 +15,19 @@ using Ryujinx.Ava.Input;
 using Ryujinx.Ava.UI.Applet;
 using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Ava.UI.ViewModels;
+using Ryujinx.Ava.Utilities;
+using Ryujinx.Ava.Utilities.AppLibrary;
+using Ryujinx.Ava.Utilities.Configuration;
 using Ryujinx.Common;
+using Ryujinx.Common.Helper;
 using Ryujinx.Common.Logging;
+using Ryujinx.Common.UI;
 using Ryujinx.Graphics.Gpu;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS;
 using Ryujinx.HLE.HOS.Services.Account.Acc;
 using Ryujinx.Input.HLE;
 using Ryujinx.Input.SDL2;
-using Ryujinx.UI.App.Common;
-using Ryujinx.UI.Common;
-using Ryujinx.UI.Common.Configuration;
-using Ryujinx.UI.Common.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -169,7 +170,7 @@ namespace Ryujinx.Ava.UI.Windows
             {
                 var ldnGameDataArray = e.LdnData.ToList();
                 ViewModel.LdnData.Clear();
-                foreach (var application in ViewModel.Applications)
+                foreach (var application in ViewModel.Applications.Where(it => it.HasControlHolder))
                 {
                     ref var controlHolder = ref application.ControlHolder.Value;
                     
