@@ -24,6 +24,7 @@ using Ryujinx.Ava.UI.Windows;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
+using Ryujinx.Common.UI;
 using Ryujinx.Common.Utilities;
 using Ryujinx.Cpu;
 using Ryujinx.HLE;
