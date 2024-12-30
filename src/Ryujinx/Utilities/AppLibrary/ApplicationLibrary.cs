@@ -75,11 +75,11 @@ namespace Ryujinx.Ava.Utilities.AppLibrary
             TitleUpdates = _titleUpdates.AsObservableCache();
             DownloadableContents = _downloadableContents.AsObservableCache();
 
-            _nspIcon = EmbeddedResources.Read("Ryujinx.Assets.UIImages.Icon_NSP.png");
-            _xciIcon = EmbeddedResources.Read("Ryujinx.Assets.UIImages.Icon_XCI.png");
-            _ncaIcon = EmbeddedResources.Read("Ryujinx.Assets.UIImages.Icon_NCA.png");
-            _nroIcon = EmbeddedResources.Read("Ryujinx.Assets.UIImages.Icon_NRO.png");
-            _nsoIcon = EmbeddedResources.Read("Ryujinx.Assets.UIImages.Icon_NSO.png");
+            _nspIcon = EmbeddedResources.Read("Ryujinx/Assets.UIImages.Icon_NSP.png");
+            _xciIcon = EmbeddedResources.Read("Ryujinx/Assets.UIImages.Icon_XCI.png");
+            _ncaIcon = EmbeddedResources.Read("Ryujinx/Assets.UIImages.Icon_NCA.png");
+            _nroIcon = EmbeddedResources.Read("Ryujinx/Assets.UIImages.Icon_NRO.png");
+            _nsoIcon = EmbeddedResources.Read("Ryujinx/Assets.UIImages.Icon_NSO.png");
         }
 
         /// <exception cref="Ryujinx.HLE.Exceptions.InvalidNpdmException">The npdm file doesn't contain valid data.</exception>
