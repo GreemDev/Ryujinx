@@ -1,14 +1,69 @@
 using Ryujinx.Common.Configuration.Hid;
+using Ryujinx.Common.Configuration.Hid.Controller;
+using Ryujinx.Common.Logging;
+using System;
+using System.Collections.Generic;
 using System.Numerics;
+using System.Threading;
+using static SDL2.SDL;
 
 namespace Ryujinx.Input.SDL2
 {
     internal class SDL2JoyCon : IGamepad
     {
-        readonly IGamepad _gamepad;
+        private bool HasConfiguration => _configuration != null;
+
+        private readonly record struct ButtonMappingEntry(GamepadButtonInputId To, GamepadButtonInputId From)
+        {
+            public bool IsValid => To is not GamepadButtonInputId.Unbound && From is not GamepadButtonInputId.Unbound;
+        }
+
+        private StandardControllerInputConfig _configuration;
+
+        private readonly Dictionary<GamepadButtonInputId,SDL_GameControllerButton> _leftButtonsDriverMapping = new()
+        {
+            { GamepadButtonInputId.LeftStick , SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_LEFTSTICK },
+             {GamepadButtonInputId.DpadUp ,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_Y},
+             {GamepadButtonInputId.DpadDown ,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_A},
+             {GamepadButtonInputId.DpadLeft ,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_B},
+             {GamepadButtonInputId.DpadRight ,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_X},
+             {GamepadButtonInputId.Minus ,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_START},
+             {GamepadButtonInputId.LeftShoulder,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_PADDLE2},
+             {GamepadButtonInputId.LeftTrigger,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_PADDLE4},
+             {GamepadButtonInputId.SingleRightTrigger0,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_RIGHTSHOULDER},
+             {GamepadButtonInputId.SingleLeftTrigger0,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_LEFTSHOULDER},
+        };
+        private readonly Dictionary<GamepadButtonInputId,SDL_GameControllerButton> _rightButtonsDriverMapping = new()
+        {
+             {GamepadButtonInputId.RightStick,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_LEFTSTICK},
+             {GamepadButtonInputId.A,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_B},
+             {GamepadButtonInputId.B,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_Y},
+             {GamepadButtonInputId.X,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_A},
+             {GamepadButtonInputId.Y,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_X},
+             {GamepadButtonInputId.Plus,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_START},
+             {GamepadButtonInputId.RightShoulder,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_PADDLE1},
+             {GamepadButtonInputId.RightTrigger,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_PADDLE3},
+             {GamepadButtonInputId.SingleRightTrigger1,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_RIGHTSHOULDER},
+             {GamepadButtonInputId.SingleLeftTrigger1,SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_LEFTSHOULDER}
+        };
+
+        private readonly Dictionary<GamepadButtonInputId, SDL_GameControllerButton> _buttonsDriverMapping;
+        private readonly Lock _userMappingLock = new();
+
+        private readonly List<ButtonMappingEntry> _buttonsUserMapping;
+
+        private readonly StickInputId[] _stickUserMapping = new StickInputId[(int)StickInputId.Count]
+        {
+            StickInputId.Unbound, StickInputId.Left, StickInputId.Right,
+        };
+
+        public GamepadFeaturesFlag Features { get; }
+
+        private nint _gamepadHandle;
+
         private enum JoyConType
         {
-            Left , Right
+            Left, Right
         }
 
         public const string Prefix = "Nintendo Switch Joy-Con";
@@ -19,44 +74,205 @@ namespace Ryujinx.Input.SDL2
 
         public SDL2JoyCon(nint gamepadHandle, string driverId)
         {
-            _gamepad = new SDL2Gamepad(gamepadHandle, driverId);
-            _joyConType = Name switch
+            _gamepadHandle = gamepadHandle;
+            _buttonsUserMapping = new List<ButtonMappingEntry>(10);
+
+            Name = SDL_GameControllerName(_gamepadHandle);
+            Id = driverId;
+            Features = GetFeaturesFlag();
+
+            // Enable motion tracking
+            if (Features.HasFlag(GamepadFeaturesFlag.Motion))
             {
-                LeftName => JoyConType.Left,
-                RightName => JoyConType.Right,
-                _ => JoyConType.Left
-            };
+                if (SDL_GameControllerSetSensorEnabled(_gamepadHandle, SDL_SensorType.SDL_SENSOR_ACCEL,
+                        SDL_bool.SDL_TRUE) != 0)
+                {
+                    Logger.Error?.Print(LogClass.Hid,
+                        $"Could not enable data reporting for SensorType {SDL_SensorType.SDL_SENSOR_ACCEL}.");
+                }
+
+                if (SDL_GameControllerSetSensorEnabled(_gamepadHandle, SDL_SensorType.SDL_SENSOR_GYRO,
+                        SDL_bool.SDL_TRUE) != 0)
+                {
+                    Logger.Error?.Print(LogClass.Hid,
+                        $"Could not enable data reporting for SensorType {SDL_SensorType.SDL_SENSOR_GYRO}.");
+                }
+            }
+
+            switch (Name)
+            {
+                case LeftName:
+                    {
+                        _buttonsDriverMapping = _leftButtonsDriverMapping;
+                        _joyConType = JoyConType.Left;
+                        break;
+                    }
+                case RightName:
+                    {
+                        _buttonsDriverMapping = _rightButtonsDriverMapping;
+                        _joyConType = JoyConType.Right;
+                        break;
+                    }
+            }
         }
 
-        public Vector3 GetMotionData(MotionInputId inputId)
+        private GamepadFeaturesFlag GetFeaturesFlag()
         {
-            var motionData = _gamepad.GetMotionData(inputId);
-            return _joyConType switch
+            GamepadFeaturesFlag result = GamepadFeaturesFlag.None;
+
+            if (SDL_GameControllerHasSensor(_gamepadHandle, SDL_SensorType.SDL_SENSOR_ACCEL) == SDL_bool.SDL_TRUE &&
+                SDL_GameControllerHasSensor(_gamepadHandle, SDL_SensorType.SDL_SENSOR_GYRO) == SDL_bool.SDL_TRUE)
             {
-                JoyConType.Left => new Vector3(-motionData.Z, motionData.Y, motionData.X),
-                JoyConType.Right => new Vector3(motionData.Z, motionData.Y, -motionData.X),
-                _ => Vector3.Zero
-            };
+                result |= GamepadFeaturesFlag.Motion;
+            }
+
+            int error = SDL_GameControllerRumble(_gamepadHandle, 0, 0, 100);
+
+            if (error == 0)
+            {
+                result |= GamepadFeaturesFlag.Rumble;
+            }
+
+            return result;
         }
+
+        public string Id { get; }
+        public string Name { get; }
+        public bool IsConnected => SDL_GameControllerGetAttached(_gamepadHandle) == SDL_bool.SDL_TRUE;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing && _gamepadHandle != nint.Zero)
+            {
+                SDL_GameControllerClose(_gamepadHandle);
+
+                _gamepadHandle = nint.Zero;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
 
         public void SetTriggerThreshold(float triggerThreshold)
         {
-            _gamepad.SetTriggerThreshold(triggerThreshold);
-        }
 
-        public void SetConfiguration(InputConfig configuration)
-        {
-            _gamepad.SetConfiguration(configuration);
         }
 
         public void Rumble(float lowFrequency, float highFrequency, uint durationMs)
         {
-            _gamepad.Rumble(lowFrequency, highFrequency, durationMs);
+            if (!Features.HasFlag(GamepadFeaturesFlag.Rumble))
+                return;
+
+            ushort lowFrequencyRaw = (ushort)(lowFrequency * ushort.MaxValue);
+            ushort highFrequencyRaw = (ushort)(highFrequency * ushort.MaxValue);
+
+            if (durationMs == uint.MaxValue)
+            {
+                if (SDL_GameControllerRumble(_gamepadHandle, lowFrequencyRaw, highFrequencyRaw, SDL_HAPTIC_INFINITY) !=
+                    0)
+                    Logger.Error?.Print(LogClass.Hid, "Rumble is not supported on this game controller.");
+            }
+            else if (durationMs > SDL_HAPTIC_INFINITY)
+            {
+                Logger.Error?.Print(LogClass.Hid, $"Unsupported rumble duration {durationMs}");
+            }
+            else
+            {
+                if (SDL_GameControllerRumble(_gamepadHandle, lowFrequencyRaw, highFrequencyRaw, durationMs) != 0)
+                    Logger.Error?.Print(LogClass.Hid, "Rumble is not supported on this game controller.");
+            }
         }
 
-        public GamepadStateSnapshot GetMappedStateSnapshot()
+        public Vector3 GetMotionData(MotionInputId inputId)
         {
-            return GetStateSnapshot();
+            SDL_SensorType sensorType = inputId switch
+            {
+                MotionInputId.Accelerometer => SDL_SensorType.SDL_SENSOR_ACCEL,
+                MotionInputId.Gyroscope => SDL_SensorType.SDL_SENSOR_GYRO,
+                _ => SDL_SensorType.SDL_SENSOR_INVALID
+            };
+
+            if (!Features.HasFlag(GamepadFeaturesFlag.Motion) || sensorType is SDL_SensorType.SDL_SENSOR_INVALID)
+                return Vector3.Zero;
+
+            const int ElementCount = 3;
+
+            unsafe
+            {
+                float* values = stackalloc float[ElementCount];
+
+                int result = SDL_GameControllerGetSensorData(_gamepadHandle, sensorType, (nint)values, ElementCount);
+
+                if (result != 0)
+                    return Vector3.Zero;
+
+                Vector3 value = _joyConType switch
+                {
+                    JoyConType.Left => new Vector3(-values[2], values[1], values[0]),
+                    JoyConType.Right => new Vector3(values[2], values[1], -values[0])
+                };
+
+                return inputId switch
+                {
+                    MotionInputId.Gyroscope => RadToDegree(value),
+                    MotionInputId.Accelerometer => GsToMs2(value),
+                    _ => value
+                };
+            }
+        }
+
+        private static Vector3 RadToDegree(Vector3 rad) => rad * (180 / MathF.PI);
+
+        private static Vector3 GsToMs2(Vector3 gs) => gs / SDL_STANDARD_GRAVITY;
+
+        public void SetConfiguration(InputConfig configuration)
+        {
+            lock (_userMappingLock)
+            {
+                _configuration = (StandardControllerInputConfig)configuration;
+
+                _buttonsUserMapping.Clear();
+
+                // First update sticks
+                _stickUserMapping[(int)StickInputId.Left] = (StickInputId)_configuration.LeftJoyconStick.Joystick;
+                _stickUserMapping[(int)StickInputId.Right] = (StickInputId)_configuration.RightJoyconStick.Joystick;
+
+
+                switch (_joyConType)
+                {
+                    case JoyConType.Left:
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.LeftStick, (GamepadButtonInputId)_configuration.LeftJoyconStick.StickButton));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.DpadUp, (GamepadButtonInputId)_configuration.LeftJoycon.DpadUp));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.DpadDown, (GamepadButtonInputId)_configuration.LeftJoycon.DpadDown));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.DpadLeft, (GamepadButtonInputId)_configuration.LeftJoycon.DpadLeft));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.DpadRight, (GamepadButtonInputId)_configuration.LeftJoycon.DpadRight));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.Minus, (GamepadButtonInputId)_configuration.LeftJoycon.ButtonMinus));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.LeftShoulder, (GamepadButtonInputId)_configuration.LeftJoycon.ButtonL));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.LeftTrigger, (GamepadButtonInputId)_configuration.LeftJoycon.ButtonZl));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.SingleRightTrigger0, (GamepadButtonInputId)_configuration.LeftJoycon.ButtonSr));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.SingleLeftTrigger0, (GamepadButtonInputId)_configuration.LeftJoycon.ButtonSl));
+                        break;
+                    case JoyConType.Right:
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.RightStick, (GamepadButtonInputId)_configuration.RightJoyconStick.StickButton));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.A, (GamepadButtonInputId)_configuration.RightJoycon.ButtonA));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.B, (GamepadButtonInputId)_configuration.RightJoycon.ButtonB));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.X, (GamepadButtonInputId)_configuration.RightJoycon.ButtonX));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.Y, (GamepadButtonInputId)_configuration.RightJoycon.ButtonY));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.Plus, (GamepadButtonInputId)_configuration.RightJoycon.ButtonPlus));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.RightShoulder, (GamepadButtonInputId)_configuration.RightJoycon.ButtonR));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.RightTrigger, (GamepadButtonInputId)_configuration.RightJoycon.ButtonZr));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.SingleRightTrigger1, (GamepadButtonInputId)_configuration.RightJoycon.ButtonSr));
+                        _buttonsUserMapping.Add(new ButtonMappingEntry(GamepadButtonInputId.SingleLeftTrigger1, (GamepadButtonInputId)_configuration.RightJoycon.ButtonSl));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                
+                SetTriggerThreshold(_configuration.TriggerThreshold);
+            }
         }
 
         public GamepadStateSnapshot GetStateSnapshot()
@@ -64,69 +280,130 @@ namespace Ryujinx.Input.SDL2
             return IGamepad.GetStateSnapshot(this);
         }
 
+        public GamepadStateSnapshot GetMappedStateSnapshot()
+        {
+            GamepadStateSnapshot rawState = GetStateSnapshot();
+            GamepadStateSnapshot result = default;
 
-        public (float, float) GetStick(StickInputId inputId)
+            lock (_userMappingLock)
+            {
+                if (_buttonsUserMapping.Count == 0)
+                    return rawState;
+
+
+                // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+                foreach (ButtonMappingEntry entry in _buttonsUserMapping)
+                {
+                    if (!entry.IsValid)
+                        continue;
+
+                    // Do not touch state of button already pressed
+                    if (!result.IsPressed(entry.To))
+                    {
+                        result.SetPressed(entry.To, rawState.IsPressed(entry.From));
+                    }
+                }
+
+                (float leftStickX, float leftStickY) = rawState.GetStick(_stickUserMapping[(int)StickInputId.Left]);
+                (float rightStickX, float rightStickY) = rawState.GetStick(_stickUserMapping[(int)StickInputId.Right]);
+
+                result.SetStick(StickInputId.Left, leftStickX, leftStickY);
+                result.SetStick(StickInputId.Right, rightStickX, rightStickY);
+            }
+
+            return result;
+        }
+
+
+        private static float ConvertRawStickValue(short value)
+        {
+            const float ConvertRate = 1.0f / (short.MaxValue + 0.5f);
+
+            return value * ConvertRate;
+        }
+
+        private JoyconConfigControllerStick<GamepadInputId, Common.Configuration.Hid.Controller.StickInputId>
+            GetLogicalJoyStickConfig(StickInputId inputId)
         {
             switch (inputId)
             {
-                case StickInputId.Left when _joyConType == JoyConType.Left:
-                    {
-                        (float x, float y) = _gamepad.GetStick(inputId);
-                        return (y, -x);
-                    }
-                case StickInputId.Right when _joyConType == JoyConType.Right:
-                    {
-                        (float x, float y) = _gamepad.GetStick(StickInputId.Left);
-                        return (-y, x);
-                    }
-                default:
-                    return (0, 0);
+                case StickInputId.Left:
+                    if (_configuration.RightJoyconStick.Joystick ==
+                        Common.Configuration.Hid.Controller.StickInputId.Left)
+                        return _configuration.RightJoyconStick;
+                    else
+                        return _configuration.LeftJoyconStick;
+                case StickInputId.Right:
+                    if (_configuration.LeftJoyconStick.Joystick ==
+                        Common.Configuration.Hid.Controller.StickInputId.Right)
+                        return _configuration.LeftJoyconStick;
+                    else
+                        return _configuration.RightJoyconStick;
             }
+
+            return null;
         }
 
-        public GamepadFeaturesFlag Features => _gamepad.Features;
-        public string Id => _gamepad.Id;
-        public string Name => _gamepad.Name;
-        public bool IsConnected => _gamepad.IsConnected;
 
-        public bool IsPressed(GamepadButtonInputId inputId)
+        public (float, float) GetStick(StickInputId inputId)
         {
-            return _joyConType switch
+            if (inputId == StickInputId.Unbound)
+                return (0.0f, 0.0f);
+
+            if (inputId == StickInputId.Left && _joyConType == JoyConType.Right || inputId == StickInputId.Right && _joyConType == JoyConType.Left)
             {
-                JoyConType.Left => inputId switch
+                return (0.0f, 0.0f);
+            }
+            
+            (short stickX, short stickY) = GetStickXY();
+
+            float resultX = ConvertRawStickValue(stickX);
+            float resultY = -ConvertRawStickValue(stickY);
+
+            if (HasConfiguration)
+            {
+                var joyconStickConfig = GetLogicalJoyStickConfig(inputId);
+
+                if (joyconStickConfig != null)
                 {
-                    GamepadButtonInputId.LeftStick => _gamepad.IsPressed(GamepadButtonInputId.LeftStick),
-                    GamepadButtonInputId.DpadUp => _gamepad.IsPressed(GamepadButtonInputId.Y),
-                    GamepadButtonInputId.DpadDown => _gamepad.IsPressed(GamepadButtonInputId.A),
-                    GamepadButtonInputId.DpadLeft => _gamepad.IsPressed(GamepadButtonInputId.B),
-                    GamepadButtonInputId.DpadRight => _gamepad.IsPressed(GamepadButtonInputId.X),
-                    GamepadButtonInputId.Minus => _gamepad.IsPressed(GamepadButtonInputId.Start),
-                    GamepadButtonInputId.LeftShoulder => _gamepad.IsPressed(GamepadButtonInputId.Paddle2),
-                    GamepadButtonInputId.LeftTrigger => _gamepad.IsPressed(GamepadButtonInputId.Paddle4),
-                    GamepadButtonInputId.SingleRightTrigger0 => _gamepad.IsPressed(GamepadButtonInputId.RightShoulder),
-                    GamepadButtonInputId.SingleLeftTrigger0 => _gamepad.IsPressed(GamepadButtonInputId.LeftShoulder),
-                    _ => false
-                },
-                JoyConType.Right => inputId switch
-                {
-                    GamepadButtonInputId.RightStick => _gamepad.IsPressed(GamepadButtonInputId.LeftStick),
-                    GamepadButtonInputId.A => _gamepad.IsPressed(GamepadButtonInputId.B),
-                    GamepadButtonInputId.B => _gamepad.IsPressed(GamepadButtonInputId.Y),
-                    GamepadButtonInputId.X => _gamepad.IsPressed(GamepadButtonInputId.A),
-                    GamepadButtonInputId.Y => _gamepad.IsPressed(GamepadButtonInputId.X),
-                    GamepadButtonInputId.Plus => _gamepad.IsPressed(GamepadButtonInputId.Start),
-                    GamepadButtonInputId.RightShoulder => _gamepad.IsPressed(GamepadButtonInputId.Paddle1),
-                    GamepadButtonInputId.RightTrigger => _gamepad.IsPressed(GamepadButtonInputId.Paddle3),
-                    GamepadButtonInputId.SingleRightTrigger1 => _gamepad.IsPressed(GamepadButtonInputId.RightShoulder),
-                    GamepadButtonInputId.SingleLeftTrigger1 => _gamepad.IsPressed(GamepadButtonInputId.LeftShoulder),
-                    _ => false
+                    if (joyconStickConfig.InvertStickX)
+                        resultX = -resultX;
+
+                    if (joyconStickConfig.InvertStickY)
+                        resultY = -resultY;
+
+                    if (joyconStickConfig.Rotate90CW)
+                    {
+                        float temp = resultX;
+                        resultX = resultY;
+                        resultY = -temp;
+                    }
                 }
+            }
+
+            return inputId switch
+            {
+                StickInputId.Left when _joyConType == JoyConType.Left => (resultY, -resultX),
+                StickInputId.Right when _joyConType == JoyConType.Right => (-resultY, resultX),
+                _ => (0.0f, 0.0f)
             };
         }
 
-        public void Dispose()
+        private (short, short) GetStickXY()
         {
-            _gamepad.Dispose();
+            return (
+                SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_LEFTX),
+                SDL_GameControllerGetAxis(_gamepadHandle, SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_LEFTY));
+        }
+        
+        public bool IsPressed(GamepadButtonInputId inputId)
+        {
+            if (!_buttonsDriverMapping.TryGetValue(inputId, out var button))
+            {
+                return false;
+            }
+
+            return SDL_GameControllerGetButton(_gamepadHandle, button) == 1;
         }
     }
 }
