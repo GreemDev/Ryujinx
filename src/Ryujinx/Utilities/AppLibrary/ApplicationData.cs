@@ -15,7 +15,7 @@ using System;
 using System.IO;
 using System.Text.Json.Serialization;
 
-namespace Ryujinx.UI.App.Common
+namespace Ryujinx.Ava.Utilities.AppLibrary
 {
     public class ApplicationData
     {

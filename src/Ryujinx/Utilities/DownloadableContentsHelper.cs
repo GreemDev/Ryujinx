@@ -3,18 +3,18 @@ using LibHac.Fs;
 using LibHac.Fs.Fsa;
 using LibHac.Tools.FsSystem;
 using LibHac.Tools.FsSystem.NcaUtils;
+using Ryujinx.Ava.Common.Models;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.Utilities;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.Utilities;
-using Ryujinx.UI.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using Path = System.IO.Path;
 
-namespace Ryujinx.UI.Common.Helper
+namespace Ryujinx.Ava.Utilities
 {
     public static class DownloadableContentsHelper
     {

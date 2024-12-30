@@ -10,6 +10,7 @@ using LibHac.Ns;
 using LibHac.Tools.Fs;
 using LibHac.Tools.FsSystem;
 using LibHac.Tools.FsSystem.NcaUtils;
+using Ryujinx.Ava.Common.Models;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Multiplayer;
@@ -22,14 +23,11 @@ using Ryujinx.HLE.Loaders.Processes.Extensions;
 using Ryujinx.HLE.Utilities;
 using Ryujinx.UI.Common.Configuration;
 using Ryujinx.UI.Common.Configuration.System;
-using Ryujinx.UI.Common.Helper;
-using Ryujinx.UI.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -39,7 +37,7 @@ using MissingKeyException = LibHac.Common.Keys.MissingKeyException;
 using Path = System.IO.Path;
 using TimeSpan = System.TimeSpan;
 
-namespace Ryujinx.UI.App.Common
+namespace Ryujinx.Ava.Utilities.AppLibrary
 {
     public class ApplicationLibrary
     {

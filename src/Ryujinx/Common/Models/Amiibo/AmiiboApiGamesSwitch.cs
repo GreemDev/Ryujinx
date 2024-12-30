@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Ryujinx.UI.Common.Models.Amiibo
+namespace Ryujinx.Ava.Common.Models.Amiibo
 {
     public class AmiiboApiGamesSwitch
     {

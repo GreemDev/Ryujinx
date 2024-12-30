@@ -4,7 +4,7 @@ using Ryujinx.HLE.FileSystem;
 using System;
 using System.IO;
 
-namespace Ryujinx.UI.Common.Helper
+namespace Ryujinx.Ava.Utilities
 {
     /// <summary>
     /// Ensure installation validity

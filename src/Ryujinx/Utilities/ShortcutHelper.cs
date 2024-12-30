@@ -1,5 +1,6 @@
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
+using Ryujinx.UI.Common.Helper;
 using ShellLink;
 using SkiaSharp;
 using System;
@@ -7,7 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Versioning;
 
-namespace Ryujinx.UI.Common.Helper
+namespace Ryujinx.Ava.Utilities
 {
     public static class ShortcutHelper
     {

@@ -1,10 +1,10 @@
 using DiscordRPC;
 using Humanizer;
 using Humanizer.Localisation;
+using Ryujinx.Ava.Utilities.AppLibrary;
 using Ryujinx.Common;
 using Ryujinx.HLE;
 using Ryujinx.HLE.Loaders.Processes;
-using Ryujinx.UI.App.Common;
 using Ryujinx.UI.Common.Configuration;
 using System.Text;
 

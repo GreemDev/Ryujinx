@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Ryujinx.UI.App.Common
+namespace Ryujinx.Ava.Utilities.AppLibrary
 {
     public struct LdnGameData
     {

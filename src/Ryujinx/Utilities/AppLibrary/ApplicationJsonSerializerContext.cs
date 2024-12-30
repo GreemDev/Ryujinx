@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Ryujinx.UI.App.Common
+namespace Ryujinx.Ava.Utilities.AppLibrary
 {
     [JsonSourceGenerationOptions(WriteIndented = true)]
     [JsonSerializable(typeof(ApplicationMetadata))]

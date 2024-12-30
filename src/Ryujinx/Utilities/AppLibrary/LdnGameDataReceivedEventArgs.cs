@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Ryujinx.UI.App.Common
+namespace Ryujinx.Ava.Utilities.AppLibrary
 {
     public class LdnGameDataReceivedEventArgs : EventArgs
     {

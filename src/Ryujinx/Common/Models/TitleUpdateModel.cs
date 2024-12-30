@@ -1,4 +1,4 @@
-namespace Ryujinx.UI.Common.Models
+namespace Ryujinx.Ava.Common.Models
 {
     // NOTE: most consuming code relies on this model being value-comparable
     public record TitleUpdateModel(ulong TitleId, ulong Version, string DisplayVersion, string Path)

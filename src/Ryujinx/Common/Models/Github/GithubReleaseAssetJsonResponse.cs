@@ -1,4 +1,4 @@
-namespace Ryujinx.UI.Common.Models.Github
+namespace Ryujinx.Ava.Common.Models.Github
 {
     public class GithubReleaseAssetJsonResponse
     {

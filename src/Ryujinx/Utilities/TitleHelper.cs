@@ -1,7 +1,6 @@
 using Ryujinx.HLE.Loaders.Processes;
-using System;
 
-namespace Ryujinx.UI.Common.Helper
+namespace Ryujinx.Ava.Utilities
 {
     public static class TitleHelper
     {

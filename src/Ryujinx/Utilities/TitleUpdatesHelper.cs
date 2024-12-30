@@ -6,6 +6,7 @@ using LibHac.Ncm;
 using LibHac.Ns;
 using LibHac.Tools.FsSystem;
 using LibHac.Tools.FsSystem.NcaUtils;
+using Ryujinx.Ava.Common.Models;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.Utilities;
@@ -13,7 +14,6 @@ using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.Loaders.Processes.Extensions;
 using Ryujinx.HLE.Utilities;
 using Ryujinx.UI.Common.Configuration;
-using Ryujinx.UI.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,7 +22,7 @@ using Path = System.IO.Path;
 using SpanHelpers = LibHac.Common.SpanHelpers;
 using TitleUpdateMetadata = Ryujinx.Common.Configuration.TitleUpdateMetadata;
 
-namespace Ryujinx.UI.Common.Helper
+namespace Ryujinx.Ava.Utilities
 {
     public static class TitleUpdatesHelper
     {

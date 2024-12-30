@@ -1,8 +1,8 @@
+using Ryujinx.Ava.Utilities.AppLibrary;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.Utilities;
-using Ryujinx.UI.App.Common;
 
-namespace Ryujinx.UI.Common.Models
+namespace Ryujinx.Ava.Common.Models
 {
     public record XCITrimmerFileModel(
         string Name,
