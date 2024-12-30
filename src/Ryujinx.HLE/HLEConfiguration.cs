@@ -192,7 +192,7 @@ namespace Ryujinx.HLE
         /// <summary>
         ///     The desired hacky workarounds.
         /// </summary>
-        public DirtyHacks Hacks { internal get; set; }
+        public EnabledDirtyHack[] Hacks { internal get; set; }
 
         public HLEConfiguration(VirtualFileSystem virtualFileSystem,
                                 LibHacHorizonManager libHacHorizonManager,
@@ -224,7 +224,7 @@ namespace Ryujinx.HLE
                                 string multiplayerLdnPassphrase,
                                 string multiplayerLdnServer,
                                 int customVSyncInterval,
-                                DirtyHacks dirtyHacks = DirtyHacks.None)
+                                EnabledDirtyHack[] dirtyHacks = null)
         {
             VirtualFileSystem = virtualFileSystem;
             LibHacHorizonManager = libHacHorizonManager;
@@ -256,7 +256,7 @@ namespace Ryujinx.HLE
             MultiplayerDisableP2p = multiplayerDisableP2p;
             MultiplayerLdnPassphrase = multiplayerLdnPassphrase;
             MultiplayerLdnServer = multiplayerLdnServer;
-            Hacks = dirtyHacks;
+            Hacks = dirtyHacks ?? [];
         }
     }
 }

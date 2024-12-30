@@ -1,7 +1,7 @@
 using Avalonia.Interactivity;
 using Ryujinx.Ava.Common.Locale;
+using Ryujinx.Ava.Common.Models.Amiibo;
 using Ryujinx.Ava.UI.ViewModels;
-using Ryujinx.UI.Common.Models.Amiibo;
 
 namespace Ryujinx.Ava.UI.Windows
 {

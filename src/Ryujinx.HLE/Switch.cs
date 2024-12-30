@@ -40,7 +40,7 @@ namespace Ryujinx.HLE
 
         public bool IsFrameAvailable => Gpu.Window.IsFrameAvailable;
 
-        public DirtyHacks DirtyHacks { get; }
+        public DirtyHackCollection DirtyHacks { get; }
 
         public Switch(HLEConfiguration configuration)
         {
@@ -57,9 +57,10 @@ namespace Ryujinx.HLE
                 : MemoryAllocationFlags.Reserve | MemoryAllocationFlags.Mirrorable;
 
 #pragma warning disable IDE0055 // Disable formatting
+            DirtyHacks        = new DirtyHackCollection(Configuration.Hacks);
             AudioDeviceDriver = new CompatLayerHardwareDeviceDriver(Configuration.AudioDeviceDriver);
             Memory            = new MemoryBlock(Configuration.MemoryConfiguration.ToDramSize(), memoryAllocationFlags);
-            Gpu               = new GpuContext(Configuration.GpuRenderer);
+            Gpu               = new GpuContext(Configuration.GpuRenderer, DirtyHacks);
             System            = new HOS.Horizon(this);
             Statistics        = new PerformanceStatistics();
             Hid               = new Hid(this, System.HidStorage);
@@ -77,7 +78,7 @@ namespace Ryujinx.HLE
             System.EnablePtc                        = Configuration.EnablePtc;
             System.FsIntegrityCheckLevel            = Configuration.FsIntegrityCheckLevel;
             System.GlobalAccessLogMode              = Configuration.FsGlobalAccessLogMode;
-            DirtyHacks                              = Configuration.Hacks;
+            
             UpdateVSyncInterval();
 #pragma warning restore IDE0055
 

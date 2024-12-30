@@ -3,7 +3,7 @@ using Avalonia.Styling;
 using Avalonia.Threading;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
-using Ryujinx.UI.Common.Configuration;
+using Ryujinx.Ava.Utilities.Configuration;
 using System;
 
 namespace Ryujinx.Ava.UI.ViewModels
@@ -66,11 +66,11 @@ namespace Ryujinx.Ava.UI.ViewModels
         {
             bool isDarkTheme = theme == "Dark" || (theme == "Auto" && RyujinxApp.DetectSystemTheme() == ThemeVariant.Dark);
 
-            string basePath = "resm:Ryujinx.UI.Common.Resources.";
+            string basePath = "resm:Ryujinx.Assets.UIImages.";
             string themeSuffix = isDarkTheme ? "Dark.png" : "Light.png";
 
-            GithubLogo = LoadBitmap($"{basePath}Logo_GitHub_{themeSuffix}?assembly=Ryujinx.UI.Common");
-            DiscordLogo = LoadBitmap($"{basePath}Logo_Discord_{themeSuffix}?assembly=Ryujinx.UI.Common");
+            GithubLogo = LoadBitmap($"{basePath}Logo_GitHub_{themeSuffix}?assembly=Ryujinx");
+            DiscordLogo = LoadBitmap($"{basePath}Logo_Discord_{themeSuffix}?assembly=Ryujinx");
         }
 
         private static Bitmap LoadBitmap(string uri) => new(Avalonia.Platform.AssetLoader.Open(new Uri(uri)));

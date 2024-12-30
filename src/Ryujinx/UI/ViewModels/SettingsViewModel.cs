@@ -10,6 +10,8 @@ using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Ava.UI.Models.Input;
 using Ryujinx.Ava.UI.Windows;
+using Ryujinx.Ava.Utilities.Configuration;
+using Ryujinx.Ava.Utilities.Configuration.System;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Multiplayer;
 using Ryujinx.Common.GraphicsDriver;
@@ -18,8 +20,6 @@ using Ryujinx.Graphics.Vulkan;
 using Ryujinx.HLE;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS.Services.Time.TimeZone;
-using Ryujinx.UI.Common.Configuration;
-using Ryujinx.UI.Common.Configuration.System;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -65,7 +65,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         private string _ldnPassphrase;
         private string _ldnServer;
 
-        private bool _xc2MenuSoftlockFix = ConfigurationState.Instance.Hacks.Xc2MenuSoftlockFix;
+        public SettingsHacksViewModel DirtyHacks { get; }
 
         public int ResolutionScale
         {
@@ -277,17 +277,6 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
         }
 
-        public bool Xc2MenuSoftlockFixEnabled
-        {
-            get => _xc2MenuSoftlockFix;
-            set
-            {
-                _xc2MenuSoftlockFix = value;
-                
-                OnPropertyChanged();
-            }
-        }
-
         public int Language { get; set; }
         public int Region { get; set; }
         public int FsGlobalAccessLogMode { get; set; }
@@ -400,9 +389,12 @@ namespace Ryujinx.Ava.UI.ViewModels
         {
             _virtualFileSystem = virtualFileSystem;
             _contentManager = contentManager;
+            
             if (Program.PreviewerDetached)
             {
                 Task.Run(LoadTimeZones);
+                
+                DirtyHacks = new SettingsHacksViewModel(this);
             }
         }
 
@@ -422,6 +414,8 @@ namespace Ryujinx.Ava.UI.ViewModels
             {
                 Task.Run(LoadAvailableGpus);
                 LoadCurrentConfiguration();
+
+                DirtyHacks = new SettingsHacksViewModel(this);
             }
         }
 
@@ -636,9 +630,9 @@ namespace Ryujinx.Ava.UI.ViewModels
             OpenglDebugLevel = (int)config.Logger.GraphicsDebugLevel.Value;
 
             MultiplayerModeIndex = (int)config.Multiplayer.Mode.Value;
-            DisableP2P = config.Multiplayer.DisableP2p.Value;
-            LdnPassphrase = config.Multiplayer.LdnPassphrase.Value;
-            LdnServer = config.Multiplayer.LdnServer.Value;
+            DisableP2P = config.Multiplayer.DisableP2p;
+            LdnPassphrase = config.Multiplayer.LdnPassphrase;
+            LdnServer = config.Multiplayer.LdnServer;
         }
 
         public void SaveSettings()
@@ -762,7 +756,9 @@ namespace Ryujinx.Ava.UI.ViewModels
             config.Multiplayer.LdnServer.Value = LdnServer;
             
             // Dirty Hacks
-            config.Hacks.Xc2MenuSoftlockFix.Value = Xc2MenuSoftlockFixEnabled;
+            config.Hacks.Xc2MenuSoftlockFix.Value = DirtyHacks.Xc2MenuSoftlockFixEnabled;
+            config.Hacks.EnableShaderTranslationDelay.Value = DirtyHacks.ShaderTranslationDelayEnabled;
+            config.Hacks.ShaderTranslationDelay.Value = DirtyHacks.ShaderTranslationDelay;
 
             config.ToFileFormat().SaveConfig(Program.ConfigurationPath);
 
@@ -796,18 +792,5 @@ namespace Ryujinx.Ava.UI.ViewModels
             RevertIfNotSaved();
             CloseWindow?.Invoke();
         }
-
-        public static string Xc2MenuFixTooltip { get; } = Lambda.String(sb =>
-        {
-            sb.AppendLine(
-                "This fix applies a 2ms delay (via 'Thread.Sleep(2)') every time the game tries to read data from the emulated Switch filesystem.")
-                .AppendLine();
-            
-            sb.AppendLine("From the issue on GitHub:").AppendLine();
-            sb.Append(
-                "When clicking very fast from game main menu to 2nd submenu, " +
-                "there is a low chance that the game will softlock, " +
-                "the submenu won't show up, while background music is still there.");
-        });
     }
 }
