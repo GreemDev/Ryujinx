@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
 
-namespace Ryujinx.UI.Common.SystemInfo
+namespace Ryujinx.Ava.Utilities.SystemInfo
 {
     public class SystemInfo
     {
