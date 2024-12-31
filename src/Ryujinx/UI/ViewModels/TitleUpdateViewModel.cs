@@ -76,10 +76,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
             ApplicationData = applicationData;
 
-            if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                StorageProvider = desktop.MainWindow.StorageProvider;
-            }
+            StorageProvider = RyujinxApp.MainWindow.StorageProvider;
 
             LoadUpdates();
         }

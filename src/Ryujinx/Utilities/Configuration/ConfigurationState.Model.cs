@@ -666,14 +666,14 @@ namespace Ryujinx.Ava.Utilities.Configuration
                     List<EnabledDirtyHack> enabledHacks = [];
                     
                     if (Xc2MenuSoftlockFix)
-                        Apply(DirtyHacks.Xc2MenuSoftlockFix);
+                        Apply(DirtyHack.Xc2MenuSoftlockFix);
                     
                     if (EnableShaderTranslationDelay)
-                        Apply(DirtyHacks.ShaderCompilationThreadSleep, ShaderTranslationDelay);
+                        Apply(DirtyHack.ShaderTranslationDelay, ShaderTranslationDelay);
                     
                     return enabledHacks.ToArray();
 
-                    void Apply(DirtyHacks hack, int value = 0)
+                    void Apply(DirtyHack hack, int value = 0)
                     {
                         enabledHacks.Add(new EnabledDirtyHack(hack, value));
                     }

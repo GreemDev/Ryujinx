@@ -86,10 +86,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
             _modJsonPath = Path.Combine(AppDataManager.GamesDirPath, applicationId.ToString("x16"), "mods.json");
 
-            if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                _storageProvider = desktop.MainWindow.StorageProvider;
-            }
+            _storageProvider = RyujinxApp.MainWindow.StorageProvider;
 
             LoadMods(applicationId);
         }

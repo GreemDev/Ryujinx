@@ -367,8 +367,8 @@ namespace Ryujinx.Graphics.Gpu.Shader.DiskCache
         {
             try
             {
-                if (_context.DirtyHacks.IsEnabled(DirtyHacks.ShaderCompilationThreadSleep))
-                    Thread.Sleep(_context.DirtyHacks[DirtyHacks.ShaderCompilationThreadSleep]);
+                if (_context.DirtyHacks.IsEnabled(DirtyHack.ShaderTranslationDelay))
+                    Thread.Sleep(_context.DirtyHacks[DirtyHack.ShaderTranslationDelay]);
                 
                 AsyncProgramTranslation asyncTranslation = new(guestShaders, specState, programIndex, isCompute);
                 _asyncTranslationQueue.Add(asyncTranslation, _cancellationToken);

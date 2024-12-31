@@ -314,7 +314,7 @@ namespace Ryujinx.Ava
             
             _renderer.Window?.ChangeVSyncMode(e.NewValue);
 
-            _viewModel.ShowCustomVSyncIntervalPicker = (e.NewValue == VSyncMode.Custom);
+            _viewModel.UpdateVSyncIntervalPicker();
         }
 
         public void VSyncModeToggle()
