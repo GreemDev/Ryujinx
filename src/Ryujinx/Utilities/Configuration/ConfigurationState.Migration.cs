@@ -9,7 +9,7 @@ using Ryujinx.Common.Configuration.Multiplayer;
 using Ryujinx.Common.Logging;
 using Ryujinx.HLE;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace Ryujinx.Ava.Utilities.Configuration
 {
@@ -17,6 +17,7 @@ namespace Ryujinx.Ava.Utilities.Configuration
     {
         public void Load(ConfigurationFileFormat configurationFileFormat, string configurationFilePath)
         {
+            // referenced by Migrate
             bool configurationFileUpdated = false;
 
             if (configurationFileFormat.Version is < 0 or > ConfigurationFileFormat.CurrentVersion)
@@ -25,174 +26,48 @@ namespace Ryujinx.Ava.Utilities.Configuration
 
                 LoadDefault();
             }
-
-            if (configurationFileFormat.Version < 2)
+            
+            Migrate(2, static cff => cff.SystemRegion = Region.USA);
+            Migrate(3, static cff => cff.SystemTimeZone = "UTC");
+            Migrate(4, static cff => cff.MaxAnisotropy = -1);
+            Migrate(5, static cff => cff.SystemTimeOffset = 0);
+            Migrate(8, static cff => cff.EnablePtc = true);
+            Migrate(9, static cff =>
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 2.");
-
-                configurationFileFormat.SystemRegion = Region.USA;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 3)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 3.");
-
-                configurationFileFormat.SystemTimeZone = "UTC";
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 4)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 4.");
-
-                configurationFileFormat.MaxAnisotropy = -1;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 5)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 5.");
-
-                configurationFileFormat.SystemTimeOffset = 0;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 8)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 8.");
-
-                configurationFileFormat.EnablePtc = true;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 9)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 9.");
-
-                configurationFileFormat.ColumnSort = new ColumnSort
+                cff.ColumnSort = new ColumnSort
                 {
                     SortColumnId = 0,
-                    SortAscending = false,
+                    SortAscending = false
                 };
 
-                configurationFileFormat.Hotkeys = new KeyboardHotkeys
-                {
-                    ToggleVSyncMode = Key.F1,
-                };
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 10)
+                cff.Hotkeys = new KeyboardHotkeys { ToggleVSyncMode = Key.F1 };
+            });
+            Migrate(10, static cff => cff.AudioBackend = AudioBackend.OpenAl);
+            Migrate(11, static cff =>
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 10.");
-
-                configurationFileFormat.AudioBackend = AudioBackend.OpenAl;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 11)
+                cff.ResScale = 1;
+                cff.ResScaleCustom = 1.0f;
+            });
+            Migrate(12, static cff => cff.LoggingGraphicsDebugLevel = GraphicsDebugLevel.None);
+            // 13 -> LDN1
+            Migrate(14, static cff => cff.CheckUpdatesOnStart = true);
+            Migrate(16, static cff => cff.EnableShaderCache = true);
+            Migrate(17, static cff => cff.StartFullscreen = false);
+            Migrate(18, static cff => cff.AspectRatio = AspectRatio.Fixed16x9);
+            // 19 -> LDN2
+            Migrate(20, static cff => cff.ShowConfirmExit = true);
+            Migrate(21, static cff =>
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 11.");
-
-                configurationFileFormat.ResScale = 1;
-                configurationFileFormat.ResScaleCustom = 1.0f;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 12)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 12.");
-
-                configurationFileFormat.LoggingGraphicsDebugLevel = GraphicsDebugLevel.None;
-
-                configurationFileUpdated = true;
-            }
-
-            // configurationFileFormat.Version == 13 -> LDN1
-
-            if (configurationFileFormat.Version < 14)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 14.");
-
-                configurationFileFormat.CheckUpdatesOnStart = true;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 16)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 16.");
-
-                configurationFileFormat.EnableShaderCache = true;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 17)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 17.");
-
-                configurationFileFormat.StartFullscreen = false;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 18)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 18.");
-
-                configurationFileFormat.AspectRatio = AspectRatio.Fixed16x9;
-
-                configurationFileUpdated = true;
-            }
-
-            // configurationFileFormat.Version == 19 -> LDN2
-
-            if (configurationFileFormat.Version < 20)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 20.");
-
-                configurationFileFormat.ShowConfirmExit = true;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 21)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 21.");
-
                 // Initialize network config.
-
-                configurationFileFormat.MultiplayerMode = MultiplayerMode.Disabled;
-                configurationFileFormat.MultiplayerLanInterfaceId = "0";
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 22)
+                
+                cff.MultiplayerMode = MultiplayerMode.Disabled;
+                cff.MultiplayerLanInterfaceId = "0";
+            });
+            Migrate(22, static cff => cff.HideCursor = HideCursorMode.Never);
+            Migrate(24, static cff =>
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 22.");
-
-                configurationFileFormat.HideCursor = HideCursorMode.Never;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 24)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 24.");
-
-                configurationFileFormat.InputConfig = new List<InputConfig>
-                {
+                cff.InputConfig =
+                [
                     new StandardKeyboardInputConfig
                     {
                         Version = InputConfig.CurrentVersion,
@@ -240,69 +115,21 @@ namespace Ryujinx.Ava.Utilities.Configuration
                             StickRight = Key.L,
                             StickButton = Key.H,
                         },
-                    },
-                };
+                    }
 
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 25)
+                ];
+            });
+            Migrate(26, static cff => cff.MemoryManagerMode = MemoryManagerMode.HostMappedUnsafe);
+            Migrate(27, static cff => cff.EnableMouse = false);
+            Migrate(29, static cff => cff.Hotkeys = new KeyboardHotkeys
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 25.");
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 26)
+                ToggleVSyncMode = Key.F1,
+                Screenshot = Key.F8,
+                ShowUI = Key.F4
+            });
+            Migrate(30, static cff => 
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 26.");
-
-                configurationFileFormat.MemoryManagerMode = MemoryManagerMode.HostMappedUnsafe;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 27)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 27.");
-
-                configurationFileFormat.EnableMouse = false;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 28)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 28.");
-
-                configurationFileFormat.Hotkeys = new KeyboardHotkeys
-                {
-                    ToggleVSyncMode = Key.F1,
-                    Screenshot = Key.F8,
-                };
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 29)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 29.");
-
-                configurationFileFormat.Hotkeys = new KeyboardHotkeys
-                {
-                    ToggleVSyncMode = Key.F1,
-                    Screenshot = Key.F8,
-                    ShowUI = Key.F4,
-                };
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 30)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 30.");
-
-                foreach (InputConfig config in configurationFileFormat.InputConfig)
+                foreach (InputConfig config in cff.InputConfig)
                 {
                     if (config is StandardControllerInputConfig controllerConfig)
                     {
@@ -314,342 +141,146 @@ namespace Ryujinx.Ava.Utilities.Configuration
                         };
                     }
                 }
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 31)
+            });
+            Migrate(31, static cff => cff.BackendThreading = BackendThreading.Auto);
+            Migrate(32, static cff => cff.Hotkeys = new KeyboardHotkeys
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 31.");
-
-                configurationFileFormat.BackendThreading = BackendThreading.Auto;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 32)
+                ToggleVSyncMode = cff.Hotkeys.ToggleVSyncMode,
+                Screenshot = cff.Hotkeys.Screenshot,
+                ShowUI = cff.Hotkeys.ShowUI,
+                Pause = Key.F5,
+            });
+            Migrate(33, static cff =>
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 32.");
-
-                configurationFileFormat.Hotkeys = new KeyboardHotkeys
+                cff.Hotkeys = new KeyboardHotkeys
                 {
-                    ToggleVSyncMode = configurationFileFormat.Hotkeys.ToggleVSyncMode,
-                    Screenshot = configurationFileFormat.Hotkeys.Screenshot,
-                    ShowUI = configurationFileFormat.Hotkeys.ShowUI,
-                    Pause = Key.F5,
-                };
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 33)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 33.");
-
-                configurationFileFormat.Hotkeys = new KeyboardHotkeys
-                {
-                    ToggleVSyncMode = configurationFileFormat.Hotkeys.ToggleVSyncMode,
-                    Screenshot = configurationFileFormat.Hotkeys.Screenshot,
-                    ShowUI = configurationFileFormat.Hotkeys.ShowUI,
-                    Pause = configurationFileFormat.Hotkeys.Pause,
+                    ToggleVSyncMode = cff.Hotkeys.ToggleVSyncMode,
+                    Screenshot = cff.Hotkeys.Screenshot,
+                    ShowUI = cff.Hotkeys.ShowUI,
+                    Pause = cff.Hotkeys.Pause,
                     ToggleMute = Key.F2,
                 };
 
-                configurationFileFormat.AudioVolume = 1;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 34)
+                cff.AudioVolume = 1;
+            });
+            Migrate(34, static cff => cff.EnableInternetAccess = false);
+            Migrate(35, static cff =>
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 34.");
-
-                configurationFileFormat.EnableInternetAccess = false;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 35)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 35.");
-
-                foreach (InputConfig config in configurationFileFormat.InputConfig)
+                foreach (StandardControllerInputConfig config in cff.InputConfig
+                             .Where(it => it is StandardControllerInputConfig)
+                             .Cast<StandardControllerInputConfig>())
                 {
-                    if (config is StandardControllerInputConfig controllerConfig)
-                    {
-                        controllerConfig.RangeLeft = 1.0f;
-                        controllerConfig.RangeRight = 1.0f;
-                    }
+                    config.RangeLeft = 1.0f;
+                    config.RangeRight = 1.0f;
                 }
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 36)
+            });
+            
+            Migrate(36, static cff => cff.LoggingEnableTrace = false);
+            Migrate(37, static cff => cff.ShowConsole = true);
+            Migrate(38, static cff =>
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 36.");
-
-                configurationFileFormat.LoggingEnableTrace = false;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 37)
+                cff.BaseStyle = "Dark";
+                cff.GameListViewMode = 0;
+                cff.ShowNames = true;
+                cff.GridSize = 2;
+                cff.LanguageCode = "en_US";
+            });
+            Migrate(39, static cff => cff.Hotkeys = new KeyboardHotkeys
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 37.");
-
-                configurationFileFormat.ShowConsole = true;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 38)
+                ToggleVSyncMode = cff.Hotkeys.ToggleVSyncMode,
+                Screenshot = cff.Hotkeys.Screenshot,
+                ShowUI = cff.Hotkeys.ShowUI,
+                Pause = cff.Hotkeys.Pause,
+                ToggleMute = cff.Hotkeys.ToggleMute,
+                ResScaleUp = Key.Unbound,
+                ResScaleDown = Key.Unbound
+            });
+            Migrate(40, static cff => cff.GraphicsBackend = GraphicsBackend.OpenGl);
+            Migrate(41, static cff => cff.Hotkeys = new KeyboardHotkeys
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 38.");
-
-                configurationFileFormat.BaseStyle = "Dark";
-                configurationFileFormat.GameListViewMode = 0;
-                configurationFileFormat.ShowNames = true;
-                configurationFileFormat.GridSize = 2;
-                configurationFileFormat.LanguageCode = "en_US";
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 39)
+                ToggleVSyncMode = cff.Hotkeys.ToggleVSyncMode,
+                Screenshot = cff.Hotkeys.Screenshot,
+                ShowUI = cff.Hotkeys.ShowUI,
+                Pause = cff.Hotkeys.Pause,
+                ToggleMute = cff.Hotkeys.ToggleMute,
+                ResScaleUp = cff.Hotkeys.ResScaleUp,
+                ResScaleDown = cff.Hotkeys.ResScaleDown,
+                VolumeUp = Key.Unbound,
+                VolumeDown = Key.Unbound
+            });
+            Migrate(42, static cff => cff.EnableMacroHLE = true);
+            Migrate(43, static cff => cff.UseHypervisor = true);
+            Migrate(44, static cff =>
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 39.");
-
-                configurationFileFormat.Hotkeys = new KeyboardHotkeys
-                {
-                    ToggleVSyncMode = configurationFileFormat.Hotkeys.ToggleVSyncMode,
-                    Screenshot = configurationFileFormat.Hotkeys.Screenshot,
-                    ShowUI = configurationFileFormat.Hotkeys.ShowUI,
-                    Pause = configurationFileFormat.Hotkeys.Pause,
-                    ToggleMute = configurationFileFormat.Hotkeys.ToggleMute,
-                    ResScaleUp = Key.Unbound,
-                    ResScaleDown = Key.Unbound,
-                };
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 40)
+                cff.AntiAliasing = AntiAliasing.None;
+                cff.ScalingFilter = ScalingFilter.Bilinear;
+                cff.ScalingFilterLevel = 80;
+            });
+            Migrate(45, static cff => cff.ShownFileTypes = new ShownFileTypes
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 40.");
-
-                configurationFileFormat.GraphicsBackend = GraphicsBackend.OpenGl;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 41)
+                NSP = true,
+                PFS0 = true,
+                XCI = true,
+                NCA = true,
+                NRO = true,
+                NSO = true
+            });
+            Migrate(46, static cff => cff.UseHypervisor = OperatingSystem.IsMacOS());
+            Migrate(47, static cff => cff.WindowStartup = new WindowStartup
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 41.");
-
-                configurationFileFormat.Hotkeys = new KeyboardHotkeys
-                {
-                    ToggleVSyncMode = configurationFileFormat.Hotkeys.ToggleVSyncMode,
-                    Screenshot = configurationFileFormat.Hotkeys.Screenshot,
-                    ShowUI = configurationFileFormat.Hotkeys.ShowUI,
-                    Pause = configurationFileFormat.Hotkeys.Pause,
-                    ToggleMute = configurationFileFormat.Hotkeys.ToggleMute,
-                    ResScaleUp = configurationFileFormat.Hotkeys.ResScaleUp,
-                    ResScaleDown = configurationFileFormat.Hotkeys.ResScaleDown,
-                    VolumeUp = Key.Unbound,
-                    VolumeDown = Key.Unbound,
-                };
-            }
-
-            if (configurationFileFormat.Version < 42)
+                WindowPositionX = 0,
+                WindowPositionY = 0,
+                WindowSizeHeight = 760,
+                WindowSizeWidth = 1280,
+                WindowMaximized = false
+            });
+            Migrate(48, static cff => cff.EnableColorSpacePassthrough = false);
+            Migrate(49, static _ =>
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 42.");
-
-                configurationFileFormat.EnableMacroHLE = true;
-            }
-
-            if (configurationFileFormat.Version < 43)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 43.");
-
-                configurationFileFormat.UseHypervisor = true;
-            }
-
-            if (configurationFileFormat.Version < 44)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 44.");
-
-                configurationFileFormat.AntiAliasing = AntiAliasing.None;
-                configurationFileFormat.ScalingFilter = ScalingFilter.Bilinear;
-                configurationFileFormat.ScalingFilterLevel = 80;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 45)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 45.");
-
-                configurationFileFormat.ShownFileTypes = new ShownFileTypes
-                {
-                    NSP = true,
-                    PFS0 = true,
-                    XCI = true,
-                    NCA = true,
-                    NRO = true,
-                    NSO = true,
-                };
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 46)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 46.");
-
-                configurationFileFormat.MultiplayerLanInterfaceId = "0";
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 47)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 47.");
-
-                configurationFileFormat.WindowStartup = new WindowStartup
-                {
-                    WindowPositionX = 0,
-                    WindowPositionY = 0,
-                    WindowSizeHeight = 760,
-                    WindowSizeWidth = 1280,
-                    WindowMaximized = false,
-                };
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 48)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 48.");
-
-                configurationFileFormat.EnableColorSpacePassthrough = false;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 49)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 49.");
-
                 if (OperatingSystem.IsMacOS())
                 {
                     AppDataManager.FixMacOSConfigurationFolders();
                 }
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 50)
+            });
+            Migrate(50, static cff => cff.EnableHardwareAcceleration = true);
+            Migrate(51, static cff => cff.RememberWindowState = true);
+            Migrate(52, static cff => cff.AutoloadDirs = []);
+            Migrate(53, static cff => cff.EnableLowPowerPtc = false);
+            Migrate(54, static cff => cff.DramSize = MemoryConfiguration.MemoryConfiguration4GiB);
+            Migrate(55, static cff => cff.IgnoreApplet = false);
+            Migrate(56, static cff => cff.ShowTitleBar = !OperatingSystem.IsWindows());
+            Migrate(57, static cff =>
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 50.");
+                cff.VSyncMode = VSyncMode.Switch;
+                cff.EnableCustomVSyncInterval = false;
 
-                configurationFileFormat.EnableHardwareAcceleration = true;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 51)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 51.");
-
-                configurationFileFormat.RememberWindowState = true;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 52)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 52.");
-
-                configurationFileFormat.AutoloadDirs = [];
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 53)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 53.");
-
-                configurationFileFormat.EnableLowPowerPtc = false;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 54)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 54.");
-
-                configurationFileFormat.DramSize = MemoryConfiguration.MemoryConfiguration4GiB;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 55)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 55.");
-
-                configurationFileFormat.IgnoreApplet = false;
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 56)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 56.");
-
-                configurationFileFormat.ShowTitleBar = !OperatingSystem.IsWindows();
-
-                configurationFileUpdated = true;
-            }
-
-            if (configurationFileFormat.Version < 57)
-            {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 57.");
-
-                configurationFileFormat.VSyncMode = VSyncMode.Switch;
-                configurationFileFormat.EnableCustomVSyncInterval = false;
-
-                configurationFileFormat.Hotkeys = new KeyboardHotkeys
+                cff.Hotkeys = new KeyboardHotkeys
                 {
                     ToggleVSyncMode = Key.F1,
-                    Screenshot = configurationFileFormat.Hotkeys.Screenshot,
-                    ShowUI = configurationFileFormat.Hotkeys.ShowUI,
-                    Pause = configurationFileFormat.Hotkeys.Pause,
-                    ToggleMute = configurationFileFormat.Hotkeys.ToggleMute,
-                    ResScaleUp = configurationFileFormat.Hotkeys.ResScaleUp,
-                    ResScaleDown = configurationFileFormat.Hotkeys.ResScaleDown,
-                    VolumeUp = configurationFileFormat.Hotkeys.VolumeUp,
-                    VolumeDown = configurationFileFormat.Hotkeys.VolumeDown,
+                    Screenshot = cff.Hotkeys.Screenshot,
+                    ShowUI = cff.Hotkeys.ShowUI,
+                    Pause = cff.Hotkeys.Pause,
+                    ToggleMute = cff.Hotkeys.ToggleMute,
+                    ResScaleUp = cff.Hotkeys.ResScaleUp,
+                    ResScaleDown = cff.Hotkeys.ResScaleDown,
+                    VolumeUp = cff.Hotkeys.VolumeUp,
+                    VolumeDown = cff.Hotkeys.VolumeDown,
                     CustomVSyncIntervalIncrement = Key.Unbound,
                     CustomVSyncIntervalDecrement = Key.Unbound,
                 };
 
-                configurationFileFormat.CustomVSyncInterval = 120;
-
-                configurationFileUpdated = true;
-            }
-            
+                cff.CustomVSyncInterval = 120;
+            });
             // 58 migration accidentally got skipped but it worked with no issues somehow lol
-            
-            if (configurationFileFormat.Version < 59)
+            Migrate(59, static cff =>
             {
-                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 59.");
+                cff.ShowDirtyHacks = false;
+                cff.DirtyHacks = [];
 
-                configurationFileFormat.ShowDirtyHacks = false;
-                configurationFileFormat.DirtyHacks = [];
-
-                configurationFileUpdated = true;
-            }
+                // This was accidentally enabled by default when it was PRed. That is not what we want,
+                // so as a compromise users who want to use it will simply need to re-enable it once after updating.
+                cff.IgnoreApplet = false;
+            });
 
             Logger.EnableFileLog.Value = configurationFileFormat.EnableFileLog;
             Graphics.ResScale.Value = configurationFileFormat.ResScale;
@@ -765,6 +396,19 @@ namespace Ryujinx.Ava.Utilities.Configuration
                 ToFileFormat().SaveConfig(configurationFilePath);
 
                 Ryujinx.Common.Logging.Logger.Notice.Print(LogClass.Application, $"Configuration file updated to version {ConfigurationFileFormat.CurrentVersion}");
+            }
+
+            return;
+            
+            void Migrate(int newVer, Action<ConfigurationFileFormat> migrator)
+            {
+                if (configurationFileFormat.Version >= newVer) return;
+
+                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version {newVer}.");
+                
+                migrator(configurationFileFormat);
+
+                configurationFileUpdated = true;
             }
         }
     }
