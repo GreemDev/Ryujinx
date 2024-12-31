@@ -166,9 +166,7 @@ namespace Ryujinx.Ava.Utilities.Configuration
             Migrate(34, static cff => cff.EnableInternetAccess = false);
             Migrate(35, static cff =>
             {
-                foreach (StandardControllerInputConfig config in cff.InputConfig
-                             .Where(it => it is StandardControllerInputConfig)
-                             .Cast<StandardControllerInputConfig>())
+                foreach (StandardControllerInputConfig config in cff.InputConfig.OfType<StandardControllerInputConfig>())
                 {
                     config.RangeLeft = 1.0f;
                     config.RangeRight = 1.0f;
