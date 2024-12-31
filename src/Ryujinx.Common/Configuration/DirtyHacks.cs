@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Gommon;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,12 +15,14 @@ namespace Ryujinx.Common.Configuration
     public record EnabledDirtyHack(DirtyHacks Hack, int Value)
     {
         public static readonly byte[] PackedFormat = [8, 32];
-        
-        public ulong Pack() => BitTricks.PackBitFields([(uint)Hack, (uint)Value], PackedFormat);
+
+        private uint[] Raw => [(uint)Hack, (uint)Value.CoerceAtLeast(0)];
+
+        public ulong Pack() => Raw.PackBitFields(PackedFormat);
 
         public static EnabledDirtyHack Unpack(ulong packedHack)
         {
-            var unpackedFields = BitTricks.UnpackBitFields(packedHack, PackedFormat);
+            var unpackedFields = packedHack.UnpackBitFields(PackedFormat);
             if (unpackedFields is not [var hack, var value])
                 throw new ArgumentException(nameof(packedHack));
             
@@ -29,26 +32,17 @@ namespace Ryujinx.Common.Configuration
 
     public class DirtyHackCollection : Dictionary<DirtyHacks, int>
     {
-        public DirtyHackCollection(EnabledDirtyHack[] hacks)
-        {
-            foreach ((DirtyHacks dirtyHacks, int value) in hacks)
-            {
-                Add(dirtyHacks, value);
-            }
-        }
-        
-        public DirtyHackCollection(ulong[] packedHacks)
-        {
-            foreach ((DirtyHacks dirtyHacks, int value) in packedHacks.Select(EnabledDirtyHack.Unpack))
-            {
-                Add(dirtyHacks, value);
-            }
-        }
+        public DirtyHackCollection(IEnumerable<EnabledDirtyHack> hacks) 
+            => hacks.ForEach(edh => Add(edh.Hack, edh.Value));
 
-        public ulong[] PackEntries() =>
-            this
-                .Select(it => 
-                    BitTricks.PackBitFields([(uint)it.Key, (uint)it.Value], EnabledDirtyHack.PackedFormat))
+        public DirtyHackCollection(ulong[] packedHacks) : this(packedHacks.Select(EnabledDirtyHack.Unpack)) {}
+
+        public ulong[] PackEntries() 
+            => Entries.Select(it => it.Pack()).ToArray();
+        
+        public EnabledDirtyHack[] Entries 
+            => this
+                .Select(it => new EnabledDirtyHack(it.Key, it.Value))
                 .ToArray();
 
         public static implicit operator DirtyHackCollection(EnabledDirtyHack[] hacks) => new(hacks);
