@@ -1,3 +1,4 @@
+using Gommon;
 using Ryujinx.Ava.Utilities.Configuration.System;
 using Ryujinx.Ava.Utilities.Configuration.UI;
 using Ryujinx.Common.Configuration;
@@ -9,7 +10,6 @@ using Ryujinx.Common.Logging;
 using Ryujinx.HLE;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Ryujinx.Ava.Utilities.Configuration
 {
@@ -752,14 +752,12 @@ namespace Ryujinx.Ava.Utilities.Configuration
             Hacks.ShowDirtyHacks.Value = configurationFileFormat.ShowDirtyHacks;
 
             {
-                EnabledDirtyHack[] hacks = (configurationFileFormat.DirtyHacks ?? []).Select(EnabledDirtyHack.Unpack).ToArray();
-            
-                Hacks.Xc2MenuSoftlockFix.Value = hacks.Any(it => it.Hack == DirtyHacks.Xc2MenuSoftlockFix);
-                
-                var shaderCompilationThreadSleep = hacks.FirstOrDefault(it => 
-                    it.Hack == DirtyHacks.ShaderCompilationThreadSleep);
-                Hacks.EnableShaderTranslationDelay.Value = shaderCompilationThreadSleep != null;
-                Hacks.ShaderTranslationDelay.Value = shaderCompilationThreadSleep?.Value ?? 0;
+                DirtyHackCollection hacks = new (configurationFileFormat.DirtyHacks ?? []);
+
+                Hacks.Xc2MenuSoftlockFix.Value = hacks.IsEnabled(DirtyHacks.Xc2MenuSoftlockFix);
+
+                Hacks.EnableShaderTranslationDelay.Value = hacks.IsEnabled(DirtyHacks.ShaderCompilationThreadSleep);
+                Hacks.ShaderTranslationDelay.Value = hacks[DirtyHacks.ShaderCompilationThreadSleep].CoerceAtLeast(0);
             }
 
             if (configurationFileUpdated)
