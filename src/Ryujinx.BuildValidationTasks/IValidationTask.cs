@@ -1,6 +1,6 @@
 namespace Ryujinx.BuildValidationTasks
 {
-    public interface ValidationTask
+    public interface IValidationTask
     {
         public bool Execute(string projectPath, bool isGitRunner);
     }

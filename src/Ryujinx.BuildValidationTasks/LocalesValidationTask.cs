@@ -7,7 +7,7 @@ using System.Text.Encodings.Web;
 
 namespace Ryujinx.BuildValidationTasks
 {
-    public class LocalesValidationTask : ValidationTask
+    public class LocalesValidationTask : IValidationTask
     {
         public LocalesValidationTask() { }
 
