@@ -123,8 +123,42 @@ namespace Ryujinx.Ava.UI.ViewModels
         private bool _isActive;
         private bool _isSubMenuOpen;
 
-        public ApplicationData ListSelectedApplication;
-        public ApplicationData GridSelectedApplication;
+        private ApplicationData _listSelectedApplication;
+        private ApplicationData _gridSelectedApplication;
+        private ApplicationContextMenu _listAppContextMenu;
+        private ApplicationContextMenu _gridAppContextMenu;
+
+        public ApplicationData ListSelectedApplication
+        {
+            get => _listSelectedApplication;
+            set
+            {
+                _listSelectedApplication = value;
+
+                if (_listSelectedApplication != null && _listAppContextMenu == null)
+                    ListAppContextMenu = new ApplicationContextMenu();
+                else if (_listSelectedApplication == null && _listAppContextMenu != null)
+                    ListAppContextMenu = null;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public ApplicationData GridSelectedApplication
+        {
+            get => _gridSelectedApplication;
+            set
+            {
+                _gridSelectedApplication = value;
+
+                if (_gridSelectedApplication != null && _gridAppContextMenu == null)
+                    GridAppContextMenu = new ApplicationContextMenu();
+                else if (_gridSelectedApplication == null && _gridAppContextMenu != null)
+                    GridAppContextMenu = null;
+                
+                OnPropertyChanged();
+            }
+        }
         
         // Key is Title ID
         public SafeDictionary<string, LdnGameData.Array> LdnData = [];
@@ -218,7 +252,7 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public bool CanUpdate
         {
-            get => _canUpdate && EnableNonGameRunningControls && Updater.CanUpdate(false);
+            get => _canUpdate && EnableNonGameRunningControls && Updater.CanUpdate();
             set
             {
                 _canUpdate = value;
@@ -243,6 +277,28 @@ namespace Ryujinx.Ava.UI.ViewModels
             {
                 _appsObservableList = value;
 
+                OnPropertyChanged();
+            }
+        }
+
+        public ApplicationContextMenu ListAppContextMenu
+        {
+            get => _listAppContextMenu;
+            set
+            {
+                _listAppContextMenu = value;
+                
+                OnPropertyChanged();
+            }
+        }
+        
+        public ApplicationContextMenu GridAppContextMenu
+        {
+            get => _gridAppContextMenu;
+            set
+            {
+                _gridAppContextMenu = value;
+                
                 OnPropertyChanged();
             }
         }
