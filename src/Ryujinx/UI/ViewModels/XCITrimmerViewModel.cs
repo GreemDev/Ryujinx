@@ -4,10 +4,10 @@ using Gommon;
 using Avalonia.Threading;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
+using Ryujinx.Ava.Common.Models;
 using Ryujinx.Ava.UI.Helpers;
+using Ryujinx.Ava.Utilities.AppLibrary;
 using Ryujinx.Common.Utilities;
-using Ryujinx.UI.App.Common;
-using Ryujinx.UI.Common.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -366,6 +366,16 @@ namespace Ryujinx.Ava.UI.ViewModels
                 if (value.HasValue)
                     _displayedXCIFiles.ReplaceWith(value);
 
+                _processingApplication = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public XCITrimmerFileModel NullableProcessingApplication
+        {
+            get => _processingApplication.OrDefault();
+            set
+            {
                 _processingApplication = value;
                 OnPropertyChanged();
             }

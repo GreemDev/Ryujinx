@@ -20,11 +20,15 @@ using Ryujinx.Ava.UI.Models;
 using Ryujinx.Ava.UI.Renderer;
 using Ryujinx.Ava.UI.ViewModels;
 using Ryujinx.Ava.UI.Windows;
+using Ryujinx.Ava.Utilities;
+using Ryujinx.Ava.Utilities.AppLibrary;
+using Ryujinx.Ava.Utilities.Configuration;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Multiplayer;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.SystemInterop;
+using Ryujinx.Common.UI;
 using Ryujinx.Common.Utilities;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.GAL.Multithreading;
@@ -39,10 +43,6 @@ using Ryujinx.HLE.HOS.Services.Account.Acc;
 using Ryujinx.HLE.HOS.SystemState;
 using Ryujinx.Input;
 using Ryujinx.Input.HLE;
-using Ryujinx.UI.App.Common;
-using Ryujinx.UI.Common;
-using Ryujinx.UI.Common.Configuration;
-using Ryujinx.UI.Common.Helper;
 using Silk.NET.Vulkan;
 using SkiaSharp;
 using SPB.Graphics.Vulkan;
@@ -952,7 +952,7 @@ namespace Ryujinx.Ava
                 ConfigurationState.Instance.Multiplayer.LdnPassphrase,
                 ConfigurationState.Instance.Multiplayer.LdnServer,
                 ConfigurationState.Instance.Graphics.CustomVSyncInterval.Value,
-                ConfigurationState.Instance.Hacks.ShowDirtyHacks ? ConfigurationState.Instance.Hacks.EnabledHacks : DirtyHacks.None));
+                ConfigurationState.Instance.Hacks.ShowDirtyHacks ? ConfigurationState.Instance.Hacks.EnabledHacks : null));
         }
 
         private static IHardwareDeviceDriver InitializeAudio()
