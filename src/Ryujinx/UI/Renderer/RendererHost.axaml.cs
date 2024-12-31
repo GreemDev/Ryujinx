@@ -1,10 +1,10 @@
 using Avalonia;
 using Avalonia.Controls;
 using Gommon;
+using Ryujinx.Ava.Utilities.Configuration;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
-using Ryujinx.UI.Common.Configuration;
 using System;
 using System.Runtime.InteropServices;
 

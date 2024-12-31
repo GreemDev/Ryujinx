@@ -13,8 +13,9 @@ namespace Ryujinx.Ava.UI.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         
-        protected void OnPropertiesChanged(params ReadOnlySpan<string> propertyNames)
+        protected void OnPropertiesChanged(string firstPropertyName, params ReadOnlySpan<string> propertyNames)
         {
+            OnPropertyChanged(firstPropertyName);
             foreach (var propertyName in propertyNames)
             {
                 OnPropertyChanged(propertyName);

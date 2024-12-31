@@ -8,6 +8,10 @@ using Projektanker.Icons.Avalonia.MaterialDesign;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Ava.UI.Windows;
+using Ryujinx.Ava.Utilities;
+using Ryujinx.Ava.Utilities.AppLibrary;
+using Ryujinx.Ava.Utilities.Configuration;
+using Ryujinx.Ava.Utilities.SystemInfo;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.GraphicsDriver;
@@ -16,11 +20,6 @@ using Ryujinx.Common.SystemInterop;
 using Ryujinx.Graphics.Vulkan.MoltenVK;
 using Ryujinx.Headless;
 using Ryujinx.SDL2.Common;
-using Ryujinx.UI.App.Common;
-using Ryujinx.UI.Common;
-using Ryujinx.UI.Common.Configuration;
-using Ryujinx.UI.Common.Helper;
-using Ryujinx.UI.Common.SystemInfo;
 using System;
 using System.IO;
 using System.Linq;
@@ -116,9 +115,6 @@ namespace Ryujinx.Ava
             
             // Setup base data directory.
             AppDataManager.Initialize(CommandLineState.BaseDirPathArg);
-
-            // Set the delegate for localizing the word "never" in the UI
-            ApplicationData.LocalizedNever = () => LocaleManager.Instance[LocaleKeys.Never];
 
             // Initialize the configuration.
             ConfigurationState.Initialize();

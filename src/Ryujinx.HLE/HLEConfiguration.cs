@@ -188,6 +188,11 @@ namespace Ryujinx.HLE
         /// An action called when HLE force a refresh of output after docked mode changed.
         /// </summary>
         public Action RefreshInputConfig { internal get; set; }
+        
+        /// <summary>
+        ///     The desired hacky workarounds.
+        /// </summary>
+        public EnabledDirtyHack[] Hacks { internal get; set; }
 
         public HLEConfiguration(VirtualFileSystem virtualFileSystem,
                                 LibHacHorizonManager libHacHorizonManager,
@@ -218,7 +223,8 @@ namespace Ryujinx.HLE
                                 bool multiplayerDisableP2p,
                                 string multiplayerLdnPassphrase,
                                 string multiplayerLdnServer,
-                                int customVSyncInterval)
+                                int customVSyncInterval,
+                                EnabledDirtyHack[] dirtyHacks = null)
         {
             VirtualFileSystem = virtualFileSystem;
             LibHacHorizonManager = libHacHorizonManager;
@@ -250,6 +256,7 @@ namespace Ryujinx.HLE
             MultiplayerDisableP2p = multiplayerDisableP2p;
             MultiplayerLdnPassphrase = multiplayerLdnPassphrase;
             MultiplayerLdnServer = multiplayerLdnServer;
+            Hacks = dirtyHacks ?? [];
         }
     }
 }

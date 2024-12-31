@@ -86,6 +86,10 @@ namespace Ryujinx.Ava.UI.Windows
                     case nameof(LoggingPage):
                         NavPanel.Content = LoggingPage;
                         break;
+                    case nameof(HacksPage):
+                        HacksPage.DataContext = ViewModel;
+                        NavPanel.Content = HacksPage;
+                        break;
                     default:
                         throw new NotImplementedException();
                 }

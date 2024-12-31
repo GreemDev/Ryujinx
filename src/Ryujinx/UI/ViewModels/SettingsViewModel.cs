@@ -1,6 +1,7 @@
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using Gommon;
 using LibHac.Tools.FsSystem;
 using Ryujinx.Audio.Backends.OpenAL;
 using Ryujinx.Audio.Backends.SDL2;
@@ -9,6 +10,8 @@ using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Ava.UI.Models.Input;
 using Ryujinx.Ava.UI.Windows;
+using Ryujinx.Ava.Utilities.Configuration;
+using Ryujinx.Ava.Utilities.Configuration.System;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Multiplayer;
 using Ryujinx.Common.GraphicsDriver;
@@ -17,8 +20,6 @@ using Ryujinx.Graphics.Vulkan;
 using Ryujinx.HLE;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS.Services.Time.TimeZone;
-using Ryujinx.UI.Common.Configuration;
-using Ryujinx.UI.Common.Configuration.System;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -62,7 +63,9 @@ namespace Ryujinx.Ava.UI.ViewModels
         private int _networkInterfaceIndex;
         private int _multiplayerModeIndex;
         private string _ldnPassphrase;
-        private string _LdnServer;
+        private string _ldnServer;
+
+        public SettingsHacksViewModel DirtyHacks { get; }
 
         public int ResolutionScale
         {
@@ -162,9 +165,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             get => _vSyncMode;
             set
             {
-                if (value == VSyncMode.Custom ||
-                    value == VSyncMode.Switch ||
-                    value == VSyncMode.Unbounded)
+                if (value is VSyncMode.Custom or VSyncMode.Switch or VSyncMode.Unbounded)
                 {
                     _vSyncMode = value;
                     OnPropertyChanged();
@@ -257,6 +258,8 @@ namespace Ryujinx.Ava.UI.ViewModels
             GraphicsBackendIndex == 1 || (GraphicsBackendIndex == 0 && !OperatingSystem.IsMacOS());
         public bool UseHypervisor { get; set; }
         public bool DisableP2P { get; set; }
+
+        public bool ShowDirtyHacks => ConfigurationState.Instance.Hacks.ShowDirtyHacks;
 
         public string TimeZone { get; set; }
         public string ShaderDumpPath { get; set; }
@@ -374,10 +377,10 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public string LdnServer
         {
-            get => _LdnServer;
+            get => _ldnServer;
             set
             {
-                _LdnServer = value;
+                _ldnServer = value;
                 OnPropertyChanged();
             }
         }
@@ -386,9 +389,12 @@ namespace Ryujinx.Ava.UI.ViewModels
         {
             _virtualFileSystem = virtualFileSystem;
             _contentManager = contentManager;
+            
             if (Program.PreviewerDetached)
             {
                 Task.Run(LoadTimeZones);
+                
+                DirtyHacks = new SettingsHacksViewModel(this);
             }
         }
 
@@ -408,6 +414,8 @@ namespace Ryujinx.Ava.UI.ViewModels
             {
                 Task.Run(LoadAvailableGpus);
                 LoadCurrentConfiguration();
+
+                DirtyHacks = new SettingsHacksViewModel(this);
             }
         }
 
@@ -622,9 +630,9 @@ namespace Ryujinx.Ava.UI.ViewModels
             OpenglDebugLevel = (int)config.Logger.GraphicsDebugLevel.Value;
 
             MultiplayerModeIndex = (int)config.Multiplayer.Mode.Value;
-            DisableP2P = config.Multiplayer.DisableP2p.Value;
-            LdnPassphrase = config.Multiplayer.LdnPassphrase.Value;
-            LdnServer = config.Multiplayer.LdnServer.Value;
+            DisableP2P = config.Multiplayer.DisableP2p;
+            LdnPassphrase = config.Multiplayer.LdnPassphrase;
+            LdnServer = config.Multiplayer.LdnServer;
         }
 
         public void SaveSettings()
@@ -746,6 +754,11 @@ namespace Ryujinx.Ava.UI.ViewModels
             config.Multiplayer.DisableP2p.Value = DisableP2P;
             config.Multiplayer.LdnPassphrase.Value = LdnPassphrase;
             config.Multiplayer.LdnServer.Value = LdnServer;
+            
+            // Dirty Hacks
+            config.Hacks.Xc2MenuSoftlockFix.Value = DirtyHacks.Xc2MenuSoftlockFixEnabled;
+            config.Hacks.EnableShaderTranslationDelay.Value = DirtyHacks.ShaderTranslationDelayEnabled;
+            config.Hacks.ShaderTranslationDelay.Value = DirtyHacks.ShaderTranslationDelay;
 
             config.ToFileFormat().SaveConfig(Program.ConfigurationPath);
 

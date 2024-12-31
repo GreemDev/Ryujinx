@@ -5,7 +5,7 @@ using Avalonia.Interactivity;
 using FluentAvalonia.UI.Controls;
 using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Ava.UI.ViewModels;
-using Ryujinx.UI.App.Common;
+using Ryujinx.Ava.Utilities.AppLibrary;
 using System;
 using System.Linq;
 
