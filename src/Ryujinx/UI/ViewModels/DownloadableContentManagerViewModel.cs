@@ -106,9 +106,9 @@ namespace Ryujinx.Ava.UI.ViewModels
             // NOTE(jpr): this works around a bug where calling _views.Clear also clears SelectedDownloadableContents for
             // some reason. so we save the items here and add them back after
             var items = SelectedDownloadableContents.ToArray();
-
-            _views.Clear();
-            _views.AddRange(view);
+            
+            Views.Clear();
+            Views.AddRange(view);
 
             foreach (DownloadableContentModel item in items)
             {

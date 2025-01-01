@@ -171,13 +171,11 @@ namespace Ryujinx.Headless
                 { PlayerIndex.Player8, (nameof(InputId8), nameof(InputProfile8Name)) }
             };
 
-            foreach ((PlayerIndex playerIndex, (string id, string profile)) in indicesToProperties)
+            foreach ((PlayerIndex playerIndex, _) in indicesToProperties
+                         .Where(it => NeedsOverride(it.Value.InputId) && NeedsOverride(it.Value.InputProfileName)))
             {
-                if (NeedsOverride(id) && NeedsOverride(profile))
-                {
-                    configurationState.Hid.InputConfig.Value.FindFirst(x => x.PlayerIndex == playerIndex)
-                        .IfPresent(ic => InheritedInputConfigs[playerIndex] = ic);
-                }
+                configurationState.Hid.InputConfig.Value.FindFirst(x => x.PlayerIndex == playerIndex)
+                    .IfPresent(ic => InheritedInputConfigs[playerIndex] = ic);
             }
 
             return;

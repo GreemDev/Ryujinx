@@ -52,7 +52,7 @@ namespace Ryujinx.Headless
             // Make process DPI aware for proper window sizing on high-res screens.
             ForceDpiAware.Windows();
 
-            Console.Title = $"Ryujinx Console {Program.Version} (Headless)";
+            Console.Title = $"HeadlessRyujinx Console {Program.Version}";
 
             if (OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
             {
