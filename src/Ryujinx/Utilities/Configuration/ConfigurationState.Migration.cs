@@ -414,7 +414,8 @@ namespace Ryujinx.Ava.Utilities.Configuration
                     // This was accidentally enabled by default when it was PRed. That is not what we want,
                     // so as a compromise users who want to use it will simply need to re-enable it once after updating.
                     cff.IgnoreApplet = false;
-                })
+                }),
+                (60, static cff => cff.StartNoUI = false)
             );
     }
 }
