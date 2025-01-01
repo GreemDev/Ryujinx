@@ -53,17 +53,9 @@ namespace Ryujinx.Common
     {
         public static void LogValueChange<T>(LogClass logClass, ReactiveEventArgs<T> eventArgs, string valueName)
         {
-            if ((eventArgs.NewValue == null || eventArgs.OldValue == null))
-            {
-                if (!(eventArgs.NewValue == null && eventArgs.OldValue == null))
-                    goto Log;
-            } 
-            else if (!eventArgs.NewValue!.Equals(eventArgs.OldValue))
-                goto Log;
+            if (eventArgs.AreValuesEqual)
+                return;
             
-            return;
-            
-        Log:
             string message = string.Create(CultureInfo.InvariantCulture, $"{valueName} set to: {eventArgs.NewValue}");
 
             Logger.Info?.Print(logClass, message);
@@ -76,5 +68,22 @@ namespace Ryujinx.Common
     {
         public T OldValue { get; } = oldValue;
         public T NewValue { get; } = newValue;
+
+        public bool AreValuesEqual
+        {
+            get
+            {
+                if (OldValue == null && NewValue == null)
+                    return true;
+
+                if (OldValue == null && NewValue != null)
+                    return false;
+                
+                if (OldValue != null && NewValue == null)
+                    return false;
+
+                return OldValue!.Equals(NewValue);
+            }
+        }
     }
 }
