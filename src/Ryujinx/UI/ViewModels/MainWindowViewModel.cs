@@ -488,6 +488,19 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
         }
 
+        public bool StartGamesWithoutUI
+        {
+            get => ConfigurationState.Instance.UI.StartNoUI;
+            set
+            {
+                ConfigurationState.Instance.UI.StartNoUI.Value = value;
+
+                ConfigurationState.Instance.ToFileFormat().SaveConfig(Program.ConfigurationPath);
+
+                OnPropertyChanged();
+            }
+        }
+
         public bool ShowConsole
         {
             get => ConfigurationState.Instance.UI.ShowConsole;
@@ -1190,6 +1203,11 @@ namespace Ryujinx.Ava.UI.ViewModels
         public void ToggleStartGamesInFullscreen()
         {
             StartGamesInFullscreen = !StartGamesInFullscreen;
+        }
+
+        public void ToggleStartGamesWithoutUI()
+        {
+            StartGamesWithoutUI = !StartGamesWithoutUI;
         }
 
         public void ToggleShowConsole()
