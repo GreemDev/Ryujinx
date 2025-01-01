@@ -756,7 +756,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             config.Multiplayer.LdnServer.Value = LdnServer;
             
             // Dirty Hacks
-            config.Hacks.Xc2MenuSoftlockFix.Value = DirtyHacks.Xc2MenuSoftlockFixEnabled;
+            config.Hacks.Xc2MenuSoftlockFix.Value = DirtyHacks.Xc2MenuSoftlockFix;
             config.Hacks.EnableShaderTranslationDelay.Value = DirtyHacks.ShaderTranslationDelayEnabled;
             config.Hacks.ShaderTranslationDelay.Value = DirtyHacks.ShaderTranslationDelay;
 

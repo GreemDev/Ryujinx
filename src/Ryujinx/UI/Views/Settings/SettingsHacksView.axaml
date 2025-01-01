@@ -37,7 +37,7 @@
                     ToolTip.Tip="{Binding DirtyHacks.Xc2MenuFixTooltip}">
                     <CheckBox
                         Margin="0"
-                        IsChecked="{Binding DirtyHacks.Xc2MenuSoftlockFixEnabled}"/>
+                        IsChecked="{Binding DirtyHacks.Xc2MenuSoftlockFix}"/>
                     <TextBlock
                         VerticalAlignment="Center"
                         Text="Xenoblade Chronicles 2 Menu Softlock Fix" />
