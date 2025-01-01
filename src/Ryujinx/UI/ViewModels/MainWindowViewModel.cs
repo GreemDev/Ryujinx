@@ -125,43 +125,6 @@ namespace Ryujinx.Ava.UI.ViewModels
         private ApplicationData _listSelectedApplication;
         private ApplicationData _gridSelectedApplication;
         
-        public ApplicationData ListSelectedApplication
-        {
-            get => _listSelectedApplication;
-            set
-            {
-                _listSelectedApplication = value;
-
-#pragma warning disable MVVMTK0034
-                if (_listSelectedApplication != null && _listAppContextMenu == null)
-
-                    ListAppContextMenu = new ApplicationContextMenu();
-                else if (_listSelectedApplication == null && _listAppContextMenu != null)
-                    ListAppContextMenu = null!;
-#pragma warning restore MVVMTK0034
-
-                OnPropertyChanged();
-            }
-        }
-
-        public ApplicationData GridSelectedApplication
-        {
-            get => _gridSelectedApplication;
-            set
-            {
-                _gridSelectedApplication = value;
-
-#pragma warning disable MVVMTK0034
-                if (_gridSelectedApplication != null && _gridAppContextMenu == null)
-                    GridAppContextMenu = new ApplicationContextMenu();
-                else if (_gridSelectedApplication == null && _gridAppContextMenu != null)
-                    GridAppContextMenu = null!;
-#pragma warning restore MVVMTK0034
-                
-                OnPropertyChanged();
-            }
-        }
-        
         // Key is Title ID
         public SafeDictionary<string, LdnGameData.Array> LdnData = [];
 
@@ -185,9 +148,8 @@ namespace Ryujinx.Ava.UI.ViewModels
                 .OnItemAdded(_ => OnPropertyChanged(nameof(AppsObservableList)))
                 .OnItemRemoved(_ => OnPropertyChanged(nameof(AppsObservableList)))
 #pragma warning disable MVVMTK0034 // Event to update is fired below
-                .Bind(out _appsObservableList)
+                .Bind(out _appsObservableList);
 #pragma warning restore MVVMTK0034
-                .AsObservableList();
 
             _rendererWaitEvent = new AutoResetEvent(false);
 
@@ -333,6 +295,43 @@ namespace Ryujinx.Ava.UI.ViewModels
 
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(ShowFirmwareStatus));
+            }
+        }
+        
+        public ApplicationData ListSelectedApplication
+        {
+            get => _listSelectedApplication;
+            set
+            {
+                _listSelectedApplication = value;
+
+#pragma warning disable MVVMTK0034
+                if (_listSelectedApplication != null && _listAppContextMenu == null)
+
+                    ListAppContextMenu = new ApplicationContextMenu();
+                else if (_listSelectedApplication == null && _listAppContextMenu != null)
+                    ListAppContextMenu = null!;
+#pragma warning restore MVVMTK0034
+
+                OnPropertyChanged();
+            }
+        }
+
+        public ApplicationData GridSelectedApplication
+        {
+            get => _gridSelectedApplication;
+            set
+            {
+                _gridSelectedApplication = value;
+
+#pragma warning disable MVVMTK0034
+                if (_gridSelectedApplication != null && _gridAppContextMenu == null)
+                    GridAppContextMenu = new ApplicationContextMenu();
+                else if (_gridSelectedApplication == null && _gridAppContextMenu != null)
+                    GridAppContextMenu = null!;
+#pragma warning restore MVVMTK0034
+                
+                OnPropertyChanged();
             }
         }
 
