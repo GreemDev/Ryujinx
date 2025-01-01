@@ -40,7 +40,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
         }
 
-        public string ShaderTranslationDelayTooltipText => $"Current value: {ShaderTranslationDelay}"; 
+        public string ShaderTranslationDelayValueText => $"{ShaderTranslationDelay}ms"; 
         
         public int ShaderTranslationDelay
         {
@@ -49,7 +49,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             {
                 _shaderTranslationSleepDelay = value;
                 
-                OnPropertiesChanged(nameof(ShaderTranslationDelay), nameof(ShaderTranslationDelayTooltipText));
+                OnPropertiesChanged(nameof(ShaderTranslationDelay), nameof(ShaderTranslationDelayValueText));
             }
         }
         
