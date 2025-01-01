@@ -466,11 +466,10 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public void MatchSystemTime()
         {
-            var dto = DateTimeOffset.Now;
-
-            CurrentDate = new DateTimeOffset(dto.Year, dto.Month, dto.Day, 0, 0, 0, dto.Offset);
+            (DateTimeOffset dto, TimeSpan timeOfDay) = DateTimeOffset.Now.Extract();
             
-            CurrentTime = dto.TimeOfDay;
+            CurrentDate = dto;
+            CurrentTime = timeOfDay;
             
             OnPropertyChanged(nameof(CurrentDate));
             OnPropertyChanged(nameof(CurrentTime));
