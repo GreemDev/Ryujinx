@@ -127,6 +127,7 @@ namespace Ryujinx.Ava.Utilities.Configuration
             UI.GridSize.Value = cff.GridSize;
             UI.ApplicationSort.Value = cff.ApplicationSort;
             UI.StartFullscreen.Value = cff.StartFullscreen;
+            UI.StartNoUI.Value = cff.StartNoUI;
             UI.ShowConsole.Value = cff.ShowConsole;
             UI.WindowStartup.WindowSizeWidth.Value = cff.WindowStartup.WindowSizeWidth;
             UI.WindowStartup.WindowSizeHeight.Value = cff.WindowStartup.WindowSizeHeight;
