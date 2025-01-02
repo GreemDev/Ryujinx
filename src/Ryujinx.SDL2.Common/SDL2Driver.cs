@@ -32,7 +32,7 @@ namespace Ryujinx.SDL2.Common
         private uint _refereceCount;
         private Thread _worker;
 
-        private const uint SQL_JOYBATTERYUPDATED = 1543;
+        private const uint SDL_JOYBATTERYUPDATED = 1543;
         public event Action<int, int> OnJoyStickConnected;
         public event Action<int> OnJoystickDisconnected;
         public event Action<int, SDL_JoystickPowerLevel> OnJoyBatteryUpdated;
@@ -148,7 +148,7 @@ namespace Ryujinx.SDL2.Common
 
                 OnJoystickDisconnected?.Invoke(evnt.cbutton.which);
             }
-            else if ((uint)evnt.type == SQL_JOYBATTERYUPDATED)
+            else if ((uint)evnt.type == SDL_JOYBATTERYUPDATED)
             {
                 OnJoyBatteryUpdated?.Invoke(evnt.cbutton.which, (SDL_JoystickPowerLevel)evnt.user.code);
             }
