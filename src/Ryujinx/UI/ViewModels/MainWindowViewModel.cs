@@ -182,7 +182,11 @@ namespace Ryujinx.Ava.UI.ViewModels
             Applications.ToObservableChangeSet()
                 .Filter(Filter)
                 .Sort(GetComparer())
+                .OnItemAdded(_ => OnPropertyChanged(nameof(AppsObservableList)))
+                .OnItemRemoved(_ => OnPropertyChanged(nameof(AppsObservableList)))
+#pragma warning disable MVVMTK0034 // Event to update is fired below
                 .Bind(out _appsObservableList)
+#pragma warning restore MVVMTK0034
                 .AsObservableList();
 
             _rendererWaitEvent = new AutoResetEvent(false);
@@ -192,8 +196,8 @@ namespace Ryujinx.Ava.UI.ViewModels
                 LoadConfigurableHotKeys();
 
                 Volume = ConfigurationState.Instance.System.AudioVolume;
+                CustomVSyncInterval = ConfigurationState.Instance.Graphics.CustomVSyncInterval.Value;
             }
-            CustomVSyncInterval = ConfigurationState.Instance.Graphics.CustomVSyncInterval.Value;
         }
 
         public void Initialize(
