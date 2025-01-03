@@ -792,7 +792,7 @@
         "sv_SE": "Installera firmware",
         "th_TH": "ติดตั้งเฟิร์มแวร์",
         "tr_TR": "Yazılım Yükle",
-        "uk_UA": "Встановити прошивку",
+        "uk_UA": "Встановити прошивку (Firmware)",
         "zh_CN": "安装系统固件",
         "zh_TW": "安裝韌體"
       }
@@ -867,7 +867,7 @@
         "sv_SE": "Installera nycklar",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Встановити Ключі",
+        "uk_UA": "Встановити ключі",
         "zh_CN": "安装密匙",
         "zh_TW": ""
       }
@@ -892,7 +892,7 @@
         "sv_SE": "Installera nycklar från KEYS eller ZIP",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Встановити ключі з файлу KEYS чи ZIP",
+        "uk_UA": "Встановити ключі з файлу .KEYS або .ZIP",
         "zh_CN": "从.KEYS文件或ZIP压缩包安装密匙",
         "zh_TW": ""
       }
@@ -8513,7 +8513,7 @@
         "no_NO": "Numerisk 0",
         "pl_PL": "",
         "pt_BR": "",
-        "ru_RU": "Блок цифр 0",
+        "ru_RU": "0 (цифровий блок)",
         "sv_SE": "",
         "th_TH": "",
         "tr_TR": "",
@@ -8538,7 +8538,7 @@
         "no_NO": "Numerisk 1",
         "pl_PL": "",
         "pt_BR": "",
-        "ru_RU": "Блок цифр 1",
+        "ru_RU": "1 (цифровий блок)",
         "sv_SE": "",
         "th_TH": "",
         "tr_TR": "",
@@ -8567,7 +8567,7 @@
         "sv_SE": "",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Блок цифр 2",
+        "uk_UA": "2 (цифровий блок)",
         "zh_CN": "小键盘2",
         "zh_TW": "數字鍵 2"
       }
@@ -8592,7 +8592,7 @@
         "sv_SE": "",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Блок цифр 3",
+        "uk_UA": "3 (цифровий блок)",
         "zh_CN": "小键盘3",
         "zh_TW": "數字鍵 3"
       }
@@ -8617,7 +8617,7 @@
         "sv_SE": "",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Блок цифр 4",
+        "uk_UA": "4 (цифровий блок)",
         "zh_CN": "小键盘4",
         "zh_TW": "數字鍵 4"
       }
@@ -8642,7 +8642,7 @@
         "sv_SE": "",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Блок цифр 5",
+        "uk_UA": "5 (цифровий блок)",
         "zh_CN": "小键盘5",
         "zh_TW": "數字鍵 5"
       }
@@ -8667,7 +8667,7 @@
         "sv_SE": "",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Блок цифр 6",
+        "uk_UA": "6 (цифровий блок)",
         "zh_CN": "小键盘6",
         "zh_TW": "數字鍵 6"
       }
@@ -8692,7 +8692,7 @@
         "sv_SE": "",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Блок цифр 7",
+        "uk_UA": "7 (цифровий блок)",
         "zh_CN": "小键盘7",
         "zh_TW": "數字鍵 7"
       }
@@ -8717,7 +8717,7 @@
         "sv_SE": "",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Блок цифр 8",
+        "uk_UA": "8 (цифровий блок)",
         "zh_CN": "小键盘8",
         "zh_TW": "數字鍵 8"
       }
@@ -8742,7 +8742,7 @@
         "sv_SE": "",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Блок цифр 9",
+        "uk_UA": "9 (цифровий блок)",
         "zh_CN": "小键盘9",
         "zh_TW": "數字鍵 9"
       }
@@ -14117,7 +14117,7 @@
         "sv_SE": "Klicka för att öppna Ryujinx GitHub-sida i din webbläsare.",
         "th_TH": "คลิกเพื่อเปิดหน้า Github ของ Ryujinx  บนเบราว์เซอร์เริ่มต้นของคุณ",
         "tr_TR": "Ryujinx'in GitHub sayfasını varsayılan tarayıcınızda açmak için tıklayın.",
-        "uk_UA": "Натисніть, щоб відкрити сторінку GitHub Ryujinx у браузері за замовчуванням.",
+        "uk_UA": "Натисніть, щоб відкрити сторінку GitHub Ryujinx у браузері.",
         "zh_CN": "在浏览器中打开 Ryujinx 的 GitHub 代码库。",
         "zh_TW": "在預設瀏覽器中開啟 Ryujinx 的 GitHub 網頁。"
       }
@@ -14142,7 +14142,7 @@
         "sv_SE": "Klicka för att öppna en inbjudan till Ryujinx Discord-server i din webbläsare.",
         "th_TH": "คลิกเพื่อเปิดคำเชิญเข้าสู่เซิร์ฟเวอร์ Discord ของ Ryujinx บนเบราว์เซอร์เริ่มต้นของคุณ",
         "tr_TR": "Varsayılan tarayıcınızda Ryujinx'in Discord'una bir davet açmak için tıklayın.",
-        "uk_UA": "Натисніть, щоб відкрити запрошення на сервер Discord Ryujinx у браузері за замовчуванням.",
+        "uk_UA": "Натисніть, щоб відкрити запрошення на сервер Discord Ryujinx у браузері.",
         "zh_CN": "在浏览器中打开 Ryujinx 的 Discord 邀请链接。",
         "zh_TW": "在預設瀏覽器中開啟 Ryujinx 的 Discord 邀請連結。"
       }
@@ -14192,7 +14192,7 @@
         "sv_SE": "Ryujinx är en emulator för Nintendo Switch™.\nFå de senaste nyheterna via vår Discord.\nUtvecklare som är intresserade att bidra kan hitta mer info på vår GitHub eller Discord.",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Ryujinx — це емулятор для Nintendo Switch™.\nОтримуйте всі останні новини в нашому Discord.\nРозробники, які хочуть зробити внесок, можуть дізнатися більше на нашому GitHub або в Discord.",
+        "uk_UA": "Ryujinx — це емулятор для Nintendo Switch™.\nОстанні новини можна отримати в нашому Discord.\nРозробники, що бажають долучитись до розробки та зробити свій внесок, можуть отримати більше інформації на нашому GitHub або в Discord.",
         "zh_CN": "",
         "zh_TW": ""
       }
@@ -19018,7 +19018,7 @@
         "sv_SE": "Denna funktion kommer först att kontrollera ledigt utrymme och sedan optimera XCI-filen för att spara diskutrymme.",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Ця функція спочатку перевірить наявність вільного місця, а потім обріже файл XCI для економії місця на диску.",
+        "uk_UA": "Ця функція спочатку перевірить наявність порожнього місця, після чого обріже файл XCI для економії місця на диску.",
         "zh_CN": "这个功能将会先检查XCI文件，再对其执行瘦身操作以节约磁盘空间。",
         "zh_TW": ""
       }
@@ -19068,7 +19068,7 @@
         "sv_SE": "XCI-filen behöver inte optimeras. Kontrollera loggen för mer information",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "XCI файл не потребує обрізання. Перевірте журнал (logs) для отримання додаткової інформації",
+        "uk_UA": "XCI файл не потребує обрізання. Перевірте журнали (logs) для отримання додаткової інформації",
         "zh_CN": "XCI文件不需要被瘦身。查看日志以获得更多细节。",
         "zh_TW": ""
       }
@@ -19918,7 +19918,7 @@
         "sv_SE": "Bundlade DLC kan inte tas bort, endast inaktiveras.",
         "th_TH": "แพ็ค DLC ไม่สามารถลบทิ้งได้ สามารถปิดใช้งานได้เท่านั้น",
         "tr_TR": "",
-        "uk_UA": "Вбудований DLC не може бути видаленим, лише вимкненим.",
+        "uk_UA": "Комплектні DLC (бандли) не можуть бути видаленими, лише вимкненими.",
         "zh_CN": "游戏整合的DLC无法移除，可尝试禁用。",
         "zh_TW": "附帶的 DLC 只能被停用而無法被刪除。"
       }
@@ -22343,7 +22343,7 @@
         "sv_SE": "Emulerad vertikal synk. 'Switch' emulerar Switchens uppdateringsfrekvens på 60Hz. 'Obunden' är en obegränsad uppdateringsfrekvens.",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Емульована вертикальна синхронізація. 'Switch' емулює частоту оновлення Switch 60 Гц. 'Безмежна' — частота оновлення не матиме обмежень.",
+        "uk_UA": "Емульована вертикальна синхронізація кадрів. 'Switch' емулює частоту оновлення консолі Nintendo Switch (60 Гц). 'Необмежена' — частота оновлення не матиме обмежень.",
         "zh_CN": "模拟垂直同步。“Switch”模拟了Switch的60Hz刷新率。“无限制”没有刷新率限制。",
         "zh_TW": ""
       }
@@ -22368,7 +22368,7 @@
         "sv_SE": "Emulerad vertikal synk. 'Switch' emulerar Switchens uppdateringsfrekvens på 60Hz. 'Obunden' är en obegränsad uppdateringsfrekvens. 'Anpassad uppdateringsfrekvens' emulerar den angivna anpassade uppdateringsfrekvensen.",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Емульована вертикальна синхронізація. 'Switch' емулює частоту оновлення Switch 60 Гц. 'Безмежна' — частота оновлення не матиме обмежень. 'Користувацька' емулює вказану користувацьку частоту оновлення.",
+        "uk_UA": "Емульована вертикальна синхронізація кадрів. 'Switch' емулює частоту оновлення консолі Nintendo Switch (60 Гц). 'Необмежена' — частота оновлення не матиме обмежень. 'Користувацька' емулює вказану користувацьку частоту оновлення.",
         "zh_CN": "模拟垂直同步。“Switch”模拟了Switch的60Hz刷新率。“无限制”没有刷新率限制。“自定义刷新率”模拟指定的自定义刷新率。",
         "zh_TW": ""
       }
@@ -22393,7 +22393,7 @@
         "sv_SE": "Låter användaren ange en emulerad uppdateringsfrekvens. För vissa spel så kan detta snabba upp eller ner frekvensen för spellogiken. I andra spel så kan detta tillåta att bildfrekvensen kapas för delar av uppdateringsfrekvensen eller leda till oväntat beteende. Detta är en experimentell funktion utan några garantier för hur spelet påverkas. \n\nLämna AV om du är osäker.",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Дозволяє користувачу вказати емульовану частоту оновлення. У деяких іграх це може прискорити або сповільнити логіку гри. У інших іграх це може дозволити обмежити FPS на певні кратні частоти оновлення або призвести до непередбачуваної поведінки. Це експериментальна функція, без гарантій того, як це вплине на ігровий процес. \n\nЗалиште ВИМКНЕНИМ, якщо не впевнені.",
+        "uk_UA": "Дозволяє користувачу вказати емульовану частоту оновлення. У деяких іграх це може прискорити або сповільнити логіку гри. Натомість в інших іграх ця функція може дозволити обмежити FPS на певні кратні частоти оновлення або призвести до непередбачуваної поведінки. Це експериментальна функція, без гарантій того, як вона вплине на ігровий процес. \n\nЗалиште ВИМКНЕНИМ, якщо не впевнені.",
         "zh_CN": "允许用户指定模拟刷新率。在某些游戏中，这可能会加快或减慢游戏逻辑的速度。在其他游戏中，它可能允许将FPS限制在刷新率的某个倍数，或者导致不可预测的行为。这是一个实验性功能，无法保证游戏会受到怎样的影响。\n\n如果不确定，请关闭。",
         "zh_TW": ""
       }
@@ -22493,7 +22493,7 @@
         "sv_SE": "Värde för anpassad uppdateringsfrekvens:",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Значення користувацька частота оновлення:",
+        "uk_UA": "Значення користувацької частоти оновлення:",
         "zh_CN": "自定义刷新率值：",
         "zh_TW": ""
       }
