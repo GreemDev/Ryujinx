@@ -1292,7 +1292,7 @@
         "sv_SE": "Öppnar Frågor, svar och felsökningssidan på den officiella Ryujinx-wikin",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Відкриває сторінку з Посібником по усуненню помилок та несправностей на офіційній вікі Ryujinx (англійською)",
+        "uk_UA": "Відкриває сторінку з Посібником по усуненню помилок та несправностей на офіційній вікі-сторінці Ryujinx (англійською)",
         "zh_CN": "打开Ryujinx官方wiki的常见问题和问题排除页面",
         "zh_TW": ""
       }
@@ -1342,7 +1342,7 @@
         "sv_SE": "Öppnar konfigurationsguiden på den officiella Ryujinx-wikin",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Відкриває посібник з Налаштування та конфігурації на офіційній вікі Ryujinx (англійською)",
+        "uk_UA": "Відкриває посібник з Налаштування та конфігурації на офіційній вікі-сторінці Ryujinx (англійською)",
         "zh_CN": "打开Ryujinx官方wiki的安装与配置指南",
         "zh_TW": ""
       }
@@ -1392,7 +1392,7 @@
         "sv_SE": "Öppnar flerspelarguiden på den officiella Ryujinx-wikin",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Відкриває посібник з налаштування Мультиплеєру на офіційній вікі Ryujinx (англійською)",
+        "uk_UA": "Відкриває посібник з налаштування Мультиплеєру на офіційній вікі-сторінці Ryujinx (англійською)",
         "zh_CN": "打开Ryujinx官方wiki的多人游戏指南",
         "zh_TW": ""
       }
@@ -19018,7 +19018,7 @@
         "sv_SE": "Denna funktion kommer först att kontrollera ledigt utrymme och sedan optimera XCI-filen för att spara diskutrymme.",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "Ця функція спочатку перевірить вільний простір, а потім обрізатиме файл XCI для економії місця на диску.",
+        "uk_UA": "Ця функція спочатку перевірить наявність вільного місця, а потім обріже файл XCI для економії місця на диску.",
         "zh_CN": "这个功能将会先检查XCI文件，再对其执行瘦身操作以节约磁盘空间。",
         "zh_TW": ""
       }
@@ -19068,7 +19068,7 @@
         "sv_SE": "XCI-filen behöver inte optimeras. Kontrollera loggen för mer information",
         "th_TH": "",
         "tr_TR": "",
-        "uk_UA": "XCI файл не потребує обрізання. Перевірте журнали (logs) для отримання додаткової інформації",
+        "uk_UA": "XCI файл не потребує обрізання. Перевірте журнал (logs) для отримання додаткової інформації",
         "zh_CN": "XCI文件不需要被瘦身。查看日志以获得更多细节。",
         "zh_TW": ""
       }
