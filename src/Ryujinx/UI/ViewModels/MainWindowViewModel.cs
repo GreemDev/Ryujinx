@@ -80,7 +80,9 @@ namespace Ryujinx.Ava.UI.ViewModels
         [ObservableProperty] private Brush _progressBarForegroundColor;
         [ObservableProperty] private Brush _progressBarBackgroundColor;
         [ObservableProperty] private Brush _vSyncModeColor;
-        [ObservableProperty] private byte[] _selectedIcon;
+        #nullable enable
+        [ObservableProperty] private byte[]? _selectedIcon;
+        #nullable disable
         [ObservableProperty] private int _statusBarProgressMaximum;
         [ObservableProperty] private int _statusBarProgressValue;
         [ObservableProperty] private string _statusBarProgressStatusText;
@@ -1754,7 +1756,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
         }
 
-        public async void ProcessTrimResult(String filename, Ryujinx.Common.Utilities.XCIFileTrimmer.OperationOutcome operationOutcome)
+        public async void ProcessTrimResult(String filename, XCIFileTrimmer.OperationOutcome operationOutcome)
         {
             string notifyUser = operationOutcome.ToLocalisedText();
 
@@ -1769,12 +1771,8 @@ namespace Ryujinx.Ava.UI.ViewModels
             {
                 switch (operationOutcome)
                 {
-                    case Ryujinx.Common.Utilities.XCIFileTrimmer.OperationOutcome.Successful:
-                        if (Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-                        {
-                            if (desktop.MainWindow is MainWindow mainWindow)
-                                mainWindow.LoadApplications();
-                        }
+                    case XCIFileTrimmer.OperationOutcome.Successful:
+                        RyujinxApp.MainWindow.LoadApplications();
                         break;
                 }
             }
